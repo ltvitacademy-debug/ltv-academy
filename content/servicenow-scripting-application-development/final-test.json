@@ -1,0 +1,446 @@
+{
+  "questions": [
+    {
+      "id": "snsc-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "What does calling `current.setAbortAction(true)` inside a Business Rule actually do, and in which timing can it be used?",
+      "code": "(function executeRule(current, previous) {\n    if (current.short_description.nil()) {\n        current.setAbortAction(true);\n    }\n})(current, previous);",
+      "options": [
+        "Cancels the pending database write entirely before it happens -- only usable in a Before rule, since by the time an After or Async rule runs, the write has already committed",
+        "Reverts current's fields to their previous values but still lets the save complete",
+        "Deletes the record permanently from the database",
+        "Pauses the transaction until a human manually approves it",
+        "Queues the record for asynchronous processing instead of writing it immediately",
+        "Logs a warning message but has no actual effect on whether the save happens"
+      ],
+      "correctIndex": 0,
+      "explain": "setAbortAction(true) cancels the database operation before it ever happens, which is only possible in a Before rule -- an After or Async rule runs once the write has already succeeded, so there's nothing left to cancel.",
+      "distractorExplain": "Option B (reverting fields but letting the save complete) describes what manually resetting current's fields back to previous's values would do, which is a real but completely different technique -- setAbortAction(true) doesn't touch field values at all, it stops the write itself from happening."
+    },
+    {
+      "id": "snsc-02",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of a single Incident save into the real order they execute, start to finish.",
+      "items": [
+        "All applicable Before Business Rules run, in order",
+        "The database write happens",
+        "All applicable After Business Rules run, in order",
+        "Any applicable Async Business Rules are queued to run in the background"
+      ],
+      "explain": "A single save follows a fixed sequence: every applicable Before rule runs in order, then the actual database write happens, then every applicable After rule runs in order, and finally any Async rules are queued to run later in the background."
+    },
+    {
+      "id": "snsc-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Business Rule mistakes this chapter covers.",
+      "options": [
+        "A Business Rule that calls current.update() on itself inside an update-triggered rule with no guard can trigger an infinite loop",
+        "current.operation() returns 'insert', 'update', or 'delete', and can guard logic meant for only one of those cases",
+        "Putting field-modifying logic in an After rule instead of a Before rule forces an extra, unnecessary database write",
+        "Missing Filter Conditions has no real performance cost, since the rule's own if-statements filter out irrelevant saves just as efficiently",
+        "A Business Rule defined on the base task table only ever affects the Incident table, never Problem or Change Request"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A self-triggering update with no guard loops forever; current.operation() is the real guard against logic meant for only one case; and modifying current in an After rule forces a second, avoidable write. Missing Filter Conditions still wastes server resources running the rule's own checks on irrelevant saves, and a rule on task reaches every table that extends it, not just Incident."
+    },
+    {
+      "id": "snsc-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the ________ object is a GlideRecord snapshot of a record's state before the current update, and it is only populated on update operations with the Business Rule's Advanced checkbox enabled.",
+      "acceptedAnswers": ["previous"],
+      "explain": "previous is a GlideRecord snapshot of the record's state before the current update -- it's only populated on update operations, and only when the Business Rule's Advanced checkbox is enabled."
+    },
+    {
+      "id": "snsc-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "A developer writes an onChange Client Script on the priority field but forgets to check isLoading. The field already holds a value when the form first loads. What actually happens?",
+      "code": "function onChange(control, oldValue, newValue, isLoading, isTemplate) {\n    // no isLoading/isTemplate guard here\n    g_form.addInfoMessage('Priority changed to ' + newValue);\n}",
+      "options": [
+        "The function still runs once automatically when the form loads, firing the real logic before the user has changed anything",
+        "The function never runs at all, since there was no actual change event",
+        "The platform throws a compile error because isLoading is a required parameter",
+        "The function only runs the first time the user manually edits the field, exactly as intended",
+        "The function runs twice as fast because there's no guard check slowing it down"
+      ],
+      "correctIndex": 0,
+      "explain": "Because the field already had a value when the form loaded, ServiceNow fires onChange once during that load -- without the isLoading guard, that unintended first firing runs the real logic before the user ever touches the field, which is the single most common onChange bug."
+    },
+    {
+      "id": "snsc-06",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each client-script mechanism to how it actually behaves.",
+      "left": ["onChange", "onSubmit", "onCellEdit", "Isolate script (checked)"],
+      "right": [
+        "Runs inside a sandboxed iframe separate from global scope, preventing variable collisions",
+        "Fires on a list inline edit, resolved via callback(true/false), no g_form",
+        "Platform only blocks the save when it returns the literal value false",
+        "Fires once per keystroke-driven change event; must guard isLoading/isTemplate"
+      ],
+      "correctMap": [3, 2, 1, 0],
+      "explain": "onChange fires on every change event and needs an isLoading/isTemplate guard; onSubmit only blocks the save when it returns the literal value false; onCellEdit fires on a list inline edit and resolves through callback(), with no g_form available; and Isolate script sandboxes a client script inside its own iframe so it can't collide with another script's global variables."
+    },
+    {
+      "id": "snsc-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: since the Quebec release, client-side ________ is disabled by default, and GlideAjax against a Script Include is the modern replacement for reaching server data from a Client Script.",
+      "acceptedAnswers": ["GlideRecord", "glide record"],
+      "explain": "Client-side GlideRecord let browser JavaScript run arbitrary database queries directly; it's been disabled by default since Quebec for performance and security reasons, and GlideAjax against a Script Include is the modern, supported replacement."
+    },
+    {
+      "id": "snsc-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A developer renames a Script Include class from IncidentUtils to IncidentHelper everywhere it's declared and called, but forgets to update the trailing `type: 'IncidentUtils'` line. What happens when the code runs?",
+      "code": "var IncidentHelper = Class.create();\nIncidentHelper.prototype = {\n    initialize: function() { /* ... */ },\n    isHighPriority: function(gr) { /* ... */ },\n    type: 'IncidentUtils'   // never updated after the rename\n};",
+      "options": [
+        "The code still runs without a syntax error, but the platform's internal reflection (used in things like logging and error messages) will report the stale old name, out of sync with the actual class",
+        "The script fails to load at all, since type must always match the variable name exactly or the instance refuses to compile it",
+        "Every method on the class silently stops working, even though no method body changed",
+        "ServiceNow automatically renames the type property to match on the next save",
+        "The class becomes inaccessible from any other scope, regardless of its Accessible from setting"
+      ],
+      "correctIndex": 0,
+      "explain": "type is a required convention the platform's reflection relies on, but it isn't enforced by the JavaScript engine itself -- the code keeps running correctly, it's just that anything depending on type to identify the class now sees a name that doesn't match reality."
+    },
+    {
+      "id": "snsc-09",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of building and constructing PriorityIncidentUtils (which extends IncidentUtils) in the order they actually happen.",
+      "items": [
+        "Class.create() returns a new constructor function for PriorityIncidentUtils",
+        "Object.extendsObject(IncidentUtils, { ... }) builds the child's prototype from the parent's",
+        "IncidentUtils.prototype.initialize.call(this) runs the parent's constructor logic first",
+        "The child's own initialize code (this.escalationHours = 4) runs afterward"
+      ],
+      "explain": "Class.create() returns the constructor, Object.extendsObject() builds the child's prototype from the parent's, the child's initialize explicitly calls the parent's initialize first so inherited setup runs before the child's own, and only then does the child's own constructor logic execute."
+    },
+    {
+      "id": "snsc-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about when to extend a Script Include versus write a new one.",
+      "options": [
+        "Extend an existing class when the new class IS A more specific version of it and inherits most of its behavior unchanged",
+        "Object.extendsObject() takes the parent class as its first argument and the child's own methods as its second",
+        "Skipping the call to the parent's initialize means the child silently loses whatever setup the parent's constructor was supposed to perform",
+        "Two Script Includes that both query the Incident table should always be related through inheritance",
+        "ServiceNow Script Includes support a native super() keyword for calling the parent constructor"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Extending makes sense only for a genuine IS-A relationship, Object.extendsObject() takes the parent first and the child's own methods second, and skipping the explicit parent initialize() call means the child silently loses whatever setup the parent's constructor was supposed to perform -- ServiceNow's class pattern has no native super() keyword, and sharing a table is not by itself a reason to force an inheritance relationship."
+    },
+    {
+      "id": "snsc-11",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "On a UI Action record, what does the Client checkbox actually control?",
+      "options": [
+        "Whether the Script field runs client-side in the browser with g_form access (checked), or server-side after postback with access to current (unchecked)",
+        "Whether the UI Action is visible at all to the currently logged-in user",
+        "Whether the UI Action appears as a form button versus a list context-menu item",
+        "Whether the UI Action requires a specific role before it can be clicked",
+        "Whether the UI Action's script runs before or after the database write completes",
+        "Whether the UI Action can be invoked from a Scripted REST API call"
+      ],
+      "correctIndex": 0,
+      "explain": "The Client checkbox is the single setting that decides which of two completely different execution models the UI Action's script runs under -- client-side with g_form, or server-side with current and action.",
+      "distractorExplain": "Option B -- whether the action is visible at all -- is actually controlled by the separate Condition field (a server-side script that must return true), not by the Client checkbox; a UI Action can be server-side (Client unchecked) and still be completely invisible to a user whose Condition evaluates to false."
+    },
+    {
+      "id": "snsc-12",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each UI mechanism to the real context it actually executes in.",
+      "left": ["UI Policy's onCondition_true", "UI Action with Client unchecked", "UI Action with Client checked", "UI Page's <g:evaluate> tag"],
+      "right": [
+        "Runs server-side at page-render time, storing the result in a jvar_ variable",
+        "Runs client-side in the browser against g_form, fires when a condition flips true",
+        "Runs server-side, after postback, with access to current and action",
+        "Runs directly in the browser with g_form access, nothing posts back unless it calls GlideAjax or submits"
+      ],
+      "correctMap": [1, 2, 3, 0],
+      "explain": "onCondition_true/false run client-side against g_form when a UI Policy's condition flips; a server-side UI Action (Client unchecked) runs after postback against current and action; a client-side UI Action (Client checked) runs directly in the browser with no postback unless it triggers one itself; and a UI Page's g:evaluate tag runs server-side at render time, storing its result in a jvar_ variable."
+    },
+    {
+      "id": "snsc-13",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: in Jelly, a variable set by a tag like <g:evaluate> must be named with the ________ prefix.",
+      "acceptedAnswers": ["jvar_", "jvar"],
+      "explain": "Jelly enforces jvar_ as the required naming convention for any variable a tag like g:evaluate sets, so it can be safely interpolated into the page's markup afterward."
+    },
+    {
+      "id": "snsc-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "A UI Policy's condition is 'Priority is 1.' Run scripts is checked, and onCondition_true calls g_form.showFieldMsg(). An integration creates a Priority 1 incident through a Scripted REST API instead of through the form. Does the warning message appear?",
+      "options": [
+        "No -- UI Policies and their scripted conditions are purely client-side and only evaluate when a form actually renders in a browser; a Scripted REST API insert never renders a form at all",
+        "Yes -- UI Policy scripts run on the server the moment the record is inserted, regardless of how the insert happened",
+        "Yes, but only after the next time any user happens to open that record's form",
+        "No, but only because the integration's request lacked an active session cookie",
+        "Yes -- Run scripts being checked makes the condition evaluate server-side as well as client-side"
+      ],
+      "correctIndex": 0,
+      "explain": "onCondition_true and onCondition_false are client-side mechanisms, full stop -- they can only fire against a rendered form in a browser. A record created through a REST API, an Import Set, or a background script never renders a form, so neither the condition nor its scripts ever run."
+    },
+    {
+      "id": "snsc-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Two unrelated scoped applications, x_acme_fleet and x_acme_vms, each have a developer create a table they casually call 'Request.' Why does this never cause a naming collision?",
+      "options": [
+        "ServiceNow automatically prefixes each table's real name with its own scope identifier, so the two real table names (e.g. x_acme_fleet_request and x_acme_vms_request) are never the same string",
+        "ServiceNow only allows one scoped application per instance to use the word 'Request' in a table label",
+        "The second application to save its table is automatically renamed by the platform with a numeric suffix",
+        "Collisions are avoided only because the two developers happened to pick different capitalization",
+        "Scoped applications aren't actually allowed to create a table named 'Request' at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The scope identifier is baked directly into the real table name the instant the table is created, which is what makes the namespace boundary enforced by the platform itself rather than by a naming convention humans have to remember."
+    },
+    {
+      "id": "snsc-16",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about cross-scope access in ServiceNow.",
+      "options": [
+        "By default, a Script Include is only reachable by code running in the same scope it belongs to",
+        "Setting a Script Include's Accessible from to All application scopes opens its entire API to every scope on the instance, with no record of who actually uses it",
+        "A Cross-Scope Access Control record (sys_scope_privilege) grants one specific calling scope access to one specific target, nothing broader",
+        "ServiceNow assumes cross-scope access is open by default unless a developer explicitly locks it down",
+        "A generic utility Script Include with no sensitive data should always use a targeted Cross-Scope Access Control instead of All application scopes"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Access across scopes is closed by default, not open -- a developer has to explicitly grant it, either broadly (All application scopes) or narrowly through a targeted Cross-Scope Access Control record naming exactly one caller scope and one target. A genuinely generic, non-sensitive utility can reasonably use the broad setting instead."
+    },
+    {
+      "id": "snsc-17",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: once a scoped application is created, its ________ cannot be changed afterward, because it's woven into the real name of every table, field, and script the application creates.",
+      "acceptedAnswers": ["scope identifier", "scope id", "scope ID"],
+      "explain": "The scope identifier gets woven into the real name of every table, field, and script the application creates the moment they're built, which is exactly why renaming it later isn't a safe or supported operation."
+    },
+    {
+      "id": "snsc-18",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of creating a new scoped application in Studio in the order they actually happen.",
+      "items": [
+        "Open Studio and choose Create Application",
+        "Choose a permanent Scope ID / name before anything else is built",
+        "Studio creates a new sys_scope record and sets up the application's file structure",
+        "Every table, Business Rule, Script Include, and UI Page built afterward is automatically filed under that application"
+      ],
+      "explain": "Creating a scoped application starts in Studio's Create Application wizard, where the permanent Scope ID has to be decided before anything else is built; that action generates a new sys_scope record and sets up the application's file structure, and every artifact created afterward is automatically filed under that same application with no extra step."
+    },
+    {
+      "id": "snsc-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "A Room table (building, floor, capacity -- no lifecycle) and a Room Booking table (Requested, Approved, Denied, Completed, with an assignment group) both need to be built. Which one should extend `task`, and why?",
+      "options": [
+        "Room Booking, because it needs to be routed, approved, and tracked through a state machine -- exactly the shared behavior `task` already provides for free",
+        "Room, because every table in a scoped application is required to extend `task` by default",
+        "Both tables should extend `task`, since extending it never has any real downside",
+        "Neither table should extend `task`, since `task` is reserved for ITSM tables like Incident and Problem",
+        "Room Booking should NOT extend `task`, since reference-style tables always extend `task` and workflow tables never do"
+      ],
+      "correctIndex": 0,
+      "explain": "The real decision rule is whether an entity needs to be routed, approved, or tracked through a state machine. Room Booking clearly does; Room is static, descriptive data with no lifecycle, so giving it task's state and assignment_group fields would only confuse the form."
+    },
+    {
+      "id": "snsc-20",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each Module Link type to what actually happens when a user clicks it.",
+      "left": ["List of Records", "Record", "URL", "UI Page"],
+      "right": [
+        "Opens a custom-rendered screen built with Jelly/HTML",
+        "Opens an external or internal address, fixed or built from arguments",
+        "Opens a list view of a chosen table, optionally pre-filtered",
+        "Opens one specific record directly, such as a settings record"
+      ],
+      "correctMap": [2, 3, 1, 0],
+      "explain": "Each Link type produces a genuinely different click behavior: List of Records opens a table's list view (optionally pre-filtered), Record opens one specific record directly, URL opens a fixed or built address, and UI Page opens a custom-rendered Jelly/HTML screen."
+    },
+    {
+      "id": "snsc-21",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a table with zero ________ records pointing at it has no entry at all in the Application Navigator, even if its dictionary, form, and list are fully built.",
+      "acceptedAnswers": ["module", "modules", "Module"],
+      "explain": "The Application Navigator displays modules, not tables directly -- a table with zero Module records pointing at it has no entry in the tree at all, even if its dictionary, form, and list are completely built."
+    },
+    {
+      "id": "snsc-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "A UI Action needs to warn the user 'This record is locked' with just an OK button -- no fields, no choices to make. Which API should the click handler use, and why not the other one?",
+      "options": [
+        "GlideModal -- it renders a simple popup message with no custom UI Page required; reaching for GlideDialogWindow here would mean building and maintaining a UI Page record just to show one sentence",
+        "GlideDialogWindow -- it's the more capable API, so it's always the safer default regardless of how simple the message is",
+        "Neither -- a plain JavaScript alert() is the only supported way to show a locked-record warning from a UI Action",
+        "GlideModal, but only because GlideDialogWindow cannot be called from a UI Action's client script at all",
+        "GlideDialogWindow, because GlideModal cannot render a title on the popup"
+      ],
+      "correctIndex": 0,
+      "explain": "The deciding question is whether the user needs a custom UI Page's content or just a message. A one-line locked-record warning with only OK/Cancel is exactly GlideModal's case -- GlideDialogWindow exists for when the user needs to actually interact with something more than a yes/no choice."
+    },
+    {
+      "id": "snsc-23",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about UI Scripts.",
+      "options": [
+        "A UI Script holds reusable client-side JavaScript that isn't tied to any one form, Client Script, or UI Page",
+        "A Global UI Script loads on every page in the instance automatically",
+        "For most reusable helpers, leaving a UI Script non-Global and including it explicitly is the better default",
+        "A UI Script is the server-side mirror of a Script Include",
+        "Copy-pasting the same helper function into multiple Client Scripts has no real downside as long as each copy works correctly today"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A UI Script is a standalone, reusable client-side library; Global loads it everywhere automatically, which is expensive if overused, so non-Global with explicit inclusion is the better default for most helpers. It's actually the client-side mirror of a Script Include, not the server-side one, and duplicated helper functions mean a bug now has to be fixed in every copy."
+    },
+    {
+      "id": "snsc-24",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: GlideDialogWindow and GlideModal are both ________-side-only APIs, called from a Client Script or a UI Action's client-side script.",
+      "acceptedAnswers": ["client"],
+      "explain": "Both APIs render a popup in the user's browser and are called from a Client Script or a UI Action's client-side script -- neither one has a server-side equivalent."
+    },
+    {
+      "id": "snsc-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "A Scripted REST API's base path is `/api/x_acme_fleet/vehicle`, and one of its Resources has relative path `/incident/{number}`, method GET. A caller sends a GET to `/api/x_acme_fleet/vehicle/incident/INC0010045`. What does `request.pathParams.number` equal inside that Resource's script?",
+      "code": "(function process(request, response) {\n    var incidentNumber = request.pathParams.number;\n    // ...\n})(request, response);",
+      "options": [
+        "'INC0010045' -- the {number} placeholder is parsed directly out of that segment of the URL",
+        "undefined, because path parameters only work with GET requests that also include a JSON body",
+        "The entire path, '/api/x_acme_fleet/vehicle/incident/INC0010045'",
+        "'incident', since pathParams always returns the Resource's own relative path segment, not the caller's actual value",
+        "An empty string, since {number} is only a display label and never actually populated"
+      ],
+      "correctIndex": 0,
+      "explain": "A {placeholder} segment in a Resource's relative path is parsed into request.pathParams under that exact name -- here, request.pathParams.number holds whatever value the caller actually put in that URL segment."
+    },
+    {
+      "id": "snsc-26",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each Scripted REST / Script Action term to what it actually is.",
+      "left": ["sys_ws_definition", "Resource", "request.pathParams", "gs.eventQueue()"],
+      "right": [
+        "The Scripted REST API itself, holding the shared base path",
+        "A child record defining one endpoint's relative path, HTTP method, and script",
+        "Parsed {placeholder} segments pulled out of the resource's URL",
+        "Raises a named event that any listening Script Action reacts to"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "sys_ws_definition is the API itself, holding the shared base path; a Resource is the child record defining one endpoint's own relative path, method, and script; request.pathParams holds parsed {placeholder} values from the URL; and gs.eventQueue() raises a named event for any listening Script Action."
+    },
+    {
+      "id": "snsc-27",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these steps of the fleet application's 'vehicle returned' flow in the order they actually happen.",
+      "items": [
+        "A checkout record's status field changes to Returned on x_acme_fleet_checkout",
+        "An after-update Business Rule detects the change and calls gs.eventQueue('vehicle.returned', current, ...)",
+        "The event is queued onto the sysevent table",
+        "A Script Action listening for vehicle.returned fires and updates the vehicle record's status to available"
+      ],
+      "explain": "The flow starts with the actual status change on the checkout record, which an after-update Business Rule detects and announces with gs.eventQueue(); that call queues the named event onto the sysevent table, and only then does a separate Script Action listening for that exact event name fire and update the vehicle record."
+    },
+    {
+      "id": "snsc-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "A code review flags this line inside EquipmentAvailabilityChecker.isEquipmentAvailable(). Why is the fix below it the better choice as the request table grows over the years?",
+      "code": "// Flagged in review\nif (gr.getRowCount() > 0) { /* equipment is unavailable */ }\n\n// Fixed\nif (gr.hasNext()) { /* equipment is unavailable */ }",
+      "options": [
+        "getRowCount() forces the database to count every matching row before your code looks at any of them, while hasNext() only needs to find the first match and stops there",
+        "getRowCount() and hasNext() always return identical performance, so the fix is purely a style preference",
+        "getRowCount() only works on tables that extend task, which is why it had to be replaced here",
+        "hasNext() automatically limits the query to records from the current scope only, while getRowCount() does not",
+        "getRowCount() cannot be called inside a Script Include, only inside a Business Rule"
+      ],
+      "correctIndex": 0,
+      "explain": "For an existence check, hasNext() only needs to find one matching row and can stop immediately, while getRowCount() forces a full count of every matching row first -- a difference that gets more expensive every year the table grows, exactly the kind of fix a real code review should flag."
+    },
+    {
+      "id": "snsc-29",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the Equipment Checkout capstone application's design.",
+      "options": [
+        "x_acme_eqchk_request extends task because it needs an approval/state workflow",
+        "x_acme_eqchk_equipment extends task because every table in a scoped application must extend task",
+        "The Business Rule enforcing equipment availability runs before insert so it can call setAbortAction(true) and stop the record from ever being written",
+        "The Client Script's onChange warning is the only real protection against a duplicate checkout request",
+        "EquipmentAvailabilityCheckerAjax extends AbstractAjaxProcessor specifically so GlideAjax can call it from the client"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "x_acme_eqchk_request extends task for its approval/state workflow, while x_acme_eqchk_equipment deliberately does not, since not every table in a scope needs to extend task -- only ones with a real lifecycle do. The before-insert Business Rule, not the Client Script, is what actually prevents a duplicate checkout, since setAbortAction(true) can stop the write server-side no matter how the insert was triggered; the ajax wrapper extends AbstractAjaxProcessor specifically so GlideAjax can reach it."
+    },
+    {
+      "id": "snsc-30",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a Script Include must extend ________ before GlideAjax can call it directly from a Client Script.",
+      "acceptedAnswers": ["AbstractAjaxProcessor"],
+      "explain": "GlideAjax can only call a Script Include that extends AbstractAjaxProcessor -- which is exactly why the capstone keeps the real logic in one class and adds a second, thin wrapper class dedicated to that ajax bridge."
+    }
+  ]
+}

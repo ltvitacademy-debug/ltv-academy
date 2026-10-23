@@ -1,0 +1,468 @@
+{
+  "questions": [
+    {
+      "id": "snsec-01",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "An admin perfects the ACLs on a sensitive table, but a custom scoped application built by a different team can still read that table's data, because cross-scope access was accidentally left wide open. Which of the five defense-in-depth layers from this course failed here?",
+      "options": [
+        "Application Scope isolation",
+        "Access Control Lists",
+        "MID Server network isolation",
+        "Authentication"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 named Application Scope isolation as the layer that keeps a scoped app's tables and APIs invisible to other applications unless cross-scope access is explicitly granted -- a failure here is a different failure mode than a bad ACL, even though the symptom is the same unwanted read."
+    },
+    {
+      "id": "snsec-02",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each of the five defense-in-depth layers to what it actually protects against, per Lesson 1.",
+      "left": [
+        "Access Control Lists",
+        "UI Policy vs. Data Policy (client- vs. server-side enforcement)",
+        "Application Scope isolation",
+        "MID Server network isolation"
+      ],
+      "right": [
+        "Every read, write, create, and delete against a table or field is checked against this before being allowed",
+        "Server-side enforcement that can't be bypassed by a direct API call the way a client-side-only check can",
+        "A scoped app's tables and APIs stay invisible to other apps unless cross-scope access is explicitly granted",
+        "Lets the instance reach an on-premises system through an outbound-only connection, so no inbound firewall port is needed"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "These are the first four of Lesson 1's five named layers, each answering a narrow question of its own -- who can see a field, can this app reach that table, can the instance reach an on-prem system at all."
+    },
+    {
+      "id": "snsec-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put the Security Model Lab's role-audit-and-redesign process into the correct order.",
+      "items": [
+        "Audit each role's actual ACL grants and Contains Roles field directly, instead of trusting what the role names imply",
+        "Interview the team to find out whether the person each narrow role was built for still needs that access",
+        "Redesign the hierarchy so one base role holds the shared grants and other roles contain it, adding only what's additional",
+        "Retire outright any role whose original need no longer exists, rather than leaving it dormant"
+      ],
+      "explain": "This is exactly the Lesson 3 lab's sequence on the Facilities roles: audit the real grants first, find the overlap and who still needs what, redesign into a clean least-privilege hierarchy, then retire what's no longer needed."
+    },
+    {
+      "id": "snsec-04",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a company that keeps building a brand-new narrow custom role for every slightly different access need, without ever reviewing the accumulated hierarchy, eventually ends up with ________ -- overlapping, hard-to-audit roles that become a security risk in themselves.",
+      "acceptedAnswers": ["role sprawl", "sprawl"],
+      "explain": "Lesson 2 names this exact pattern role sprawl: each individual narrow-role decision felt safer in the moment, but years without review leaves behind complexity nobody can quickly explain."
+    },
+    {
+      "id": "snsec-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A task-level read ACL requires the itil role. No ACL exists directly on problem, but one does exist directly on incident, requiring itil_admin instead. Which role does a user need to read a Problem record, and which role to read an Incident record?",
+      "options": [
+        "itil for Problem, because it inherits the task-level ACL; itil_admin for Incident, because its own more specific ACL overrides the inherited one",
+        "itil_admin for both, because the more restrictive ACL anywhere in the hierarchy always wins globally",
+        "itil for both, because a task-level ACL always overrides any table-specific ACL beneath it",
+        "itil for Problem; Incident requires both itil and itil_admin together, since multiple applicable ACLs always AND together"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4's precedence rule is that the most specific ACL in the inheritance chain wins for a given table and operation, not that it ANDs with the inherited one. Problem has no ACL of its own, so it falls back to the task-level rule; Incident has its own, which is used instead of the task-level one entirely."
+    },
+    {
+      "id": "snsec-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about writing performant ACL scripts, per Lesson 5.",
+      "options": [
+        "gs.getUser().isMemberOf() checks group membership using data already cached for the transaction, without issuing a new database query",
+        "Running a fresh GlideRecord query inside an ACL script is fine, because ACL scripts only run once per transaction",
+        "Reading a value directly off current is cheaper than querying another table to re-derive the same information",
+        "A 50-millisecond delay in an ACL script is no more costly than the same delay in a nightly scheduled job",
+        "If a field is frequently needed in ACL logic, that can be a sign it belongs denormalized onto the record itself"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "ACL scripts run on every single access attempt -- every form load, every list view, every API call -- so a GlideRecord query inside one multiplies instance-wide, and a 50ms delay there is far costlier than the same delay in a job that runs once a night. isMemberOf() and reading current directly both avoid that cost, and a frequently-needed field is a real signal to denormalize it."
+    },
+    {
+      "id": "snsec-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the GlideUser method ________() checks whether the current user belongs to a specific group, without ServiceNow having to issue a fresh database query.",
+      "acceptedAnswers": ["isMemberOf", "isMemberOf()"],
+      "explain": "isMemberOf() is Lesson 5's standard, fast pattern for group-membership checks inside an ACL script, reusing the GlideUser data already cached for the transaction instead of querying sys_user_grmember directly."
+    },
+    {
+      "id": "snsec-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "An admin protects a sensitive field by listing every role currently thought to be ineligible to see it, planning to keep adding new roles to that deny list as they're created. Six months later a new role is created and nobody remembers to add it to the list, so it can see the field by default. What design mistake caused this?",
+      "options": [
+        "They built a deny-list instead of an allow-list, so any role not yet enumerated defaults to being able to see the field -- the opposite of deny-by-default, allow-by-exception",
+        "They used a scripted ACL instead of a role-only ACL, which is always less secure",
+        "They should have used Data Anonymization instead of a field-level ACL for this field",
+        "The field-level ACL was unnecessary, since the table-level ACL already covers it"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 6's real pattern is deny by default, allow by exception -- list only who should see the field. A deny-list has the opposite failure mode: a brand-new role automatically has access until someone remembers to add it to the list, which is exactly backwards for a sensitive field."
+    },
+    {
+      "id": "snsec-09",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Match each user profile in the Advanced ACL Lab's x_hr_core_employee scenario to what they actually see for the salary_band field.",
+      "left": [
+        "Holds hr_user role only (not in the hr_compensation group, no hr_compensation_admin)",
+        "Holds hr_compensation_admin only (not hr_user, and not the employee's manager)",
+        "Is the employee's manager, and is a member of the hr_compensation group",
+        "Holds both hr_user and hr_compensation_admin"
+      ],
+      "right": [
+        "Opens the record (passes the table-level ACL) but salary_band is blank (fails the field-level ACL)",
+        "Cannot open the employee record at all -- fails the table-level ACL before the field-level ACL is ever reached",
+        "Opens the record via the manager check and sees salary_band populated via group membership",
+        "Opens the record via hr_user and sees salary_band populated via hr_compensation_admin"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "The table-level ACL requires hr_user or being the employee's manager; the field-level ACL requires hr_compensation group membership or hr_compensation_admin. Both must pass independently -- holding hr_compensation_admin alone, with neither hr_user nor the manager relationship, never even clears the table-level gate."
+    },
+    {
+      "id": "snsec-10",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "In a SAML 2.0 single sign-on exchange, what role does ServiceNow play, and what role does a platform like Okta or Microsoft Entra ID play?",
+      "options": [
+        "ServiceNow is the Service Provider (SP), trusting a separate Identity Provider (IdP) to vouch for who the user is",
+        "ServiceNow is the Identity Provider (IdP), issuing signed assertions that Okta consumes",
+        "Both ServiceNow and Okta act as Identity Providers, and whichever responds first wins",
+        "ServiceNow is the Service Provider, and it also independently re-verifies the user's password itself before trusting the assertion",
+        "Okta is the Service Provider, and ServiceNow is the Identity Provider for every other connected application",
+        "ServiceNow and Okta swap roles depending on which application the user logs into first"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 9 names the two fixed roles in every SAML exchange: ServiceNow is the Service Provider, the application the user actually wants to reach, and a separate system plays the Identity Provider, confirming identity on ServiceNow's behalf.",
+      "distractorExplain": "Option 4 is the closest wrong answer -- it correctly calls ServiceNow the Service Provider, but it's wrong that ServiceNow independently re-verifies the password too. In the SAML flow, ServiceNow never receives a password at all; it only ever receives a signed assertion it verifies against the IdP's certificate."
+    },
+    {
+      "id": "snsec-11",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A company migrates 2,000 users from local ServiceNow authentication to SSO against their existing Okta tenant. What happens to those users' existing roles and group memberships in sys_user as a result?",
+      "options": [
+        "Nothing -- they stay exactly as they were; SSO changes who verifies identity, not what that identity is authorized to do",
+        "They must all be rebuilt from scratch, since Okta doesn't know about ServiceNow roles",
+        "They are automatically widened to match whatever access level Okta grants for other applications",
+        "They are removed until a security_admin manually re-approves each one"
+      ],
+      "correctIndex": 0,
+      "explain": "The Authentication Lab is explicit about this: migrating to SSO changes nothing about authorization. All 2,000 sys_user records keep every existing role and group assignment exactly as-is -- only who verifies identity on the way in changes."
+    },
+    {
+      "id": "snsec-12",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Multi-Factor Authentication on the Now Platform, per Lesson 10.",
+      "options": [
+        "MFA is typically enforced at the Identity Provider rather than natively inside ServiceNow, once an organization uses SSO",
+        "MFA makes a password impossible to steal via phishing",
+        "A stolen password alone is no longer sufficient to log in once MFA is required, because the attacker also needs the second factor",
+        "The two common real-world second factors are a one-time code from an authenticator app and a push notification to a trusted device",
+        "Enforcing MFA at the IdP means it still has to be separately configured in every connected application anyway"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "MFA doesn't prevent credential theft -- phishing still works just as well. What it changes is what a stolen password is worth afterward: without the second factor it's immediately sufficient, with MFA it's not. Enforcing it at the IdP is exactly what lets it apply consistently without separate per-application configuration."
+    },
+    {
+      "id": "snsec-13",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: with Multi-Factor Authentication in place, a stolen password -- 'something you know' -- is no longer enough on its own, because the attacker still lacks the second factor, 'something you ________.'",
+      "acceptedAnswers": ["have"],
+      "explain": "Lesson 10 frames MFA as combining 'something you know' (a password, which can be phished or breached) with 'something you have' (a device, a one-time code) -- two independent categories of proof."
+    },
+    {
+      "id": "snsec-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A compliance team requires that even ServiceNow's own vendor infrastructure and support staff never be able to see the plaintext value of a specific field. Which control actually satisfies that requirement, and why does column-level encryption at rest fall short of it?",
+      "options": [
+        "Edge Encryption, because it encrypts the value inside the customer's own network before it ever reaches ServiceNow's cloud -- column-level encryption still requires the application layer to decrypt the value to render or process it",
+        "Column-level encryption, because it encrypts the field in the database where ServiceNow's support staff can't query it",
+        "Data masking, because masked fields are never stored in their real form anywhere",
+        "Data anonymization, because it permanently replaces the value so no one, including the customer, can ever see it again"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 12 draws this distinction directly: Edge Encryption encrypts on the customer's side of the network boundary, so the plaintext and keys never reach ServiceNow's cloud at all. Column-level encryption still needs the application layer to decrypt the value to render or evaluate it, so the vendor's platform still has access to it during normal processing."
+    },
+    {
+      "id": "snsec-15",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A QA team needs a realistic-looking clone of production to test against, and nobody on that team has any legitimate need to ever see a real customer's actual name or phone number again on that instance. Which control is the right fit, and why?",
+      "options": [
+        "Data anonymization -- the real values are permanently replaced with realistic fake data, which is correct because this environment should never have held real PII in the first place",
+        "Data masking -- the real values stay intact and visible to anyone holding an unmask permission",
+        "Edge Encryption -- so the real values are encrypted but still technically recoverable later",
+        "Column-level encryption -- so the real values remain in the database for later use"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 13 draws the line precisely here: reach for anonymization when the goal is that an environment should never have held real PII at all -- permanently destroying it is both safe and correct for a QA clone, unlike masking, which is meant for production where the real data must stay available to the right roles."
+    },
+    {
+      "id": "snsec-16",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about attachment and export controls, per Lesson 14.",
+      "options": [
+        "A user with read access to an Incident record automatically has read/download access to every file attached to it",
+        "ACLs can be configured directly on sys_attachment, separately from the parent record's own ACL",
+        "Whether a user can bulk-export a list of records to CSV is governed by its own export capability, not granted automatically by read access",
+        "Viewing 4,000 records one at a time in the UI carries the same data-leakage risk as exporting all 4,000 to a spreadsheet",
+        "A record's own ACL and its attachments' ACL are two separate permission checks"
+      ],
+      "correctIndices": [1, 2, 4],
+      "explain": "Attachments live on sys_attachment with their own ACLs, and record-level read access does not automatically extend to them. Export is likewise its own distinct, separately gated capability -- and bulk export is a meaningfully bigger data-leakage risk than viewing records one at a time, because exported data can leave the platform's reach entirely."
+    },
+    {
+      "id": "snsec-17",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Put the path of a field value protected by Edge Encryption into the correct order, from the moment a user submits it.",
+      "items": [
+        "User enters the sensitive field value in the browser",
+        "The value reaches the customer's own edge proxy, inside the customer's network",
+        "The proxy encrypts the value before it leaves the customer's network boundary",
+        "Only the ciphertext is transmitted to and stored in ServiceNow's cloud instance"
+      ],
+      "explain": "Lesson 12's whole point is where encryption happens: the proxy sits on the customer's own infrastructure, so the plaintext is encrypted before it ever crosses into ServiceNow's cloud -- only ciphertext ever arrives there."
+    },
+    {
+      "id": "snsec-18",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Why does ServiceNow give security incidents their own dedicated application (sn_si_incident) instead of just using the regular Incident table with a higher priority value?",
+      "options": [
+        "A security incident carries legal, compliance, and investigative obligations a regular outage ticket never has, and its lifecycle (containment, eradication, recovery, review) doesn't match the regular Incident lifecycle at all",
+        "The Incident table technically cannot be assigned a Critical priority",
+        "sn_si_incident doesn't actually extend task, so it needed to be built from scratch anyway",
+        "Security incidents are always lower volume, so a separate table is only about performance"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 is explicit: a Security Incident asks a fundamentally different question than a regular Incident, its work notes may become legal evidence, and its lifecycle is built around containment, eradication, recovery, and review -- none of which maps onto 'New -> In Progress -> Resolved -> Closed.'"
+    },
+    {
+      "id": "snsec-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Two servers show the identical Critical-severity CVE from a vulnerability scan. One supports an internal QA test environment; the other is the production database behind the Patient Scheduling Business Service. Why should Vulnerability Response prioritize the second one first, even though the scanner reported both as equally severe?",
+      "options": [
+        "Because CMDB correlation enriched with CSDM's Business Service relationships shows one CI supports a critical business service real users depend on, which the scanner's raw severity score alone could never reveal",
+        "Because production servers are always patched before test servers, regardless of what they actually support",
+        "Because the scanner itself assigns a higher severity score to any CI tagged as production",
+        "Because Security Incident Response automatically re-ranks every Vulnerability Response finding"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 16 and the Security Operations Lab both make this the central point: a raw scanner finding carries no business context. Only CMDB correlation, backed by CSDM's Business Service modeling, can tell a security team that one CI supports something patients depend on and the other doesn't -- which is what should drive remediation order, not the identical technical severity score."
+    },
+    {
+      "id": "snsec-20",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each security operations term to its definition.",
+      "left": [
+        "Containment",
+        "Eradication",
+        "Recovery",
+        "CMDB correlation"
+      ],
+      "right": [
+        "Stopping an active threat from spreading further, before the root cause is fully understood",
+        "Removing the actual root cause of the incident, not just the symptom that was contained",
+        "Restoring normal operation with confidence the threat is actually gone, while monitoring for recurrence",
+        "Matching a scan finding to the real Configuration Item it was found on, adding business context to a bare technical fact"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Containment, eradication, and recovery are Lesson 15's three ordered SIR phases, and CMDB correlation is Lesson 16's mechanism for turning a bare CVE-and-hostname pair into something a team can actually prioritize."
+    },
+    {
+      "id": "snsec-21",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: when evidence turns up during Vulnerability Response triage that a vulnerability wasn't just present but was already actively exploited, that's the trigger for opening a ________ record instead.",
+      "acceptedAnswers": ["Security Incident Response", "security incident response", "SIR", "security incident"],
+      "explain": "The Security Operations Lab walks through exactly this handoff: a confirmed or strongly suspected exploitation event moves the problem from Vulnerability Response's 'this should be patched' into Security Incident Response's 'we may already be compromised.'"
+    },
+    {
+      "id": "snsec-22",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "When an admin activates the security_admin role through Elevate Roles, what does that elevation specifically bypass?",
+      "options": [
+        "ACL script evaluation, specifically for edits to ACL records themselves (sys_security_acl) -- not ACL enforcement on every other table platform-wide",
+        "Every ACL on every table platform-wide, for the duration of the elevated session",
+        "The requirement to authenticate at all for the rest of that session",
+        "Only field-level ACLs, while table-level ACLs continue to apply normally",
+        "The audit logging configuration stored in sys_audit"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 is precise about this: elevation unlocks something narrow and sharp -- the ability to edit ACL records without their own script logic standing in the way of the edit. Every other ACL, on every other table, still runs normally for every other user and operation.",
+      "distractorExplain": "Option 2 is the closest wrong answer -- it's tempting because the consequences of a bad ACL edit really can reach the whole platform, but the bypass itself is scoped narrowly to editing ACL records, not to ACL enforcement on Incident, Change, or any other table during that elevated session."
+    },
+    {
+      "id": "snsec-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A field has never had its Audit flag enabled in its dictionary entry. Six months later, a regulator asks who changed that field's value last March. What can sys_audit produce?",
+      "options": [
+        "Nothing -- an un-audited field's changes were never written to sys_audit in the first place, and that history isn't recoverable after the fact",
+        "The full history, because sys_audit captures every field change on every table by default",
+        "A partial history, automatically reconstructed from sys_history_line",
+        "The history, but only if security_admin is elevated first"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 19's central point is that auditing isn't automatically on -- it's a per-table, per-field configuration decision. A field with auditing off can change repeatedly with no sys_audit entry ever created, and no amount of querying after the fact recovers history that was never captured."
+    },
+    {
+      "id": "snsec-24",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how ServiceNow relates to compliance frameworks like SOC 2, HIPAA, GDPR, and PCI-DSS, per Lesson 20.",
+      "options": [
+        "Running an organization's instance on ServiceNow is not, by itself, a compliance claim",
+        "The platform provides capabilities -- encryption, audit logging, ACLs, masking -- that help meet these frameworks, but configuring and operating them correctly is the customer's responsibility",
+        "HIPAA relevance is strictly limited to organizations in the healthcare industry itself",
+        "GDPR can apply to an organization's ServiceNow instance regardless of where that organization is headquartered, if it processes EU residents' personal data",
+        "A successful SOC 2 audit certifies that ServiceNow the vendor alone is responsible for a customer's security controls"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 20's core framing is shared responsibility: 'we use ServiceNow' is never itself a compliance claim. HIPAA applies the moment an instance stores or processes PHI, not only to healthcare organizations by industry, and GDPR follows the data subject's location, not the organization's headquarters."
+    },
+    {
+      "id": "snsec-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A HIPAA-relevant Patient Scheduling table has patient_name, appointment_type, clinic_location, and scheduling_notes fields, alongside routine fields like sys_id and sys_created_on. Per the Governance Lab's selective-auditing principle, which fields should actually have their Audit flag enabled?",
+      "options": [
+        "patient_name, appointment_type, clinic_location, and scheduling_notes -- the patient-adjacent fields a HIPAA review would actually ask about",
+        "Every field on the table, including sys_id and sys_created_on, to be safe",
+        "Only scheduling_notes, since it's the only free-text field",
+        "None of them, since security_admin elevation logging already covers this requirement"
+      ],
+      "correctIndex": 0,
+      "explain": "The Governance Lab's audited list is a short, deliberately scoped set of patient-adjacent fields, not a blanket setting -- routine metadata like sys_id and sys_created_on carries no compliance weight and doesn't need a change history anyone will query."
+    },
+    {
+      "id": "snsec-26",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Put Meridian's security_admin elevation policy, from the Governance Lab, into the correct order.",
+      "items": [
+        "Admin requests elevation and logs a justification naming the specific ACL they intend to edit",
+        "Elevation activates, and the requesting admin's manager is notified immediately",
+        "The admin makes the ACL edit",
+        "The justification and the actual ACL change are reviewed together afterward, to confirm the edit matches what was requested"
+      ],
+      "explain": "This is the Governance Lab's end-to-end elevation policy: a logged justification before elevating, a manager notification the moment it activates, the edit itself, and a post-hoc review confirming the edit matched what was requested."
+    },
+    {
+      "id": "snsec-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Meridian's customer.ssn field is gated by a scripted condition checking a dedicated customer_pii_view role, while customer.annual_income is gated only by the generic itil role with no script at all, even though both fields are comparably sensitive financial/personal data. What specific failure does this illustrate?",
+      "options": [
+        "Inconsistent field-level ACL design -- the sensitivity of the data has no relationship to the strength of the control protecting it, because two different admins applied two different patterns",
+        "A table-level ACL inheritance conflict between customer and a parent table",
+        "A missing MID Server configuration for the customer table",
+        "An expired SAML signing certificate"
+      ],
+      "correctIndex": 0,
+      "explain": "This is Finding 2 from the Capstone Kickoff: ssn and annual_income are comparably sensitive, but one is protected by a purpose-built role checked in a script and the other by a generic role over a thousand employees already hold -- exactly the field-level design-pattern failure Chapter 2 warned about."
+    },
+    {
+      "id": "snsec-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Why is the rebuilt annual_income ACL (requiring customer_financial_senior, OR customer_financial_view plus an assigned-case check) a materially stronger control than simply swapping its required role from itil to one single dedicated role with no script?",
+      "options": [
+        "Because a standard underwriter can now only view income data for customers on cases actually assigned to them, while a senior underwriter keeps the broader access their job genuinely requires -- a single dedicated role alone would still let every holder of it browse every customer",
+        "Because scripted ACLs always run faster than role-only ACLs",
+        "Because it also automatically encrypts the field at rest",
+        "Because it removes the need to enable the Audit flag on that field"
+      ],
+      "correctIndex": 0,
+      "explain": "The Capstone's remediation in Lesson 23 goes beyond swapping one role name for another: it actually enforces least privilege by case assignment for standard underwriters, while still giving senior underwriters the broader access their role genuinely requires."
+    },
+    {
+      "id": "snsec-29",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each Capstone Kickoff finding at Meridian Trust Bank to the chapter and mechanism it traces back to.",
+      "left": [
+        "162 custom roles for 1,800 users, with near-duplicate roles never consolidated",
+        "ssn and annual_income protected by two completely different ACL patterns",
+        "All 1,800 users still authenticate locally despite an enterprise Okta SSO standard",
+        "Neither sensitive field has its Audit flag enabled in its dictionary entry"
+      ],
+      "right": [
+        "Role sprawl (Chapter 1: role design and contains_roles)",
+        "Inconsistent field-level security design pattern (Chapter 2)",
+        "Authentication debt (Chapter 3: local vs. SSO)",
+        "Missing audit configuration (Chapter 6: audit logging)"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "These are the four named findings from the Capstone Kickoff, each tied explicitly to a specific platform mechanism and the course chapter that explains why it's a real risk -- not just a vague impression."
+    },
+    {
+      "id": "snsec-30",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the Capstone's final checklist treats a passing security review as a ________, not a permanent state -- because new roles, new ACLs, and new fields keep getting added after the review is done.",
+      "acceptedAnswers": ["snapshot"],
+      "explain": "Lesson 24 states this directly: a passing score today is a snapshot, not a permanent state, which is exactly why every one of the Capstone Kickoff's four findings was itself the result of nobody re-running a check like this for four years."
+    }
+  ]
+}

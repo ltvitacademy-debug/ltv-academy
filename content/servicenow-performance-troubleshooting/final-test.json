@@ -1,0 +1,457 @@
+{
+  "questions": [
+    {
+      "id": "snpt-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "In ServiceNow, what does the Slow Request Log (slow transaction log) actually record?",
+      "options": [
+        "Every request whose total response time crossed a configured threshold, including a breakdown of where that time was spent",
+        "Every UI Policy that ran on every form load, regardless of how long the form took to load",
+        "A list of every user currently logged into the instance",
+        "A historical archive of every database index created on each table",
+        "A report of only Scheduled Jobs that failed to run on time"
+      ],
+      "correctIndex": 0,
+      "explain": "The Slow Request Log is ServiceNow's own record of requests whose total response time crossed a configured threshold, capturing the URL/table, user, duration, and a breakdown of where that duration was spent -- turning a vague complaint into measurable evidence.",
+      "distractorExplain": "Option B describes a UI Policy audit, not the Slow Request Log -- UI Policy execution only shows up as part of a transaction's time breakdown when that transaction itself crossed the slow threshold; the log doesn't independently record every UI Policy on every form load regardless of duration."
+    },
+    {
+      "id": "snpt-02",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Form A has a single UI Policy with 'Run scripts' enabled, whose onCondition function loops over related records with a synchronous GlideRecord call. Form B has twenty simple declarative UI Policies with no scripts at all. Which form is more likely to load slower, and why?",
+      "options": [
+        "Form A, because its onCondition script does real, expensive work on the critical path of the form becoming usable, which can outweigh many cheap declarative checks combined",
+        "Form B, because the platform always evaluates total policy count before looking at what any individual policy actually does",
+        "Neither -- ServiceNow caps every UI Policy to the same fixed execution time regardless of content",
+        "Form B, because declarative field-state changes execute slower than client-side JavaScript"
+      ],
+      "correctIndex": 0,
+      "explain": "One expensive 'Run scripts' policy running a loop or a synchronous GlideRecord call can outweigh a dozen simple declarative field-state checks combined, because the script itself is doing meaningfully more work on the form's critical path."
+    },
+    {
+      "id": "snpt-03",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about list-view and Related List performance from Chapter 1.",
+      "options": [
+        "A reference-field column costs more to render than a plain-value column because the platform must resolve a sys_id into a display value for every row",
+        "Each Related List on a form runs as its own separate query, independent of every other Related List on that form",
+        "A list that is slow only on its default view, but reasonably fast once a different filter is applied, is a strong hint that the default filter/sort condition lacks a matching index",
+        "A form can carry an unlimited number of Related Lists with no cumulative performance impact",
+        "Plain string or number fields stored directly on the record cost roughly the same to render as reference-field columns"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Reference columns require a per-row lookup, each Related List is its own independent query, and a default-view-only slowdown points at a missing index on that default condition. Related Lists are cumulative in cost, not free past some count, and reference columns cost meaningfully more than plain fields -- the opposite of options D and E."
+    },
+    {
+      "id": "snpt-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put the Slow Forms Lab's diagnostic steps for Meridian Logistics' 'Open Incidents list is slow' complaint in the order they were actually performed.",
+      "items": [
+        "Pull the Slow Request Log filtered to incident_list.do to confirm the complaint and see where the time is going",
+        "Review the List Layout and identify a reference column that no longer needs to be shown",
+        "Review the Incident form's UI Policies and find two redundant ones that can be consolidated into one",
+        "Re-check the Slow Request Log the following week to confirm the average duration actually improved"
+      ],
+      "explain": "Confirm first with the Slow Request Log, then review the list columns, then review the form's UI Policies, and finally re-measure -- the same measure-before-fixing, verify-after-fixing discipline this chapter builds from Lesson 1 onward."
+    },
+    {
+      "id": "snpt-05",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: instead of looping through a full GlideRecord result just to increment a counter, use ________ to ask the database to do the counting and return only the number.",
+      "acceptedAnswers": ["GlideAggregate", "glideaggregate"],
+      "explain": "GlideAggregate returns a computed aggregate like COUNT directly from the database, instead of fetching every full row across the network just to tally them in a loop."
+    },
+    {
+      "id": "snpt-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A debug panel for one business rule transaction shows the same query against the problem table listed 47 separate times, each small on its own. What does that execution count, by itself, tell you about where the query sits in the script, before you've even opened the code?",
+      "options": [
+        "The query is almost certainly running inside a loop, firing once per iteration, rather than running once outside it",
+        "The query is a composite index lookup running at normal, expected speed",
+        "The request is waiting on a semaphore and queuing for a free execution slot",
+        "The business rule is recursively re-triggering itself through current.update()"
+      ],
+      "correctIndex": 0,
+      "explain": "Repetition is the tell of a query-in-a-loop: the same table and condition shape firing far more times than the business logic calls for, which is exactly what an execution count of 47 inside one transaction signals."
+    },
+    {
+      "id": "snpt-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "A business rule named 'Calculate Priority Score' appears six times in a debug panel after a single form save, with durations shrinking toward zero on each successive run. Select every statement that correctly describes this situation and its fix.",
+      "options": [
+        "This is the signature of a recursive trigger, most commonly caused by calling current.update() inside an after business rule",
+        "current.setWorkflow(false), called right before the remaining current.update(), tells the platform that save should not re-trigger business rules on that table",
+        "An idempotent guard that checks whether the new value actually differs before saving prevents a no-op run from saving or re-triggering at all",
+        "ServiceNow will let this recursion run forever unless an admin manually intervenes before the sixth run",
+        "The correct fix is to add more semaphore slots to the background-work pool"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The shrinking-duration repeat pattern is a recursive trigger caused by a self-save; setWorkflow(false) plus an idempotent guard is the standard fix. The platform caps recursion depth on its own (it doesn't run forever), and semaphore pools are an unrelated Chapter 4 concept, not the fix for a recursive business rule."
+    },
+    {
+      "id": "snpt-08",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each profiler/code symptom from the Slow Scripts Lab to the fix that actually resolves it.",
+      "left": [
+        "TaskUtils.getOwnerNames runs one sys_user GlideRecord query per linked task (40 queries for 40 tasks)",
+        "'Recalculate SLA Flag' fires six times for one form save, with durations shrinking toward zero",
+        "A query that runs once and shows as a single line in the debug panel",
+        "A query that pulls every full matching row across the network just to count them"
+      ],
+      "right": [
+        "Build one lookup map from a single query using addQuery('sys_id', 'IN', userIds) instead of querying per iteration",
+        "Add an idempotent guard plus current.setWorkflow(false) before the remaining current.update()",
+        "No fix needed -- that's the expected, healthy one-query signature",
+        "Replace it with GlideAggregate so the database returns only the computed count"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Forty per-task queries become one lookup map; a six-times-firing business rule gets an idempotent guard plus setWorkflow(false); a single clean query line needs no fix; and counting via a full row fetch gets replaced with GlideAggregate."
+    },
+    {
+      "id": "snpt-09",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Put the Slow Scripts Lab's steps for diagnosing the 'updating an incident takes four to five seconds' ticket in order.",
+      "items": [
+        "Turn on Debug Business Rule and Debug Script, then repeat the exact slow save to get a profiled transaction",
+        "Identify TaskUtils.getOwnerNames as a query-in-a-loop and rewrite it to build one lookup map instead",
+        "Identify 'Recalculate SLA Flag' as a recursive trigger and add an idempotent guard plus setWorkflow(false)",
+        "Repeat the same save with debugging still on to confirm both fixes actually reduced the transaction time"
+      ],
+      "explain": "The lab measures first with the profiler, fixes the query-in-a-loop, fixes the recursive business rule, then re-measures with the same profiler to confirm both fixes actually worked, rather than assuming the code change was enough."
+    },
+    {
+      "id": "snpt-10",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "In relational database terms as covered in this course, what is an index?",
+      "options": [
+        "A separate structure the database maintains on specific fields that lets it find matching rows directly instead of checking every row",
+        "A setting that permanently caches every query's result set in memory",
+        "A ServiceNow feature that automatically rewrites slow scripts for you",
+        "A limit on how many requests of a given type can run simultaneously on one node",
+        "A log of every slow transaction that crossed a configured response-time threshold"
+      ],
+      "correctIndex": 0,
+      "explain": "An index is a structure built on one or more fields that lets the database jump directly to matching rows instead of scanning every row -- the same way a book's index lets you jump to a page instead of reading the whole book.",
+      "distractorExplain": "Option D describes a semaphore (Chapter 4), not an index -- a semaphore limits concurrent execution of a category of work on a node, while an index is a read-optimization structure on a table's own stored data; the two solve completely different problems."
+    },
+    {
+      "id": "snpt-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a single index built across more than one field, used when a query filters on two conditions together (such as assignment_group and a date range), is called a ________ index.",
+      "acceptedAnswers": ["composite", "Composite"],
+      "explain": "A composite index covers a combined, multi-field condition in one step, rather than finding all rows for one field and then still checking each one's second condition individually."
+    },
+    {
+      "id": "snpt-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "A report against the Incident table (400,000+ rows) used to run in under two seconds and now takes fifteen to twenty seconds, with no sudden spike -- just a steady decline that tracks the table's row count. Which strategy is the database most likely falling back to, and why?",
+      "options": [
+        "A full table scan, because no index covers the report's combined filter condition, so the cost scales directly with row count as the table keeps growing",
+        "An indexed lookup, because indexed queries always get slower as a table grows larger",
+        "Semaphore queuing, because the report is background work competing for a bounded execution pool",
+        "A composite index seek, because composite indexes degrade in speed over time regardless of growth"
+      ],
+      "correctIndex": 0,
+      "explain": "A query that was fast and has steadily slowed as the table grew is the signature of a full table scan -- the database has no shortcut for the condition, so cost scales directly with how many rows exist; a composite index covering the combined condition is the fix."
+    },
+    {
+      "id": "snpt-13",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the real cost of adding a database index, per Chapter 3.",
+      "options": [
+        "Every insert or update to the table must also update any index covering a changed field, so more indexes mean more write overhead",
+        "Indexes consume real storage, separate from the table's own data",
+        "Indexing is turned on instance-wide with one global setting, not configured field by field",
+        "A field that is rarely or never used in a filter or sort condition gains little from being indexed, while still adding write cost",
+        "Indexes have no real cost and should be added to every field just in case a query eventually needs one"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Indexes cost extra write time and storage, and over-indexing rarely-filtered fields taxes every write for no read benefit. Indexing is dictionary-level and field-specific, not a single instance-wide toggle, and it is never a cost-free addition."
+    },
+    {
+      "id": "snpt-14",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "A user reports 'the instance has felt sluggish all week,' without naming any single transaction. Which tool should you open first, and why?",
+      "options": [
+        "Instance Health, because it tracks response time, transaction volume, and error rate as trends over time across the whole instance -- exactly the kind of question being asked",
+        "The Slow Request Log, because it is built to analyze one single transaction's time breakdown",
+        "The Script Performance Profiler, because it only shows script-level debugging for one page reload at a time",
+        "The Flow Execution Log, because it shows the run history of a single flow"
+      ],
+      "correctIndex": 0,
+      "explain": "'Sluggish all week' is a trend question, not a single-transaction question -- Instance Health aggregates response time, volume, and error rate over time across the whole instance, which is exactly what answers that kind of complaint."
+    },
+    {
+      "id": "snpt-15",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a ________ is a concurrency-control limit on how many requests of a given category can execute simultaneously on a single application node.",
+      "acceptedAnswers": ["semaphore", "Semaphore"],
+      "explain": "A semaphore is a per-node, per-category concurrency limit that protects shared node resources from being monopolized by one type of work."
+    },
+    {
+      "id": "snpt-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A request takes eight seconds to complete, but the exact same script, tested alone, normally runs in under a second. What would semaphore exhaustion actually look like in this scenario?",
+      "options": [
+        "The request is queuing, waiting for a free slot in an already-full semaphore pool, rather than running slowly on its own -- so optimizing the script itself would completely miss the real cause",
+        "The script has a query-in-a-loop pattern that the Script Performance Profiler would reveal as repeated queries",
+        "The request triggered a recursive business rule that fired several extra times",
+        "The table the request queries against is missing an index on its filter condition"
+      ],
+      "correctIndex": 0,
+      "explain": "Semaphore exhaustion looks like generic slowness from a user's chair, but the real cause is queuing for a limited shared pool, not the script itself being slow -- which is exactly why optimizing an already-fast script wouldn't fix this."
+    },
+    {
+      "id": "snpt-17",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each monitoring or diagnostic tool from this course to the specific question it is actually built to answer.",
+      "left": [
+        "Slow Request Log",
+        "Script Performance Profiler (debug panel)",
+        "Instance Health Dashboard",
+        "Semaphore and node usage"
+      ],
+      "right": [
+        "How slow was this one specific request, and where did its total time actually go?",
+        "Which specific script, business rule, or Script Include method consumed the time inside one transaction?",
+        "Is the whole instance trending slower over days or weeks, not just for this one request?",
+        "Is a category of work queuing because its shared execution-slot pool on a node is currently full?"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each tool answers a distinct diagnostic question: the Slow Request Log is one-transaction evidence, the profiler isolates which script, Instance Health answers trend-over-time questions, and semaphore/node usage reveals resource contention."
+    },
+    {
+      "id": "snpt-18",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Put the Monitoring Lab's four-step sequence for the three Scheduled Jobs clustered at midnight in order.",
+      "items": [
+        "Resist the instinct to blame one job's script, since all three jobs degraded together with no recent code changes",
+        "Recognize the pattern as semaphore contention: three background jobs competing for the same bounded pool at the same instant",
+        "Stagger the three jobs' start times across a wider window instead of clustering them at midnight",
+        "Confirm the fix over several nights using Instance Health, rather than trusting a single good night"
+      ],
+      "explain": "This is the recognize-diagnose-fix-confirm sequence the Monitoring Lab teaches: resist blaming one job's code, diagnose it correctly as semaphore contention, apply the staggering fix, then confirm with a multi-night trend rather than one good outcome."
+    },
+    {
+      "id": "snpt-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A production integration's checkpoint log shows the request was built correctly and sent, but every response in the last twenty minutes came back with HTTP 429. Is this a bug to fix in the transform script, or an external cause -- and what's the actual fix?",
+      "options": [
+        "An external cause -- the far end is rate-limiting the calls, so the fix is adjusting call volume or backoff timing, not editing the business logic that builds the request",
+        "A bug in the transform script, so the fix is rewriting the payload-building logic",
+        "An external cause, so the fix is refreshing the expired OAuth credential",
+        "A bug, because an HTTP 429 always means the request itself was malformed"
+      ],
+      "correctIndex": 0,
+      "explain": "HTTP 429 is the external system's own rate-limiting signal, not a payload or credential problem -- the fix adjusts call volume or backoff timing, exactly as Chapter 5 distinguishes it from a 401 (credential) or a genuine code bug."
+    },
+    {
+      "id": "snpt-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every statement that correctly matches an external-failure signature to its real fix, per Chapter 5.",
+      "options": [
+        "An HTTP 5xx or connection timeout with no response at all is the signature of an outage -- the fix is to wait it out and communicate status, not edit the script",
+        "An HTTP 429 means the request's payload was malformed and needs to be rebuilt",
+        "An authentication failure such as HTTP 401, after a correctly-built request, points to an expired OAuth token -- the fix is refreshing or reconfiguring the credential",
+        "A flow step showing status 'Requested' on an Approval step means the flow has genuinely failed and needs a troubleshooter",
+        "A genuine bug looks like the same transform step failing on a specific record shape every time, independent of when it runs"
+      ],
+      "correctIndices": [0, 2, 4],
+      "explain": "Outages and expired credentials have distinct, correct fixes unrelated to the transform script, and a genuine bug shows up as a consistent failure on a specific record shape. A 429 is rate-limiting, not a malformed payload, and a 'Requested' Approval step is a correct pause, not a failure."
+    },
+    {
+      "id": "snpt-21",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each error signature to the correct diagnosis from Chapter 5.",
+      "left": [
+        "HTTP 429 on every response at the 'after response' checkpoint",
+        "HTTP 401 even though the request was built correctly",
+        "HTTP 503 with a fast response, not a slow timeout",
+        "A flow's current step shows status 'Requested' with no error below it"
+      ],
+      "right": [
+        "Rate-limiting -- the external system is telling you to slow down",
+        "An expired or invalid Connection & Credential Alias / OAuth token",
+        "An outage -- the external system itself is rejecting or dropping connections",
+        "The flow is correctly paused, waiting on an unactioned approval, not failed"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each status code and flow-step state points at a distinct, specific cause: 429 is rate-limiting, 401 is a credential problem, a fast 503 is an outage, and a 'Requested' approval step is a legitimate pause, not a failure."
+    },
+    {
+      "id": "snpt-22",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: an IntegrationHub action references credentials through a named ________ rather than hardcoding them, which is exactly why an expired credential fails cleanly and visibly as an authentication error on that action's step.",
+      "acceptedAnswers": ["Connection & Credential Alias", "Connection and Credential Alias", "connection & credential alias", "connection and credential alias"],
+      "explain": "The Connection & Credential Alias is the named credential reference an IntegrationHub action uses; expiring or invalidating it fails the action cleanly rather than silently."
+    },
+    {
+      "id": "snpt-23",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Several users report 'the instance feels slow.' Per the triage sequence in Chapter 6, what should you check first, before looking at a recent deployment or at semaphore/node usage?",
+      "options": [
+        "Instance Health, to confirm whether response time, volume, and error rate are actually moving together instance-wide, rather than this being one loud but narrow feature",
+        "The deployment history, since a bad release is always the cause of a platform-wide slowdown",
+        "Semaphore and node usage, since resource exhaustion is always the first real candidate to rule out",
+        "Open a ServiceNow Support case immediately so engineers can investigate in parallel"
+      ],
+      "correctIndex": 0,
+      "explain": "Confirming scope with Instance Health comes first because it tells you whether the complaint is genuinely instance-wide before you commit to checking a deployment timeline or resource exhaustion, which are the next two steps in order."
+    },
+    {
+      "id": "snpt-24",
+      "type": "sequencing",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Put the Incident Response Lab's steps for the 1:50 PM platform-wide slowdown in the order they were actually performed.",
+      "items": [
+        "Open the Instance Health Dashboard and confirm response time tripled instance-wide while transaction volume stayed flat",
+        "Check the deployment history and find a Business Rule update that went out three minutes before the first reports",
+        "Check semaphore and node usage to confirm elevated semaphore use is a downstream effect of the Business Rule, not a separate cause",
+        "Decide this is self-diagnosable and self-fixable, so no ServiceNow Support case is needed",
+        "Disable the Business Rule, redeploy it with an indexed filter, and write a blameless postmortem with a concrete prevention action"
+      ],
+      "explain": "The lab triages scope first with Instance Health, then checks the deployment timeline, then rules out a separate resource cause, then decides a Support case isn't needed, and finally fixes and documents the incident -- evidence before any fix, every time."
+    },
+    {
+      "id": "snpt-25",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Select every piece of evidence that Chapter 6 says actually makes a ServiceNow Support case move forward quickly.",
+      "options": [
+        "Specific Slow Request Log entries showing exactly which transactions were slow and when",
+        "The exact start and end time of the slowdown",
+        "A general statement that 'the instance feels slow, please investigate'",
+        "Which users or features were affected, and whether anything changed recently that might correlate",
+        "A promise that the admin will be more careful with future deployments"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Concrete, timestamped evidence -- specific log entries, exact time windows, and affected scope plus recent changes -- is what moves a case forward fast. A vague feeling or a vague promise gives Support no starting point to investigate."
+    },
+    {
+      "id": "snpt-26",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a postmortem that focuses on what in the process or system allowed an incident to happen, rather than on which individual was at the keyboard, is called a ________ postmortem.",
+      "acceptedAnswers": ["blameless", "Blameless"],
+      "explain": "A blameless postmortem asks what gap in process or system allowed the incident, which keeps people volunteering honest detail next time instead of hiding what they tried."
+    },
+    {
+      "id": "snpt-27",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "In the Meridian Retail capstone, Instance Health shows a gradual climb in response time that steepens over the last two months, with no single deployment lining up with the steepest jump. What does that specific pattern suggest about the likely cause?",
+      "options": [
+        "Something that scales badly with volume as usage grows, rather than one bad deployment causing a sudden regression",
+        "A single bad release that should be rolled back immediately",
+        "A semaphore pool that has been permanently disabled on every node",
+        "An expired OAuth token affecting every integration on the instance at once"
+      ],
+      "correctIndex": 0,
+      "explain": "A sudden cliff usually means one bad deployment; a gradual climb that steepens as a number (store count) grows usually means something that was always a little inefficient and simply didn't matter yet at small scale."
+    },
+    {
+      "id": "snpt-28",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every one of the three real, independently confirmed causes behind Meridian Retail's performance problems in the capstone.",
+      "options": [
+        "A missing index on u_checklist_item.u_store_region, forcing a full table scan on the 'My Open Checklist Items' list filter",
+        "A query-in-a-loop in the ChecklistUtils Script Include, running one GlideRecord query against u_store_config per checklist item instead of once",
+        "Two Scheduled Jobs sharing the same semaphore pool and overlapping with the 7:00 AM submission spike once usage grew to 500 stores",
+        "An expired Connection & Credential Alias on an IntegrationHub action",
+        "A recursive business rule calling current.update() inside an after business rule"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The capstone confirmed exactly three causes with independent evidence: a query plan showing a full scan, the Script Include's own source code showing a loop, and the semaphore pool's saturation pattern. The credential and recursive-rule options are real patterns from earlier chapters, but not part of this capstone's confirmed causes."
+    },
+    {
+      "id": "snpt-29",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Match each confirmed cause from the Meridian Retail capstone to the evidence that actually confirmed it.",
+      "left": [
+        "Missing index on u_store_region",
+        "Query-in-a-loop in ChecklistUtils.getApprovalThresholds",
+        "Scheduled job contention at 7:00 AM"
+      ],
+      "right": [
+        "The query plan showed a full table scan of 2.1 million rows instead of an index seek",
+        "Reading the Script Include's own source code revealed a GlideRecord query running inside a loop, once per item",
+        "The semaphore pool's saturation pattern showed both jobs plus the submission spike overwhelming the same bounded pool"
+      ],
+      "correctMap": [0, 1, 2],
+      "explain": "None of the three causes was guessed -- each was confirmed with its own distinct diagnostic evidence: a query plan, the script's own source, and the semaphore pool's saturation pattern."
+    },
+    {
+      "id": "snpt-30",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the prevention plan's most forward-looking threshold alerts when a scoped app's active-user count crosses any 100-user growth milestone -- this is called a ________-tied alert threshold, because it fires on usage growth itself rather than waiting for a performance number to already have degraded.",
+      "acceptedAnswers": ["growth", "Growth"],
+      "explain": "A growth-tied alert threshold fires on usage growth itself, catching the next version of this problem months before a response-time number would have crossed any alert threshold."
+    }
+  ]
+}
