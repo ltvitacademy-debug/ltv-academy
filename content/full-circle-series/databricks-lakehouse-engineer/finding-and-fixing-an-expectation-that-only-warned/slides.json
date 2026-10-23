@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "Finding and Fixing a Data-Quality Expectation That ",
+    "titleEmphasis": "Only Warned",
+    "titleSuffix": "",
+    "subtitle": "Video 16 of 20 · Harborview Health Partners"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The rule that let it through",
+    "code": "import pyspark.pipelines as dp\n\n@dp.table(name=\"claims_clean\")\n@dp.expect(\"valid_claim_amount\", \"claim_amount_usd > 0\")\n@dp.expect(\"valid_clinic_id\", \"clinic_id IS NOT NULL\")\ndef claims_clean():\n    return (dp.read_stream(\"harborview.bronze.claims_raw\")\n        .select(col(\"claim_id\").cast(\"string\"),\n                trim(col(\"clinic_id\")).alias(\"clinic_id\"),\n                col(\"claim_amount_usd\").cast(\"decimal(12,2)\"))\n        .dropDuplicates([\"claim_id\"]))",
+    "caption": "Lesson 10's exact code -- bare @dp.expect defaults to warn: log it, keep the row."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Proof, from the pipeline's own event log",
+    "code": "SELECT exp.name, exp.passed_records, exp.failed_records\nFROM event_log(TABLE(harborview.silver.claims_clean)),\n     LATERAL VIEW explode(\n       details:flow_progress:data_quality:expectations) t AS exp\nWHERE event_type = 'flow_progress'\n  AND exp.name = 'valid_claim_amount'\nORDER BY timestamp DESC LIMIT 1;\n-- failed_records: 14 -- kept, every one",
+    "caption": "Warn was doing exactly what it was told: count the violation, don't block it."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The fix, in three parts",
+    "titlePlain": "Drop, ",
+    "titleEmphasis": "backfill",
+    "titleSuffix": ", watch",
+    "steps": [
+      { "label": "expect_or_drop", "sub": "severity changed for the two rules that feed a dollar total" },
+      { "label": "Full refresh", "sub": "replays claims_raw through the corrected rule, drops the 14 rows retroactively" },
+      { "label": "Hourly SQL alert", "sub": "on failed_records > 0 -- a warn spike now pages a human" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 17",
+    "titlePlain": "Explaining the Reconciliation to ",
+    "titleEmphasis": "Finance",
+    "titleSuffix": "",
+    "subtitle": "Turning a fixed pipeline into a trusted number."
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Landing Claims Files With ",
+    "titleEmphasis": "Auto Loader",
+    "titleSuffix": "",
+    "subtitle": "Video 9 of 20 · Harborview Health Partners"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three things Bronze has to get right",
+    "titlePlain": "Land it, ",
+    "titleEmphasis": "don't touch it",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "Incremental file discovery",
+        "sub": "Auto Loader, not a one-time batch job, watching the nightly drop folder"
+      },
+      {
+        "label": "Schema tracked, not fixed",
+        "sub": "cloudFiles.schemaLocation plus addNewColumns, so a new clinic field doesn't break the stream"
+      },
+      {
+        "label": "Append-only, zero business logic",
+        "sub": "harborview.bronze.claims_raw stays a faithful copy of what each clinic sent"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Fifteen clinics, one incremental stream",
+    "code": "spark.readStream\n  .format(\"cloudFiles\")\n  .option(\"cloudFiles.format\", \"csv\")\n  .option(\"cloudFiles.schemaLocation\", \"/mnt/harborview/_schemas/claims_raw\")\n  .option(\"cloudFiles.schemaEvolutionMode\", \"addNewColumns\")\n  .load(\"/mnt/harborview/landing/claims/\")",
+    "caption": "Auto Loader infers and tracks the schema itself -- no one hand-writes it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Append-only, with a paper trail",
+    "code": "bronze_claims = (raw_claims_stream\n  .withColumn(\"_file_name\", input_file_name())\n  .withColumn(\"_ingested_at\", current_timestamp()))\n\nbronze_claims.writeStream\n  .format(\"delta\")\n  .option(\"checkpointLocation\", \"/mnt/harborview/_checkpoints/claims_raw\")\n  .outputMode(\"append\")\n  .trigger(availableNow=True)\n  .toTable(\"harborview.bronze.claims_raw\")",
+    "caption": "_file_name and _ingested_at trace every row back to its source file."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 10",
+    "titlePlain": "Building the Silver Layer With ",
+    "titleEmphasis": "Lakeflow Declarative Pipelines",
+    "titleSuffix": "",
+    "subtitle": "Where claims actually get cleaned -- and where one quiet decision has a cost."
+  }
+]

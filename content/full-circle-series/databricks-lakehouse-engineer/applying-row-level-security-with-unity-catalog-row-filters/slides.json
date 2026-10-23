@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Applying Row-Level Security With ",
+    "titleEmphasis": "Unity Catalog Row Filters",
+    "titleSuffix": "",
+    "subtitle": "Video 12 of 20 · Harborview Health Partners"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three pieces, one real fix",
+    "titlePlain": "One filter, ",
+    "titleEmphasis": "every query",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "clinic_access_lookup",
+        "sub": "the single source of truth for which user sees which clinic"
+      },
+      {
+        "label": "A SQL row filter function",
+        "sub": "compliance_team sees everything; everyone else checks the lookup"
+      },
+      {
+        "label": "ALTER TABLE ... SET ROW FILTER",
+        "sub": "attached to the table itself -- no query can bypass it"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The policy, as one function",
+    "code": "CREATE OR REPLACE FUNCTION\n  harborview.gold.clinic_row_filter(clinic_id STRING)\nRETURNS BOOLEAN\nRETURN\n  is_account_group_member('compliance_team')\n  OR EXISTS (\n    SELECT 1 FROM harborview.gold.clinic_access_lookup a\n    WHERE a.user_email = current_user()\n      AND a.clinic_id = clinic_row_filter.clinic_id\n  );",
+    "caption": "Compliance sees all 15 clinics; everyone else sees only their own."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Attaching it to the table",
+    "code": "ALTER TABLE harborview.gold.claims_detail_gold\nSET ROW FILTER harborview.gold.clinic_row_filter\n  ON (clinic_id);\n\n-- Verify both sides before calling it done:\n-- a clinic user sees only their clinic's rows;\n-- a compliance_team member sees all 15.",
+    "caption": "Enforced by the catalog on every query -- dashboard, notebook, or BI tool."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 13",
+    "titlePlain": "Masking Patient SSNs With ",
+    "titleEmphasis": "Unity Catalog Column Masks",
+    "titleSuffix": "",
+    "subtitle": "Row filters handled who sees which clinic -- next, who sees the SSN itself."
+  }
+]

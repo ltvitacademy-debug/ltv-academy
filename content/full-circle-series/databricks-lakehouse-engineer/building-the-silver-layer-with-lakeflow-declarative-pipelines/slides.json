@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the Silver Layer With ",
+    "titleEmphasis": "Lakeflow Declarative Pipelines",
+    "titleSuffix": "",
+    "subtitle": "Video 10 of 20 · Harborview Health Partners"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two decisions that matter here",
+    "titlePlain": "Clean the data, ",
+    "titleEmphasis": "pick a severity",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "Parse, type, dedupe",
+        "sub": "Bronze's text columns become real types; claim_id dedupes the stream"
+      },
+      {
+        "label": "Two expectations attached",
+        "sub": "claim_amount_usd > 0, and clinic_id IS NOT NULL"
+      },
+      {
+        "label": "Severity set to warn, deliberately",
+        "sub": "log the violation, keep the row -- week one of a pipeline we don't fully trust yet"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "pyspark.pipelines, the current Lakeflow API",
+    "code": "import pyspark.pipelines as dp\n\n@dp.table(name=\"claims_clean\")\n@dp.expect(\"valid_claim_amount\", \"claim_amount_usd > 0\")\n@dp.expect(\"valid_clinic_id\", \"clinic_id IS NOT NULL\")\ndef claims_clean():\n    return (dp.read_stream(\"harborview.bronze.claims_raw\")\n        .select(col(\"claim_id\").cast(\"string\"),\n                trim(col(\"clinic_id\")).alias(\"clinic_id\"),\n                col(\"claim_amount_usd\").cast(\"decimal(12,2)\"))\n        .dropDuplicates([\"claim_id\"]))",
+    "caption": "@dp.expect, not expect_or_drop or expect_or_fail -- rows stay in the table."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Three severities, one decision",
+    "code": "@dp.expect(...)            # warn  -- logs, keeps the row\n@dp.expect_or_drop(...)    # drop  -- removes the row\n@dp.expect_or_fail(...)    # fail  -- halts the pipeline update\n\n# Chosen here: warn. Dropping silently felt too aggressive\n# for a brand-new pipeline -- a legitimate edge-case claim\n# could trip the amount check and vanish unnoticed.",
+    "caption": "A defensible call for week one -- revisit once the event log has real volume."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 11",
+    "titlePlain": "Building the Gold Layer: ",
+    "titleEmphasis": "Claims Summary and Claims Detail",
+    "titleSuffix": "",
+    "subtitle": "Two tables, two very different audiences, from the same clean Silver stream."
+  }
+]

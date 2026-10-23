@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Architecture & Planning · Full-Circle Implementation Series",
+    "titlePlain": "Planning Row-Level Security and ",
+    "titleEmphasis": "Column Masking",
+    "titleSuffix": "",
+    "subtitle": "Video 6 of 20 · Harborview Health Partners"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three groups, decided before any policy",
+    "titlePlain": "Who sees ",
+    "titleEmphasis": "what",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "compliance_team", "sub": "all 15 clinics, unmasked patient_name and patient_ssn" },
+      { "label": "clinical_quality", "sub": "assigned clinic(s) only, PII masked to NULL" },
+      { "label": "billing_analysts", "sub": "assigned clinic(s) only, PII masked to NULL" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The row filter's real logic",
+    "code": "CREATE FUNCTION harborview.gold.clinic_row_filter(\n  clinic_id STRING)\nRETURNS BOOLEAN\nRETURN\n  IS_ACCOUNT_GROUP_MEMBER('compliance_team')\n  OR EXISTS (\n    SELECT 1 FROM harborview.gold.clinic_access_map m\n    WHERE m.user_email = current_user()\n      AND m.clinic_id = clinic_row_filter.clinic_id\n  );",
+    "caption": "Group membership first, then a clinic_access_map lookup -- never a hardcoded clinic list."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The column mask's real logic",
+    "code": "CREATE FUNCTION harborview.gold.mask_patient_name(\n  patient_name STRING)\nRETURNS STRING\nRETURN CASE\n  WHEN IS_ACCOUNT_GROUP_MEMBER('compliance_team')\n  THEN patient_name\n  ELSE NULL\nEND;",
+    "caption": "Same shape for patient_ssn -- compliance sees it, everyone else sees NULL."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 7",
+    "titlePlain": "Planning the Auto Loader Ingestion Path for ",
+    "titleEmphasis": "Nightly Claims Files",
+    "titleSuffix": "",
+    "subtitle": "15 clinics, one landing zone, one schedule."
+  }
+]
