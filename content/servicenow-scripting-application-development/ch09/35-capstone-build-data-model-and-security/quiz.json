@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-data-model-and-security",
+  "questions": [
+    {
+      "q": "Why doesn't x_acme_eqchk_equipment extend task, while x_acme_eqchk_request does?",
+      "options": [
+        "ServiceNow does not allow lookup tables to extend task under any circumstances",
+        "Equipment is reference/lookup data, not a workflow record, while the request table needs task's approval and state plumbing",
+        "Both tables actually extend task, with equipment simply hiding the extra fields",
+        "equipment extends task, but request does not"
+      ],
+      "answer": 1,
+      "explain": "A lookup table like equipment holds reference data pointed at by other records; the request table extends task because it needs an approval/state workflow."
+    },
+    {
+      "q": "What does this code actually do?\n\nvar gr = new GlideRecord('x_acme_eqchk_request');\ngr.get(requestSysId);\nvar condition = gr.equipment.equipment_condition.getDisplayValue();",
+      "options": [
+        "Creates a new equipment record from the request",
+        "Deletes the equipment_condition field from the equipment table",
+        "Fails, because dot-walking through a reference field is not supported in ServiceNow",
+        "Dot-walks from the request record through its equipment reference field to read the equipment's condition, with no separate lookup query"
+      ],
+      "answer": 3,
+      "explain": "gr.equipment.equipment_condition dot-walks across the reference field to the equipment record's condition field directly."
+    },
+    {
+      "q": "What does this ACL script actually control?\n\nanswer = gs.hasRole('x_acme_eqchk.equipment_admin') || gs.hasRole('admin');",
+      "options": [
+        "Whether the current user can log into the instance at all",
+        "Whether a Business Rule is allowed to run on a table",
+        "Whether the current user may write to a specific field (equipment_condition), returning true only for equipment admins or system admins",
+        "Whether the equipment table itself exists in this scope"
+      ],
+      "answer": 2,
+      "explain": "A field-level write ACL evaluates this script and assigns the result to answer; only users with the named roles get write access to that one field."
+    },
+    {
+      "q": "What is the field-level consequence for a user who lacks both x_acme_eqchk.equipment_admin and admin, given the ACL above?",
+      "options": [
+        "They lose all access to the entire equipment table",
+        "They can still view equipment_condition, but it's read-only to them even though other fields on the same form remain editable",
+        "They are automatically granted the equipment_admin role",
+        "The ACL has no effect unless it's also applied to the whole table"
+      ],
+      "answer": 1,
+      "explain": "A field-level write ACL only restricts that one field — the rest of the form's editable fields are unaffected."
+    },
+    {
+      "q": "Why is EquipmentAvailabilityChecker's Application Access set to \"This application scope only\" rather than \"all application scopes\"?",
+      "options": [
+        "Nothing outside x_acme_eqchk has a legitimate reason to check equipment availability, so the narrowest access is the correct choice",
+        "\"This application scope only\" is the only option ServiceNow allows for class-based Script Includes",
+        "It needs to be callable from Global for the Client Script to reach it",
+        "Application Access only matters for Scripted REST APIs, not Script Includes"
+      ],
+      "answer": 0,
+      "explain": "Per Chapter 5's cross-scope reasoning, Application Access should grant the narrowest reach that still lets this application's own code call it — here, scope-only is correct."
+    }
+  ]
+}

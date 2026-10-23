@@ -1,0 +1,58 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Scripting & Application Development · Chapter Eight",
+    "titlePlain": "Scripted REST ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 33 · Scripted REST APIs & Script Actions"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two requirements, one fleet app",
+    "titlePlain": "Status over REST, ",
+    "titleEmphasis": "decoupled",
+    "titleSuffix": " reaction",
+    "steps": [
+      { "label": "Requirement 1", "sub": "an external dashboard checks vehicle status over REST" },
+      { "label": "Requirement 2", "sub": "a return updates related records, decoupled from the trigger" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Part 1 — GET /vehicle/{sys_id}/status",
+    "code": "(function process(request, response) {\n    var vehicleId = request.pathParams.sys_id;\n\n    var veh = new GlideRecord('x_acme_fleet_vehicle');\n    if (!veh.get(vehicleId)) {\n        response.setStatus(404);\n        response.setBody({ error: 'Not found: ' + vehicleId });\n        return;\n    }\n\n    response.setBody({\n        vehicle_id: veh.getValue('vehicle_id'),\n        status: veh.getValue('status')\n    });\n})(request, response);",
+    "caption": "veh.get() by sys_id, 404 if nothing matches, JSON body if it does."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Part 2 — the Business Rule announces it",
+    "code": "// after update, condition: status changes to Returned\n(function executeRule(current, previous) {\n\n    gs.eventQueue(\n        'vehicle.returned',\n        current,\n        current.vehicle.toString(),\n        gs.getUserID()\n    );\n\n})(current, previous);",
+    "caption": "It announces the event — it never touches the vehicle record itself."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Part 2 — the Script Action reacts",
+    "code": "// Fires on event: vehicle.returned\n(function onVehicleReturned(event) {\n    var vehicleId = event.parm1;\n\n    var veh = new GlideRecord('x_acme_fleet_vehicle');\n    if (veh.get(vehicleId)) {\n        veh.status = 'available';\n        veh.last_returned = new GlideDateTime();\n        veh.update();\n    }\n})(event);",
+    "caption": "event.parm1 carries the vehicle sys_id the Business Rule passed in."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why decouple it",
+    "titlePlain": "Add a listener ",
+    "titleEmphasis": "without",
+    "titleSuffix": " touching the trigger",
+    "steps": [
+      { "label": "Today", "sub": "one Script Action updates the vehicle record" },
+      { "label": "Later", "sub": "a second listener (email alert, external sync) needs zero Business Rule changes" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 34",
+    "titlePlain": "Capstone Kickoff: Application ",
+    "titleEmphasis": "Requirements",
+    "titleSuffix": "",
+    "subtitle": "Chapter 9 begins — scoping your own scoped application."
+  }
+]

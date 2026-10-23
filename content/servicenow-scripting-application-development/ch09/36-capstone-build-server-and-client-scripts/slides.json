@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Scripting & Application Development · Chapter Nine",
+    "titlePlain": "Capstone: Build Server & Client ",
+    "titleEmphasis": "Scripts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 36 · Capstone: a Custom Scoped Application"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The one source of truth",
+    "code": "var EquipmentAvailabilityChecker = Class.create();\nEquipmentAvailabilityChecker.prototype = {\n    initialize: function() {},\n\n    isEquipmentAvailable: function(equipmentId) {\n        var gr = new GlideRecord('x_acme_eqchk_request');\n        gr.addQuery('equipment', equipmentId);\n        gr.addQuery('state', 'IN', '2,3');\n        gr.addQuery('active', true);\n        gr.query();\n        return !gr.hasNext();\n    },\n\n    type: 'EquipmentAvailabilityChecker'\n};",
+    "caption": "One class-based Script Include — called from both the Business Rule and the Client Script."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The authoritative check",
+    "code": "(function executeRule(current, previous) {\n    var checker = new x_acme_eqchk.EquipmentAvailabilityChecker();\n\n    if (!checker.isEquipmentAvailable(current.equipment.toString())) {\n        gs.addErrorMessage('Equipment already checked out.');\n        current.setAbortAction(true);\n    }\n})(current, previous);",
+    "caption": "A before-insert Business Rule — setAbortAction(true) stops the insert, no matter how it was triggered."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The ajax bridge + the client warning",
+    "code": "// Wrapper Script Include (extends AbstractAjaxProcessor)\nisEquipmentAvailable: function() {\n    var id = this.getParameter('sysparm_equipment_id');\n    return new x_acme_eqchk.EquipmentAvailabilityChecker()\n        .isEquipmentAvailable(id);\n}\n\n// Client Script, onChange of \"equipment\"\nga.getXMLAnswer(function(answer) {\n    if (answer === 'false') {\n        g_form.addErrorMessage('Already checked out.');\n    }\n});",
+    "caption": "GlideAjax only calls an AbstractAjaxProcessor — the real logic stays in one place."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Server vs. client, clearly separated",
+    "titlePlain": "Enforcement ",
+    "titleEmphasis": "vs.",
+    "titleSuffix": " warning",
+    "steps": [
+      { "label": "Business Rule", "sub": "server-side, authoritative — can't be bypassed" },
+      { "label": "Client Script", "sub": "instant warning only — pure user experience" },
+      { "label": "Same logic, one place", "sub": "both call the same Script Include, no duplication" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 37",
+    "titlePlain": "Wrap-Up & Code ",
+    "titleEmphasis": "Review",
+    "titleSuffix": "",
+    "subtitle": "A real review pass on everything just built, then the close of this course."
+  }
+]

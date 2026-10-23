@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Scripting & Application Development · Chapter Three",
+    "titlePlain": "Script Includes ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Script Includes"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · the base class",
+    "code": "var TaskUtils = Class.create();\nTaskUtils.prototype = {\n    initialize: function() {\n        this.msPerDay = 1000 * 60 * 60 * 24;\n    },\n    getOverdueDays: function(gr) {\n        var due = new GlideDateTime(gr.getValue('due_date'));\n        var now = new GlideDateTime();\n        var diffMs = now.getNumericValue() - due.getNumericValue();\n        return diffMs <= 0 ? 0 : Math.floor(diffMs / this.msPerDay);\n    },\n    type: 'TaskUtils'\n};",
+    "caption": "due_date lives on Task — so this logic belongs on TaskUtils, not Incident-only code."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · extend it",
+    "code": "var IncidentUtils = Class.create();\nIncidentUtils.prototype = Object.extendsObject(TaskUtils, {\n    initialize: function() {\n        TaskUtils.prototype.initialize.call(this);\n        this.majorPriority = '1';\n        this.majorImpact = '1';\n    },\n    isMajorIncident: function(gr) {\n        return gr.getValue('priority') === this.majorPriority &&\n            gr.getValue('impact') === this.majorImpact;\n    },\n    type: 'IncidentUtils'\n});",
+    "caption": "Incident really does extend Task on the platform — the class mirrors that."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 · wire it into a Business Rule",
+    "code": "(function executeRule(current, previous) {\n    var utils = new IncidentUtils();\n    var overdueDays = utils.getOverdueDays(current); // inherited\n\n    if (utils.isMajorIncident(current) && overdueDays > 0) {\n        current.work_notes = 'Major incident is ' + overdueDays +\n            ' day(s) past its due date.';\n    }\n})(current, previous);",
+    "caption": "One instance, two capabilities — inherited and its own, side by side."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why this design works",
+    "titlePlain": "The IS-A test, ",
+    "titleEmphasis": "proven",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "General logic stays general", "sub": "getOverdueDays works for any Task-derived record" },
+      { "label": "Specific logic stays specific", "sub": "isMajorIncident only ever makes sense on Incident" },
+      { "label": "Future classes inherit it free", "sub": "a ProblemUtils extending TaskUtils gets getOverdueDays with no rewrite" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 4, Lesson 15",
+    "titlePlain": "UI Policies: a ",
+    "titleEmphasis": "Developer's",
+    "titleSuffix": " View",
+    "subtitle": "From server-side classes to form behavior."
+  }
+]

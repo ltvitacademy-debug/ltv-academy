@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Scripting & Application Development · Chapter One",
+    "titlePlain": "Business Rules ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 6 · Business Rules"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two real requests",
+    "titlePlain": "Mapping requests to ",
+    "titleEmphasis": "timing",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Request 1", "sub": "auto-set assignment_group on every new incident" },
+      { "label": "Request 2", "sub": "notify a manager only at the real moment of escalation" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 1 — Before insert",
+    "code": "(function executeRule(current, previous) {\n\n    if (current.operation() != 'insert') return;\n\n    var groupByCategory = {\n        'network':  'Network Support',\n        'hardware': 'Desktop Support'\n    };\n\n    var groupName = groupByCategory[current.category.toString()];\n    if (groupName) {\n        var group = new GlideRecord('sys_user_group');\n        group.addQuery('name', groupName);\n        group.query();\n        if (group.next()) {\n            current.assignment_group = group.sys_id;\n        }\n    }\n\n})(current, previous);",
+    "caption": "One write, correctly routed — no current.update() needed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule 2 — After update, Advanced",
+    "code": "(function executeRule(current, previous) {\n\n    var justEscalated = (current.priority == 1 &&\n        previous.priority != 1);\n    if (!justEscalated) return;\n\n    var agent = new GlideRecord('sys_user');\n    if (!agent.get(current.assigned_to)) return;\n\n    var manager = new GlideRecord('sys_user');\n    if (manager.get(agent.manager)) {\n        gs.eventQueue('incident.priority.escalated',\n            current, manager.sys_id, current.number);\n    }\n\n})(current, previous);",
+    "caption": "Fires once, only at the real moment of escalation."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "No Chapter 1 mistakes repeated",
+    "titlePlain": "Checked against every ",
+    "titleEmphasis": "pitfall",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "No infinite loop", "sub": "neither rule writes back into its own trigger" },
+      { "label": "Operation-aware", "sub": "checkboxes and current.operation() agree" },
+      { "label": "Right timing", "sub": "Before for the insert default, After for the related lookup" },
+      { "label": "Scoped with Filter Conditions", "sub": "Rule 2 only runs when priority actually changes" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 2, Lesson 7",
+    "titlePlain": "onLoad, onChange, onSubmit & ",
+    "titleEmphasis": "onCellEdit",
+    "titleSuffix": "",
+    "subtitle": "Moving from server-side Business Rules to Client Scripts."
+  }
+]

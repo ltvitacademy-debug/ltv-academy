@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Scripting & Application Development · Chapter Seven",
+    "titlePlain": "Advanced UI ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · GlideDialogWindow, GlideModal & Advanced UI"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 — the shared UI Script",
+    "code": "// UI Script: DateFormatHelpers\nfunction formatShortDate(dateString) {\n    if (!dateString) { return 'unknown date'; }\n    var d = new Date(dateString);\n    var months = ['Jan','Feb','Mar','Apr','May','Jun',\n                  'Jul','Aug','Sep','Oct','Nov','Dec'];\n    return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();\n}",
+    "caption": "One function, reused by two unrelated scripts on the form."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — UI Action client script",
+    "code": "function closeAllTasksClicked() {\n    var created = g_form.getValue('sys_created_on');\n    var msg = 'Closes ' + g_form.getValue('open_task_count') +\n        ' task(s), change created ' + formatShortDate(created) + '.';\n    var gm = new GlideModal('glide_modal_confirm');\n    gm.setTitle('Close All Related Tasks?');\n    gm.setPreference('sysparm_message', msg);\n    gm.setPreference('onPromptComplete', function(confirmed) {\n        if (confirmed) {\n            gsftSubmit(null, g_form.getFormElement(), 'close_all_tasks');\n        }\n    });\n    gm.render();\n}",
+    "caption": "GlideModal confirms first; gsftSubmit only runs server-side on confirm."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 — server-side close",
+    "code": "if (typeof window == 'undefined') {\n    var gr = new GlideRecord('task');\n    gr.addQuery('parent', current.sys_id);\n    gr.addQuery('active', true);\n    gr.query();\n    while (gr.next()) {\n        gr.state = 3; // Closed Complete\n        gr.update();\n    }\n    gs.addInfoMessage('All related tasks closed.');\n}",
+    "caption": "Runs only after the confirmed gsftSubmit — never on the first click."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The pattern, end to end",
+    "titlePlain": "Lightest API, ",
+    "titleEmphasis": "shared logic",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "GlideModal", "sub": "a message and a count — no custom UI Page needed" },
+      { "label": "DateFormatHelpers", "sub": "one UI Script, called from the dialog and a separate Client Script" },
+      { "label": "gsftSubmit", "sub": "the bridge from a confirmed click to the server-side script" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "Building a Scripted ",
+    "titleEmphasis": "REST API",
+    "titleSuffix": "",
+    "subtitle": "Chapter 8 — exposing your application's data beyond the UI."
+  }
+]
