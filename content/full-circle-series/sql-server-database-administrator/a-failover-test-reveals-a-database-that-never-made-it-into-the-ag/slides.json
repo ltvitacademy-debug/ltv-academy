@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "A Failover Test Reveals a Database ",
+    "titleEmphasis": "That Never Made It Into the AG",
+    "titleSuffix": "",
+    "subtitle": "Video 15 of 20 · Brennan Manufacturing"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One test, two different outcomes",
+    "titlePlain": "Narrow it down, ",
+    "titleEmphasis": "don't guess",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "BrennanERP fails over cleanly", "sub": "SYNCHRONIZED / HEALTHY on SQLDBA02, confirmed directly" },
+      { "label": "ProductionSchedulingDB breaks", "sub": "the scheduling module can't find its database at all" },
+      { "label": "Check sys.availability_databases_cluster", "sub": "the authoritative answer: was it ever actually a member of BrennanAG?" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Still sitting there, untouched",
+    "code": "-- On SQLDBA01, now the secondary\nSELECT name, state_desc, create_date\nFROM sys.databases\nWHERE name = 'ProductionSchedulingDB';\n\n-- name: ProductionSchedulingDB\n-- state_desc: ONLINE\n-- a real AG member would have changed role with the failover",
+    "caption": "Checked directly, not through the application reporting the error."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The authoritative check",
+    "code": "SELECT adc.database_name, ag.name AS availability_group_name\nFROM sys.availability_databases_cluster adc\nJOIN sys.availability_groups ag ON adc.group_id = ag.group_id\nWHERE ag.name = 'BrennanAG';\n\n-- returns BrennanERP only --\n-- ProductionSchedulingDB was never a member at all",
+    "caption": "Not a failover bug -- a database that was never inside the group that failed over."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 16",
+    "titlePlain": "Finding and Fixing the Missing Database ",
+    "titleEmphasis": "and the Process Gap Behind It",
+    "titleSuffix": "",
+    "subtitle": "Adding it for real, proving it, and closing the gap for good."
+  }
+]

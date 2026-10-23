@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "Finding and Fixing the Missing Database ",
+    "titleEmphasis": "and the Process Gap Behind It",
+    "titleSuffix": "",
+    "subtitle": "Video 16 of 20 · Brennan Manufacturing"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Fix it for real, then prove it",
+    "titlePlain": "Three steps to ",
+    "titleEmphasis": "close the gap",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Backup + restore WITH NORECOVERY", "sub": "on SQLDBA01 (primary) and SQLDBA02 (secondary)" },
+      { "label": "ALTER AVAILABILITY GROUP ... ADD DATABASE", "sub": "ProductionSchedulingDB joins BrennanAG for real" },
+      { "label": "Re-run the failover test", "sub": "this time it follows the AG with zero application changes" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The join sequence",
+    "code": "-- On SQLDBA01 (primary)\nBACKUP DATABASE ProductionSchedulingDB\n  TO DISK = 'D:\\SQLBackups\\ProductionSchedulingDB_Full.bak';\n\n-- On SQLDBA02 (secondary)\nRESTORE DATABASE ProductionSchedulingDB\n  FROM DISK = '...Full.bak' WITH NORECOVERY;\n\n-- Back on SQLDBA01 (primary)\nALTER AVAILABILITY GROUP BrennanAG\n  ADD DATABASE ProductionSchedulingDB;",
+    "caption": "The same mechanism that joined BrennanERP -- run again, now, for the one that was missed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Closing the real root cause",
+    "code": "$allDbs = Get-DbaDatabase -SqlInstance SQLDBA01\n$agDbs  = Get-DbaAgDatabase -SqlInstance SQLDBA01 `\n            -AvailabilityGroup BrennanAG\n\n$unprotected = $allDbs | Where-Object {\n  $_.Name -notin $agDbs.DatabaseName\n}\n# alert nightly if anything comes back here",
+    "caption": "A recurring check so a database can exist without AG protection for at most a day, never silently."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 17",
+    "titlePlain": "Connecting a Monitoring Dashboard for the ",
+    "titleEmphasis": "DBA Team",
+    "titleSuffix": "",
+    "subtitle": "Giving the team ongoing visibility, not a one-time fix."
+  }
+]
