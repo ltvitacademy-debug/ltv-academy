@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Moving POS Exports Into Snowflake With ",
+    "titleEmphasis": "Data Factory and Snowpipe",
+    "titleSuffix": "",
+    "subtitle": "Video 9 of 20 · Pinehurst Grocers"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two tools, one clean handoff",
+    "titlePlain": "From a file share to a ",
+    "titleEmphasis": "raw table",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "pl_copy_pos_exports",
+        "sub": "ADF Copy Activity, on-prem share to pinehurststagingblob/pos-exports"
+      },
+      {
+        "label": "Event Grid notification",
+        "sub": "a storage queue tells Snowflake the instant a file lands"
+      },
+      {
+        "label": "POS_TRANSACTIONS_PIPE",
+        "sub": "Snowpipe auto-ingests into RAW.POS_TRANSACTIONS_RAW, no schedule"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The pipe itself",
+    "code": "CREATE PIPE PINEHURST_DB.RAW.POS_TRANSACTIONS_PIPE\n  AUTO_INGEST = TRUE\n  AZURE_NOTIFICATION_INTEGRATION = 'pinehurst_blob_event_notify'\nAS\n  COPY INTO PINEHURST_DB.RAW.POS_TRANSACTIONS_RAW\n  FROM @PINEHURST_DB.RAW.STG_POS_EXPORTS\n  FILE_FORMAT = (FORMAT_NAME = PINEHURST_DB.RAW.FF_POS_CSV);",
+    "caption": "AUTO_INGEST = TRUE is the whole point -- no batch window, just an event."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirm it, don't assume it",
+    "code": "SELECT SYSTEM$PIPE_STATUS('PINEHURST_DB.RAW.POS_TRANSACTIONS_PIPE');\n\nSELECT FILE_NAME, STATUS, ERROR_COUNT\nFROM TABLE(INFORMATION_SCHEMA.COPY_HISTORY(\n  TABLE_NAME => 'PINEHURST_DB.RAW.POS_TRANSACTIONS_RAW',\n  START_TIME => DATEADD('hour', -2, CURRENT_TIMESTAMP())\n));",
+    "caption": "Zero error rows on a test file is the bar before calling this production-ready."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 10",
+    "titlePlain": "Capturing Changes With a ",
+    "titleEmphasis": "Snowflake Stream",
+    "titleSuffix": "",
+    "subtitle": "Tracking exactly which raw rows are new."
+  }
+]

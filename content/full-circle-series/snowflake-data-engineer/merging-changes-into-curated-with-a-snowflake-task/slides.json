@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Merging Changes Into Curated With a ",
+    "titleEmphasis": "Snowflake Task",
+    "titleSuffix": "",
+    "subtitle": "Video 11 of 20 · Pinehurst Grocers"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Build it right, then wake it up",
+    "titlePlain": "One easy step to ",
+    "titleEmphasis": "forget",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "Idempotent MERGE",
+        "sub": "keyed on transaction_id -- a re-run can't double-count"
+      },
+      {
+        "label": "WHEN SYSTEM$STREAM_HAS_DATA(...)",
+        "sub": "the task skips spinning up when nothing's pending"
+      },
+      {
+        "label": "ALTER TASK ... RESUME",
+        "sub": "every new task starts SUSPENDED by default -- always"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The task, scheduled every 5 minutes",
+    "code": "CREATE OR REPLACE TASK PINEHURST_DB.RAW.MERGE_POS_TRANSACTIONS_TASK\n  WAREHOUSE = LOAD_WH\n  SCHEDULE = '5 MINUTE'\n  WHEN SYSTEM$STREAM_HAS_DATA(\n    'PINEHURST_DB.RAW.POS_TRANSACTIONS_STREAM')\nAS\nMERGE INTO PINEHURST_DB.CURATED.POS_TRANSACTIONS_CLEAN AS tgt\nUSING (... FROM ...POS_TRANSACTIONS_STREAM) AS src\nON tgt.TRANSACTION_ID = src.TRANSACTION_ID\nWHEN MATCHED THEN UPDATE SET ...\nWHEN NOT MATCHED THEN INSERT ...;",
+    "caption": "Correct MERGE logic -- the operational risk here is elsewhere, not in this SQL."
+  },
+  {
+    "type": "code",
+    "eyebrow": "It will not run until you do this",
+    "code": "ALTER TASK PINEHURST_DB.RAW.MERGE_POS_TRANSACTIONS_TASK RESUME;\n\nSHOW TASKS LIKE 'MERGE_POS_TRANSACTIONS_TASK'\n  IN SCHEMA PINEHURST_DB.RAW;\n-- state must read STARTED, not SUSPENDED",
+    "caption": "The single most common reason a new task 'does nothing' at all."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 12",
+    "titlePlain": "Building the Gold Models With ",
+    "titleEmphasis": "dbt and Airflow",
+    "titleSuffix": "",
+    "subtitle": "Turning clean transactions into a number Operations can use."
+  }
+]

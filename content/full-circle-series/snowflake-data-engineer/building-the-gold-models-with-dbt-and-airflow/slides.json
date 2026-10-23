@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the Gold Models With ",
+    "titleEmphasis": "dbt and Airflow",
+    "titleSuffix": "",
+    "subtitle": "Video 12 of 20 · Pinehurst Grocers"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From curated to actually useful",
+    "titlePlain": "Two tables, one ",
+    "titleEmphasis": "schedule",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "daily_sales_gold",
+        "sub": "per-store, per-day sales rollup, built on curated"
+      },
+      {
+        "label": "inventory_depletion_gold",
+        "sub": "7-day trailing depletion rate, per store and SKU"
+      },
+      {
+        "label": "Airflow DAG",
+        "sub": "dbt run then dbt test, triggered daily -- not by hand"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The window function that matters",
+    "code": "select store_id, sku, transaction_date, units_sold,\n  avg(units_sold) over (\n    partition by store_id, sku\n    order by transaction_date\n    rows between 6 preceding and current row\n  ) as depletion_rate_units_per_day_7d\nfrom daily_sku_sales",
+    "caption": "A smoothed sell-through rate, not one noisy day's number."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Triggered on a schedule, not a memory",
+    "code": "with DAG(\n  dag_id='pinehurst_dbt_gold_build',\n  schedule_interval='15 6 * * *',\n) as dag:\n  dbt_run = BashOperator(task_id='dbt_run_gold_models',\n    bash_command='dbt run --select daily_sales_gold inventory_depletion_gold')\n  dbt_test = BashOperator(task_id='dbt_test_gold_models',\n    bash_command='dbt test --select daily_sales_gold inventory_depletion_gold')\n  dbt_run >> dbt_test",
+    "caption": "6:15am -- hours ahead of any store's morning rush."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 13",
+    "titlePlain": "Setting Up CI for ",
+    "titleEmphasis": "dbt and Terraform",
+    "titleSuffix": "",
+    "subtitle": "Making sure a broken model or plan can't merge."
+  }
+]
