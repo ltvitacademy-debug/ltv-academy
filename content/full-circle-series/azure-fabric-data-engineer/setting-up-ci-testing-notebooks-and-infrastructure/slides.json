@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Setting Up CI: Testing Notebooks and ",
+    "titleEmphasis": "Infrastructure",
+    "titleSuffix": " on Every Pull Request",
+    "subtitle": "Video 13 of 20 · Fernbridge Logistics"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two independent gates on every PR",
+    "titlePlain": "Nothing merges ",
+    "titleEmphasis": "untested",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "pytest + local SparkSession", "sub": "tests the real transformation logic, no Databricks cluster needed" },
+      { "label": "terraform plan + validate", "sub": "read-only service principal -- apply stays a separate, manual step" },
+      { "label": "Both required on main", "sub": "a red X disables the merge button, no exceptions" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Testable because the logic isn't buried in a notebook",
+    "code": "# transforms/gold_package_status.py\ndef resolve_latest_status(silver_df):\n    latest = Window.partitionBy(\"package_id\") \\\n        .orderBy(F.col(\"kafka_ingest_timestamp\").desc())\n    return (silver_df\n        .withColumn(\"rn\", F.row_number().over(latest))\n        .filter(\"rn = 1\"))",
+    "caption": "The exact function pytest calls is the exact function the Gold notebook runs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Terraform never gets to say yes on its own",
+    "code": "- run: terraform validate\n- run: terraform plan -no-color -out=tfplan.binary\n- run: terraform show -no-color tfplan.binary > plan.txt\n# terraform apply appears nowhere in this workflow",
+    "caption": "A read-only CI service principal -- it cannot change real infrastructure."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 14",
+    "titlePlain": "Orchestrating the Pipeline and Connecting ",
+    "titleEmphasis": "Fabric Real-Time Analytics",
+    "titleSuffix": "",
+    "subtitle": "Scheduling Gold, and giving support a live lookup."
+  }
+]

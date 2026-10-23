@@ -1,0 +1,36 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "Finding and Fixing a Duplicate-Event Bug From ",
+    "titleEmphasis": "Out-of-Order Kafka Messages",
+    "titleSuffix": "",
+    "subtitle": "Video 16 of 20 · Fernbridge Logistics"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The bug: ordering by arrival, not by event time",
+    "code": "# BEFORE\nlatest = Window.partitionBy(\"package_id\") \\\n    .orderBy(F.col(\"kafka_ingest_timestamp\").desc())\n# a late-arriving OLD event can outrank a newer one",
+    "caption": "Reproduced on command with two fabricated rows -- no live data needed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix: trust the scanner's own clock",
+    "code": "# AFTER\nlatest = Window.partitionBy(\"package_id\") \\\n    .orderBy(\n        F.col(\"event_timestamp\").desc(),\n        F.col(\"kafka_ingest_timestamp\").desc(),  # tiebreaker only\n    )",
+    "caption": "PKG-1048275 now resolves to DELIVERED -- matching Fabric exactly."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A test that makes sure it can't come back",
+    "code": "def test_late_arriving_old_event_does_not_win(spark):\n    # older event, later arrival  vs  newer event, earlier arrival\n    result = resolve_latest_status(df).collect()\n    assert result[0][\"status\"] == \"DELIVERED\"",
+    "caption": "Wired into Lesson 13's CI -- a future regression fails the pull request."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 17",
+    "titlePlain": "Connecting Fabric Dashboards to the Gold Layer and ",
+    "titleEmphasis": "Real-Time Feed",
+    "titleSuffix": "",
+    "subtitle": "Giving both teams a screen to actually look at."
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the Bronze Layer: Landing ",
+    "titleEmphasis": "Raw Scan and GPS Events",
+    "titleSuffix": "",
+    "subtitle": "Video 9 of 20 · Fernbridge Logistics"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Bronze has one job",
+    "titlePlain": "Land it ",
+    "titleEmphasis": "as-is",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Read Kafka", "sub": "fernbridge.delivery-events, partitioned by vehicle_id" },
+      { "label": "Parse with a schema", "sub": "typed columns, zero business logic" },
+      { "label": "Append to Delta", "sub": "kafka_ingest_timestamp + _source_offset on every row" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Reading the stream",
+    "code": "raw_kafka_stream = (\n    spark.readStream.format(\"kafka\")\n    .option(\"kafka.bootstrap.servers\", kafka_bootstrap)\n    .option(\"subscribe\", \"fernbridge.delivery-events\")\n    .load()\n)\n\nparsed_events = raw_kafka_stream.select(\n    from_json(col(\"value\").cast(\"string\"), delivery_event_schema).alias(\"event\")\n)",
+    "caption": "No filtering, no joins -- just bytes given the shape the schema promises."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Writing it, append-only",
+    "code": "bronze_query = (\n    parsed_events.writeStream\n    .format(\"delta\")\n    .outputMode(\"append\")\n    .option(\"checkpointLocation\", bronze_checkpoint)\n    .trigger(processingTime=\"30 seconds\")\n    .toTable(\"fernbridge.bronze.raw_delivery_events\")\n)",
+    "caption": "Every scan and GPS ping now has a permanent, replayable home."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 10",
+    "titlePlain": "Building the Silver Layer: Cleaning and ",
+    "titleEmphasis": "Conforming Delivery Events",
+    "titleSuffix": "",
+    "subtitle": "Deduplication and reference-table resolution."
+  }
+]

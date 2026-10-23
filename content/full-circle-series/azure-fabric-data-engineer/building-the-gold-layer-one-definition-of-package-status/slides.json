@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the Gold Layer: One Definition of ",
+    "titleEmphasis": "Package Status",
+    "titleSuffix": "",
+    "subtitle": "Video 11 of 20 · Fernbridge Logistics"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The business-logic heart of the project",
+    "titlePlain": "Latest, ",
+    "titleEmphasis": "defined exactly",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "package_status_gold", "sub": "one row per package, current status" },
+      { "label": "Latest = max kafka_ingest_timestamp", "sub": "whichever row landed in Bronze most recently" },
+      { "label": "delivery_performance_gold", "sub": "daily on-time rate, avg transit time" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The latest-event-wins rule",
+    "code": "latest_rank = Window.partitionBy(\"package_id\").orderBy(\n    col(\"kafka_ingest_timestamp\").desc()\n)\n\npackage_status_gold = (\n    silver_events\n    .withColumn(\"rn\", row_number().over(latest_rank))\n    .filter(col(\"rn\") == 1)\n)",
+    "caption": "Ordered by whichever row landed in Bronze most recently -- simple, and usually right."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Daily performance rollup",
+    "code": "delivery_performance_gold = (\n    delivered_with_promise\n    .withColumn(\"is_on_time\", col(\"event_timestamp\") <= col(\"promised_delivery_date\"))\n    .groupBy(\"delivery_date\")\n    .agg(sum(col(\"is_on_time\").cast(\"int\")), avg(\"transit_hours\"))\n)",
+    "caption": "Scheduled daily, for Operations' reporting once Fabric is built."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 12",
+    "titlePlain": "Wiring Kafka Into the Pipeline for ",
+    "titleEmphasis": "Near-Real-Time Events",
+    "titleSuffix": "",
+    "subtitle": "Hardening Bronze into something production-grade."
+  }
+]
