@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Adding Monitoring and Alerting ",
+    "titleEmphasis": "to the Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Video 14 of 20 · Caldera Energy Co-op"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three signals, one alert path",
+    "titlePlain": "Find out the same day, ",
+    "titleEmphasis": "not weeks later",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "Lambda Errors alarm",
+        "sub": "ingest-inverter-events failing to write to S3"
+      },
+      {
+        "label": "Kinesis IteratorAgeMilliseconds alarm",
+        "sub": "the standard signal that the consumer is falling behind"
+      },
+      {
+        "label": "Step Functions ExecutionsFailed alarm",
+        "sub": "routed to the same SNS topic as the other two"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Consumer lag, the standard way to catch it",
+    "code": "resource \"aws_cloudwatch_metric_alarm\" \"stream_iterator_age\" {\n  namespace   = \"AWS/Kinesis\"\n  metric_name = \"GetRecords.IteratorAgeMilliseconds\"\n  dimensions  = { StreamName = \"caldera-inverter-telemetry\" }\n  threshold   = 60000\n  alarm_actions = [aws_sns_topic.pipeline_alerts.arn]\n}",
+    "caption": "A rising iterator age means Lambda is falling behind -- the earliest warning available."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One topic, every alarm",
+    "code": "resource \"aws_sns_topic\" \"pipeline_alerts\" {\n  name = \"caldera-pipeline-alerts\"\n}\nresource \"aws_sns_topic_subscription\" \"oncall_email\" {\n  topic_arn = aws_sns_topic.pipeline_alerts.arn\n  protocol  = \"email\"\n  endpoint  = var.oncall_alert_email\n}",
+    "caption": "Verified by actually breaking something on purpose -- not just by trusting the Terraform applied."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 15",
+    "titlePlain": "Billing Flags a Monthly Total ",
+    "titleEmphasis": "That's Too High",
+    "titleSuffix": "",
+    "subtitle": "A real number, flagged by a real person, traced layer by layer."
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Building the Gold Tables ",
+    "titleEmphasis": "in Redshift",
+    "titleSuffix": "",
+    "subtitle": "Video 11 of 20 · Caldera Energy Co-op"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From curated files to business tables",
+    "titlePlain": "One schema, ",
+    "titleEmphasis": "two gold tables",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Redshift Spectrum", "sub": "queries the curated S3 data straight through the Glue Data Catalog" },
+      { "label": "installation_performance_gold", "sub": "daily kWh total and a panel-health flag per installation" },
+      { "label": "monthly_billing_gold", "sub": "total kWh and the net-metering credit per billing month" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Daily performance",
+    "code": "INSERT INTO gold.installation_performance_gold\nSELECT installation_id,\n  CAST(reading_timestamp AS DATE) AS performance_date,\n  SUM(kwh_generated) AS kwh_total,\n  CASE WHEN ... THEN 'FAULT' ... END AS panel_health_flag\nFROM caldera_spectrum.inverter_events_clean\nGROUP BY installation_id, CAST(reading_timestamp AS DATE);",
+    "caption": "Spectrum reads the curated Parquet directly -- no second copy of the data to keep in sync."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Monthly billing",
+    "code": "-- Board-approved net-metering rate: $0.1125/kWh\nINSERT INTO gold.monthly_billing_gold\nSELECT installation_id,\n  DATE_TRUNC('month', performance_date)::DATE AS billing_month,\n  SUM(kwh_total) AS total_kwh,\n  ROUND(SUM(kwh_total) * 0.1125, 2) AS net_metering_credit_amount\nFROM gold.installation_performance_gold\nGROUP BY installation_id, DATE_TRUNC('month', performance_date);",
+    "caption": "One documented rate, applied the same way for every member, every month."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 12",
+    "titlePlain": "Orchestrating the Pipeline ",
+    "titleEmphasis": "With Step Functions",
+    "titleSuffix": "",
+    "subtitle": "Running the whole thing automatically, every night."
+  }
+]

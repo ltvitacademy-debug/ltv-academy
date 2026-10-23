@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Business Interpretation · Full-Circle Implementation Series",
+    "titlePlain": "Connecting a BI Dashboard to the ",
+    "titleEmphasis": "Gold Tables",
+    "titleSuffix": " in Redshift",
+    "subtitle": "Video 17 of 20 · Caldera Energy Co-op"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two rules that keep this trustworthy",
+    "titlePlain": "QuickSight reads ",
+    "titleEmphasis": "Gold only",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "One schema, nothing else", "sub": "quicksight_reader is granted SELECT on gold -- no path to raw or curated" },
+      { "label": "SPICE, refreshed by the pipeline", "sub": "CreateIngestion fires when caldera-nightly-pipeline finishes, not on a guessed clock" },
+      { "label": "Column-level security", "sub": "billing dollar figures restricted to the Billing-MemberServices group" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "One grant statement, one schema",
+    "code": "CREATE USER quicksight_reader WITH PASSWORD DISABLE;\nGRANT USAGE ON SCHEMA gold TO quicksight_reader;\nGRANT SELECT ON gold.installation_performance_gold\n  TO quicksight_reader;\nGRANT SELECT ON gold.monthly_billing_gold\n  TO quicksight_reader;\n-- no grant on caldera_spectrum or any raw bucket",
+    "caption": "No connection a dashboard author could configure reaches past Gold."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Refresh triggered by the pipeline finishing",
+    "code": "# final state in caldera-nightly-pipeline\nimport boto3\nqs = boto3.client(\"quicksight\")\n\nfor dataset_id in [\"caldera_installation_performance\",\n                    \"caldera_monthly_billing\"]:\n    qs.create_ingestion(\n        DataSetId=dataset_id,\n        IngestionId=f\"refresh-{dataset_id}-{context.aws_request_id}\",\n        AwsAccountId=ACCOUNT_ID,\n    )",
+    "caption": "The dashboard refreshes the moment Gold is current -- never before, never stale."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 18",
+    "titlePlain": "Presenting the Corrected Billing Numbers ",
+    "titleEmphasis": "to Finance and Members",
+    "titleSuffix": "",
+    "subtitle": "Why nobody's statement went out wrong this time."
+  }
+]

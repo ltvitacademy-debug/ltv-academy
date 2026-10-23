@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Cataloging and Cleaning ",
+    "titleEmphasis": "Raw Events",
+    "titleSuffix": " With AWS Glue",
+    "subtitle": "Video 10 of 20 · Caldera Energy Co-op"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From files to a trustworthy table",
+    "titlePlain": "Catalog it, type it, ",
+    "titleEmphasis": "dedupe it",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Glue Crawler", "sub": "catalogs raw JSON as caldera_energy.raw_inverter_events" },
+      { "label": "PySpark ETL job", "sub": "casts every field to its real type" },
+      { "label": "Dedup on installation_id + reading_timestamp", "sub": "removes retried Kinesis deliveries before anything downstream sees them" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The dedup step",
+    "code": "# Kinesis + Lambda is at-least-once -- a retried batch\n# can redeliver the same reading. installation_id +\n# reading_timestamp is obviously enough to identify one\n# reading, so that's what we dedupe on.\nclean_df = typed_df.dropDuplicates(\n    [\"installation_id\", \"reading_timestamp\"]\n)",
+    "caption": "One inverter can't produce two readings at the same instant -- a reasonable, deliberate call."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Write and catalog the curated output",
+    "code": "clean_df.write.mode(\"append\") \\\n  .partitionBy(\"installation_id\") \\\n  .parquet(\"s3://caldera-lake-curated/inverter_events_clean/\")\n\n# cataloged by a second Glue Crawler as\n# caldera_energy.inverter_events_clean",
+    "caption": "Partitioned by installation_id -- the column every downstream query actually filters on."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 11",
+    "titlePlain": "Building the Gold Tables ",
+    "titleEmphasis": "in Redshift",
+    "titleSuffix": "",
+    "subtitle": "Turning clean telemetry into daily performance and monthly billing."
+  }
+]

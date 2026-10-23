@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Step-by-Step Implementation · Full-Circle Implementation Series",
+    "titlePlain": "Streaming Inverter Telemetry ",
+    "titleEmphasis": "Into S3",
+    "titleSuffix": "",
+    "subtitle": "Video 9 of 20 · Caldera Energy Co-op"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three pieces, one job: never lose a reading",
+    "titlePlain": "Catch every reading, ",
+    "titleEmphasis": "untouched",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Kinesis stream", "sub": "caldera-inverter-telemetry catches every inverter's reading" },
+      { "label": "Lambda ingest-inverter-events", "sub": "triggered automatically by the stream" },
+      { "label": "Raw S3 landing zone", "sub": "written as-is to caldera-lake-raw, partitioned by date" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The ingest handler",
+    "code": "def lambda_handler(event, context):\n    for record in event[\"Records\"]:\n        data = base64.b64decode(record[\"kinesis\"][\"data\"])\n        reading = json.loads(data)\n        ...\n    s3.put_object(\n        Bucket=RAW_BUCKET,\n        Key=f\"inverter_events/dt={dt}/{batch_id}.jsonl\",\n        Body=body,\n    )",
+    "caption": "No cleaning, no dedup -- just land every reading, exactly as it arrived."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wiring the trigger",
+    "code": "aws lambda create-event-source-mapping \\\n  --function-name ingest-inverter-events \\\n  --event-source-arn arn:aws:kinesis:...:stream/caldera-inverter-telemetry \\\n  --batch-size 500 \\\n  --starting-position LATEST",
+    "caption": "Kinesis-to-Lambda is at-least-once -- a retried batch can land twice. That's expected here."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 10",
+    "titlePlain": "Cataloging and Cleaning ",
+    "titleEmphasis": "Raw Events",
+    "titleSuffix": " With AWS Glue",
+    "subtitle": "Turning raw JSON into one clean, queryable table."
+  }
+]
