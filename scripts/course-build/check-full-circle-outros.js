@@ -20,9 +20,17 @@ for (const l of series.lessons) {
   const slidesPath = path.join(ROOT, "content/full-circle-series", pathSlug, l.slug, "slides.json");
   const slides = JSON.parse(fs.readFileSync(slidesPath, "utf8"));
   const outro = slides[slides.length - 1];
-  const outroTitle = (outro.titlePlain + outro.titleEmphasis + outro.titleSuffix).toLowerCase().replace(/[^a-z]/g, "");
-  const realTitle = next.title.toLowerCase().replace(/[^a-z]/g, "");
-  const match = realTitle.includes(outroTitle.slice(0, 15)) || outroTitle.includes(realTitle.slice(0, 15));
+  const STOPWORDS = new Set(["the", "a", "an", "and", "or", "to", "with", "for", "of", "on", "in", "into", "up", "coming", "next"]);
+  const words = (s) => new Set(s.toLowerCase().replace(/[^a-z\s]/g, "").split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w)));
+  const outroWords = words(outro.titlePlain + " " + outro.titleEmphasis + " " + outro.titleSuffix);
+  const realWords = words(next.title);
+  let overlap = 0;
+  for (const w of outroWords) if (realWords.has(w)) overlap++;
+  // Require meaningful word overlap (at least 2 shared significant words, or
+  // over half of whichever title has fewer significant words) rather than a
+  // prefix match, so legitimate shortened paraphrases don't false-positive.
+  const threshold = Math.min(2, Math.ceil(Math.min(outroWords.size, realWords.size) / 2));
+  const match = overlap >= threshold;
   if (!match) {
     console.log(`MISMATCH lesson ${l.n} -> ${l.n + 1}: outro says "${outro.titlePlain}${outro.titleEmphasis}" but real next title is "${next.title}"`);
     problems++;
