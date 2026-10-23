@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-the-platform-integrations",
+  "questions": [
+    {
+      "q": "Why does Lesson 15's domain-routing Script Include depend on this lesson's integration existing?",
+      "options": [
+        "Routing reads a caller's sys_domain value, which is only correct if that caller's sys_user record was synced and domain-tagged in the first place",
+        "It doesn't -- routing works whether or not sys_user records are synced",
+        "The routing script calls the Prairie View API directly, bypassing sys_user entirely",
+        "Flow Designer requires a live integration to be installed before any flow can run"
+      ],
+      "answer": 0,
+      "explain": "getAssignmentGroupForCaller() assumes caller.getValue('sys_domain') is already correct -- that only holds once this lesson's sync has written a correctly domain-tagged record."
+    },
+    {
+      "q": "Why is a scheduled pull chosen for Prairie View's integration instead of an inbound webhook?",
+      "options": [
+        "Webhooks are against ServiceNow platform policy",
+        "Scheduled pulls are always faster than webhooks in every integration",
+        "Prairie View's homegrown, PeopleSoft-based module has no webhook or event-notification capability -- only a read endpoint exists",
+        "St. Catherine's and Lakeshore require Prairie View to also use their exact pattern"
+      ],
+      "answer": 2,
+      "explain": "There's no event to receive from a system that was never built to call out -- a scheduled pull against its read endpoint is the only realistic option."
+    },
+    {
+      "q": "What does `PrairieViewWorkerSync.pullChangedWorkers` do when the REST call returns a non-200 status?",
+      "options": [
+        "It retries immediately in a tight loop with no delay",
+        "It logs the failure with `gs.error` and returns an empty array, rather than passing an unverified response into the upsert step",
+        "It throws an unhandled exception that crashes the scheduled job",
+        "It silently returns the raw error body as if it were worker data"
+      ],
+      "answer": 1,
+      "explain": "A bad response is logged and never allowed to reach the upsert logic -- the same \"never pass through what you haven't verified\" discipline from this track's error-handling lesson."
+    },
+    {
+      "q": "What role does `u_prairie_employee_id` play in `upsertWorker`?",
+      "options": [
+        "It stores the assignment group for the worker's tickets",
+        "It's only used for St. Catherine's and Lakeshore, never for Prairie View",
+        "It's a display label with no functional purpose",
+        "It's the coalesce field -- the check that lets a repeated or retried sync update an existing record instead of creating a duplicate"
+      ],
+      "answer": 3,
+      "explain": "Querying on this field before deciding insert vs. update is exactly the upsert/coalesce pattern this track's Retry Strategies & Idempotency lesson taught, applied here to people instead of tickets."
+    },
+    {
+      "q": "Why doesn't this lesson also build St. Catherine's Workday integration and Lakeshore's ADP Workforce Now integration in full?",
+      "options": [
+        "Because those two integrations are not part of Technical Architecture's approved plan",
+        "Because Workday and ADP cannot be integrated with ServiceNow at all",
+        "Because they follow the exact same pull/coalesce/domain-tag template as Prairie View's, just against more modern APIs -- building all three here would repeat the same lesson without teaching anything new",
+        "Because St. Catherine's and Lakeshore were deferred out of Phase 1 entirely"
+      ],
+      "answer": 2,
+      "explain": "This lesson proves the integration template against the hardest case -- a homegrown system with no modern API -- rather than repeating the same shape three times."
+    }
+  ]
+}

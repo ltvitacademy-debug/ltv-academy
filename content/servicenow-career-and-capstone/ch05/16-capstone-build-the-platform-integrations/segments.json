@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 15 built a flow that routes every request by reading the caller's own domain -- but that script only works if the caller's record actually exists in ServiceNow, tagged correctly, before anyone opens the catalog. Technical Architecture already decided where that data comes from: Workday for St. Catherine's, ADP Workforce Now for Lakeshore, and a homegrown PeopleSoft-based module for Prairie View. This lesson builds that third integration in real depth."
+  },
+  {
+    "slide": "s2",
+    "text": "Prairie View's system was never built to call out to anything -- no webhook, no event bus, just a read endpoint. That rules out an event-driven design outright and leaves a scheduled pull: a Script Include, run on a timer, asking what changed since the last check. The real cost is a staleness window, up to one sync interval, which is a reasonable tradeoff for HR data feeding a help desk rather than a payroll system."
+  },
+  {
+    "slide": "s3",
+    "text": "The REST Message authenticates with a static API key, fitting a legacy system that predates modern OAuth support. The Script Include that calls it executes on a fifteen-minute schedule, requests whatever changed since the last run, and checks the response status directly. A non-200 response gets logged and returns an empty array -- never passed downstream unverified, the same discipline this track's error-handling lesson already taught."
+  },
+  {
+    "slide": "s4",
+    "text": "Each worker record gets written into sys_user through an upsert, coalesced on an external employee ID field -- the same pattern this track used for idempotent incident creation, applied here to people. A record never seen before is created and tagged to Prairie View's domain; an existing record has its name, department, and active status refreshed. Run on schedule, this keeps Lesson 15's routing script supplied with current, domain-tagged callers."
+  },
+  {
+    "slide": "s5",
+    "text": "St. Catherine's and Lakeshore's integrations follow this same pull-and-upsert template against more modern vendor APIs, deferred here on purpose rather than repeating the same pattern three times. What's actually built now needs proving, not assuming. Lesson 17 writes a real test plan and runs it -- including one case that doesn't pass on the first try."
+  }
+]

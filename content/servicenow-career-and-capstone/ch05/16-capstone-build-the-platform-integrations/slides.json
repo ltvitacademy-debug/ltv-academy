@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Career & Capstone · Chapter Five",
+    "titlePlain": "Capstone: Build the ",
+    "titleEmphasis": "Platform Integrations",
+    "titleSuffix": "",
+    "subtitle": "Lesson 16 · Real worker data behind the Service Desk"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Prairie View's integration, built in depth",
+    "titlePlain": "The hardest case, ",
+    "titleEmphasis": "built first",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Why Integrate", "sub": "routing can't trust a caller's domain without a synced sys_user record" },
+      { "label": "Pull, Not Push", "sub": "a homegrown system with no webhook capability at all" },
+      { "label": "REST Message", "sub": "a scheduled Script Include asks what changed since last check" },
+      { "label": "Upsert + Domain Tag", "sub": "coalesced on employeeId, written into sys_user" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Script Include · the scheduled pull",
+    "code": "pullChangedWorkers(sinceTimestamp) {\n  var r = new sn_ws.RESTMessageV2(\n    'PrairieViewHR', 'getChangedWorkers');\n  r.setStringParameterNoEscape('since', sinceTimestamp);\n  r.setRequestHeader('X-PV-API-Key',\n    gs.getProperty('u_pv_hr_api_key'));\n\n  var response = r.execute();\n  if (response.getStatusCode() != 200) {\n    gs.error('PrairieViewHR sync failed');\n    return [];\n  }\n  return JSON.parse(response.getBody()).workers;\n}",
+    "caption": "A static API key, a scheduled timer, and a verified response before anything downstream trusts it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Script Include · the upsert",
+    "code": "upsertWorker(worker) {\n  var gr = new GlideRecord('sys_user');\n  gr.addQuery('u_prairie_employee_id',\n    worker.employeeId);\n  gr.query();\n  var isNew = !gr.next();\n\n  if (isNew) {\n    gr.initialize();\n    gr.sys_domain = PRAIRIE_VIEW_DOMAIN_ID;\n    gr.u_prairie_employee_id = worker.employeeId;\n  }\n  gr.first_name = worker.firstName;\n  gr.active = (worker.status === 'active');\n  isNew ? gr.insert() : gr.update();\n}",
+    "caption": "Coalesced on employeeId -- a repeated sync updates, never duplicates."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 17",
+    "titlePlain": "Capstone: Build Test Plans & ",
+    "titleEmphasis": "Run Them",
+    "titleSuffix": "",
+    "subtitle": "Confirming this all actually works -- before go-live does."
+  }
+]
