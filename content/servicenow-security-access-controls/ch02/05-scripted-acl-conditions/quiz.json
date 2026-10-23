@@ -1,0 +1,60 @@
+{
+  "lesson": "scripted-acl-conditions",
+  "questions": [
+    {
+      "q": "Why is a slow ACL script a more serious performance concern than a slow scheduled job that runs once a night?",
+      "options": [
+        "ACL scripts always run with elevated database permissions",
+        "ACL scripts run on every access attempt to the governed record or field -- every form load, list view, and API call -- so the delay compounds across the whole instance",
+        "Scheduled jobs are not allowed to contain any script logic",
+        "There is no real difference in performance impact between the two"
+      ],
+      "answer": 1,
+      "explain": "A scheduled job's cost is paid once per run. An ACL script's cost is paid on every single access attempt it governs, all day, for every user."
+    },
+    {
+      "q": "What is wrong with this ACL script, from a performance standpoint?\n```javascript\nvar grp = new GlideRecord('sys_user_grmember');\ngrp.addQuery('user', gs.getUserID());\ngrp.addQuery('group', 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6');\ngrp.query();\nanswer = grp.next();\n```",
+      "options": [
+        "It will never return true, even for a group member",
+        "It is syntactically invalid JavaScript",
+        "It issues a fresh database query every time the ACL runs, when a cheaper built-in check already answers the same question",
+        "It grants access to every user regardless of group membership"
+      ],
+      "answer": 2,
+      "explain": "This is the query-in-ACL anti-pattern: a real GlideRecord query runs on every single access attempt this ACL governs."
+    },
+    {
+      "q": "What does this corrected version of the same check do, and why is it preferred?\n```javascript\nanswer = gs.getUser().isMemberOf('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6');\n```",
+      "options": [
+        "It checks group membership using GlideUser's already-cached data for the transaction, avoiding a fresh database query",
+        "It is functionally different from the GlideRecord version and checks role, not group membership",
+        "It only works for the admin role",
+        "It is slower than the GlideRecord version because it loads the full user record"
+      ],
+      "answer": 0,
+      "explain": "gs.getUser() returns a GlideUser object that already holds role and group membership data for the current transaction; isMemberOf() reuses it instead of querying again."
+    },
+    {
+      "q": "An ACL needs to check whether the current record's state equals 3. What's the fastest way to express that in the script?",
+      "options": [
+        "Query the table again with a GlideRecord to re-read the state field",
+        "Compare current.state directly, since the record is already loaded into memory for the ACL check",
+        "Call gs.getUser() to look up the record's state",
+        "It cannot be checked inside an ACL script at all"
+      ],
+      "answer": 1,
+      "explain": "current already represents the record being evaluated -- comparing its fields directly avoids any unnecessary query."
+    },
+    {
+      "q": "What is the general guidance this lesson gives for writing ACL scripts?",
+      "options": [
+        "Always query related tables directly for the most accurate, real-time answer",
+        "Keep ACL scripts fast and simple, preferring already-available data (current's fields, gs.getUser()) over querying other tables",
+        "ACL scripts should never contain any conditional logic",
+        "Performance doesn't matter for ACL scripts since they run server-side"
+      ],
+      "answer": 1,
+      "explain": "Because ACL scripts run so frequently, the standard guidance is to favor cheap, already-cached data over fresh queries whenever possible."
+    }
+  ]
+}

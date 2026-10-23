@@ -1,0 +1,60 @@
+{
+  "lesson": "acl-evaluation-order-in-depth",
+  "questions": [
+    {
+      "q": "A read ACL exists on `task` requiring the `itil` role. No ACL exists directly on `problem`, but one exists directly on `incident` requiring `itil_admin`. What role does a user need to read a Problem record?",
+      "options": [
+        "itil, inherited from the task-level ACL, since no more specific ACL exists for problem",
+        "itil_admin, inherited from the incident-level ACL",
+        "Both itil and itil_admin are required together",
+        "No role is required for Problem reads"
+      ],
+      "answer": 0,
+      "explain": "Problem has no ACL of its own, so it falls back to the inherited task-level rule, which requires itil."
+    },
+    {
+      "q": "Using the same setup, what role does a user need to read an Incident record, and why?",
+      "options": [
+        "itil, because the task-level ACL always applies everywhere",
+        "itil_admin, because the more specific incident-level ACL overrides the inherited task-level one",
+        "Both itil and itil_admin, combined with AND",
+        "Whichever role has fewer permissions, since ACLs grant the narrower option"
+      ],
+      "answer": 1,
+      "explain": "Most specific ACL wins: since incident has its own ACL for the read operation, it replaces the inherited task-level rule for Incident specifically."
+    },
+    {
+      "q": "Look at this ACL script: `answer = gs.hasRole('itil') || current.caller_id == gs.getUserID();` defined on `incident` for the read operation. What does it mean for Problem and Change records?",
+      "options": [
+        "It also governs Problem and Change, since they extend task the same way Incident does",
+        "It governs Incident only -- Problem and Change are unaffected by this ACL and use whatever ACL applies at their own level",
+        "It overrides every ACL on every table in the instance",
+        "It only runs if the task-level ACL is deleted first"
+      ],
+      "answer": 1,
+      "explain": "An ACL defined directly on incident is scoped to incident. Problem and Change each resolve their own most-specific match independently."
+    },
+    {
+      "q": "An admin changes the script on the task-level read ACL and then tests read access on an Incident record, expecting the behavior to change. Nothing changes. What is the most likely explanation?",
+      "options": [
+        "ServiceNow caches ACL scripts for 24 hours before they take effect",
+        "Incident has its own, more specific read ACL, so it was never using the task-level ACL the admin edited",
+        "ACL scripts on task can never be edited after creation",
+        "The admin must also edit the ACL on problem for the change to take effect"
+      ],
+      "answer": 1,
+      "explain": "This is the classic confusion the lesson calls out: Incident resolves to its own ACL first. Editing the inherited task-level rule has no visible effect on Incident if a more specific incident-level ACL exists."
+    },
+    {
+      "q": "Before concluding an ACL \"isn't working\" on an extended table like Incident, what should an admin check in `sys_security_acl`?",
+      "options": [
+        "Only the ACL on the exact table being tested -- the base table is irrelevant",
+        "Only the base-table ACL, since extended tables never have their own rules",
+        "Both the base-table ACL (table = task) and any ACL on the extended table (table = incident) for the same operation, to confirm which one is actually in effect",
+        "Nothing in sys_security_acl -- ACL behavior can only be diagnosed by trial and error"
+      ],
+      "answer": 2,
+      "explain": "Because precedence resolves to the most specific match, diagnosing behavior correctly requires checking both levels, not assuming either one in isolation."
+    }
+  ]
+}

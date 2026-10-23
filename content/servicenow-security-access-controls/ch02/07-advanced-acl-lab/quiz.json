@@ -1,0 +1,60 @@
+{
+  "lesson": "advanced-acl-lab",
+  "questions": [
+    {
+      "q": "In the lab's table-level ACL below, what two conditions allow a user to open an employee record?\n```javascript\nanswer = gs.hasRole('hr_user') || current.manager == gs.getUserID();\n```",
+      "options": [
+        "Holding the hr_user role, or being the manager listed on that specific employee record",
+        "Holding the hr_user role, or being a member of the hr_compensation group",
+        "Only holding the hr_compensation_admin role",
+        "Only being the employee whose record it is"
+      ],
+      "answer": 0,
+      "explain": "The script is an OR of two conditions: the hr_user role, or current.manager matching the logged-in user's sys_id."
+    },
+    {
+      "q": "A user holds `hr_user` but is not a member of the `hr_compensation` group and does not hold `hr_compensation_admin`. Using the lab's two ACLs, what do they see on the employee record?",
+      "options": [
+        "The entire record, including salary_band, because passing the table-level ACL grants every field automatically",
+        "Nothing at all -- the record fails to open",
+        "The record, with salary_band absent or blank, because the field-level ACL evaluates separately and fails",
+        "An error, because two ACLs can never apply to the same record"
+      ],
+      "answer": 2,
+      "explain": "Table-level and field-level ACLs are independent checks that both must pass. Passing one never substitutes for the other."
+    },
+    {
+      "q": "Why does the field-level script use `gs.getUser().isMemberOf('c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8')` instead of a `GlideRecord` query against `sys_user_grmember`?",
+      "options": [
+        "GlideRecord queries are not permitted inside ACL scripts at all",
+        "isMemberOf() reuses GlideUser's already-cached membership data instead of issuing a fresh query on every access, which matters because this field is read constantly across list views and reports",
+        "There is no real performance difference between the two approaches",
+        "isMemberOf() checks roles, not group membership, so it answers a different question"
+      ],
+      "answer": 1,
+      "explain": "This is the Lesson 5 guidance applied to a real field: avoid a per-access database query when a cached check already answers the same question."
+    },
+    {
+      "q": "A user holds `hr_compensation_admin` but does not hold `hr_user` and is not that employee's manager. What happens when they try to view the record?",
+      "options": [
+        "They see salary_band but nothing else on the record",
+        "They fail the table-level ACL and cannot open the record at all, so the field-level ACL is never reached",
+        "They see the full record including salary_band, since hr_compensation_admin overrides every other ACL",
+        "The field-level ACL runs first and grants them access to the whole record"
+      ],
+      "answer": 1,
+      "explain": "The table-level ACL is evaluated for the record as a whole. Failing it blocks access before any field-level check is relevant."
+    },
+    {
+      "q": "Why does this lab's field-level ACL design \"hold up under load,\" as the lesson puts it, across a list view showing hundreds of employee records?",
+      "options": [
+        "Because list views skip ACL evaluation entirely",
+        "Because isMemberOf() avoids issuing a separate database query per row, unlike a manual GlideRecord lookup would",
+        "Because salary_band is cached in the browser after the first page load",
+        "Because table-level ACLs replace the need for field-level ACLs in list views"
+      ],
+      "answer": 1,
+      "explain": "The same reasoning from Lesson 5 applies at scale: a cached membership check doesn't multiply query cost per row the way a manual query would."
+    }
+  ]
+}
