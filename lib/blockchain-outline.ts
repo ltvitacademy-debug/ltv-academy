@@ -3,13 +3,16 @@
 // 2025" class recordings (owned by LTV Academy), not synthetic narrated
 // slides — so those guide.md screenshots are real video frames, not stock
 // documentation screenshots, and durationLabel reflects genuine clip length.
-// Chapter 10 lessons 4-6 are a deliberate exception: written case studies
+// Chapter 10 lessons 55-57 are a deliberate exception: written case studies
 // on vulnerability classes no classroom footage ever covered (flash loans,
-// oracle manipulation, access control) — contentDir but no videoUrl, same
-// pattern already used across this path's other three courses. A lesson
-// with a contentDir but no videoUrl still renders fully (guide, quiz, AI
-// assistant, navigation) — only the video player itself is replaced with
-// an "in production" placeholder. Mirrors the pattern in powerbi-outline.ts.
+// oracle manipulation, access control) — later narrated with Fish Audio
+// over slides (synthetic video, same as most of this catalog), not real
+// classroom footage. This course is deliberately 9 chapters/57 lessons, not
+// 11: two originally-sketched chapters (Deployment & Hosting; Capstone
+// Project) were intentionally left out — confirmed 2026-10-23 — because
+// they'd duplicate two other, more thorough courses already in this career
+// path (Blockchain Testing & DevOps; Blockchain Engineering Capstones),
+// not because of missing source material.
 
 import type { ChapterMeta, LessonMeta } from "./powerbi-outline";
 
@@ -397,9 +400,9 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788909857/ltv-blockchain/ch10-03-fixing-reentrancy.mp4",
         durationLabel: "12 min 23 s",
       }),
-      // Lessons 4-6: written case studies, no video — see the comment
-      // at the top of this file. Guide + quiz only, same as the other
-      // three courses in this career path.
+      // Lessons 55-57: written case studies — see the comment at the top
+      // of this file. Narrated with Fish Audio over slides, not real
+      // classroom footage.
       L(55, "flash-loan-attacks-harvest-finance", "Flash Loan Attacks: The Harvest Finance Exploit", {
         contentDir: "ch10/04-flash-loan-attacks-harvest-finance",
         videoUrl:
@@ -414,6 +417,9 @@ export const BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
       }),
       L(57, "access-control-parity-multisig", "Access Control Failures: The Parity Multisig Freeze", {
         contentDir: "ch10/06-access-control-parity-multisig",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420384/ltv-blockchain/ch10-06-access-control-parity-multisig.mp4",
+        durationLabel: "2 min 10 s",
       }),
     ],
   },
