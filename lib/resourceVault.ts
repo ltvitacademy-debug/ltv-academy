@@ -10,7 +10,7 @@ export type CourseResourceWithFile = CourseResource & {
   fileSizeLabel: string | null; // computed from the real file; null if missing on disk
 };
 
-function formatFileSize(bytes: number): string {
+export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;

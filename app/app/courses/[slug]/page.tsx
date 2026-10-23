@@ -10,8 +10,9 @@ import {
 } from "@/lib/courses";
 import { buildFinalTest } from "@/lib/finalTest";
 import { getCourseHeroImage } from "@/lib/courseHeroImage";
-import { getCareerPath } from "@/lib/career-paths";
+import { getCareerPath, getPrimaryCareerPathForCourse } from "@/lib/career-paths";
 import { loadCourseResources } from "@/lib/resourceVault";
+import { loadPathResources } from "@/lib/pathResourceVault";
 import { loadWorkedExamples } from "@/lib/workedExamples";
 import CourseCurriculum from "@/components/app/CourseCurriculum";
 import CoursePathBreadcrumb from "@/components/app/CoursePathBreadcrumb";
@@ -43,7 +44,9 @@ export default async function CoursePage({
   const practiceCount = getCoursePracticeQuestions(course).length;
   const resourceCount = loadCourseResources(course).length;
   const workedExampleCount = loadWorkedExamples(course).length;
-  const hasCourseResourcesSection = resourceCount > 0 || workedExampleCount > 0;
+  const primaryPath = getPrimaryCareerPathForCourse(course.slug);
+  const pathResourceCount = primaryPath ? loadPathResources(primaryPath.slug).length : 0;
+  const hasCourseResourcesSection = resourceCount > 0 || workedExampleCount > 0 || pathResourceCount > 0;
 
   if (course.status === "coming-soon") {
     return (
@@ -213,6 +216,16 @@ export default async function CoursePage({
                 count={`${workedExampleCount} worked example${workedExampleCount === 1 ? "" : "s"}`}
                 href={`/app/courses/${course.slug}/worked-examples`}
                 cta="Explore worked examples →"
+              />
+            )}
+            {pathResourceCount > 0 && primaryPath && (
+              <ResourceCard
+                icon={<LayersIcon className="h-6 w-6" />}
+                title={`${primaryPath.title} Resource Vault`}
+                description="Reference diagrams and materials that apply across every course in this path, not just this one."
+                count={`${pathResourceCount} path resource${pathResourceCount === 1 ? "" : "s"}`}
+                href={`/app/path-resources/${primaryPath.slug}`}
+                cta="Open the path's Resource Vault →"
               />
             )}
           </div>

@@ -21,7 +21,9 @@ export type ResourceFileType =
   | "txt"
   | "zip"
   | "pbix"
-  | "config";
+  | "config"
+  | "png"
+  | "jpg";
 
 export type CourseResource = {
   id: string; // unique within the course, e.g. "tsql-res-01"
@@ -50,4 +52,6 @@ export const FILE_TYPE_LABELS: Record<ResourceFileType, string> = {
   zip: "ZIP archive",
   pbix: "Power BI file",
   config: "Configuration file",
+  png: "Diagram (PNG)",
+  jpg: "Image (JPG)",
 };

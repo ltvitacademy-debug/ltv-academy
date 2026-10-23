@@ -6,6 +6,7 @@ import { hasCommunicationExercises } from "@/lib/communicationTrainer";
 import { hasLearningPlanner, getLearningPlannerWeeks } from "@/lib/learningPlanner";
 import { getSampleResumeLevels } from "@/lib/sampleResumes";
 import { loadFullCircleSeries } from "@/lib/fullCircleSeries";
+import { hasPathResourceVault, loadPathResources } from "@/lib/pathResourceVault";
 import PathDetailRedesign from "@/components/careers/PathDetailRedesign";
 
 export function generateStaticParams() {
@@ -45,6 +46,7 @@ export default async function CareerPathPage({
       hasLearningPlanner={hasLearningPlanner(path.slug)}
       learningPlannerWeeks={getLearningPlannerWeeks(path.slug)}
       sampleResumeLevels={getSampleResumeLevels(path.slug)}
+      pathResourceCount={hasPathResourceVault(path.slug) ? loadPathResources(path.slug).length : 0}
       fullCircleSeries={
         fullCircle
           ? {

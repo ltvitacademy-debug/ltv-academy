@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CourseResourceWithFile } from "@/lib/resourceVault";
 import { FILE_TYPE_LABELS, type ResourceFileType } from "@/lib/resourceVaultTypes";
 import { DownloadIcon } from "@/components/app/DashboardIcons";
 
@@ -10,10 +9,24 @@ import { DownloadIcon } from "@/components/app/DashboardIcons";
 const FILTER_THRESHOLD = 6;
 const SEARCH_THRESHOLD = 10;
 
+// Structural shape only — covers both CourseResourceWithFile (lib/resourceVault)
+// and PathResourceWithFile (lib/pathResourceVault), so this one list renders
+// either a course's own vault or a path-wide vault without duplication.
+type VaultResourceWithFile = {
+  id: string;
+  chapterTitle?: string;
+  title: string;
+  description: string;
+  fileType: ResourceFileType;
+  fileName: string;
+  downloadHref: string;
+  fileSizeLabel: string | null;
+};
+
 export default function ResourceVaultList({
   resources,
 }: {
-  resources: CourseResourceWithFile[];
+  resources: VaultResourceWithFile[];
 }) {
   const chapters = useMemo(
     () => Array.from(new Set(resources.map((r) => r.chapterTitle).filter(Boolean))) as string[],

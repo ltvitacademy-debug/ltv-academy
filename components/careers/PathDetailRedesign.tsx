@@ -55,6 +55,7 @@ export default function PathDetailRedesign({
   learningPlannerWeeks,
   sampleResumeLevels,
   fullCircleSeries,
+  pathResourceCount,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
@@ -63,6 +64,7 @@ export default function PathDetailRedesign({
   learningPlannerWeeks?: number | null;
   sampleResumeLevels?: { key: string; label: string }[];
   fullCircleSeries?: { projectTitle: string; projectTagline: string; totalVideos: number; publishedVideos: number } | null;
+  pathResourceCount?: number;
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
@@ -630,6 +632,29 @@ export default function PathDetailRedesign({
                 </div>
                 <span className="inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment group-hover:bg-crimson-deep">
                   View the planner
+                </span>
+              </Link>
+            )}
+
+            {Boolean(pathResourceCount) && (
+              <Link
+                href={`/app/path-resources/${path.slug}`}
+                className="group mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 hover:border-crimson-deep/40"
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-crimson-deep">
+                    Path Resource Vault
+                  </p>
+                  <p className="display mt-1 text-xl text-ink">
+                    {pathResourceCount} reference {pathResourceCount === 1 ? "download" : "downloads"} for this path →
+                  </p>
+                  <p className="mt-1 text-sm text-stone">
+                    Architecture diagrams and reference material that apply across every course in this
+                    path, not tied to any one of them.
+                  </p>
+                </div>
+                <span className="inline-block rounded-[2px] border border-ink/20 px-6 py-3 text-sm font-semibold text-ink group-hover:border-crimson group-hover:text-crimson">
+                  Open the vault
                 </span>
               </Link>
             )}
