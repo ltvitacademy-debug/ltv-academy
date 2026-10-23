@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PHONE } from "@/lib/copy";
 import { useEmbedMode } from "./useEmbedMode";
@@ -14,7 +13,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-crimson-deep text-parchment">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2">
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -27,16 +26,6 @@ export default function Footer() {
           <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold-pale">
             Information Technology Academy · Est. 2017
           </p>
-        </div>
-        <div className="text-sm">
-          <p className="eyebrow mb-3">Explore</p>
-          <ul className="space-y-2">
-            <li><Link href="/#tracks" className="hover:text-gold-pale">Tracks</Link></li>
-            <li><Link href="/#schedule" className="hover:text-gold-pale">Schedule</Link></li>
-            <li><Link href="/#pricing" className="hover:text-gold-pale">Pricing</Link></li>
-            <li><Link href="/#faq" className="hover:text-gold-pale">FAQ</Link></li>
-            <li><Link href="/login" className="hover:text-gold-pale">Member login</Link></li>
-          </ul>
         </div>
         <div className="text-sm">
           <p className="eyebrow mb-3">Get in touch</p>
