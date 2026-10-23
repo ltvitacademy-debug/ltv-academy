@@ -1,0 +1,60 @@
+{
+  "lesson": "capstone-build-error-handling-logging-and-retries",
+  "questions": [
+    {
+      "q": "Why does the retry loop only retry on a 5xx status code or a thrown exception, and not on a 4xx status code?",
+      "options": [
+        "A 4xx means the request itself is wrong; retrying it just repeats the same failure instead of fixing a transient problem",
+        "4xx codes are actually more likely to succeed on retry than 5xx codes",
+        "RESTMessageV2 cannot return a 4xx status",
+        "Retrying on any status code always risks creating a duplicate record"
+      ],
+      "answer": 0,
+      "explain": "5xx and network exceptions are transient; 4xx means the request itself needs to change, which a retry can't fix."
+    },
+    {
+      "q": "Looking at `existing.addQuery('u_meridian_employee_id', employee.employeeId); existing.query(); if (existing.next()) { ... return existing.getUniqueValue(); }`, what does this code protect against?",
+      "options": [
+        "Network timeouts while calling Meridian HR",
+        "Expired OAuth tokens",
+        "Malformed JSON in the response body",
+        "Creating a second, duplicate sys_user if the same employee notification arrives more than once"
+      ],
+      "answer": 3,
+      "explain": "This is the idempotency check — it looks for an existing record by the external ID before ever inserting a new one."
+    },
+    {
+      "q": "Why does the retry delay double after each failed attempt instead of staying fixed?",
+      "options": [
+        "Doubling the delay is called exponential backoff, and avoids hammering a struggling system with the same request on a fixed, aggressive interval",
+        "A fixed delay is actually illegal in ServiceNow script",
+        "Doubling the delay makes the REST Message authenticate faster",
+        "It has no real effect on the integration's behavior"
+      ],
+      "answer": 0,
+      "explain": "Exponential backoff gives a struggling system increasing room to recover, instead of retrying at the same aggressive pace each time."
+    },
+    {
+      "q": "In this lesson's logging approach, when is gs.error() used instead of gs.info()?",
+      "options": [
+        "Every single time a retry happens, including the first one",
+        "Only when retries are fully exhausted or a response can't be parsed — cases a real on-call engineer actually needs to see",
+        "Never — gs.error() is not used anywhere in this integration",
+        "Only when the sys_user record already exists and creation is skipped"
+      ],
+      "answer": 1,
+      "explain": "gs.info() covers normal operation, including retries and skipped duplicates; gs.error() is reserved for genuine failures."
+    },
+    {
+      "q": "In the processNewHire orchestrator, what happens if pullEmployeeFromMeridian returns null after exhausting all retries?",
+      "options": [
+        "The method logs an error and returns, without ever calling createPendingUser or createOnboardingTasks",
+        "It creates a sys_user record with blank fields anyway",
+        "It automatically retries one more time, with no limit",
+        "It silently ignores the failure and proceeds to create onboarding tasks"
+      ],
+      "answer": 0,
+      "explain": "The orchestrator checks for a missing employee record and bails out before any downstream record creation runs."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow IntegrationHub & REST APIs · Chapter Eight",
+    "titlePlain": "Capstone: Build Authentication & the REST ",
+    "titleEmphasis": "Message",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Capstone: an Enterprise REST Integration"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The OAuth Entity Profile",
+    "code": "OAuth Entity Profile: Meridian HR Client Credentials\nGrant type:            Client Credentials\nToken URL:             https://auth.meridianhr.com/oauth/token\nClient ID / Secret:    issued by Meridian HR, stored encrypted\nScope:                 employees.read",
+    "caption": "RESTMessageV2 requests and refreshes this token on its own."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Choosing the grant type",
+    "titlePlain": "Client Credentials — ",
+    "titleEmphasis": "no",
+    "titleSuffix": " human user involved",
+    "steps": [
+      { "label": "Basic Auth", "sub": "rejected — Meridian HR no longer accepts it" },
+      { "label": "Authorization Code", "sub": "rejected — assumes a human login" },
+      { "label": "Client Credentials", "sub": "chosen — server-to-server, no user context" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The REST Message and Function",
+    "code": "REST Message:    MeridianHR\nFunction:        getEmployee\nHTTP Method:     GET\nEndpoint:        https://api.meridianhr.com/v2/employees/${employeeId}\nAuthentication:  OAuth 2.0 — Meridian HR Client Credentials",
+    "caption": "Same pattern as Lessons 4 and 5, pointed at a real API."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real pull, in script",
+    "code": "var r = new sn_ws.RESTMessageV2('MeridianHR', 'getEmployee');\nr.setStringParameterNoEscape('employeeId', employeeId);\nr.setRequestHeader('Accept', 'application/json');\n\nvar response = r.execute();\nvar httpStatus = response.getStatusCode();\n\nif (httpStatus != 200) {\n  throw new Error('Meridian HR returned ' + httpStatus);\n}\nreturn JSON.parse(response.getBody());",
+    "caption": "No OAuth logic here — the attached profile handles the token."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The webhook hands off",
+    "code": "(function process(request, response) {\n  var payload = request.body.data;\n  var employeeId = payload.employeeId;\n\n  var sync = new OnboardingSync();\n  sync.pullEmployeeFromMeridian(employeeId);\n\n  response.setStatus(202);\n  return { received: true, employeeId: employeeId };\n})(request, response);",
+    "caption": "The Scripted REST API resource that receives Meridian HR's event."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "Build Error Handling, Logging & ",
+    "titleEmphasis": "Retries",
+    "titleSuffix": "",
+    "subtitle": "Making this integration survive the failures that actually happen."
+  }
+]

@@ -1,0 +1,60 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow IntegrationHub & REST APIs · Chapter Eight",
+    "titlePlain": "Capstone: Build Error Handling, Logging & ",
+    "titleEmphasis": "Retries",
+    "titleSuffix": "",
+    "subtitle": "Lesson 28 · Capstone: an Enterprise REST Integration"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What production adds",
+    "titlePlain": "Three real ",
+    "titleEmphasis": "gaps",
+    "titleSuffix": " Lesson 27 didn't cover",
+    "steps": [
+      { "label": "Network blip", "sub": "a transient failure mid-pull" },
+      { "label": "Meridian 500s", "sub": "the API fails during its own deploy" },
+      { "label": "Redelivered webhook", "sub": "the same notification arrives twice" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Exponential backoff",
+    "code": "for (var attempt = 1; attempt <= maxAttempts; attempt++) {\n  try {\n    var response = r.execute();\n    if (response.getStatusCode() == 200) {\n      return JSON.parse(response.getBody());\n    }\n    gs.info('Retrying in ' + delayMs + 'ms, attempt ' + attempt);\n    gs.sleep(delayMs);\n    delayMs *= 2;\n  } catch (ex) {\n    gs.error('Network exception: ' + ex.getMessage());\n  }\n}",
+    "caption": "Retry only on 5xx or exception; delay doubles each attempt."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Idempotency before insert",
+    "code": "var existing = new GlideRecord('sys_user');\nexisting.addQuery('u_meridian_employee_id', employee.employeeId);\nexisting.query();\n\nif (existing.next()) {\n  gs.info('Already exists, skipping create');\n  return existing.getUniqueValue();\n}\n\nvar user = new GlideRecord('sys_user');\nuser.initialize();\nuser.u_meridian_employee_id = employee.employeeId;\nreturn user.insert();",
+    "caption": "Check before creating — one record, never two."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The orchestrator",
+    "code": "processNewHire: function(employeeId) {\n  var employee = this.pullEmployeeFromMeridian(employeeId);\n  if (!employee) {\n    gs.error('Giving up after retries exhausted');\n    return;\n  }\n  var userSysId = this.createPendingUser(employee);\n  this.createOnboardingTasks(userSysId);\n}",
+    "caption": "Nothing downstream runs on a partial or missing record."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Logging placed on purpose",
+    "titlePlain": "gs.info vs. ",
+    "titleEmphasis": "gs.error",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "gs.info()", "sub": "pull success, retry about to happen, skip" },
+      { "label": "gs.error()", "sub": "retries exhausted, response unparseable" },
+      { "label": "Why it matters", "sub": "real failures stay visible, not buried" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 29",
+    "titlePlain": "Capstone Wrap-Up & Integration Test ",
+    "titleEmphasis": "Plan",
+    "titleSuffix": "",
+    "subtitle": "Closing this capstone the way a working developer actually would."
+  }
+]

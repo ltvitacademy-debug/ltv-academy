@@ -1,0 +1,60 @@
+{
+  "lesson": "designing-for-integration-failures",
+  "questions": [
+    {
+      "q": "Why is a \"happy path only\" integration script considered incomplete by design, not just unfinished?",
+      "options": [
+        "Because the external system it depends on will eventually go down, expire its credentials, change its schema, or rate-limit it, and none of those are coding bugs",
+        "Because ServiceNow refuses to run scripts that lack a try/catch block",
+        "Because REST Message records cannot be tested until error handling exists",
+        "Because happy-path code always runs slower than code with error handling"
+      ],
+      "answer": 0,
+      "explain": "A happy-path-only script has simply never had its failure modes considered — those failures are the normal operating condition of a dependency you don't control."
+    },
+    {
+      "q": "Look at this code: `var response = request.execute(); var data = JSON.parse(response.getBody());`. What does this code silently assume?",
+      "options": [
+        "That the call returned HTTP 200 with valid JSON in the shape the script expects",
+        "That the REST Message record has already been deleted",
+        "That the external system requires no Authentication Profile",
+        "That JSON.parse() always throws an exception on success"
+      ],
+      "answer": 0,
+      "explain": "There's no status-code check and no try/catch around the parse — the code assumes success and a stable response shape."
+    },
+    {
+      "q": "What does an external system returning HTTP 429 actually mean?",
+      "options": [
+        "The caller exceeded an allowed call volume, and the system is protecting itself, not reporting an outage",
+        "The requested resource does not exist on the external system",
+        "The caller's OAuth token has expired",
+        "The external system has a schema mismatch with the request body"
+      ],
+      "answer": 0,
+      "explain": "429 Too Many Requests is rate limiting — the system is healthy but asking the caller to slow down, which calls for backing off rather than retrying immediately."
+    },
+    {
+      "q": "What can happen inside ServiceNow if a business rule's script throws an exception that is never caught?",
+      "options": [
+        "The transaction the business rule ran in can be aborted, with no explicit record of why unless someone finds it in logs later",
+        "ServiceNow automatically retries the exact same operation three times with no code change needed",
+        "The platform silently converts the exception into a successful HTTP 200 response",
+        "Nothing happens; unhandled exceptions have no effect in ServiceNow scripts"
+      ],
+      "answer": 0,
+      "explain": "An unhandled exception can abort the surrounding transaction or flow run, leaving the failure to be discovered later rather than handled at the moment it happened."
+    },
+    {
+      "q": "Per this lesson's design principle, why is it usually pointless to immediately retry a request that got back an HTTP 4xx client error?",
+      "options": [
+        "Because a 4xx means the request itself is malformed or unauthorized, so repeating it unchanged just repeats the same failure",
+        "Because 4xx errors always resolve themselves within one second",
+        "Because 4xx errors can only happen on GET requests, never on POST",
+        "Because retrying a 4xx permanently bans the integration user's account"
+      ],
+      "answer": 0,
+      "explain": "A 4xx points to a problem with the request itself (bad auth, bad input) — retrying the same bad request produces the same bad result."
+    }
+  ]
+}

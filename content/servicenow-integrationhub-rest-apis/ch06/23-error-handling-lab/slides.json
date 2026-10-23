@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow IntegrationHub & REST APIs · Chapter Six",
+    "titlePlain": "Error Handling ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 23 · Error Handling, Logging & Retries"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · isolate and wrap",
+    "code": "function getWeatherForCity(city) {\n  try {\n    var request = new sn_ws.RESTMessageV2('WeatherAPI', 'getCurrentConditions');\n    request.setStringParameterNoEscape('city', city);\n    request.setHttpTimeout(10000); // 10 seconds\n    var response = request.execute();\n  } catch (ex) {\n    gs.error('WeatherAPI threw for city {0}: {1}', city, ex.message);\n  }\n}",
+    "caption": "A timeout turns an indefinite hang into a failure you can act on."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · retryable vs. not",
+    "code": "var statusCode = response.getStatusCode();\nvar transportError = response.getErrorMessage();\n\nif (!transportError && statusCode == 200) {\n  return JSON.parse(response.getBody());\n}\nif (!transportError && statusCode >= 400 && statusCode < 500) {\n  gs.error('Client error for {0}: HTTP {1}', city, statusCode);\n  return null; // never retry a 4xx\n}\n// 5xx or transport failure: retryable",
+    "caption": "A 4xx won't fix itself on retry. A 5xx or timeout might."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 · backoff loop",
+    "code": "while (attempt <= maxRetries) {\n  // ...execute, check statusCode/transportError...\n  if (statusCode == 200) return data;\n  if (statusCode >= 400 && statusCode < 500) return null;\n\n  gs.warn('Retryable failure for {0}: HTTP {1} (attempt {2})',\n    city, statusCode, attempt + 1);\n  attempt++;\n  gs.sleep(backoffMs);\n  backoffMs *= 2;\n}",
+    "caption": "Up to 3 retries, 1s/2s/4s/8s — never on a 4xx."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why this script survives production",
+    "titlePlain": "Every piece ",
+    "titleEmphasis": "earns its place",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Timeout", "sub": "turns a hang into an actionable failure" },
+      { "label": "4xx vs. 5xx", "sub": "stops a doomed retry before it wastes an attempt" },
+      { "label": "Backoff", "sub": "gives a struggling system real recovery room" },
+      { "label": "Structured logs", "sub": "city, status code, and attempt number on every line" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 24",
+    "titlePlain": "What a MID Server Does & ",
+    "titleEmphasis": "Why It's Needed",
+    "titleSuffix": "",
+    "subtitle": "Chapter 7 · MID Server & On-Premises Integration"
+  }
+]

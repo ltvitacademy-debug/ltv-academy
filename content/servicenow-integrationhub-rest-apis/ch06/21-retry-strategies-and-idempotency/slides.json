@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow IntegrationHub & REST APIs · Chapter Six",
+    "titlePlain": "Retry Strategies & ",
+    "titleEmphasis": "Idempotency",
+    "titleSuffix": "",
+    "subtitle": "Lesson 21 · Error Handling, Logging & Retries"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why \"just retry\" isn't enough",
+    "code": "// Worst option — tight-loop immediate retry:\nwhile (statusCode != 200 && attempts < 3) {\n  response = request.execute(); // hammers a struggling system harder\n  attempts++;\n}\n// A flat fixed interval is better, but still gives no real recovery room",
+    "caption": "A struggling system needs room to recover, not more traffic."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Exponential backoff",
+    "code": "var backoffMs = 1000; // 1 second\nvar attempt = 0;\nwhile (attempt <= maxRetries) {\n  var response = request.execute();\n  if (response.getStatusCode() == 200) return response;\n  attempt++;\n  gs.sleep(backoffMs);        // real server-side pause\n  backoffMs = backoffMs * 2;  // 1s, 2s, 4s, 8s...\n}",
+    "caption": "Each wait doubles — real room for the system to recover."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Idempotency: what makes retries safe",
+    "titlePlain": "Same result, ",
+    "titleEmphasis": "once or three times",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "The risk", "sub": "a retried \"create\" can insert a second, duplicate record" },
+      { "label": "The fix", "sub": "check for an existing record by external ID before inserting" },
+      { "label": "The result", "sub": "exactly one record, whether this ran once or three times" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Coalesce-on-external-ID",
+    "code": "gr.addQuery('u_external_alert_id', externalId); // coalesce field\ngr.query();\nif (gr.next()) {\n  gr.update();   // retry — update, don't duplicate\n} else {\n  gr.initialize();\n  gr.u_external_alert_id = externalId;\n  gr.insert();   // first time we've seen this ID\n}",
+    "caption": "Same coalesce idea as a Transform Map, written in script."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 22",
+    "titlePlain": "Logging Integration Activity for ",
+    "titleEmphasis": "Troubleshooting",
+    "titleSuffix": "",
+    "subtitle": "A failed integration is only as debuggable as its logs."
+  }
+]
