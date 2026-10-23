@@ -1,0 +1,60 @@
+{
+  "lesson": "business-rule-loops-and-recursive-triggers",
+  "questions": [
+    {
+      "q": "Course 6 already covered the classic business rule infinite-loop mistake. What is it, in one sentence?",
+      "options": [
+        "A business rule that updates the same table it's triggered on, without excluding the change it itself just made, so the update re-triggers the rule",
+        "A business rule that is scheduled to run at midnight every day",
+        "A business rule that has no condition script at all",
+        "A business rule that only runs for the admin role"
+      ],
+      "answer": 0,
+      "explain": "This is the recap: a business rule re-saving the record it's triggered on, without a guard, can re-trigger itself through that same save."
+    },
+    {
+      "q": "A debug panel shows:\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 14 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 14 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 11 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 9 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 0 ms\nfor one form save. What is the real detection signature here?",
+      "options": [
+        "One of the five lines is unusually slow",
+        "The business rule's name is misspelled",
+        "The same business rule name appears repeatedly for a single user action, with durations shrinking toward zero",
+        "The five lines represent five different business rules"
+      ],
+      "answer": 2,
+      "explain": "Recursive triggers often aren't individually slow — the tell is the repeated count for one action, converging toward zero as the recalculated value stabilizes."
+    },
+    {
+      "q": "Given this business rule script, what causes it to potentially re-trigger itself?\n(function executeRule(current, previous) {\n    current.u_priority_score = calculateScore(current);\n    current.update();\n})(current, previous);",
+      "options": [
+        "calculateScore() is undefined",
+        "current.update() performs a brand-new save on the same table, which other update business rules — including this one — are eligible to run on again",
+        "The function is missing a return statement",
+        "previous is never used in the script"
+      ],
+      "answer": 1,
+      "explain": "current.update() is a real save on the incident table; ServiceNow treats it like any other update, so update business rules can fire on it again."
+    },
+    {
+      "q": "What does this fixed version add, and why does each piece matter?\nif (current.u_priority_score == newScore) { return; }\ncurrent.u_priority_score = newScore;\ncurrent.setWorkflow(false);\ncurrent.update();",
+      "options": [
+        "The idempotent guard skips the save entirely when nothing changed; setWorkflow(false) stops the remaining save from re-triggering business rules on the table",
+        "Both lines do the same thing and one is redundant",
+        "setWorkflow(false) deletes the record instead of updating it",
+        "The guard check has no effect on business rule execution count"
+      ],
+      "answer": 0,
+      "explain": "The guard prevents unnecessary saves outright; setWorkflow(false) prevents the save that does happen from re-firing business rules, workflows, or flows."
+    },
+    {
+      "q": "After deploying the fix, how do you confirm it actually worked?",
+      "options": [
+        "Assume it worked because the code change matches the documented pattern",
+        "Delete the business rule and see if anything breaks",
+        "Turn on Debug Business Rule again, repeat the same save, and confirm the rule now fires exactly once",
+        "Raise the Slow Request Log's response-time threshold so it stops logging the transaction"
+      ],
+      "answer": 2,
+      "explain": "Confirming a fix means re-measuring the same transaction with the same profiler that found the problem, not just trusting the code change."
+    }
+  ]
+}

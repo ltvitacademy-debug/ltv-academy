@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Performance & Troubleshooting · Chapter Seven",
+    "titlePlain": "Capstone: Diagnose the ",
+    "titleEmphasis": "Root Cause",
+    "titleSuffix": "",
+    "subtitle": "Lesson 24 · Capstone: Diagnose & Fix a Realistic Performance Problem"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cause one -- confirmed with a query plan",
+    "code": "u_checklist_item WHERE u_store_region='WEST'\nBefore: full table scan -- 2.1M rows scanned\nAfter:  index seek -- ~340 rows scanned\nNo index exists on u_store_region today",
+    "caption": "A full table scan that was invisible at 50 stores is 6,000x the work at 500."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cause two -- ChecklistUtils, before",
+    "code": "getApprovalThresholds(items) {\n  for each item in items:\n    new GlideRecord('u_store_config')\n    .query()   <- runs once PER item\n}",
+    "caption": "A query-in-a-loop: one round trip to u_store_config for every item in the batch."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cause two -- ChecklistUtils, after",
+    "code": "getApprovalThresholds(items) {\n  new GlideRecord('u_store_config')\n  .query()   <- runs exactly ONCE\n  build a lookup map by store id\n}",
+    "caption": "Same result, one query total instead of one query per item in the batch."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Cause three -- semaphore pool at 7:00 AM",
+    "code": "Nightly Rollup job + Morning Reminder job\nboth claim the SAME semaphore set\n+ 500 stores submitting at once\n50 stores: no contention. 500: everything queues.",
+    "caption": "The exact 40-minute, instance-wide slowdown this pattern produces."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 25",
+    "titlePlain": "Capstone Wrap-Up & ",
+    "titleEmphasis": "Prevention",
+    "titleSuffix": " Plan",
+    "subtitle": "Applying the fixes, and making sure this doesn't happen again."
+  }
+]

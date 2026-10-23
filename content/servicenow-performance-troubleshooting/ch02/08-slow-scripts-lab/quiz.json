@@ -1,0 +1,60 @@
+{
+  "lesson": "slow-scripts-lab",
+  "questions": [
+    {
+      "q": "The ticket says only \"updating an incident is taking four to five seconds.\" What is the first real step in working it, per this lab?",
+      "options": [
+        "Guess which business rule is probably responsible and rewrite it",
+        "Turn on Debug Business Rule and Debug Script, then reproduce the exact slow save to get a measured breakdown",
+        "Delete the most recently created business rule on the incident table",
+        "Raise the Slow Request Log's threshold so the transaction stops appearing"
+      ],
+      "answer": 1,
+      "explain": "Lessons 5 through 7 all point the same way: measure the exact transaction first, then fix exactly what the measurement shows."
+    },
+    {
+      "q": "The initial debug panel shows \"Sync Task Owners\" at 2410 ms (mostly inside one Script Include method) and \"Recalculate SLA Flag\" firing six times with shrinking durations. What two problems does this point to?",
+      "options": [
+        "A missing database index and a network outage",
+        "A query stuck inside a loop, and a business rule recursively re-triggering itself",
+        "Two unrelated client script errors",
+        "A single business rule that is simply too long"
+      ],
+      "answer": 1,
+      "explain": "A dominant Script Include time is the query-in-a-loop signature from Lesson 6; a repeated rule name with shrinking durations is the recursive-trigger signature from Lesson 7."
+    },
+    {
+      "q": "In TaskUtils.getOwnerNames, what is the performance problem in this code?\nwhile (taskGr.next()) {\n    var userGr = new GlideRecord('sys_user');\n    userGr.get(taskGr.getValue('assigned_to'));\n    names.push(userGr.getValue('name'));\n}",
+      "options": [
+        "names.push() is used incorrectly",
+        "taskGr.next() never returns false",
+        "A brand-new GlideRecord query against sys_user runs once per task in the loop, instead of once for all the needed users",
+        "assigned_to is spelled incorrectly"
+      ],
+      "answer": 2,
+      "explain": "Over 40 linked tasks, this issues 40 separate sys_user queries — the same query-in-a-loop signature covered in Lesson 6, just against a different table."
+    },
+    {
+      "q": "What does the fixed version of getOwnerNames do differently?",
+      "options": [
+        "It collects the distinct needed user IDs, runs one sys_user query with addQuery('sys_id', 'IN', userIds), and reads names back from a lookup map",
+        "It removes the loop over tasks entirely",
+        "It replaces GlideRecord with a client script",
+        "It caches the result in browser localStorage"
+      ],
+      "answer": 0,
+      "explain": "One query against the distinct set of user IDs, followed by reading names out of a plain object keyed by sys_id, replaces 40 separate per-task queries."
+    },
+    {
+      "q": "After both fixes are deployed, why does the lab repeat the exact same save with Debug Business Rule and Debug Script still on, rather than considering the job done?",
+      "options": [
+        "Because the debug toggles must be turned off and back on to take effect",
+        "Because re-measuring the same transaction is how you confirm the fixes actually worked, instead of just trusting that the code changes should help",
+        "Because ServiceNow requires debugging to run twice before saving any script",
+        "Because the ticket required exactly two transaction replays"
+      ],
+      "answer": 1,
+      "explain": "The debug panel after the fix should show one sys_user query instead of forty, and one execution of Recalculate SLA Flag instead of six — confirmed, not assumed."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "common-gliderecord-performance-mistakes",
+  "questions": [
+    {
+      "q": "This lesson builds on Course 5's GlideRecord performance pitfalls lesson. What does it add?",
+      "options": [
+        "A full replacement for everything that lesson already taught",
+        "How to recognize those same mistakes by their signature in a profiled transaction, not just by reading the script",
+        "A reason those mistakes no longer matter on modern ServiceNow instances",
+        "A new unrelated set of GlideRecord methods"
+      ],
+      "answer": 1,
+      "explain": "The underlying mistakes (query-in-a-loop, missing setLimit, looping to count) were already covered; this lesson is about spotting them once you're measuring a real transaction."
+    },
+    {
+      "q": "A debug panel shows: GlideRecord Query: problem [47 executions] — 2980 ms, inside one business rule transaction over 50 incidents. What does the 47 most likely indicate?",
+      "options": [
+        "A database replication error",
+        "The query against problem is sitting inside a loop, running once per incident instead of once total",
+        "ServiceNow automatically re-runs every query 47 times for accuracy",
+        "47 unrelated transactions happened at the same moment"
+      ],
+      "answer": 1,
+      "explain": "An execution count that close to the number of loop iterations is the signature of a query left inside the loop instead of being run once."
+    },
+    {
+      "q": "Given this code, what is the real performance problem?\nvar incGr = new GlideRecord('incident');\nincGr.addActiveQuery();\nincGr.query();\nwhile (incGr.next()) {\n    var probGr = new GlideRecord('problem');\n    probGr.addQuery('sys_id', incGr.problem_id);\n    probGr.query();\n    if (probGr.next()) { /* ... */ }\n}",
+      "options": [
+        "addActiveQuery() is spelled incorrectly",
+        "The incident query itself is missing a condition",
+        "A brand-new GlideRecord query against problem runs once per incident in the loop, instead of once total",
+        "while (incGr.next()) never terminates"
+      ],
+      "answer": 2,
+      "explain": "Opening and querying probGr inside the while loop means that query runs for every incident returned by the outer query."
+    },
+    {
+      "q": "What is the real fix for that code, given that problem_id is a reference field already on the incident record?",
+      "options": [
+        "Add a GlideAggregate instead of the inner GlideRecord",
+        "Remove the outer query entirely",
+        "Dot-walk the reference field (incGr.problem_id.number) instead of opening a new GlideRecord per iteration",
+        "Increase the response-time threshold on the Slow Request Log"
+      ],
+      "answer": 2,
+      "explain": "Dot-walking a reference field already on the current record reads the related record's fields without issuing a brand-new query each time."
+    },
+    {
+      "q": "A script runs 'var gr = new GlideRecord(\"incident\"); ... while (gr.next()) { count++; }' just to produce a count. What should replace this pattern?",
+      "options": [
+        "GlideAggregate, with addAggregate('COUNT') and getAggregate('COUNT')",
+        "A second nested GlideRecord loop",
+        "Removing the addActiveQuery() call",
+        "Calling .get() instead of .query()"
+      ],
+      "answer": 0,
+      "explain": "GlideAggregate asks the database to compute the count directly, instead of fetching every full row just to increment a counter in script."
+    }
+  ]
+}

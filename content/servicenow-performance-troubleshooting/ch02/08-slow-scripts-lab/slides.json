@@ -1,0 +1,55 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Performance & Troubleshooting · Chapter Two",
+    "titlePlain": "Slow Scripts ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Diagnosing Slow Scripts"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The ticket, profiled",
+    "code": "\"Updating an incident takes 4-5 seconds.\"\n\n*** Business Rule \"Sync Task Owners\" - 2410 ms\n***   Script Include: getOwnerNames - 2360 ms\n*** Business Rule \"Recalculate SLA Flag\" - 180 ms\n*** Business Rule \"Recalculate SLA Flag\" - 90 ms\n*** Business Rule \"Recalculate SLA Flag\" - 0 ms",
+    "caption": "Two signatures from this chapter, in one real transaction."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Finding #1 — before",
+    "code": "while (taskGr.next()) {\n    var userGr = new GlideRecord('sys_user');\n    userGr.get(taskGr.getValue('assigned_to'));\n    names.push(userGr.getValue('name'));\n}",
+    "caption": "Forty linked tasks, forty separate sys_user queries."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Finding #1 — after",
+    "code": "userGr.addQuery('sys_id', 'IN', userIds);\nuserGr.query();\nwhile (userGr.next()) {\n    nameById[userGr.getValue('sys_id')] =\n        userGr.getValue('name');\n}",
+    "caption": "One query against the distinct owners, read back from a lookup map."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Finding #2 — before and after",
+    "code": "BEFORE: current.update();           // fires 6x\n\nAFTER:\nif (current.u_sla_at_risk == atRisk) return;\ncurrent.setWorkflow(false);\ncurrent.update();                    // fires 1x",
+    "caption": "The same idempotent guard and setWorkflow(false) from Lesson 7."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The lab, start to finish",
+    "titlePlain": "Measure, fix, ",
+    "titleEmphasis": "re-measure",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Profile", "sub": "reproduce the exact slow save, read the debug panel" },
+      { "label": "Fix the loop", "sub": "lookup map replaces 40 sys_user queries with 1" },
+      { "label": "Fix the recursion", "sub": "guard + setWorkflow(false) stops 6 runs down to 1" },
+      { "label": "Re-measure", "sub": "confirm the fix with the same profiler that found it" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 9",
+    "titlePlain": "Indexes on the ",
+    "titleEmphasis": "Platform",
+    "titleSuffix": "",
+    "subtitle": "Chapter Three: when the slowness lives in the database itself."
+  }
+]

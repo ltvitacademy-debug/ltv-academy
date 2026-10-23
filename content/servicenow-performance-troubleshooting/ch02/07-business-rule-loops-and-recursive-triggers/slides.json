@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "ServiceNow Performance & Troubleshooting · Chapter Two",
+    "titlePlain": "Business Rule Loops & ",
+    "titleEmphasis": "Recursive",
+    "titleSuffix": " Triggers",
+    "subtitle": "Lesson 7 · Diagnosing Slow Scripts"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Detect by count, not duration",
+    "code": "*** Script: Business Rule \"Calculate Priority Score\" (incident) - 14 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 14 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 11 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 9 ms\n*** Script: Business Rule \"Calculate Priority Score\" (incident) - 0 ms",
+    "caption": "One click, one save — the same rule fired five times, shrinking toward zero."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The usual cause",
+    "code": "(function executeRule(current, previous) {\n    current.u_priority_score = calculateScore(current);\n    current.update(); // re-saves, re-triggers update rules\n})(current, previous);",
+    "caption": "current.update() is a brand-new save — eligible for every update business rule to run again."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix",
+    "code": "var newScore = calculateScore(current);\nif (current.u_priority_score == newScore) {\n    return; // nothing changed, nothing to save\n}\ncurrent.u_priority_score = newScore;\ncurrent.setWorkflow(false);\ncurrent.update();",
+    "caption": "An idempotent guard, plus setWorkflow(false) on the save that remains."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Detect, diagnose, confirm",
+    "titlePlain": "Close the loop on the ",
+    "titleEmphasis": "loop",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Detect", "sub": "same rule name repeated for one action, durations shrinking" },
+      { "label": "Diagnose", "sub": "look for current.update() inside an after business rule" },
+      { "label": "Confirm", "sub": "re-profile the same save — the rule should fire exactly once" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Slow Scripts ",
+    "titleEmphasis": "Lab",
+    "titleSuffix": "",
+    "subtitle": "One transaction, two real problems, two confirmed fixes."
+  }
+]
