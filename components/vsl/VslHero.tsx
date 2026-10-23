@@ -1,4 +1,4 @@
-const CHECKOUT_URL = "https://www.ltvacademy.com/vsl";
+const CHECKOUT_URL = "https://www.ltvacademy.com/landing";
 
 const FEATURES = [
   { label: "24 Career Options", icon: PathIcon },
