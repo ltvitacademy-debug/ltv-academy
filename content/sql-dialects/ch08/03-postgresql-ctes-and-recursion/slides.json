@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Dialects: T-SQL, PL/SQL, MySQL & Beyond · Chapter Eight",
+    "titlePlain": "CTEs and ",
+    "titleEmphasis": "Recursion",
+    "titleSuffix": "",
+    "subtitle": "Lesson 50 · PostgreSQL Deep Dive for T-SQL Developers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The syntax itself hasn't changed since Chapter 4",
+    "code": "WITH high_value_customers AS (\n  SELECT customer_id, SUM(amount) AS total_spent\n  FROM orders\n  GROUP BY customer_id\n  HAVING SUM(amount) > 10000\n)\nSELECT c.customer_name, h.total_spent\nFROM high_value_customers h\nJOIN customers c ON c.customer_id = h.customer_id;",
+    "caption": "Standard WITH syntax -- this lesson is about behavior AROUND it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Before PostgreSQL 12: always an optimization fence",
+    "code": "-- Pre-12: this CTE is ALWAYS fully run and stored first,\n-- never inlined -- even if it's noticeably slower than\n-- the equivalent subquery would have been.",
+    "caption": "A real, version-dependent performance trap with identical SQL text."
+  },
+  {
+    "type": "code",
+    "eyebrow": "PostgreSQL 12+: inlined by default",
+    "code": "-- Inlined automatically, like a subquery\nWITH recent_orders AS (SELECT * FROM orders)\nSELECT * FROM recent_orders WHERE customer_id = 42;\n\n-- Force the old fenced behavior explicitly\nWITH recent_orders AS MATERIALIZED (SELECT * FROM orders)\nSELECT * FROM recent_orders WHERE customer_id = 42;",
+    "caption": "MATERIALIZED opts back into the pre-12 fence when you want it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "WITH RECURSIVE: required, same as MySQL",
+    "code": "-- T-SQL: no special keyword needed for self-reference\n-- PostgreSQL (and MySQL): WITH RECURSIVE is required\nWITH RECURSIVE org_chart AS (\n  SELECT employee_id, manager_id, 0 AS level\n  FROM employees WHERE manager_id IS NULL\n  UNION ALL\n  SELECT e.employee_id, e.manager_id, o.level + 1\n  FROM employees e JOIN org_chart o ON e.manager_id = o.employee_id\n)\nSELECT * FROM org_chart;",
+    "caption": "T-SQL and Oracle infer recursion automatically -- PostgreSQL does not."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 51",
+    "titlePlain": "PostgreSQL-Specific Operators and ",
+    "titleEmphasis": "Functions",
+    "titleSuffix": "",
+    "subtitle": "ILIKE, regex operators, and DISTINCT ON."
+  }
+]

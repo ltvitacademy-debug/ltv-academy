@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Dialects: T-SQL, PL/SQL, MySQL & Beyond · Chapter Six",
+    "titlePlain": "Translating a Real T-SQL ",
+    "titleEmphasis": "Stored Procedure",
+    "titleSuffix": " Into PL/SQL",
+    "subtitle": "Lesson 42 · The chapter's capstone"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The starting point: a real T-SQL procedure",
+    "code": "CREATE PROCEDURE dbo.GetCustomerOrderSummary\n    @CustomerId INT\nAS\nBEGIN\n  DECLARE @OrderCount INT;\n  IF @OrderCount = 0\n  BEGIN\n    PRINT 'No orders found.'; RETURN;\n  END\n  SELECT OrderId, OrderDate, TotalAmount\n  FROM Orders WHERE CustomerId = @CustomerId;\nEND;",
+    "caption": "A realistic everyday T-SQL pattern — let's translate it decision by decision."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Decisions 1 & 2: params and DECLARE",
+    "code": "-- @CustomerId INT  ->  p_customer_id IN NUMBER\n-- DECLARE @OrderCount INT  ->  moved into ONE\n-- DECLARE/IS section before BEGIN\nCREATE OR REPLACE PROCEDURE get_customer_order_summary (\n    p_customer_id IN NUMBER\n) IS\n    v_order_count NUMBER;\nBEGIN",
+    "caption": "No @ sigil; every local variable declared up front, not scattered."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Decision 3: IF...BEGIN...END -> IF...THEN...END IF",
+    "code": "IF v_order_count = 0 THEN\n  DBMS_OUTPUT.PUT_LINE('No orders found.');\n  RETURN;\nEND IF;",
+    "caption": "PRINT becomes DBMS_OUTPUT.PUT_LINE; END IF is always required, every time."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Decision 4: the bare SELECT needs a REF CURSOR",
+    "code": "CREATE OR REPLACE PROCEDURE get_customer_order_summary (\n    p_customer_id IN  NUMBER,\n    p_orders      OUT SYS_REFCURSOR\n) IS\n...\nOPEN p_orders FOR\n  SELECT order_id, order_date, total_amount\n  FROM orders WHERE customer_id = p_customer_id;",
+    "caption": "The biggest structural change — T-SQL's free result-set return has no PL/SQL equivalent."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Plus an EXCEPTION section, added defensively",
+    "code": "EXCEPTION\n  WHEN NO_DATA_FOUND THEN\n    DBMS_OUTPUT.PUT_LINE('Unexpected: no row returned.');\n  WHEN OTHERS THEN\n    DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);\nEND get_customer_order_summary;\n/",
+    "caption": "The original had no TRY...CATCH, but a real PL/SQL translation should add one."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter Seven",
+    "titlePlain": "MySQL's SQL ",
+    "titleEmphasis": "Mode",
+    "titleSuffix": " and Why It Changes Behavior",
+    "subtitle": "A new dialect, a new set of surprises for a T-SQL developer."
+  }
+]

@@ -58,11 +58,11 @@ export const GOV_DATABRICKS_UNITY_CATALOG_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     n: 4,
     title: "Discovery, Lineage and Auditing",
     lessons: [
-      L(16, "data-discovery-in-unity-catalog", "Data Discovery in Unity Catalog", { contentDir: "ch04/16-data-discovery-in-unity-catalog" }),
-      L(17, "lineage-in-unity-catalog", "Lineage in Unity Catalog", { contentDir: "ch04/17-lineage-in-unity-catalog" }),
-      L(18, "system-tables-and-auditing", "System Tables and Auditing", { contentDir: "ch04/18-system-tables-and-auditing" }),
-      L(19, "audit-logs", "Audit Logs", { contentDir: "ch04/19-audit-logs" }),
-      L(20, "monitoring-and-compliance", "Monitoring and Compliance", { contentDir: "ch04/20-monitoring-and-compliance" }),
+      L(16, "data-discovery-in-unity-catalog", "Data Discovery in Unity Catalog", { contentDir: "ch04/16-data-discovery-in-unity-catalog", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429591/ltv-databricks-unity-catalog-governance/data-discovery-in-unity-catalog.mp4", durationLabel: "1:44" }),
+      L(17, "lineage-in-unity-catalog", "Lineage in Unity Catalog", { contentDir: "ch04/17-lineage-in-unity-catalog", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792430059/ltv-databricks-unity-catalog-governance/lineage-in-unity-catalog.mp4", durationLabel: "1:37" }),
+      L(18, "system-tables-and-auditing", "System Tables and Auditing", { contentDir: "ch04/18-system-tables-and-auditing", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792431060/ltv-databricks-unity-catalog-governance/system-tables-and-auditing.mp4", durationLabel: "1:32" }),
+      L(19, "audit-logs", "Audit Logs", { contentDir: "ch04/19-audit-logs", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429946/ltv-databricks-unity-catalog-governance/audit-logs.mp4", durationLabel: "1:41" }),
+      L(20, "monitoring-and-compliance", "Monitoring and Compliance", { contentDir: "ch04/20-monitoring-and-compliance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792429289/ltv-databricks-unity-catalog-governance/monitoring-and-compliance.mp4", durationLabel: "1:36" }),
     ],
   },
   {

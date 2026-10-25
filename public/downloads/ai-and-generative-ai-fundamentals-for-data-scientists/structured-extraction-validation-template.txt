@@ -1,0 +1,83 @@
+# Structured-Extraction Validation Template
+# Compiled from Chapter 4, Lesson 18 (Structured Extraction With LLMs).
+#
+# Core habit: never trust the model's output until your own code has
+# validated it. Define the fields BEFORE writing any prompt, then validate
+# every reply against that definition -- code fences, missing fields,
+# invented category values, and plain prose are all real, common failure
+# shapes, not edge cases.
+
+import json
+
+
+# ---------------------------------------------------------------------------
+# Step 1: define the target schema. Replace the field names, types, and
+# allowed value sets with your own task's fields.
+# ---------------------------------------------------------------------------
+
+SCHEMA = {
+    "category": ("str", {"billing", "shipping", "returns", "other"}),
+    "urgency": ("int", None),
+    "order_id": ("str", None),
+}
+
+
+# ---------------------------------------------------------------------------
+# Step 2: validate. Returns (data, None) on success or (None, error) on
+# failure, with a human-readable error you can feed straight back to the
+# model on retry.
+# ---------------------------------------------------------------------------
+
+def validate(raw, schema=SCHEMA):
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.strip("`").removeprefix("json").strip()
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as err:
+        return None, f"not valid JSON: {err.msg}"
+    for field, (kind, allowed) in schema.items():
+        if field not in data:
+            return None, f"missing field: {field}"
+        if kind == "int" and not isinstance(data[field], int):
+            return None, f"{field} must be an integer"
+        if kind == "str" and not isinstance(data[field], str):
+            return None, f"{field} must be a string"
+        if allowed and data[field] not in allowed:
+            return None, f"{field} not in {sorted(allowed)}"
+    return data, None
+
+
+# ---------------------------------------------------------------------------
+# Step 3: retry with the error fed back, capped at max_tries. Decide up
+# front what happens when tries run out -- logging for human review is a
+# reasonable default, never silently accepting the last bad reply.
+# ---------------------------------------------------------------------------
+
+def extract(item_text, llm, build_prompt, max_tries=3, schema=SCHEMA):
+    prompt = build_prompt(item_text)
+    for attempt in range(1, max_tries + 1):
+        data, error = validate(llm(prompt), schema)
+        if data:
+            return data, attempt, None
+        prompt += f"\nYour last reply was rejected: {error}"
+    return None, max_tries, "exhausted retries -- route to human review"
+
+
+# ---------------------------------------------------------------------------
+# Example canned replies, matching the five real failure shapes from the
+# lesson -- useful as a quick smoke test of this file before wiring in a
+# real model.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    canned = [
+        '{"category": "returns", "urgency": 2, "order_id": "A-1001"}',
+        '```json\n{"category": "billing", "urgency": 3, "order_id": "A-1002"}\n```',
+        '{"category": "returns", "urgency": 2}',                       # missing field
+        '{"category": "fraud", "urgency": 2, "order_id": "A-1003"}',   # invented category
+        "I think this is a billing issue, urgency medium.",            # prose, not JSON
+    ]
+    for raw in canned:
+        data, error = validate(raw)
+        print("OK  ", data) if data else print("FAIL", error)

@@ -41,14 +41,14 @@ export const GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
       L(8, "data-quality-for-machine-learning", "Data Quality for Machine Learning", { contentDir: "ch02/08-data-quality-for-machine-learning", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792418396/ltv-ai-and-machine-learning-governance/data-quality-for-machine-learning.mp4", durationLabel: "1 min 58 s" }),
       L(9, "bias-in-data", "Bias in Data", { contentDir: "ch02/09-bias-in-data", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419175/ltv-ai-and-machine-learning-governance/bias-in-data.mp4", durationLabel: "1 min 48 s" }),
       L(10, "data-labeling-and-governance", "Data Labeling and Governance", { contentDir: "ch02/10-data-labeling-and-governance", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419521/ltv-ai-and-machine-learning-governance/data-labeling-and-governance.mp4", durationLabel: "1 min 53 s" }),
-      L(11, "synthetic-data-considerations", "Synthetic Data Considerations", { contentDir: "ch02/11-synthetic-data-considerations" }),
+      L(11, "synthetic-data-considerations", "Synthetic Data Considerations", { contentDir: "ch02/11-synthetic-data-considerations", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425117/ltv-ai-and-machine-learning-governance/synthetic-data-considerations.mp4", durationLabel: "1 min 56 s" }),
     ],
   },
   {
     n: 3,
     title: "Model Governance",
     lessons: [
-      L(12, "model-documentation-and-model-cards", "Model Documentation and Model Cards", { contentDir: "ch03/12-model-documentation-and-model-cards" }),
+      L(12, "model-documentation-and-model-cards", "Model Documentation and Model Cards", { contentDir: "ch03/12-model-documentation-and-model-cards", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792425668/ltv-ai-and-machine-learning-governance/model-documentation-and-model-cards.mp4", durationLabel: "1 min 53 s" }),
       L(13, "model-inventory-and-registry", "Model Inventory and Registry", { contentDir: "ch03/13-model-inventory-and-registry", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419936/ltv-ai-and-machine-learning-governance/model-inventory-and-registry.mp4", durationLabel: "1 min 30 s" }),
       L(14, "ai-lineage", "AI Lineage", { contentDir: "ch03/14-ai-lineage", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420351/ltv-ai-and-machine-learning-governance/ai-lineage.mp4", durationLabel: "1 min 41 s" }),
       L(15, "model-versioning-and-change-control", "Model Versioning and Change Control", { contentDir: "ch03/15-model-versioning-and-change-control", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420606/ltv-ai-and-machine-learning-governance/model-versioning-and-change-control.mp4", durationLabel: "1 min 32 s" }),
@@ -84,7 +84,7 @@ export const GOV_AI_AND_MACHINE_LEARNING_GOVERNANCE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(28, "ai-governance-case-study-credit-decisioning", "AI Governance Case Study: Credit Decisioning", { contentDir: "ch06/28-ai-governance-case-study-credit-decisioning", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792423865/ltv-ai-and-machine-learning-governance/ai-governance-case-study-credit-decisioning.mp4", durationLabel: "1 min 20 s" }),
       L(29, "ai-governance-case-study-customer-facing-generative-ai", "AI Governance Case Study: Customer-Facing Generative AI", { contentDir: "ch06/29-ai-governance-case-study-customer-facing-generative-ai", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424074/ltv-ai-and-machine-learning-governance/ai-governance-case-study-customer-facing-generative-ai.mp4", durationLabel: "1 min 23 s" }),
-      L(30, "building-an-ai-governance-program", "Building an AI Governance Program", { contentDir: "ch06/30-building-an-ai-governance-program" }),
+      L(30, "building-an-ai-governance-program", "Building an AI Governance Program", { contentDir: "ch06/30-building-an-ai-governance-program", videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792424696/ltv-ai-and-machine-learning-governance/building-an-ai-governance-program.mp4", durationLabel: "1 min 26 s" }),
     ],
   },
 ];

@@ -4,20 +4,20 @@ Segments map 1:1 to slides. Target: ~2-3 minutes total.
 
 ## S1 · TITLE
 
-Lesson 10 ended at a dashboard inside one Power BI workspace. This lesson zooms out — to the enterprise catalog that scans Power BI centrally, and to why a dashboard is the one box most of its viewers ever actually see.
+Lesson 10 ended at a single dashboard inside one Power BI workspace. This lesson zooms out to how that same chain looks at enterprise scale, inside Microsoft Purview's governance catalog, and makes one central point: a dashboard is the visible tip of a chain almost none of its viewers ever see. It also closes out Chapter 2, setting up Chapter 3's impact analysis.
 
 ## S2 · SCREENSHOT — RECAP
 
-Here's the canvas from Lesson 10 again. Customers360, top right, is the dashboard. Everything to its left — the semantic models, the dataflows, the reports — is invisible to whoever just opens that one dashboard every morning.
+Here's the canvas from Lesson 10 again. Customers360, top right, is the dashboard — the only box most viewers ever open. Everything to its left — the semantic models, the dataflows feeding them, and the reports built on top — stays invisible to anyone who just checks that one dashboard each morning.
 
 ## S3 · SCREENSHOT — ENTERPRISE SCALE
 
-Most organizations also govern Power BI through Microsoft Purview, which scans Power BI tenants and pulls that same lineage into an enterprise catalog. Read left to right: a SQL source feeds a Power BI dataset, which feeds a report, which feeds the dashboard — the exact dataflow-to-dashboard pattern this chapter has built toward since Lesson 6. The dataset itself carries governance badges right on the card.
+Most organizations also govern Power BI centrally through Microsoft Purview, which scans entire tenants and pulls that lineage into one enterprise catalog. Read left to right: PBIConnectDM, the underlying SQL source, feeds the Sales health dataset, which feeds the Sales health report, which feeds the dashboard — the same dataflow-to-dashboard pattern since Lesson 6. The dataset itself carries two governance badges on its card: a Highly Confidential sensitivity label, and a Promoted endorsement.
 
 ## S4 · SCREENSHOT — TRUST SHORTCUT
 
-Not every dashboard viewer traces its lineage, and most shouldn't have to. Promoted means a content owner flagged it as good practice to reuse. Certified means it passed a more rigorous review, usually by a central governance team. These badges compress lineage's trust into a single glance.
+Here's why this matters: an executive opening that dashboard every morning sees exactly one box, never the dataset or report beneath it. When a number looks wrong, they have no visibility into the chain — someone else must trace it, fast. Promoted means a content owner flagged it as good practice to reuse. Certified means it passed a rigorous review, usually by a central governance team — the strongest trust signal Power BI offers. These badges compress lineage's trust into a single glance.
 
 ## S5 · OUTRO
 
-You can now follow a number forward, from source to screen. Chapter 3 turns that same chain around: if something upstream changes, what breaks — and how do you find out before your executive does?
+Chapters 6 through 11 traced one path end to end: a source system extracted, transformed through ETL or ELT, landed in a lake or warehouse, modeled in a semantic layer, and surfaced through Power BI to a dashboard. You can now follow a number forward, from source to screen. Chapter 3 turns that chain around: if something upstream changes, what breaks — and how do you find out before your executive does?

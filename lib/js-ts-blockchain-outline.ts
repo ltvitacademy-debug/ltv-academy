@@ -250,19 +250,54 @@ export const JS_TS_BLOCKCHAIN_CHAPTERS: ChapterMeta[] = [
           "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792419793/ltv-js-ts-blockchain/ch06-32-npm-and-package-management.mp4",
         durationLabel: "1 min 50 s",
       }),
-      L(33, "building-a-simple-node-script", "Building a Simple Node Script", { contentDir: "ch06/33-building-a-simple-node-script" }),
-      L(34, "environment-variables-and-config", "Environment Variables & Config", { contentDir: "ch06/34-environment-variables-and-config" }),
-      L(35, "file-system-basics", "File System Basics", { contentDir: "ch06/35-file-system-basics" }),
-      L(36, "a-simple-express-server", "A Simple Express Server", { contentDir: "ch06/36-a-simple-express-server" }),
+      L(33, "building-a-simple-node-script", "Building a Simple Node Script", {
+        contentDir: "ch06/33-building-a-simple-node-script",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420184/ltv-js-ts-blockchain/ch06-33-building-a-simple-node-script.mp4",
+        durationLabel: "1 min 50 s",
+      }),
+      L(34, "environment-variables-and-config", "Environment Variables & Config", {
+        contentDir: "ch06/34-environment-variables-and-config",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420553/ltv-js-ts-blockchain/ch06-34-environment-variables-and-config.mp4",
+        durationLabel: "2 min 6 s",
+      }),
+      L(35, "file-system-basics", "File System Basics", {
+        contentDir: "ch06/35-file-system-basics",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792420845/ltv-js-ts-blockchain/ch06-35-file-system-basics.mp4",
+        durationLabel: "1 min 52 s",
+      }),
+      L(36, "a-simple-express-server", "A Simple Express Server", {
+        contentDir: "ch06/36-a-simple-express-server",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421123/ltv-js-ts-blockchain/ch06-36-a-simple-express-server.mp4",
+        durationLabel: "1 min 47 s",
+      }),
     ],
   },
   {
     n: 7,
     title: "Capstone",
     lessons: [
-      L(37, "capstone-kickoff", "Capstone Kickoff", { contentDir: "ch07/37-capstone-kickoff" }),
-      L(38, "capstone-a-typed-node-script", "Capstone: A Typed Node/TS Script That Reads Blockchain Data", { contentDir: "ch07/38-capstone-a-typed-node-script" }),
-      L(39, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", { contentDir: "ch07/39-capstone-wrap-up" }),
+      L(37, "capstone-kickoff", "Capstone Kickoff", {
+        contentDir: "ch07/37-capstone-kickoff",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421418/ltv-js-ts-blockchain/ch07-37-capstone-kickoff.mp4",
+        durationLabel: "1 min 41 s",
+      }),
+      L(38, "capstone-a-typed-node-script", "Capstone: A Typed Node/TS Script That Reads Blockchain Data", {
+        contentDir: "ch07/38-capstone-a-typed-node-script",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792421826/ltv-js-ts-blockchain/ch07-38-capstone-a-typed-node-script.mp4",
+        durationLabel: "1 min 56 s",
+      }),
+      L(39, "capstone-wrap-up", "Capstone: Wrap-Up & Portfolio Presentation", {
+        contentDir: "ch07/39-capstone-wrap-up",
+        videoUrl:
+          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792422071/ltv-js-ts-blockchain/ch07-39-capstone-wrap-up.mp4",
+        durationLabel: "1 min 42 s",
+      }),
     ],
   },
 ];

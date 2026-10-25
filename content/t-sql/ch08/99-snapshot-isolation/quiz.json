@@ -1,0 +1,60 @@
+{
+  "lesson": "snapshot-isolation",
+  "questions": [
+    {
+      "q": "How does SNAPSHOT isolation fundamentally differ from READ UNCOMMITTED through SERIALIZABLE?",
+      "options": [
+        "It uses row versioning to give a consistent point-in-time view, instead of using locks to block other sessions",
+        "It is actually looser than READ UNCOMMITTED",
+        "It only works on single-row tables",
+        "It disables transactions entirely"
+      ],
+      "answer": 0,
+      "explain": "SNAPSHOT is optimistic: instead of locking rows to prevent conflicts, it reconstructs a consistent version of the data as of the transaction's start."
+    },
+    {
+      "q": "What must be done before any session can SET TRANSACTION ISOLATION LEVEL SNAPSHOT?",
+      "options": [
+        "The database must have ALLOW_SNAPSHOT_ISOLATION turned ON",
+        "Every table in the database must be rebuilt with a rowversion column",
+        "All other sessions must be disconnected",
+        "SERIALIZABLE must be enabled first"
+      ],
+      "answer": 0,
+      "explain": "ALTER DATABASE ... SET ALLOW_SNAPSHOT_ISOLATION ON is a one-time, database-level prerequisite for SNAPSHOT isolation to be usable."
+    },
+    {
+      "q": "Why don't SNAPSHOT readers block writers, or writers block SNAPSHOT readers?",
+      "options": [
+        "A SNAPSHOT read is served from a versioned copy of the data, not the live row, so there's no shared lock for a writer to wait on",
+        "SNAPSHOT isolation disables all locks database-wide for every session",
+        "Writers always wait for SNAPSHOT readers to finish, just silently",
+        "SNAPSHOT isolation only reads from a separate read-only replica"
+      ],
+      "answer": 0,
+      "explain": "Because SNAPSHOT reads a versioned, consistent copy rather than the live row under lock, there's nothing for a concurrent writer to block on, and vice versa."
+    },
+    {
+      "q": "What happens when two SNAPSHOT transactions both try to update the same row, based on the same starting snapshot?",
+      "options": [
+        "SQL Server raises error 3960 and rolls back the second transaction to commit its write",
+        "Both updates silently succeed, and the last one wins with no error",
+        "The first transaction to start automatically blocks the second from even reading the row",
+        "SQL Server merges both updates into a single combined value"
+      ],
+      "answer": 0,
+      "explain": "SNAPSHOT isolation detects this write-write conflict and aborts the second writer with error 3960, rather than letting it silently overwrite based on stale data."
+    },
+    {
+      "q": "If Window 1 opens a SNAPSHOT transaction and reads a row, then Window 2 updates and commits a change to that same row under READ COMMITTED, what does Window 1 see on a second read of that row (still in its original transaction)?",
+      "options": [
+        "The original value, because Window 1 is reading from its own fixed snapshot taken at the transaction's start",
+        "Window 2's new value, because SNAPSHOT always shows the latest committed data",
+        "An error, because the row was modified by another session",
+        "NULL, because the row is now ambiguous"
+      ],
+      "answer": 0,
+      "explain": "SNAPSHOT isolation gives a consistent view of the data as of when the transaction started, unaffected by other transactions committing afterward."
+    }
+  ]
+}

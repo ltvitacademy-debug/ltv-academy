@@ -1,0 +1,106 @@
+# LLM Call Wrapper, Retry & Fake-Model Test Harness
+# Compiled from Chapter 4, Lesson 17 (Using LLM APIs From Python).
+#
+# The pattern: hide every provider behind one narrow function,
+#   call_llm(prompt) -> text
+# so retries, testing, and provider swaps never touch your pipeline code.
+# Copy this file into a new project and fill in ONE of the provider blocks.
+
+import os
+import time
+
+
+def get_key(name):
+    key = os.environ.get(name)
+    if not key:
+        raise RuntimeError(f"Set the {name} environment variable")
+    return key
+
+
+# ---------------------------------------------------------------------------
+# Provider call shapes (NOT run as-is -- pick one, confirm against that
+# provider's CURRENT documentation before relying on it; model names and
+# parameters change often).
+# ---------------------------------------------------------------------------
+
+def _call_openai(prompt):
+    from openai import OpenAI
+    client = OpenAI()  # reads OPENAI_API_KEY
+    r = client.responses.create(model="MODEL_NAME", input=prompt)
+    return r.output_text
+
+
+def _call_anthropic(prompt):
+    from anthropic import Anthropic
+    client = Anthropic()  # reads ANTHROPIC_API_KEY
+    m = client.messages.create(
+        model="MODEL_NAME",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return m.content[0].text
+
+
+def _call_azure_openai(prompt):
+    from openai import OpenAI
+    key = os.getenv("AZURE_OPENAI_API_KEY")
+    client = OpenAI(
+        api_key=key,
+        base_url="https://YOUR-RESOURCE.openai.azure.com/openai/v1/",
+    )
+    r = client.responses.create(model="MY_DEPLOYMENT_NAME", input=prompt)
+    return r.output_text
+
+
+# ---------------------------------------------------------------------------
+# Retry wrapper with exponential backoff (this part is plain Python, runs
+# anywhere). The official SDKs also retry some failures by default --
+# check their current docs before stacking this on top of an SDK that
+# already retries internally.
+# ---------------------------------------------------------------------------
+
+def with_retries(fn, attempts=3, base_delay=0.1):
+    for attempt in range(1, attempts + 1):
+        try:
+            return fn()
+        except ConnectionError as err:
+            print(f"attempt {attempt} failed: {err}")
+            if attempt == attempts:
+                raise
+            time.sleep(base_delay * 2 ** (attempt - 1))
+
+
+# ---------------------------------------------------------------------------
+# Fake model for offline testing. Swap FakeModel() for a real provider call
+# once your pipeline logic is working -- nothing else in your code changes,
+# because call_llm's signature never did.
+# ---------------------------------------------------------------------------
+
+class FakeModel:
+    """Stand-in for a real model. Fails twice, then answers -- useful for
+    exercising the retry path without any network access."""
+    def __init__(self, reply="Items can be returned within 30 days. [0]",
+                 fail_times=2):
+        self.calls = 0
+        self.reply = reply
+        self.fail_times = fail_times
+
+    def __call__(self, prompt):
+        self.calls += 1
+        if self.calls <= self.fail_times:
+            raise ConnectionError("simulated timeout")
+        return self.reply
+
+
+model = FakeModel()
+
+
+def call_llm(prompt):
+    return with_retries(lambda: model(prompt))
+
+
+if __name__ == "__main__":
+    print(call_llm("How many days do I have to return an item?"))
+    # attempt 1 failed: simulated timeout
+    # attempt 2 failed: simulated timeout
+    # Items can be returned within 30 days. [0]

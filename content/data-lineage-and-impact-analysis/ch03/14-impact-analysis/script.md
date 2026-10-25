@@ -7,35 +7,48 @@ Segments map 1:1 to slides. Target: ~2-3 minutes total.
 ## S1 · TITLE CARD
 
 Impact analysis answers one question: if this changes, what breaks?
-It's Lesson 12's downstream walk, put to work before a change ships,
-instead of after a stakeholder reports something's wrong.
+It's different from simply knowing a dependency exists — it's Lesson
+12's downstream walk, put to work before a change ships. This is
+before-the-fact discovery: finding consequences before you make them,
+rather than hearing about them from an angry stakeholder after a
+report breaks. The full set of consumers it surfaces is informally
+called the blast radius.
 
 ## S2 · STEPS CARD (the process)
 
 Three steps. Identify the change point — the exact column or
 transformation about to change. Traverse downstream, following every
 dependency, then every dependency of those, until you hit the leaves.
-Then classify what you find — not every consumer is affected the same
-way.
+Classify what you find — a report displaying the field directly is
+affected differently than a table that stores it but never surfaces
+it. Without documented lineage, this walk is done from memory — slow,
+incomplete, easy to miss something in.
 
 ## S3 · STEPS CARD (CDEs matter most)
 
 Not all impact is equal. Metadata Management, Chapter 4, introduced
-Critical Data Elements — the small set whose errors have outsized
-consequences. When you traverse downstream, the first thing worth
-checking is whether the path touches a CDE anywhere — that matters
-more than how many total things get touched.
+Critical Data Elements — the small, deliberately selective set of data
+elements whose errors have outsized consequences for regulatory
+reporting, financial statements, or major decisions. When you
+traverse downstream, check whether the path touches a CDE anywhere,
+before counting how many things it touches. A twenty-table ripple can
+be lower-stakes than one CDE feeding a regulatory report, even though
+it looks bigger on paper.
 
 ## S4 · CODE CARD (worked example)
 
-Renaming Orders dot OrderTotal: it feeds RevenueFact, which feeds an
-executive revenue dashboard — a CDE — and a nightly commission
-calculation job. It also feeds an inventory reorder view's filter
-logic. Three consumers, but the dashboard branch is the one to flag
-loudest.
+Renaming Orders dot OrderTotal: it feeds RevenueFact directly, which
+feeds an executive revenue dashboard — a CDE feeding board reporting —
+and a job that recalculates sales commissions nightly. It also feeds
+an inventory reorder view, which references OrderTotal in a threshold
+filter and needs a closer look rather than an obvious break. Three
+consumers found; the dashboard and commission job would break or go
+stale silently, and the dashboard branch is the one to flag loudest.
 
 ## S5 · OUTRO CARD
 
-Next lesson: change impact assessment — turning this walk into a
-formal, repeatable process with a document, a risk classification,
-and a sign-off, instead of a one-off exercise you do from memory.
+Next lesson: change impact assessment — turning this one-off walk
+into a formal, repeatable process with a written document, a risk
+classification, and a sign-off from someone with authority over the
+affected consumers, instead of an exercise you run from memory
+whenever someone happens to ask.

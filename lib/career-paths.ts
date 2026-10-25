@@ -113,7 +113,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Advanced",
         note: "Automate the business processes around what you just built — report distribution, approvals, notifications and refresh-related workflows",
-        courseSlugs: ["power-automate"],
+        courseSlugs: ["power-automate", "sql-dialects-for-developers"],
       },
     ],
     destinationNote:
@@ -135,7 +135,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Advanced",
         note: "Data Factory, selected sections, plus the business-process automation that shows up in nearly every analyst role",
-        courseSlugs: ["data-factory", "git-github-cicd-for-data", "power-automate"],
+        courseSlugs: ["data-factory", "git-github-cicd-for-data", "power-automate", "sql-dialects-for-developers"],
       },
     ],
     destinationNote:
@@ -153,7 +153,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["how-it-teams-work", "t-sql-development", "power-bi", "snowflake", "dbt-analytics-engineering", "git-github-cicd-for-data"],
       },
-      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "data-factory", "airflow"] },
+      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "data-factory", "airflow", "sql-dialects-for-developers"] },
     ],
     destinationNote:
       "Analytics Engineer → Senior Analytics Engineer → Staff/Principal Analytics Engineer → Data/Analytics Architect. Worth calling out on the site explicitly — students hear far less about this path than Data Analyst or Data Engineer.",
@@ -182,7 +182,7 @@ export const CAREER_PATHS: CareerPath[] = [
       },
       {
         label: "Advanced",
-        courseSlugs: ["git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "airflow", "kafka-event-streaming"],
+        courseSlugs: ["git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "airflow", "kafka-event-streaming", "sql-dialects-for-developers"],
       },
     ],
     destinationNote:
@@ -209,6 +209,7 @@ export const CAREER_PATHS: CareerPath[] = [
           "airflow",
           "terraform-bicep-for-data-engineers",
           "data-engineering-career-and-capstone",
+          "sql-dialects-for-developers",
         ],
       },
     ],
@@ -231,7 +232,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Advanced",
         note: "Databricks/Spark, selected content",
-        courseSlugs: ["azure-databricks-and-delta-lake", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "aws-capstone"],
+        courseSlugs: ["azure-databricks-and-delta-lake", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "aws-capstone", "sql-dialects-for-developers"],
       },
     ],
     destinationNote:
@@ -250,7 +251,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["how-it-teams-work", "t-sql-development", "python-for-data-engineers", "snowflake", "dbt-analytics-engineering", "data-factory", "power-bi"],
       },
-      { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers"] },
+      { label: "Advanced", courseSlugs: ["airflow", "git-github-cicd-for-data", "terraform-bicep-for-data-engineers", "sql-dialects-for-developers"] },
       {
         label: "Capstone",
         note: "Final capstone: ties Snowflake, dbt, Airflow, Power BI, Git/CI-CD, and Terraform into one platform",
@@ -274,7 +275,7 @@ export const CAREER_PATHS: CareerPath[] = [
         label: "Job Ready",
         courseSlugs: ["how-it-teams-work", "t-sql-development", "azure-fundamentals", "azure-database-administrator", "data-factory"],
       },
-      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data"] },
+      { label: "Advanced", courseSlugs: ["python-for-data-engineers", "powershell-fundamentals", "terraform-bicep-for-data-engineers", "git-github-cicd-for-data", "sql-dialects-for-developers"] },
     ],
     courseDetails: {
       "python-for-data-engineers": "Focus on Chapters 5–7 — database connectivity, SQL integration, and automation — the Python a working Azure DBA actually reaches for, alongside the fundamentals that support it.",

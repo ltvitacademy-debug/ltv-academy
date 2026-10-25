@@ -7,37 +7,54 @@ Segments map 1:1 to slides. Target: ~2-3 minutes total.
 ## S1 · TITLE CARD
 
 Chapter 1 closes with the practical question: how does lineage actually
-get captured? Three approaches, two open standards worth knowing, and
-the tradeoffs between them.
+get captured? Three approaches, two open standards worth knowing by
+name, and the tradeoffs between them.
 
-## S2 · STEPS CARD (three approaches)
+## S2 · STEPS CARD (manual and static parsing)
 
-Manual documentation — cheap to start, decays the moment the real
-pipeline changes. Static parsing — a tool reads the actual source code
-and derives lineage automatically, but only sees what the code expresses
-directly. Runtime capture — a tool observes what actually happens when a
-pipeline runs, the most trustworthy in principle, but requires
-instrumenting the running system.
+Manual documentation — someone who built or knows a pipeline writes
+down by hand what feeds what. Cheapest to start, works for small stable
+systems, but decays the moment the real pipeline changes and nobody
+remembers to update it. Static parsing — a tool reads the actual source
+code, SQL scripts, ETL job definitions, transformation configs, and
+derives lineage automatically, without running it. Scales better and
+stays closer to the truth, but dynamic logic built at runtime can
+defeat it.
 
-## S3 · STEPS CARD (standards)
+## S3 · STEPS CARD (runtime capture)
 
-If every tool records lineage in its own format, you can't combine
-lineage from a warehouse tool with lineage from an orchestration tool.
-OpenLineage is an open specification for describing lineage events in a
-common format. W3C PROV is an older, broader model for provenance in
-general, that underlies a lot of modern lineage tooling.
+Runtime capture instead observes what actually happens when a pipeline
+runs — which tables were read, which were written, in what order — and
+records that as lineage. It captures real executed behavior rather than
+an inference about intended behavior, the most trustworthy of the three
+in principle. But it requires instrumenting the running systems, and it
+only sees jobs that have actually executed at least once.
 
-## S4 · STEPS CARD (tradeoffs, mixing approaches)
+## S4 · STEPS CARD (open standards)
 
-Manual decays over time but suits small, stable systems. Static parsing
-reflects code as written and scales well. Runtime capture reflects what
-actually ran. Most real organizations mix all three — automated capture
-for the technical detail, manual documentation for legacy gaps, and a
-business-lineage layer written by people on top.
+Capturing lineage is only half the problem — if every tool records it
+in its own proprietary format, lineage from a warehouse tool can't
+combine with lineage from an orchestration tool into one coherent
+picture. OpenLineage is an open specification for describing lineage
+events — runs, datasets, jobs — in a common format a shared backend can
+stitch into one graph. W3C PROV is an older, broader data model for
+provenance in general.
 
-## S5 · OUTRO CARD
+## S5 · STEPS CARD (why organizations mix them)
 
-That closes Chapter 1 — lineage concepts. Chapter 2 moves from concepts
+Manual documentation decays over time but suits small, stable, one-off
+systems. Static parsing reflects code as written and, once built, runs
+automatically. Runtime capture reflects what actually ran, but requires
+instrumentation. Most real organizations mix all three: automated
+capture for the technical, column-level detail feeding a pipeline,
+manual documentation filling gaps for legacy systems nothing else can
+reach, plus a business-lineage layer written and maintained by people.
+
+## S6 · OUTRO CARD
+
+This chapter covered what lineage is, why it matters, the business and
+technical split, the table and column granularity split, and now how it
+actually gets captured and standardized. Chapter 2 moves from concepts
 to practice: tracing lineage through real source systems, ETL and ELT
-pipelines, lakes and warehouses, semantic models, and all the way into
+pipelines, lakes and warehouses, semantic models, and all the way to
 Power BI dashboards.

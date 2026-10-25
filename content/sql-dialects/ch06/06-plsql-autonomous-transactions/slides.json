@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "SQL Dialects: T-SQL, PL/SQL, MySQL & Beyond · Chapter Six",
+    "titlePlain": "Autonomous ",
+    "titleEmphasis": "Transactions",
+    "titleSuffix": " in PL/SQL",
+    "subtitle": "Lesson 40 · PL/SQL Deep Dive for T-SQL Developers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A block's transaction, fully independent",
+    "code": "CREATE OR REPLACE PROCEDURE log_login_attempt (...)\nIS\n  PRAGMA AUTONOMOUS_TRANSACTION;\nBEGIN\n  INSERT INTO login_audit (username, attempted_at)\n  VALUES (p_username, SYSTIMESTAMP);\n  COMMIT;  -- commits ONLY this, independent of the caller\nEND;\n/",
+    "caption": "Starts a brand-new transaction, unrelated to whatever called it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real use case: audit logging that survives",
+    "code": "log_login_attempt('system', TRUE);  -- commits immediately\nUPDATE accounts SET balance = balance - p_amount ...;\nIF p_amount > 1000000 THEN\n  RAISE_APPLICATION_ERROR(-20001, 'Over limit');\n  -- rolls back the updates, NOT the audit row\nEND IF;",
+    "caption": "The audit row persists even though the main transfer rolls back."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Rule: must COMMIT or ROLLBACK before returning",
+    "code": "PRAGMA AUTONOMOUS_TRANSACTION;\nBEGIN\n  INSERT INTO login_audit (username) VALUES ('test');\n  -- Missing COMMIT/ROLLBACK here raises\n  -- ORA-06519: active autonomous transaction detected\nEND;\n/",
+    "caption": "Oracle enforces this strictly — no implicit commit on exit."
+  },
+  {
+    "type": "code",
+    "eyebrow": "T-SQL nested transactions are NOT independent",
+    "code": "BEGIN TRANSACTION;\n  INSERT INTO LoginAudit (Username) VALUES ('system');\n  BEGIN TRANSACTION;  -- just a nesting COUNT, not isolated\n    UPDATE Accounts SET Balance = Balance - 1000 ...;\n  ROLLBACK TRANSACTION;\n-- The LoginAudit insert is rolled back TOO",
+    "caption": "An outer ROLLBACK undoes everything — T-SQL has no true autonomous equivalent."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 41",
+    "titlePlain": "BULK COLLECT and ",
+    "titleEmphasis": "FORALL",
+    "titleSuffix": "",
+    "subtitle": "Reducing PL/SQL's context-switch overhead."
+  }
+]

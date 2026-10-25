@@ -47,7 +47,7 @@ if (!fs.existsSync(mp4)) {
 const publicId = `ltv-full-circle-${pathSlug}/${lessonSlug}`;
 const uploadOut = execFileSync(
   process.execPath,
-  [path.join(ROOT, "scripts", "course-build", "upload-to-cloudinary.js"), mp4, publicId],
+  [path.join(ROOT, "scripts", "course-build", "upload-to-bunny.js"), mp4, publicId],
   { env: process.env, encoding: "utf8" }
 );
 console.log(uploadOut);

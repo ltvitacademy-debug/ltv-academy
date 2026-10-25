@@ -8,34 +8,51 @@ Segments map 1:1 to slides. Target: ~2-3 minutes total.
 
 Lesson 14 walked through impact analysis once, for one change. A
 change impact assessment is that same exercise, formalized into a
-process every meaningful change goes through before it ships.
+process every meaningful change goes through before it ships — not
+because every change needs heavy process, but because the changes
+that do need it are hard to tell apart from the ones that don't until
+you've actually traced the lineage.
 
 ## S2 · STEPS CARD (the four stages)
 
-Four stages. Propose — describe precisely what's changing. Trace
-lineage — perform and document the downstream walk, not just in
-someone's head. Classify risk — score the findings, high, medium, or
-low. Sign off and communicate — get approval, and notify affected
-owners before it ships, not after.
+Four stages. Propose — describe precisely what's changing, in what
+dataset, field, or transformation. Trace lineage — perform and
+document the downstream walk, not just in someone's head. Classify
+risk — score the findings, high, medium, or low. Sign off and
+communicate — someone with authority approves, and affected owners are
+notified before it ships, not after.
 
-## S3 · STEPS CARD (risk isn't just counting)
+## S3 · STEPS CARD (what goes in the document)
+
+A change impact assessment is only useful if it's written down. At
+minimum, it captures what's changing — the exact dataset, column, or
+transformation; who's affected — every downstream consumer the trace
+found, with an owner; the risk level, high, medium, or low; and a
+rollback plan for what happens if the change ships and something
+breaks anyway.
+
+## S4 · STEPS CARD (risk isn't just counting)
 
 Risk classification isn't just counting consumers. Five non-critical
 tables and one dashboard that's a Critical Data Element are not the
 same risk level, even though the second change touches fewer things.
-Any trace that touches a CDE gets treated as at least medium risk,
-regardless of how small it otherwise looks.
+Any trace that touches a CDE is automatically treated as at least
+medium risk, regardless of how small it otherwise looks — weight
+what's affected, not just how much.
 
-## S4 · CODE CARD (grain change example)
+## S5 · CODE CARD (grain change example)
 
 Changing SalesFact from one row per order to one row per order line.
-Three reports doing SUM aggregations still work fine. One report
-counting rows — "number of orders" — now silently double-counts. That
-one gets flagged high risk and fixed before the change ships.
+Three reports doing SUM aggregations still work fine at the new grain.
+One report counting rows — number of orders — now silently
+double-counts, because the grain changed underneath it. That's exactly
+the break that counting consumers, without checking what each one does
+with the data, would have missed — it gets flagged high risk and
+fixed first.
 
-## S5 · OUTRO CARD
+## S6 · OUTRO CARD
 
 Next lesson: lineage for root cause analysis — the mirror image of
-everything in this lesson. Instead of walking downstream from a
-proposed change, you'll walk upstream from a number that's already
-wrong.
+everything here. Instead of walking downstream from a proposed change,
+you'll walk upstream from a number that's already wrong, to find out
+where it started.

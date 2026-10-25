@@ -1,0 +1,60 @@
+{
+  "lesson": "schema-locks",
+  "questions": [
+    {
+      "q": "Why does SQL Server need a separate lock category for a table's schema, apart from locks on its data?",
+      "options": [
+        "Because a column disappearing mid-query is a different, more disruptive problem than a row being edited mid-query",
+        "Because schema locks are actually identical to row locks",
+        "Because SQL Server only has one lock type total, and this is it",
+        "Because DDL statements never run inside transactions"
+      ],
+      "answer": 0,
+      "explain": "Structural changes mid-query (like a dropped column) are a fundamentally different hazard than data changes, so they get their own lock category."
+    },
+    {
+      "q": "When is a schema stability (Sch-S) lock taken?",
+      "options": [
+        "Automatically during normal query compilation and execution, essentially every time a statement runs against a table",
+        "Only when a DBA explicitly requests it",
+        "Only during ALTER TABLE statements",
+        "Only once per server restart"
+      ],
+      "answer": 0,
+      "explain": "Sch-S is taken routinely during ordinary query execution to guarantee the table's structure doesn't change while the query runs."
+    },
+    {
+      "q": "What is a schema modification (Sch-M) lock compatible with?",
+      "options": [
+        "Nothing — it is incompatible with everything, including Sch-S",
+        "Other Sch-M locks only",
+        "Sch-S locks, but not data locks",
+        "All shared and intent locks"
+      ],
+      "answer": 0,
+      "explain": "Sch-M is deliberately incompatible with everything, including Sch-S, so a structural change can't happen while any query is mid-execution against that table."
+    },
+    {
+      "q": "Why can an ordinary SELECT end up blocking an ALTER TABLE statement running against the same table?",
+      "options": [
+        "The SELECT holds a Sch-S lock, and Sch-M (needed by ALTER TABLE) conflicts with Sch-S, so ALTER TABLE waits for the SELECT to finish",
+        "SELECT statements always take a Sch-M lock",
+        "ALTER TABLE never actually needs any lock",
+        "SELECT and ALTER TABLE can never run against the same table at all"
+      ],
+      "answer": 0,
+      "explain": "Because Sch-M conflicts with Sch-S in both directions, a long-running SELECT can delay a structural change just as easily as the reverse."
+    },
+    {
+      "q": "What is the practical, real-world symptom of Sch-M and Sch-S being mutually exclusive?",
+      "options": [
+        "An ALTER TABLE against a busy table can appear to hang while waiting for in-flight queries to finish, and vice versa",
+        "ALTER TABLE statements always fail instantly with an error",
+        "SELECT statements silently return stale data instead of waiting",
+        "Nothing — schema locks have no observable effect on query behavior"
+      ],
+      "answer": 0,
+      "explain": "This mutual exclusivity is exactly why DDL changes are often scheduled during low-traffic windows."
+    }
+  ]
+}

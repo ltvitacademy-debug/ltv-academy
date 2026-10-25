@@ -7,6 +7,7 @@ import { PYTHON_CHAPTERS } from "./python-outline";
 import { DATA_FACTORY_CHAPTERS } from "./data-factory-outline";
 import { BLOCKCHAIN_CHAPTERS } from "./blockchain-outline";
 import { TSQL_CHAPTERS } from "./t-sql-outline";
+import { SQL_DIALECTS_CHAPTERS } from "./sql-dialects-outline";
 import { DE_FOUNDATIONS_CHAPTERS } from "./de-foundations-outline";
 import { DATABRICKS_DELTA_CHAPTERS } from "./databricks-delta-outline";
 import { FABRIC_REALTIME_CHAPTERS } from "./fabric-realtime-outline";
@@ -294,10 +295,19 @@ export const COURSES: CourseMeta[] = [
     slug: "t-sql-development",
     title: "T-SQL Development",
     tagline:
-      "From your first SELECT to performance tuning and data warehousing — 118 lessons in real SQL Server Management Studio, working against AdventureWorks2012 and AdventureWorksDW2014.",
+      "From your first SELECT to writing data, locking and isolation levels, and data warehousing — 182 lessons in real SQL Server Management Studio, working against AdventureWorks2012 and AdventureWorksDW2014.",
     status: "available",
     chapters: TSQL_CHAPTERS,
     contentBase: "t-sql",
+  },
+  {
+    slug: "sql-dialects-for-developers",
+    title: "SQL Dialects: T-SQL, PL/SQL, MySQL & Beyond",
+    tagline:
+      "You already know T-SQL cold — now learn how PL/SQL, MySQL, PostgreSQL, and cloud warehouse SQL actually differ, so you can read and write real code on whatever platform a job throws at you.",
+    status: "available",
+    chapters: SQL_DIALECTS_CHAPTERS,
+    contentBase: "sql-dialects",
   },
   {
     slug: "data-engineering-foundations",

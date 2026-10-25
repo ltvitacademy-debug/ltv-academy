@@ -4,20 +4,20 @@ Segments map 1:1 to slides. Target: ~2-3 minutes total.
 
 ## S1 · TITLE
 
-Lesson 8 ended at the warehouse's gold layer. This lesson covers what sits on top of it — a semantic model, the layer that turns warehouse tables into something a report can actually query.
+Lesson 8 ended at the warehouse's gold layer — fact and dimension tables. This lesson covers what sits on top of it: a semantic model, like a Power BI dataset, a Tableau published data source, an Analysis Services model, or a dbt semantic layer — the layer that turns warehouse tables into something a report can actually query.
 
 ## S2 · STEPS — WHAT A SEMANTIC MODEL ADDS
 
-A semantic model pulls from warehouse tables, relates them into a model, and defines measures — calculations like Total Sales that don't exist as a column anywhere upstream. That's a genuinely new kind of lineage edge, not just another hop in the same chain.
+A semantic model pulls from warehouse tables, renames and relates them into a model a report can query, and defines measures — calculations like Total Sales or Year-over-Year Growth that don't exist as columns anywhere upstream. That's a genuinely new kind of lineage edge: a measure can be built from a column, from another measure, or from several measures combined, branching and recombining in ways table-to-table lineage usually doesn't.
 
 ## S3 · STEPS — IMPORT VS DIRECTQUERY
 
-How the model connects changes what current even means. Import copies data at refresh time — fast, but frozen as of that refresh. DirectQuery queries the warehouse live on every interaction — always current, but it inherits whatever freshness problem already exists upstream.
+How a semantic model connects to its warehouse tables changes what current even means for everything built on top of it. Import copies data into its own storage at refresh time — fast to query, but frozen as of the last refresh, the same lag you saw with materialized tables in Lesson 8. DirectQuery queries the warehouse live, on every interaction — always current, but it inherits the warehouse's own freshness, propagating any view-versus-materialized lag straight through to the report. Knowing the mode tells you whether a wrong number is stale or live.
 
 ## S4 · CODE — MEASURE-TO-MEASURE LINEAGE
 
-A warehouse column feeds a base measure, which feeds a second measure built on top of it, which feeds a visual. A single broken column can cascade through every measure built on it — lineage inside the model, distinct from lineage into it.
+fact_sales.amount feeds a base measure, Total Sales — a simple SUM. Total Sales then feeds Total Sales YoY, a measure built on another measure, which feeds the visual the report actually shows. This chain is why "a broken upstream column breaks a report" undersells the real blast radius: a single column feeding one base measure can cascade into every measure built on top of it, and every visual built on any of those — lineage inside the semantic model, distinct from lineage into it.
 
 ## S5 · OUTRO
 
-Next lesson: a real product's lineage view — Power BI's own lineage diagram, screen by screen, with actual screenshots.
+Next lesson: a real product's lineage view — Power BI's own lineage diagram, screen by screen, with actual screenshots of the canvas, the highlight interaction, and the metadata panel.
