@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CareerPath } from "@/lib/career-paths";
 import { getCareerPath } from "@/lib/career-paths";
 import { getCourse, lessonCount } from "@/lib/courses";
+import type { CapstoneTier } from "@/lib/capstoneProjects";
 import { COURSE_CERTIFICATIONS, certificationsForCourses } from "@/lib/course-certifications";
 
 function CourseLogo({ slug, className = "h-6 w-6" }: { slug: string; className?: string }) {
@@ -56,6 +57,7 @@ export default function PathDetailRedesign({
   sampleResumeLevels,
   fullCircleSeries,
   pathResourceCount,
+  capstoneTiers,
 }: {
   path: CareerPath;
   hasInterviewPrep?: boolean;
@@ -65,6 +67,7 @@ export default function PathDetailRedesign({
   sampleResumeLevels?: { key: string; label: string }[];
   fullCircleSeries?: { projectTitle: string; projectTagline: string; totalVideos: number; publishedVideos: number } | null;
   pathResourceCount?: number;
+  capstoneTiers?: CapstoneTier[];
 }) {
   const allCourseSlugs = path.stages.flatMap((s) => s.courseSlugs ?? []);
   const tiers = parseSalaryTiers(path.salaryRange);
@@ -757,6 +760,22 @@ export default function PathDetailRedesign({
                   className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
                 >
                   Practice interview questions →
+                </Link>
+              </div>
+            )}
+
+            {capstoneTiers && capstoneTiers.length > 0 && (
+              <div className="rounded-[2px] border-2 border-ink/15 bg-white/50 p-6 text-center">
+                <p className="display text-xl text-ink">Ready to build something real?</p>
+                <p className="mt-2 text-sm text-stone">
+                  Pick a difficulty — Beginner, Intermediate, or Advanced — and work through a
+                  real {path.title} project of your own, start to finish.
+                </p>
+                <Link
+                  href={`/app/capstone-projects/${path.slug}`}
+                  className="mt-5 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep transition-colors"
+                >
+                  Choose your project →
                 </Link>
               </div>
             )}

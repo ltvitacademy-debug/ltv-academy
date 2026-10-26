@@ -44,6 +44,8 @@ import { SSIS_CHAPTERS } from "./ssis-outline";
 import { SSRS_CHAPTERS } from "./ssrs-outline";
 import { DATA_WAREHOUSING_CHAPTERS } from "./data-warehousing-outline";
 import { MICROSOFT_BI_CAPSTONE_CHAPTERS } from "./microsoft-bi-capstone-outline";
+import { MICROSOFT_BI_CAPSTONE_BEGINNER_CHAPTERS } from "./microsoft-bi-capstone-beginner-outline";
+import { MICROSOFT_BI_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./microsoft-bi-capstone-intermediate-outline";
 import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
 import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
 import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
@@ -632,6 +634,24 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: MICROSOFT_BI_CAPSTONE_CHAPTERS,
     contentBase: "microsoft-bi-capstone",
+  },
+  {
+    slug: "microsoft-bi-capstone-beginner",
+    title: "Microsoft BI Capstone — Beginner Project",
+    tagline:
+      "Your first real project: one stakeholder, one question — pull the data with T-SQL, build a one-page Power BI dashboard, and present it.",
+    status: "available",
+    chapters: MICROSOFT_BI_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "microsoft-bi-capstone-beginner",
+  },
+  {
+    slug: "microsoft-bi-capstone-intermediate",
+    title: "Microsoft BI Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: two stakeholders, a recurring report, a multi-table data model, a scheduled refresh — and a real bug to find and fix before anyone trusts the numbers.",
+    status: "available",
+    chapters: MICROSOFT_BI_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "microsoft-bi-capstone-intermediate",
   },
   {
     slug: "python-for-ai-engineering",

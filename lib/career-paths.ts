@@ -85,6 +85,17 @@ export type CareerPath = {
   };
   stages: PathStage[];
   destinationNote: string;
+  // The tiered Beginner/Intermediate/Advanced capstone project chooser,
+  // reached from a side link rather than listed as a normal curriculum
+  // course. `advancedCourseSlug` is usually the path's pre-existing,
+  // already-built capstone course (still also listed in `stages` as
+  // normal — this field doesn't remove it from there); beginner/
+  // intermediate are optional until built.
+  capstoneProjects?: {
+    beginnerCourseSlug?: string;
+    intermediateCourseSlug?: string;
+    advancedCourseSlug: string;
+  };
 };
 
 export const CAREER_PATHS: CareerPath[] = [
@@ -118,6 +129,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "This program doesn't lead to a single destination — it leads to a first job. Once you're working, the rest of this catalog becomes optional next steps, not required ones: Analytics Engineer, Azure/Fabric Data Engineer, Snowflake Data Engineer, Azure Database Engineer, and Salesforce Data Analyst all build on exactly what you just learned here. Get job-ready first. Then decide how far you want to go.",
+    capstoneProjects: {
+      beginnerCourseSlug: "microsoft-bi-capstone-beginner",
+      intermediateCourseSlug: "microsoft-bi-capstone-intermediate",
+      advancedCourseSlug: "microsoft-bi-capstone",
+    },
   },
   {
     slug: "data-analyst-bi-engineer",
