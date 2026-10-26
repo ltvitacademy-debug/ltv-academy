@@ -49,6 +49,9 @@ import { MICROSOFT_BI_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./microsoft-bi-caps
 import { DATA_ANALYST_CAPSTONE_BEGINNER_CHAPTERS } from "./data-analyst-capstone-beginner-outline";
 import { DATA_ANALYST_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./data-analyst-capstone-intermediate-outline";
 import { DATA_ANALYST_CAPSTONE_ADVANCED_CHAPTERS } from "./data-analyst-capstone-advanced-outline";
+import { ANALYTICS_ENGINEER_CAPSTONE_BEGINNER_CHAPTERS } from "./analytics-engineer-capstone-beginner-outline";
+import { ANALYTICS_ENGINEER_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./analytics-engineer-capstone-intermediate-outline";
+import { ANALYTICS_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS } from "./analytics-engineer-capstone-advanced-outline";
 import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
 import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
 import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
@@ -682,6 +685,33 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: DATA_ANALYST_CAPSTONE_ADVANCED_CHAPTERS,
     contentBase: "data-analyst-capstone-advanced",
+  },
+  {
+    slug: "analytics-engineer-capstone-beginner",
+    title: "Analytics Engineer Capstone — Beginner Project",
+    tagline:
+      "Your first real project: load raw data into Snowflake, build one dbt model with real tests, and ship it with dbt build.",
+    status: "available",
+    chapters: ANALYTICS_ENGINEER_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "analytics-engineer-capstone-beginner",
+  },
+  {
+    slug: "analytics-engineer-capstone-intermediate",
+    title: "Analytics Engineer Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: two stakeholders, an incremental model, a custom Jinja macro, dbt docs — and a failed test to diagnose and fix before it ships.",
+    status: "available",
+    chapters: ANALYTICS_ENGINEER_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "analytics-engineer-capstone-intermediate",
+  },
+  {
+    slug: "analytics-engineer-capstone-advanced",
+    title: "Analytics Engineer Capstone — Advanced Project",
+    tagline:
+      "The full platform: Snowflake RBAC, a governed dbt model layer with snapshots and custom tests, a Python ingestion script, CI/CD on every pull request, and a production incident caught before it ships.",
+    status: "available",
+    chapters: ANALYTICS_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS,
+    contentBase: "analytics-engineer-capstone-advanced",
   },
   {
     slug: "python-for-ai-engineering",

@@ -1,0 +1,60 @@
+{
+  "lesson": "handling-a-late-breaking-schema-change",
+  "questions": [
+    {
+      "q": "Where does the dbt build actually fail first after raw_orders.status is renamed to order_status with no warning?",
+      "options": [
+        "In the Power BI report, with no error anywhere upstream",
+        "At the staging model, stg_jaffle_shop__orders — exactly one layer away from the raw source, with an invalid identifier error surfaced from Snowflake",
+        "In the GitHub Actions workflow file itself",
+        "Nowhere — dbt silently ignores renamed columns"
+      ],
+      "answer": 1,
+      "explain": "The staging model reads the old column name directly from source(), so it's the first and closest point of failure — exactly where Lesson 7 said a rename belongs."
+    },
+    {
+      "q": "What does dbt ls --select stg_jaffle_shop__orders+ do, and why is it the real first move here?",
+      "options": [
+        "It deletes the broken model so it can be rebuilt from scratch",
+        "It lists the model and everything downstream that depends on it, turning \"what's the blast radius\" into a graph query instead of a guess",
+        "It automatically fixes the broken column reference",
+        "It only works after the schema change has already been fixed"
+      ],
+      "answer": 1,
+      "explain": "The + suffix selects the model and its downstream dependents, giving a precise, traceable list of every affected model via the ref()/source() graph."
+    },
+    {
+      "q": "In the fix, why does the staging model's OUTPUT column stay named status even though the source column is now order_status?",
+      "options": [
+        "Because dbt does not allow renaming columns in a select statement",
+        "To contain the blast radius at exactly one file — every downstream model, test, and dashboard that already referenced status keeps working unmodified",
+        "Because Snowflake requires output column names to match input names",
+        "It's arbitrary; renaming the output too would have made no difference"
+      ],
+      "answer": 1,
+      "explain": "Renaming only the source-side read and keeping the staging model's own output name stable is what absorbs the change at one layer instead of rippling it everywhere."
+    },
+    {
+      "q": "Which four stops does the fix for this schema change pass through, in order?",
+      "options": [
+        "Power BI, CI/CD, Snowflake roles, then staging",
+        "Staging, then any downstream SQL referencing the old name, then tests, then docs",
+        "Docs, then tests, then staging, then downstream SQL",
+        "Only the staging model needs to change; nothing else is affected"
+      ],
+      "answer": 1,
+      "explain": "The fix starts at staging (closest to the source), then checks downstream SQL, tests, and documentation for any other reference to the old column name."
+    },
+    {
+      "q": "What would have happened if the staging model's output column had also been renamed to order_status, matching the source?",
+      "options": [
+        "Nothing different — renaming the output has no real effect",
+        "The rename would have rippled into every downstream model, every test, and the Power BI report, for a change that carries zero new information",
+        "It would have made the fix faster with no downside",
+        "dbt would have automatically reverted the output name back to status"
+      ],
+      "answer": 1,
+      "explain": "Letting the rename propagate past staging would force every consumer of status to change too — exactly what staging models exist to prevent."
+    }
+  ]
+}

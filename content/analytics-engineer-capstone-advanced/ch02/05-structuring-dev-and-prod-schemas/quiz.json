@@ -1,0 +1,60 @@
+{
+  "lesson": "structuring-dev-and-prod-schemas",
+  "questions": [
+    {
+      "q": "What is the PROD schema's job in this platform?",
+      "options": [
+        "It's where every developer's in-progress dbt build lands while they work",
+        "It's the one schema that has already passed Chapter 4's tests and Chapter 6's CI gate — the only schema anything business-facing is allowed to read from",
+        "It's a temporary staging area for raw CSV files before they're cleaned",
+        "It only exists inside the CI runner, never in the real Snowflake account"
+      ],
+      "answer": 1,
+      "explain": "PROD holds only models that have cleared tests and CI — Power BI (Lesson 22) connects only here, never to RAW or DEV."
+    },
+    {
+      "q": "Why does the GRANT SELECT ON FUTURE TABLES IN SCHEMA prod TO ROLE analyst statement matter?",
+      "options": [
+        "Without it, ANALYST would need a brand-new grant every time dbt build creates a new mart in prod — FUTURE TABLES makes the grant apply automatically",
+        "It only affects tables that existed before the grant was issued",
+        "It is required before CREATE SCHEMA prod can run",
+        "It gives ANALYST write access to future tables, not just read access"
+      ],
+      "answer": 0,
+      "explain": "FUTURE TABLES extends the grant to objects created after the grant itself, so newly built marts are automatically readable by ANALYST without a manual re-grant."
+    },
+    {
+      "q": "How does dbt's \"target\" concept relate to the DEV/PROD schema split this lesson builds?",
+      "options": [
+        "dbt targets have nothing to do with which schema a build lands in",
+        "A target is a named connection profile; this platform defines a dev target and a prod target, each pointing dbt build at a different Snowflake schema",
+        "Targets only control which warehouse size is used, never the schema",
+        "Every dbt project can only ever have one target, named default"
+      ],
+      "answer": 1,
+      "explain": "dbt doesn't know 'dev' and 'prod' as a built-in concept — targets are the real mechanism, and Lesson 6 writes the profiles.yml that defines both."
+    },
+    {
+      "q": "What would go wrong if ANALYST were accidentally granted SELECT on dev instead of only prod?",
+      "options": [
+        "Nothing — dev and prod always contain identical data",
+        "Business users or Power BI could end up reading a developer's half-finished, untested model instead of a trusted, CI-verified mart",
+        "The grant would simply fail with an error and have no effect",
+        "It would automatically revoke TRANSFORMER's access to dev"
+      ],
+      "answer": 1,
+      "explain": "DEV is explicitly where half-finished work lives — letting ANALYST read it would break the whole point of restricting business-facing access to PROD only."
+    },
+    {
+      "q": "Why might a real team give each developer a personal schema like dev_alice instead of one shared dev schema?",
+      "options": [
+        "So two developers running dbt build --target dev at the same time don't overwrite or collide with each other's in-progress models",
+        "Because Snowflake requires a unique schema name per Snowflake user account",
+        "Because TRANSFORMER can only be granted access to one schema at a time",
+        "Because shared schemas are not supported by dbt at all"
+      ],
+      "answer": 0,
+      "explain": "A personal dev schema per developer avoids the real collision risk of multiple people building into the exact same schema simultaneously."
+    }
+  ]
+}

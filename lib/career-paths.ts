@@ -177,6 +177,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Analytics Engineer → Senior Analytics Engineer → Staff/Principal Analytics Engineer → Data/Analytics Architect. Worth calling out on the site explicitly — students hear far less about this path than Data Analyst or Data Engineer.",
+    capstoneProjects: {
+      beginnerCourseSlug: "analytics-engineer-capstone-beginner",
+      intermediateCourseSlug: "analytics-engineer-capstone-intermediate",
+      advancedCourseSlug: "analytics-engineer-capstone-advanced",
+    },
   },
   {
     slug: "azure-fabric-data-engineer",

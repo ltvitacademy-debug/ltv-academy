@@ -1,0 +1,46 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Analytics Engineer Capstone · Intermediate · Lesson 6",
+    "titlePlain": "Building the Incremental ",
+    "titleEmphasis": "Orders Model",
+    "titleSuffix": "",
+    "subtitle": "fct_orders — the model Finance and Ops both query"
+  },
+  {
+    "type": "code",
+    "eyebrow": "fct_orders.sql",
+    "code": "{{ config(\n    materialized='incremental',\n    unique_key='order_id',\n) }}\n\nwith orders as (\n    select * from {{ ref('int_orders__joined') }}\n),\npayments as (\n    select * from {{ ref('stg_jaffle_shop__payments') }}\n),\nfinal as (\n    select orders.order_id, orders.customer_id,\n        orders.order_date, orders.status, payments.amount\n    from orders\n    left join payments on orders.order_id = payments.order_id\n)\nselect * from final\n\n{% if is_incremental() %}\n    where order_date > (select max(order_date) from {{ this }})\n{% endif %}",
+    "caption": "Same is_incremental() idiom this project's own incremental-models lesson already teaches — applied to the real fact model."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The watermark, for this model",
+    "titlePlain": "order_date ",
+    "titleEmphasis": "and",
+    "titleSuffix": " unique_key",
+    "steps": [
+      { "label": "order_date", "sub": "Reliably increases, always populated — the watermark" },
+      { "label": "unique_key: order_id", "sub": "So a rerun updates a changed row, not a duplicate" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Watch this, don't fix it yet",
+    "titlePlain": "The payments join — ",
+    "titleEmphasis": "note it",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Row count check", "sub": "Compare fct_orders to int_orders__joined" },
+      { "label": "If it's larger", "sub": "The join isn't one-row-per-order — Lessons 13-15 return to this" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Next lesson",
+    "titlePlain": "Writing a Custom ",
+    "titleEmphasis": "Jinja Macro",
+    "titleSuffix": "",
+    "subtitle": "A reusable cents_to_dollars() helper for payments.amount"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "finding-the-real-cause",
+  "questions": [
+    {
+      "q": "What row-count comparison narrows down which join is adding rows?",
+      "options": [
+        "Comparing `int_orders__joined`'s count (orders-to-customers only) against `fct_orders`'s count (adds payments)",
+        "Comparing raw_customers to raw_orders",
+        "Comparing fct_orders against itself on two different days",
+        "There's no useful row-count comparison available"
+      ],
+      "answer": 0,
+      "explain": "Since int_orders__joined has no payments join, a higher count on fct_orders points directly at the payments join as the source of extra rows."
+    },
+    {
+      "q": "What controlled test confirms the hypothesis about `raw_payments`?",
+      "options": [
+        "Querying raw_payments directly for the specific duplicated order_ids and confirming count(*) > 1 for them",
+        "Re-running dbt test with --full-refresh",
+        "Checking the Power BI refresh schedule",
+        "Rewriting the join before checking any data"
+      ],
+      "answer": 0,
+      "explain": "Querying the exact suspect table for the exact suspect rows is the controlled test that confirms rather than assumes the cause."
+    },
+    {
+      "q": "What real, legitimate fact about jaffle_shop orders causes `raw_payments` to have multiple rows per `order_id`?",
+      "options": [
+        "A real order can be paid with more than one payment method — a split payment, e.g. part gift card, part credit card",
+        "raw_payments has a bug where every row is duplicated twice",
+        "Orders are randomly assigned extra payment rows by a nightly job",
+        "Every order always has exactly two payment rows by design"
+      ],
+      "answer": 0,
+      "explain": "Split payments are a real, legitimate business scenario — not a data quality defect — that produces more than one payments row per order."
+    },
+    {
+      "q": "Why does the left join in fct_orders multiply rows instead of just adding columns?",
+      "options": [
+        "It matches each order row against every payments row sharing that order_id — one order paired with two payment rows produces two output rows",
+        "left join always duplicates rows regardless of the data",
+        "The join condition uses the wrong column name",
+        "dbt's incremental materialization causes duplication automatically"
+      ],
+      "answer": 0,
+      "explain": "A one-to-many relationship between orders and payments means the join is a one-to-many join, not the one-to-one join it was written to be."
+    },
+    {
+      "q": "Why was this bug invisible when the model was first built?",
+      "options": [
+        "Most orders in the earlier, smaller dataset happened to have exactly one payment row — the fanout was rare until more split payments accumulated",
+        "The join syntax only started being buggy after an upgrade",
+        "Tests weren't enabled until Lesson 13",
+        "It was never actually invisible — it failed immediately"
+      ],
+      "answer": 0,
+      "explain": "The fanout was always structurally possible but statistically rare on the smaller, earlier dataset — exactly why it surfaced only after more data accumulated."
+    }
+  ]
+}

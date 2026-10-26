@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-github-actions-workflow",
+  "questions": [
+    {
+      "q": "Why does this workflow install dbt-snowflake instead of dbt-postgres, the adapter used in the original Git/CI-CD course's version of this pattern?",
+      "options": [
+        "dbt-snowflake is a newer, generally better-performing package in every case",
+        "This platform's warehouse is Snowflake, not Postgres, so the Snowflake-specific adapter is required to connect to it",
+        "dbt-postgres has been fully discontinued and no longer installs",
+        "There is no real difference between the two adapters"
+      ],
+      "answer": 1,
+      "explain": "The adapter has to match the actual database platform — Snowflake here, versus Postgres in the original retail-orders-analytics example."
+    },
+    {
+      "q": "Why can't the workflow rely on a developer's existing ~/.dbt/profiles.yml file?",
+      "options": [
+        "GitHub Actions automatically deletes all YAML files before a run",
+        "A fresh GitHub Actions runner has no home directory full of personal config files and no real password sitting on disk — the file has to be generated at CI time",
+        "profiles.yml is not a supported file format in CI",
+        "dbt does not require a profiles.yml file when running in CI"
+      ],
+      "answer": 1,
+      "explain": "Each CI run starts from a clean, disposable runner with none of a developer's local configuration — the workflow must create profiles.yml itself every time."
+    },
+    {
+      "q": "Where do the real Snowflake connection values in the generated profiles.yml actually come from at run time?",
+      "options": [
+        "They're hardcoded directly as literal text in the workflow YAML file",
+        "env_var(...) inside profiles.yml, fed by step-level env: reading from ${{ secrets.* }} — never written as literal text anywhere in the repo",
+        "They're read from a .env file committed to the repository",
+        "dbt generates random placeholder values automatically"
+      ],
+      "answer": 1,
+      "explain": "The env_var()/secrets.* chain keeps every sensitive value out of the repo entirely, generated fresh from GitHub's encrypted secrets each run."
+    },
+    {
+      "q": "Why does this workflow's dbt build step target schema: ci rather than dev or prod?",
+      "options": [
+        "ci is just an alias for prod with a different name",
+        "CI builds into its own disposable schema with a narrowly-scoped credential, so a misbehaving CI run can't touch real production data",
+        "dbt requires every CI run to use a schema literally named ci",
+        "schema: ci is required so Snowflake can bill CI usage separately"
+      ],
+      "answer": 1,
+      "explain": "A fourth, separate schema plus a scoped SNOWFLAKE_CI_USER credential is the least-privilege pattern — CI never has the access to reach dev or prod."
+    },
+    {
+      "q": "Why does this step run dbt build rather than dbt run followed by a separate dbt test?",
+      "options": [
+        "dbt build runs models and tests together in dependency order, so CI never builds a downstream model on top of data that just failed a test in the same run",
+        "dbt run and dbt test are deprecated commands that no longer exist",
+        "dbt build is required specifically inside GitHub Actions and nowhere else",
+        "There is no difference in outcome between the two approaches"
+      ],
+      "answer": 0,
+      "explain": "This reuses Chapter 4 and 15's exact reasoning: dbt build stops a bad test result from letting dependent models build on top of it, within the same run."
+    }
+  ]
+}

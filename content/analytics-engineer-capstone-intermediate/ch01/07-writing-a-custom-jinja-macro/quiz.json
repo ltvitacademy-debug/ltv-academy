@@ -1,0 +1,60 @@
+{
+  "lesson": "writing-a-custom-jinja-macro",
+  "questions": [
+    {
+      "q": "What real detail about `raw_payments.amount` makes a macro worth writing here?",
+      "options": [
+        "It's stored in cents, not dollars, and every money-displaying model needs the same conversion",
+        "It's stored as a text string that needs parsing",
+        "It's sometimes null and needs a default value",
+        "It's stored in a different currency per row"
+      ],
+      "answer": 0,
+      "explain": "raw_payments.amount is in cents in the real jaffle_shop data (2691 means $26.91) — a conversion every money-touching model needs identically."
+    },
+    {
+      "q": "What correctly defines the `cents_to_dollars` macro?",
+      "options": [
+        "`{% macro cents_to_dollars(column_name, decimal_places=2) %} round({{ column_name }} / 100.0, {{ decimal_places }}) {% endmacro %}`",
+        "`def cents_to_dollars(column_name): return column_name / 100`",
+        "`CREATE FUNCTION cents_to_dollars(amount) RETURNS amount/100`",
+        "`{{ macro cents_to_dollars }} ... {{ end }}`"
+      ],
+      "answer": 0,
+      "explain": "{% macro %} / {% endmacro %} is the real Jinja syntax; decimal_places=2 gives that argument a default."
+    },
+    {
+      "q": "Where is `cents_to_dollars()` called in this lesson, and why there specifically?",
+      "options": [
+        "In `stg_jaffle_shop__payments`, so every downstream model already receives dollars, not cents",
+        "In the Power BI measure, so dbt never has to touch it",
+        "In `fct_orders`, because that's the final model",
+        "It isn't called anywhere yet — that's left for Lesson 11"
+      ],
+      "answer": 0,
+      "explain": "Applying the conversion as early as possible, in staging, means fct_orders and everything after it already work in dollars."
+    },
+    {
+      "q": "What does `{{ cents_to_dollars('amount') }}` compile down to?",
+      "options": [
+        "`round(amount / 100.0, 2)`",
+        "A call to a Python function at query time",
+        "Nothing — it has to be called with both arguments every time",
+        "`amount * 100`"
+      ],
+      "answer": 0,
+      "explain": "The macro's rendered text is plain SQL — no leftover Jinja syntax in the compiled model."
+    },
+    {
+      "q": "Why is this specific conversion a good candidate for a macro, by this project's own rule?",
+      "options": [
+        "The same logic is needed by more than one model, and it's a single business rule that should have exactly one place to change",
+        "Because any calculation involving division must be a macro",
+        "Because dbt requires all column transformations to be macros",
+        "Because it makes the compiled SQL shorter"
+      ],
+      "answer": 0,
+      "explain": "The rule from the project's own macros lesson: write a macro when logic repeats across models or represents one rule that should have one place to change."
+    }
+  ]
+}

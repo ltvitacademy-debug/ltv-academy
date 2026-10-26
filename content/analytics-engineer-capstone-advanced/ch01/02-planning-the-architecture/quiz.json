@@ -1,0 +1,60 @@
+{
+  "lesson": "planning-the-architecture",
+  "questions": [
+    {
+      "q": "What are the five layers of this capstone's architecture, in order?",
+      "options": [
+        "Power BI, dbt, Python, Snowflake, CI/CD",
+        "Snowflake, dbt, Python ingestion, CI/CD, Power BI",
+        "dbt, Snowflake, CI/CD, Power BI, Python ingestion",
+        "CI/CD, Snowflake, dbt, Power BI, Python ingestion"
+      ],
+      "answer": 1,
+      "explain": "Snowflake first (compute/storage/access), then dbt (transformation), then Python ingestion, then the CI/CD gate, then Power BI on top."
+    },
+    {
+      "q": "Why can't dbt alone load a one-off CSV from an external system with no native Snowflake connector?",
+      "options": [
+        "dbt transforms data already inside Snowflake — it doesn't load external files into Snowflake in the first place, which is a separate ingestion job",
+        "dbt is not allowed to run SELECT statements on external data",
+        "Snowflake doesn't support CSV files under any circumstances",
+        "dbt can only read from Python scripts, never from raw tables"
+      ],
+      "answer": 0,
+      "explain": "dbt's job starts once data is already in Snowflake; getting a new external source into Snowflake in the first place is what the Python ingestion layer is for."
+    },
+    {
+      "q": "Why does Power BI connect only to the PROD schema's marts, never RAW or DEV?",
+      "options": [
+        "Power BI is technically incapable of connecting to any other schema",
+        "Because PROD contains only marts that have already passed dbt's tests and the CI/CD gate — it's a deliberate governance boundary, not an afterthought",
+        "RAW and DEV schemas don't exist in Snowflake",
+        "Because Snowflake charges extra for BI tools connecting to RAW"
+      ],
+      "answer": 1,
+      "explain": "Restricting the BI connection to PROD is itself a governance control — it guarantees business users only ever see data that has cleared every check."
+    },
+    {
+      "q": "Why does the order of these five layers matter, rather than building them in any sequence?",
+      "options": [
+        "The order is arbitrary and doesn't matter at all",
+        "Each layer is load-bearing for the next — dbt needs a role and schema from Snowflake, CI/CD needs real models and tests to run dbt build against, and so on",
+        "Snowflake must always be built last for security reasons",
+        "Power BI must be connected before any data exists, so it can validate the schema in advance"
+      ],
+      "answer": 1,
+      "explain": "Each layer depends on something concrete the previous layer produced — skipping ahead leaves the next layer with nothing real to stand on."
+    },
+    {
+      "q": "What is the TRANSFORMER role's job in this architecture, as planned in this lesson?",
+      "options": [
+        "It's the role Power BI connects as to read PROD marts",
+        "It's the Snowflake role dbt runs as — able to read RAW and write to DEV/PROD",
+        "It's a Python library used for data cleaning",
+        "It's the GitHub Actions role used to approve pull requests"
+      ],
+      "answer": 1,
+      "explain": "TRANSFORMER is the role dbt itself runs as, scoped to read raw data and write the models it builds — distinct from the read-only ANALYST role Power BI uses."
+    }
+  ]
+}

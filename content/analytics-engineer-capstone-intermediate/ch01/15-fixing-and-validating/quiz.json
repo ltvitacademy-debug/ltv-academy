@@ -1,0 +1,60 @@
+{
+  "lesson": "fixing-and-validating",
+  "questions": [
+    {
+      "q": "What is the standard dbt fix for a join fanout like this one?",
+      "options": [
+        "Pre-aggregate the many-side of the join down to one row per key before joining",
+        "Add a DISTINCT to the final select statement",
+        "Switch the left join to an inner join",
+        "Delete the duplicate rows manually after each run"
+      ],
+      "answer": 0,
+      "explain": "Collapsing payments to one row per order_id before the join turns the relationship into the one-to-one one the join was always meant to assume."
+    },
+    {
+      "q": "What does `int_payments__aggregated` do with a split payment's two amounts?",
+      "options": [
+        "Sums them into the order's real total revenue with `sum(amount)`",
+        "Keeps only the first payment and discards the second",
+        "Averages the two amounts together",
+        "Multiplies them together"
+      ],
+      "answer": 0,
+      "explain": "sum(amount) grouped by order_id correctly combines a split payment into one true total — which is also what Finance actually wanted."
+    },
+    {
+      "q": "Why is `dbt run --full-refresh` required here, not just a plain `dbt run`?",
+      "options": [
+        "fct_orders's existing incremental data already has the duplicated rows baked in; is_incremental()'s filter would leave that old bad data untouched",
+        "Full refresh is always required after any model change, as a general dbt rule",
+        "Plain dbt run doesn't support changing a ref() inside a CTE",
+        "There's no real difference between the two commands"
+      ],
+      "answer": 0,
+      "explain": "A full refresh re-derives every row under the corrected join; an incremental run would only reprocess new rows, leaving old duplicated rows in place."
+    },
+    {
+      "q": "After the fix, what should happen to Lesson 11's `[Total Revenue]` and Lesson 12's `[Order Count]`?",
+      "options": [
+        "Total Revenue now matches the Snowflake check exactly; Order Count stays unchanged because DISTINCTCOUNT was never actually wrong",
+        "Both measures need to be completely rewritten from scratch",
+        "Order Count also needs fixing because it was previously wrong",
+        "Neither measure is affected by this fix in any way"
+      ],
+      "answer": 0,
+      "explain": "SUM(amount) was inflated by the fanout and is now corrected; DISTINCTCOUNT(order_id) was already immune to the fanout, as set up back in Lesson 12."
+    },
+    {
+      "q": "Only one part of `fct_orders` changes to apply this fix. What is it?",
+      "options": [
+        "The payments CTE's source — from the raw staging model to the new one-row-per-order aggregate",
+        "The unique_key configuration",
+        "The is_incremental() block's watermark column",
+        "The materialization type, from incremental to table"
+      ],
+      "answer": 0,
+      "explain": "Everything else about fct_orders — its config, unique_key, and other columns — stays the same; only where the payments CTE reads from changes."
+    }
+  ]
+}
