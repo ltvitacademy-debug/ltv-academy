@@ -310,7 +310,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Multi-Platform Databases",
         note: "Apply everything above to the platforms every senior DBA eventually meets",
-        courseSlugs: ["cross-platform-relational-database-administration", "nosql-document-and-graph-databases"],
+        courseSlugs: ["cross-platform-relational-database-administration", "nosql-document-and-graph-databases", "sql-dialects-for-developers"],
       },
     ],
     destinationNote:
@@ -429,6 +429,13 @@ export const CAREER_PATHS: CareerPath[] = [
         "note": "Existing LTV course",
         "courseSlugs": [
           "t-sql-development"
+        ]
+      },
+      {
+        "label": "SQL Dialects for Developers",
+        "note": "Writing SQL across SQL Server, Oracle, MySQL, PostgreSQL and cloud warehouses — a governance professional ends up reading queries on all of them",
+        "courseSlugs": [
+          "sql-dialects-for-developers"
         ]
       },
       {
@@ -562,6 +569,7 @@ export const CAREER_PATHS: CareerPath[] = [
         courseSlugs: [
           "how-it-teams-work",
           "t-sql-development",
+          "sql-dialects-for-developers",
           "python-for-data-science",
           "statistics-and-probability-for-data-science",
           "data-visualization-and-eda",
@@ -947,7 +955,7 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$250K–$500K+ total compensation at Principal/Enterprise level — realistic only after years of the progression below",
     isDestination: true,
     stages: [
-      { label: "Start", courseSlugs: ["t-sql-development", "power-bi", "tableau"] },
+      { label: "Start", courseSlugs: ["t-sql-development", "sql-dialects-for-developers", "power-bi", "tableau"] },
       { label: "Expand", courseSlugs: ["data-factory", "snowflake", "dbt-analytics-engineering", "microsoft-fabric-and-real-time-analytics"] },
       { label: "Converge", courseSlugs: ["azure-databricks-and-delta-lake", "data-engineering-career-and-capstone"] },
     ],
@@ -963,7 +971,7 @@ export const CAREER_PATHS: CareerPath[] = [
     salaryRange: "$300K–$600K+ total compensation at elite tech companies — genuinely real, but typically requiring 5–10+ years of production experience and technical ownership",
     isDestination: true,
     stages: [
-      { label: "Foundation", courseSlugs: ["t-sql-development"] },
+      { label: "Foundation", courseSlugs: ["t-sql-development", "sql-dialects-for-developers"] },
       {
         label: "Choose a specialty",
         note: "Pick one",
@@ -1427,7 +1435,7 @@ export const CAREER_PATHS: CareerPath[] = [
       {
         label: "Alternate Track — Data Analyst Foundations",
         note: "Optional branch toward Salesforce Data/Analytics Architect instead of Technical Architect — SQL, SOQL and native Salesforce reporting",
-        courseSlugs: ["t-sql-development", "salesforce-fundamentals-for-data-analysts", "soql-and-salesforce-data-management", "salesforce-reports-and-dashboards"],
+        courseSlugs: ["t-sql-development", "sql-dialects-for-developers", "salesforce-fundamentals-for-data-analysts", "soql-and-salesforce-data-management", "salesforce-reports-and-dashboards"],
       },
       {
         label: "Alternate Track — Analytics & Visualization",

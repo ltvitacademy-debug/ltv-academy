@@ -1254,6 +1254,1229 @@
         "BI tools: Power BI or another reporting layer visualizes the result, backed by a T-SQL query underneath"
       ],
       "explain": "Data is recorded first in an OLTP source system, reshaped by a transform step into warehouse-ready facts and dimensions, loaded into the OLAP warehouse's fact/dimension tables, and only then visualized by a BI tool sitting on top -- every chart or table that tool renders is ultimately backed by a T-SQL query against that warehouse."
+    },
+    {
+      "id": "tsql-71",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch-dml",
+      "difficulty": "foundational",
+      "code": "INSERT INTO dbo.LessonDemo\nVALUES ('Road Bike', 1199.00, 'Blue');",
+      "prompt": "dbo.LessonDemo has columns ProductID (IDENTITY), ProductName, ListPrice, Color, in that order. What happens when this statement runs with no column list given?",
+      "options": [
+        "It inserts successfully, matching 'Road Bike', 1199.00, and 'Blue' to ProductName, ListPrice, and Color by position, since IDENTITY columns are skipped automatically",
+        "It fails, because every INSERT must explicitly name its target columns",
+        "It inserts 'Road Bike' into ProductID, which fails since ProductID is numeric",
+        "It inserts all three values plus a NULL for ProductID, since IDENTITY columns always need an explicit placeholder"
+      ],
+      "correctIndex": 0,
+      "explain": "Omitting the column list is legal and relies on the table's exact declared column order, skipping IDENTITY columns automatically. Here the three literals line up by position with ProductName, ListPrice, and Color, in that order. It's fragile — a later schema change breaks it silently — but it is not an error."
+    },
+    {
+      "id": "tsql-72",
+      "type": "multi-select",
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "code": "INSERT INTO dbo.LessonDemo (ProductName, ListPrice)\nVALUES ('Good Row', 25.00), (NULL, 40.00);",
+      "prompt": "ProductName is declared NOT NULL. Select every true statement about running this multi-row INSERT.",
+      "options": [
+        "The entire statement fails and zero rows are inserted",
+        "'Good Row' is inserted, and only the second tuple fails",
+        "The failure happens because the second tuple supplies NULL for a NOT NULL column",
+        "A multi-row VALUES list is all-or-nothing: one bad tuple blocks every tuple in that statement",
+        "SQL Server silently substitutes an empty string for the missing ProductName and inserts both rows"
+      ],
+      "correctIndices": [
+        0,
+        2,
+        3
+      ],
+      "explain": "A multi-row INSERT is all-or-nothing: if any single tuple violates a constraint, the entire statement is rejected and no rows are inserted, not just the offending one. Here the second tuple explicitly supplies NULL for ProductName, which is NOT NULL, and that single bad tuple blocks 'Good Row' from being inserted too."
+    },
+    {
+      "id": "tsql-73",
+      "type": "fill-in",
+      "chapter": "ch-dml",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: after INSERT INTO dbo.LessonDemo (ProductName, ListPrice, Color) VALUES ('Mountain Bike', 1499.50, 'Black');, the safest way to read back the ProductID value SQL Server just generated for that IDENTITY column, in the same session, is to call ________().",
+      "acceptedAnswers": [
+        "SCOPE_IDENTITY",
+        "SCOPE_IDENTITY()"
+      ],
+      "explain": "SCOPE_IDENTITY() returns the last identity value generated in the current session and current scope, right after the INSERT that created it."
+    },
+    {
+      "id": "tsql-74",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "code": "INSERT INTO dbo.LessonDemo (ProductName, ListPrice, Color)\nSELECT p.Color, p.Name, p.ListPrice\nFROM Production.Product AS p\nWHERE p.ProductLine = 'R';",
+      "prompt": "This INSERT ... SELECT runs without a syntax error. What actually lands in dbo.LessonDemo's columns?",
+      "options": [
+        "ProductName receives each product's Color, ListPrice receives its Name, and Color receives its ListPrice, because the SELECT list is matched to the target column list by position, not by name",
+        "It fails at runtime, because the SELECT column names don't match the target column names",
+        "SQL Server automatically reorders the SELECT columns to match the target column list by name",
+        "Only ProductName gets filled in correctly, since Color happens to come first in both lists"
+      ],
+      "correctIndex": 0,
+      "explain": "INSERT ... SELECT matches the SELECT list to the target column list purely by position, regardless of what either side is named. Here the SELECT list is ordered Color, Name, ListPrice while the target list is ProductName, ListPrice, Color, so each value lands in the wrong column even though nothing raises an error — a mismatched order like this fails silently unless the data types happen to be incompatible."
+    },
+    {
+      "id": "tsql-75",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes what happens if you run an UPDATE statement with a SET clause but no WHERE clause?",
+      "options": [
+        "Every row in the table is updated",
+        "No rows are updated, since WHERE is required to target any rows",
+        "SQL Server raises a syntax error, since WHERE is mandatory on UPDATE",
+        "Only the first row in the table is updated",
+        "SQL Server prompts for confirmation before applying the SET clause to all rows",
+        "Only rows that were most recently inserted are updated"
+      ],
+      "correctIndex": 0,
+      "explain": "Leaving off WHERE is legal syntax, and UPDATE applies its SET assignments to every row currently in the table, the same way a SELECT with no WHERE returns every row.",
+      "distractorExplain": "Option B assumes WHERE is somehow required for an UPDATE to take effect, but WHERE is entirely optional T-SQL syntax — omitting it doesn't block the statement, it widens its scope to every row instead of narrowing it."
+    },
+    {
+      "id": "tsql-76",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch-dml",
+      "difficulty": "advanced",
+      "code": "UPDATE d\nSET d.ListPrice = p.ListPrice\nFROM dbo.LessonDemo AS d\nJOIN Production.Product AS p\n    ON d.ProductName = p.Name\nWHERE p.ProductLine = 'R';",
+      "prompt": "A row in dbo.LessonDemo has a ProductName that doesn't match any Name in Production.Product. What happens to that row when this statement runs?",
+      "options": [
+        "It is left completely untouched, because it never finds a matching row in the join",
+        "Its ListPrice is set to NULL, since the join produces no value to assign",
+        "The entire statement fails, because every row in dbo.LessonDemo must find a match",
+        "It is deleted from dbo.LessonDemo, since an unmatched row violates the join condition"
+      ],
+      "correctIndex": 0,
+      "explain": "An UPDATE ... FROM ... JOIN only touches rows that find a matching row under the ON condition, exactly like an inner join would exclude an unmatched row from a SELECT. A row with no match in Production.Product is simply skipped, left exactly as it was."
+    },
+    {
+      "id": "tsql-77",
+      "type": "matching",
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "prompt": "Match each clause in a joined UPDATE/DELETE statement to the job it actually does.",
+      "left": [
+        "ON",
+        "WHERE",
+        "The alias right after UPDATE or DELETE",
+        "FROM ... JOIN"
+      ],
+      "right": [
+        "Defines the real table and how it's joined to the second table",
+        "Decides which rows pair up between the two tables",
+        "Further filters the already-matched pairs before the write happens",
+        "Names the target of the SET or the rows being removed, defined later in FROM"
+      ],
+      "correctMap": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "explain": "ON decides which rows pair up in the join. WHERE further filters those matched pairs before the UPDATE or DELETE applies. The alias written directly after UPDATE or DELETE is just a name, defined later in the FROM clause, that SET or the removal targets. FROM ... JOIN is where the real table name and the join itself are actually spelled out."
+    },
+    {
+      "id": "tsql-78",
+      "type": "multi-select",
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement comparing TRUNCATE TABLE to DELETE FROM with no WHERE clause, both run against the same table.",
+      "options": [
+        "Both leave the table with zero rows and the same column definitions intact",
+        "TRUNCATE TABLE resets an IDENTITY column's counter back to its seed value; DELETE does not",
+        "TRUNCATE TABLE can take a WHERE clause to remove only some rows, just like DELETE",
+        "DELETE FROM with no WHERE clause removes every row, exactly like TRUNCATE TABLE does",
+        "After DELETE removes all rows and new rows are inserted, the IDENTITY counter continues from where it left off rather than restarting"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "Both statements leave an empty table with its structure untouched, and both remove every row when DELETE has no WHERE clause. The real difference is IDENTITY behavior: TRUNCATE TABLE resets the counter to its seed value, while DELETE leaves it exactly where it was, so the next insert continues numbering from where it left off. TRUNCATE TABLE has no WHERE clause option at all — it's strictly all-or-nothing."
+    },
+    {
+      "id": "tsql-79",
+      "type": "fill-in",
+      "chapter": "ch-dml",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: An UPDATE statement's OUTPUT clause is the only one of INSERT, UPDATE, and DELETE that can reference both the inserted and ________ pseudo-tables at once, since an UPDATE has both an old value and a new value for each changed row.",
+      "acceptedAnswers": [
+        "deleted"
+      ],
+      "explain": "The deleted pseudo-table holds a row's old values, available for DELETE and UPDATE, while inserted holds new values, available for INSERT and UPDATE. Only UPDATE has both an old and a new value for the same changed row, so only UPDATE's OUTPUT clause can reference both pseudo-tables at once."
+    },
+    {
+      "id": "tsql-80",
+      "type": "sequencing",
+      "chapter": "ch-dml",
+      "difficulty": "intermediate",
+      "prompt": "Put these statements in the order needed to delete rows from dbo.LessonDemo priced under 500 while keeping a permanent record of what was removed, using OUTPUT ... INTO.",
+      "items": [
+        "CREATE TABLE dbo.LessonDemoArchive (ProductID INT, ProductName VARCHAR(50), ListPrice MONEY, DeletedAt DATETIME2 DEFAULT SYSDATETIME());",
+        "DELETE FROM dbo.LessonDemo",
+        "OUTPUT deleted.ProductID, deleted.ProductName, deleted.ListPrice",
+        "INTO dbo.LessonDemoArchive (ProductID, ProductName, ListPrice)",
+        "WHERE ListPrice < 500;"
+      ],
+      "explain": "The archive table must exist before anything is written into it. Within the DELETE statement itself, the shape is fixed: DELETE FROM the target table, then OUTPUT naming the deleted-table columns to capture, then INTO the archive table with its matching column list, then WHERE narrowing which rows are removed."
+    },
+    {
+      "id": "tsql-81",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "code": "CREATE TABLE dbo.Widgets (\n    WidgetID INT NOT NULL,\n    Label    NVARCHAR(50) NOT NULL,\n    Notes    NVARCHAR(200)\n);",
+      "prompt": "Notes was declared with no NULL or NOT NULL keyword at all. What nullability does it actually get?",
+      "options": [
+        "NULL — nullability defaults to allowing NULL when the keyword is left off entirely",
+        "NOT NULL — leaving off the keyword defaults to the stricter rule",
+        "The CREATE TABLE statement fails, because every column must explicitly state NULL or NOT NULL",
+        "It depends on the database's default collation setting, not the column definition"
+      ],
+      "correctIndex": 0,
+      "explain": "NULL is the default for most column types when the keyword is omitted entirely — the column is allowed to have no value, the same as if NULL had been written explicitly."
+    },
+    {
+      "id": "tsql-82",
+      "type": "multi-select",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "A table named dbo.LessonChild has a foreign key referencing dbo.LessonParent. Select every true statement about dropping these tables.",
+      "options": [
+        "DROP TABLE dbo.LessonParent; fails while LessonChild's foreign key still references it",
+        "Dropping LessonChild first, then LessonParent, succeeds",
+        "DROP TABLE IF EXISTS silently succeeds against a dependent table even if other objects still reference it",
+        "SQL Server refuses a DROP TABLE that would leave another object's reference broken, rather than dropping it silently",
+        "A view built on top of a table can also block that table's DROP TABLE, the same way a foreign key does"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "explain": "DROP TABLE fails when a foreign key or view still depends on the table, because SQL Server refuses to leave another object broken. Dropping the dependent child table first, then the parent, resolves this. DROP TABLE IF EXISTS only changes behavior for a table that doesn't exist — it does not bypass a genuine dependency failure."
+    },
+    {
+      "id": "tsql-83",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: DROP TABLE dbo.Widgets; raises an error if dbo.Widgets doesn't exist, but DROP TABLE ________ dbo.Widgets; quietly does nothing instead of erroring when the table was never there.",
+      "acceptedAnswers": [
+        "IF EXISTS"
+      ],
+      "explain": "DROP TABLE IF EXISTS drops the table if it's present and quietly does nothing if it isn't, making it the safe form to use at the top of setup scripts that want a guaranteed clean slate."
+    },
+    {
+      "id": "tsql-84",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "advanced",
+      "code": "ALTER TABLE dbo.Widgets\nALTER COLUMN Label NVARCHAR(10) NOT NULL;",
+      "prompt": "dbo.Widgets already has rows, and one existing Label value is 'Replacement Gearbox Assembly' (29 characters), well over 10. What happens when this ALTER COLUMN runs?",
+      "options": [
+        "The entire statement is rejected and nothing changes, because at least one existing value can't fit the new, narrower type",
+        "It succeeds, silently truncating the long value down to its first 10 characters",
+        "It succeeds for every other row, and only the row with the long value is skipped",
+        "It succeeds, and the long value is converted to NULL since it no longer fits"
+      ],
+      "correctIndex": 0,
+      "explain": "ALTER COLUMN always checks the data already in the table before narrowing or changing a column's type. If even one existing row can't fit the new type or satisfy the new constraint, the entire statement is rejected and nothing changes — SQL Server never silently truncates data to make an ALTER succeed."
+    },
+    {
+      "id": "tsql-85",
+      "type": "matching",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Match each identity-related function or object to what it actually returns or represents.",
+      "left": [
+        "SCOPE_IDENTITY()",
+        "@@IDENTITY",
+        "IDENT_CURRENT('table')",
+        "CREATE SEQUENCE"
+      ],
+      "right": [
+        "Last identity value for a specific table, generated by any session, not just yours",
+        "Last identity value inserted in your current session and scope — the safe default",
+        "A standalone number generator that isn't tied to any one table or column",
+        "Last identity value inserted anywhere in your current session, including inside a trigger"
+      ],
+      "correctMap": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "explain": "SCOPE_IDENTITY() is scoped to your current session and scope, making it the safe default. @@IDENTITY widens that to your whole session, including values generated inside a trigger, which is why it can be clobbered. IDENT_CURRENT('table') widens further still, to any session's last value for that specific table, making it the least safe for concurrency. A SEQUENCE, unlike all three, is a standalone object not tied to any one table."
+    },
+    {
+      "id": "tsql-86",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "A table named dbo.Orders currently uses an IDENTITY(1,1) column for OrderID. The team now wants both dbo.Orders and a new dbo.Invoices table to draw their key values from one shared, common pool of numbers. Which feature correctly supports this?",
+      "options": [
+        "A SEQUENCE object, referenced by both tables' DEFAULT constraints with NEXT VALUE FOR",
+        "An IDENTITY(1,1) column defined identically on both tables",
+        "A single computed column shared between the two tables",
+        "A synonym pointing dbo.Invoices at dbo.Orders",
+        "IDENT_CURRENT('dbo.Orders'), read before each insert into dbo.Invoices",
+        "A CHECK constraint comparing OrderID and InvoiceID"
+      ],
+      "correctIndex": 0,
+      "explain": "A SEQUENCE is a standalone object, not tied to any one table, so multiple tables can pull from the exact same pool of numbers via NEXT VALUE FOR. This is something IDENTITY can never do.",
+      "distractorExplain": "Option B defines IDENTITY(1,1) identically on both tables, but each IDENTITY column still only generates values for inserts into its own table — the two tables would each count up independently from 1, not share one common pool of numbers."
+    },
+    {
+      "id": "tsql-87",
+      "type": "fill-in",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: INSERT INTO dbo.LessonDemo (DemoID, Label, IsActive) VALUES (3, 'Third row', NULL); against a table where IsActive is NOT NULL with DEFAULT (1) fails, because supplying an explicit NULL does not fall back to the default — a DEFAULT only applies when the column is ________ from the INSERT's column list entirely.",
+      "acceptedAnswers": [
+        "omitted",
+        "left out"
+      ],
+      "explain": "A DEFAULT constraint only kicks in when a column is left out of the column list entirely. Writing an explicit NULL for that column bypasses the default — SQL Server inserts the NULL you wrote, which fails here because IsActive is also NOT NULL."
+    },
+    {
+      "id": "tsql-88",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch11",
+      "difficulty": "advanced",
+      "code": "CREATE TABLE dbo.OrderLines (\n    OrderLineID INT           NOT NULL PRIMARY KEY,\n    Quantity    INT           NOT NULL,\n    UnitPrice   DECIMAL(10,2) NOT NULL,\n    LineTotal   AS (Quantity * UnitPrice)\n);\n\nCREATE INDEX IX_OrderLines_LineTotal\nON dbo.OrderLines (LineTotal);",
+      "prompt": "What happens when this CREATE INDEX statement runs against the LineTotal column as defined here?",
+      "options": [
+        "It fails, because a plain (non-PERSISTED) computed column has no physically stored value for an index to point at",
+        "It succeeds, and the index is automatically rebuilt every time Quantity or UnitPrice changes",
+        "It succeeds, but the index always reports stale values since LineTotal is recalculated on read",
+        "It succeeds, because any computed column can be indexed regardless of PERSISTED"
+      ],
+      "correctIndex": 0,
+      "explain": "LineTotal is declared without PERSISTED, so it's virtual: SQL Server recalculates it on every read rather than storing it on disk. A non-persisted computed column has no actual stored value for an index to point at, so CREATE INDEX on it fails — PERSISTED is required before a computed column can be indexed."
+    },
+    {
+      "id": "tsql-89",
+      "type": "multi-select",
+      "chapter": "ch11",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about CREATE CLUSTERED INDEX and CREATE NONCLUSTERED INDEX.",
+      "options": [
+        "A table can have only one clustered index, because the data can only be physically stored in one order at a time",
+        "A table can have many nonclustered indexes, each tuned for a different lookup pattern",
+        "A clustered index physically sorts the table's rows; a nonclustered index is a separate structure with pointers back to the rows",
+        "INCLUDE adds extra columns to a nonclustered index's sort key, changing the order rows are stored in",
+        "A nonclustered index with INCLUDE can satisfy a query entirely from the index itself, without following a pointer back to the table"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "A table can only have one clustered index since rows can only be physically ordered one way, but it can have many nonclustered indexes. A clustered index sorts the actual rows; a nonclustered index is a separate lookup structure with pointers. INCLUDE adds columns to a nonclustered index's leaf pages WITHOUT making them part of the sort key — that's exactly what lets a covering index satisfy a query without touching the base table."
+    },
+    {
+      "id": "tsql-90",
+      "type": "sequencing",
+      "chapter": "ch11",
+      "difficulty": "foundational",
+      "prompt": "A reporting database needs a stable local name for AdventureWorks2012.Production.Product, and later needs to repoint that name at a new server without breaking any existing queries. Put these steps in the correct order.",
+      "items": [
+        "CREATE SYNONYM dbo.Products FOR AdventureWorks2012.Production.Product;",
+        "SELECT TOP 5 Name, ListPrice FROM dbo.Products;",
+        "DROP SYNONYM dbo.Products;",
+        "CREATE SYNONYM dbo.Products FOR AdventureWorks2012NewServer.Production.Product;"
+      ],
+      "explain": "The synonym must be created before anything can query it, so existing queries against dbo.Products keep working unaware of where the real object lives. When the underlying object moves to a new server, the old synonym is dropped and recreated pointing at the new location — every query that already referenced dbo.Products keeps working, because the stable name itself never changed."
+    },
+    {
+      "id": "tsql-91",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "SELECT Color, Size, SUM(ListPrice) AS TotalListPrice\nFROM Production.Product\nGROUP BY GROUPING SETS (\n    (Color, Size),\n    (Color),\n    ()\n);",
+      "prompt": "Compared to GROUP BY CUBE (Color, Size), which single subtotal level is missing from this GROUPING SETS result?",
+      "options": [
+        "A Size-alone subtotal (grouped by Size with Color ignored)",
+        "A Color-alone subtotal",
+        "The grand total row",
+        "The full (Color, Size) detail rows"
+      ],
+      "correctIndex": 0,
+      "explain": "CUBE (Color, Size) expands to all four possible combinations: (Color, Size), (Color), (Size), and (). The GROUPING SETS list above only names three of those four, leaving out (Size) — so there's no Size-alone subtotal row, unlike CUBE, which always includes every combination automatically whether you want it or not."
+    },
+    {
+      "id": "tsql-92",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: inside a GROUPING SETS list, writing ________ as one of the grouping sets produces a single grand-total row with no grouping columns at all.",
+      "acceptedAnswers": [
+        "()",
+        "( )",
+        "empty parentheses"
+      ],
+      "explain": "() is an empty grouping set — no columns are grouped by for that row, so it collapses to one grand-total row summarizing the entire result set. It's the same grand-total row that sits at the top of both ROLLUP's hierarchy and CUBE's full power set."
+    },
+    {
+      "id": "tsql-93",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each GROUP BY form to what it actually expands to.",
+      "left": [
+        "ROLLUP (Color, Size)",
+        "CUBE (Color, Size)",
+        "GROUPING SETS ((Color, Size), (Color), ())",
+        "GROUPING SETS ((Color, Size), (Color), (Size), ())"
+      ],
+      "right": [
+        "Expands to the full power set of two columns: all four possible combinations",
+        "A custom list that reproduces CUBE's exact output, written out explicitly",
+        "Expands to a fixed hierarchy: (Color, Size), (Color), () — exactly three grouping sets",
+        "A custom list that reproduces ROLLUP's exact hierarchy, written out explicitly"
+      ],
+      "correctMap": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "explain": "ROLLUP always expands to its fixed three-level hierarchy for two columns. CUBE always expands to the full power set — all four combinations. GROUPING SETS is the one notation that can reproduce either of those as a custom, explicit list: the three-set list matches ROLLUP's hierarchy exactly, and adding (Size) to make a four-set list matches CUBE's full power set — confirming ROLLUP and CUBE really are just convenience shorthand for GROUPING SETS."
+    },
+    {
+      "id": "tsql-94",
+      "type": "single-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes the difference between ISNULL and COALESCE in T-SQL?",
+      "options": [
+        "ISNULL takes exactly two arguments and its result type is based on its first argument's declared type; COALESCE takes any number of arguments and follows standard data type precedence across all of them",
+        "ISNULL and COALESCE are fully interchangeable in every case, including argument count and result type",
+        "COALESCE only takes two arguments, the same as ISNULL, but is ANSI standard while ISNULL is T-SQL only",
+        "ISNULL follows data type precedence across all of its arguments, while COALESCE's result type comes only from its first argument"
+      ],
+      "correctIndex": 0,
+      "traditional": true,
+      "distractorExplain": "Option D swaps the two functions' actual behavior — it's ISNULL whose result type is pinned to its first argument's declared type, and COALESCE that follows data type precedence across every argument. That's exactly backwards from the real rule, which is what makes it such an effective distractor for anyone who only skimmed the function names without the behavior behind them.",
+      "explain": "ISNULL is T-SQL-only, takes exactly two arguments, and its result type comes from its first argument's declared type — which is why it can silently truncate a longer fallback value to fit. COALESCE is ANSI standard, takes any number of arguments, and its result type follows standard data type precedence across all of them, so it doesn't truncate the same way."
+    },
+    {
+      "id": "tsql-95",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "DECLARE @OrderQty INT = 0;\nDECLARE @LineTotal DECIMAL(10,2) = 150.00;\n\nSELECT @LineTotal / NULLIF(@OrderQty, 0) AS PricePerUnit;",
+      "prompt": "What does this return?",
+      "options": [
+        "NULL, because NULLIF(@OrderQty, 0) returns NULL when @OrderQty equals 0, and dividing by NULL produces NULL instead of an error",
+        "A divide-by-zero runtime error, because NULLIF doesn't actually change the 0 before the division runs",
+        "150.00, because NULLIF causes the division to be skipped entirely",
+        "0, because NULLIF converts the zero denominator into a zero result"
+      ],
+      "correctIndex": 0,
+      "explain": "NULLIF(@OrderQty, 0) compares @OrderQty to 0; since they're equal, it returns NULL instead of 0. Dividing any value by NULL produces NULL, not a runtime error — exactly the mechanism that lets the query keep running instead of raising 'Divide by zero error encountered.'"
+    },
+    {
+      "id": "tsql-96",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "DECLARE @ListPrice DECIMAL(10,2) = NULL;\n\nSELECT IIF(@ListPrice > 1000, 'Premium', 'Standard') AS PriceTier;",
+      "prompt": "What does this return, and why?",
+      "options": [
+        "'Standard', because @ListPrice > 1000 evaluates to UNKNOWN when @ListPrice is NULL, and IIF takes the false branch for anything other than TRUE — including UNKNOWN — exactly like a CASE expression's WHEN",
+        "NULL, because IIF propagates a NULL condition straight through to its result",
+        "'Premium', because NULL is treated as larger than any number for comparison purposes",
+        "A runtime error, because IIF's condition can't evaluate to NULL"
+      ],
+      "correctIndex": 0,
+      "explain": "IIF(condition, true_value, false_value) returns false_value whenever condition isn't TRUE — and comparing a column against NULL evaluates to UNKNOWN, not TRUE. This mirrors exactly how a CASE expression's WHEN behaves: anything short of a TRUE match falls through, landing on 'Standard' here."
+    },
+    {
+      "id": "tsql-97",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "code": "SELECT CHOOSE(0, 'Red', 'Green', 'Blue') AS Result1,\n       CHOOSE(4, 'Red', 'Green', 'Blue') AS Result2;",
+      "prompt": "What do Result1 and Result2 return?",
+      "options": [
+        "Both NULL — CHOOSE is strictly 1-based, so index 0 has no matching item, and index 4 is past the last (third) item",
+        "Result1 is 'Red' (treating 0 like the first item) and Result2 is NULL",
+        "Both raise an error, because CHOOSE only accepts an index that exists in the list",
+        "Result1 is NULL and Result2 wraps back around to 'Red'"
+      ],
+      "correctIndex": 0,
+      "explain": "CHOOSE is strictly 1-based: index 1 is the first item, not index 0. Index 0 doesn't correspond to anything in the list, and index 4 is past the last (third) item of a 3-item list — both are simply out of range, and CHOOSE returns NULL for an out-of-range index rather than raising an error or wrapping around."
+    },
+    {
+      "id": "tsql-98",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "SELECT\n    PhoneNumber,\n    TRY_CAST(REPLACE(REPLACE(REPLACE(PhoneNumber, '-', ''), '(', ''), ')', '') AS BIGINT) AS DigitsOnly\nFROM Person.PersonPhone;",
+      "prompt": "For a row where PhoneNumber is '697-555-0142 x1234' (it has a trailing extension), what happens to DigitsOnly, and why?",
+      "options": [
+        "DigitsOnly is NULL for that row, because even after stripping dashes and parentheses the string still contains non-numeric characters (the space and 'x1234'), so the conversion to BIGINT fails and TRY_CAST returns NULL instead of raising an error",
+        "The query raises a conversion error and the whole batch stops, the same way plain CAST would",
+        "DigitsOnly contains just the digits, with the 'x1234' extension silently dropped",
+        "DigitsOnly contains 6975550142, with the extension truncated but the row still returned"
+      ],
+      "correctIndex": 0,
+      "explain": "TRY_CAST attempts the exact same conversion CAST would, but returns NULL instead of throwing an error when the conversion fails. REPLACE here only strips dashes and parentheses, so a value with a space and letters like 'x1234' still isn't purely numeric, and TRY_CAST can't convert it to BIGINT — it quietly returns NULL rather than stopping the query the way plain CAST would."
+    },
+    {
+      "id": "tsql-99",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about COALESCE, per Chapter 6.",
+      "options": [
+        "COALESCE checks its arguments left to right and returns the first one that isn't NULL",
+        "COALESCE can accept any number of arguments, unlike ISNULL, which is capped at two",
+        "COALESCE(a, b, c) returns NULL only when a, b, and c are all NULL",
+        "COALESCE is T-SQL-specific and has no equivalent in ANSI-standard SQL",
+        "Wrapping a possibly-NULL operand in COALESCE can prevent an entire arithmetic expression from silently becoming NULL"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "COALESCE checks its arguments left to right and returns the first non-NULL one, only returning NULL itself if every argument is NULL. It accepts any number of arguments, unlike ISNULL's fixed two. Wrapping a possibly-NULL operand in COALESCE, such as COALESCE(Freight, 0), stops NULL from propagating through arithmetic the way plain + does. COALESCE is the opposite of T-SQL-specific — it's the ANSI SQL standard function; ISNULL is the T-SQL-only one."
+    },
+    {
+      "id": "tsql-100",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about STRING_AGG, per Chapter 6.",
+      "options": [
+        "STRING_AGG is itself an aggregate function, used in the SELECT list alongside GROUP BY, the same way SUM or COUNT would be",
+        "STRING_AGG automatically skips NULL values in a group, without needing a WHERE ... IS NOT NULL filter",
+        "Without WITHIN GROUP (ORDER BY ...), the order the values are concatenated in isn't guaranteed",
+        "WITHIN GROUP (ORDER BY ...) is required syntax — STRING_AGG cannot run without it",
+        "STRING_AGG inserts an empty placeholder and an extra separator for every NULL value it encounters"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "STRING_AGG is a genuine aggregate function, belonging in SELECT alongside GROUP BY. Like other aggregates, it skips NULL values automatically rather than inserting a placeholder or stray separator for them. Without WITHIN GROUP (ORDER BY ...), the concatenation order isn't guaranteed — but that clause is optional, not required; STRING_AGG runs fine without it, just with unordered output."
+    },
+    {
+      "id": "tsql-101",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about SQL Server's JSON functions, per Chapter 6.",
+      "options": [
+        "JSON_VALUE returns NULL when the given path points at a JSON object or array instead of a scalar value",
+        "JSON_QUERY returns an object or array fragment as JSON text — exactly the case JSON_VALUE can't handle",
+        "FOR JSON always wraps its output in a [ ] array unless WITHOUT_ARRAY_WRAPPER is specified",
+        "OPENJSON, without a WITH clause, returns columns named key, value, and type",
+        "FOR JSON PATH infers its nested JSON shape automatically from the table/join structure, the same way FOR JSON AUTO does"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explain": "JSON_VALUE only ever returns a scalar and returns NULL on a path that points at an object or array; JSON_QUERY is built for exactly that case, returning the fragment as JSON text. FOR JSON always adds the [ ] array wrapper unless WITHOUT_ARRAY_WRAPPER strips it. OPENJSON's default output, with no WITH clause, is the key/value/type shape. FOR JSON PATH is the opposite of AUTO's inference — PATH controls the nested shape explicitly through dotted column aliases like [Product.Name], it doesn't infer it from the join."
+    },
+    {
+      "id": "tsql-102",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: adding a third argument of 1 to STRING_SPLIT (available since SQL Server 2022) adds an extra ________ column holding each piece's 1-based position in the original string, letting you sort the output back into its original order.",
+      "acceptedAnswers": [
+        "ordinal",
+        "ordinal column",
+        "the ordinal column"
+      ],
+      "explain": "STRING_SPLIT(string, separator, 1) adds an ordinal column giving each piece's 1-based position in the original string. Sorting by that column reproduces the original order deterministically — something STRING_SPLIT can't otherwise guarantee, since its row order isn't promised by default."
+    },
+    {
+      "id": "tsql-103",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: ________(expr1, expr2) returns NULL if expr1 and expr2 are equal, and returns expr1 unchanged otherwise — the function used to guard LineTotal / OrderQty against a zero denominator.",
+      "acceptedAnswers": [
+        "NULLIF",
+        "NULLIF()"
+      ],
+      "explain": "NULLIF(expr1, expr2) compares the two expressions; if they're equal it returns NULL, otherwise it returns expr1's own value unchanged. Wrapping a divisor like OrderQty in NULLIF(OrderQty, 0) turns a would-be zero into NULL, and dividing by NULL produces NULL instead of a runtime error."
+    },
+    {
+      "id": "tsql-104",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each function to what it actually does.",
+      "left": [
+        "COALESCE(expr1, ..., exprN)",
+        "NULLIF(expr1, expr2)",
+        "TRY_CAST(expr AS type)",
+        "CHOOSE(index, val1, ..., valN)"
+      ],
+      "right": [
+        "Returns the first non-NULL value from its argument list",
+        "Returns the value at a given 1-based position in a list, or NULL if that position doesn't exist",
+        "Returns NULL instead of raising an error when a conversion would otherwise fail",
+        "Returns NULL if its first two arguments are equal, otherwise returns the first one unchanged"
+      ],
+      "correctMap": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "explain": "COALESCE returns the first non-NULL value among any number of arguments. NULLIF returns NULL only when its two arguments are equal, otherwise passing the first one through unchanged. TRY_CAST attempts a conversion and returns NULL instead of raising an error if it would fail. CHOOSE picks a value out of a list by its 1-based position, returning NULL if that position doesn't exist."
+    },
+    {
+      "id": "tsql-105",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Put these steps in the correct order for accepting a JSON array as a single parameter and joining it against a real table, per the OPENJSON lesson.",
+      "items": [
+        "Declare a variable holding the JSON array as plain text, e.g. DECLARE @ProductIdsJson NVARCHAR(MAX) = N'[1, 2, 3, 316]';",
+        "Call OPENJSON(@ProductIdsJson) in the FROM clause to parse that JSON text into a rowset",
+        "Add a WITH clause specifying a typed column, e.g. ProductID INT '$', instead of the default key/value/type columns",
+        "JOIN the parsed rowset to Production.Product ON the typed ProductID column, matching each JSON array element to a real row"
+      ],
+      "explain": "Accepting a JSON array as a single parameter starts with declaring it as NVARCHAR(MAX) text. OPENJSON then parses that text into a rowset right inside FROM. A WITH clause turns the default key/value/type shape into a real, typed column. Only then can that parsed, typed column be JOINed directly against a real table like Production.Product — a modern alternative to STRING_SPLIT on a comma-separated string or a full table-valued parameter."
+    },
+    {
+      "id": "tsql-106",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly defines a scalar user-defined function that returns the margin between two money values?",
+      "options": [
+        "CREATE FUNCTION dbo.ProductMargin(@ListPrice money, @StandardCost money) RETURNS money AS BEGIN RETURN @ListPrice - @StandardCost; END;",
+        "CREATE FUNCTION dbo.ProductMargin(@ListPrice money, @StandardCost money) RETURNS TABLE AS RETURN (SELECT @ListPrice - @StandardCost AS Margin);",
+        "CREATE FUNCTION dbo.ProductMargin(@ListPrice money, @StandardCost money) RETURNS @Result TABLE (Margin money) AS BEGIN INSERT INTO @Result VALUES (@ListPrice - @StandardCost); RETURN; END;",
+        "CREATE FUNCTION dbo.ProductMargin(@ListPrice money, @StandardCost money) AS BEGIN RETURN @ListPrice - @StandardCost; END;"
+      ],
+      "correctIndex": 0,
+      "explain": "A scalar UDF's shape is CREATE FUNCTION name(@params) RETURNS <scalar type> AS BEGIN ... RETURN <value>; END — a BEGIN/END body that computes and returns exactly one value of the declared type, callable anywhere an expression is legal, like dbo.ProductMargin(ListPrice, StandardCost) in a SELECT list.",
+      "distractorExplain": "Option B is valid T-SQL, but it's the shape of an inline table-valued function (RETURNS TABLE AS RETURN (SELECT ...), no BEGIN/END) — it hands back a whole table you query in a FROM clause, not a single scalar value you call inside a SELECT list. A scalar UDF needs RETURNS <scalar type>, not RETURNS TABLE."
+    },
+    {
+      "id": "tsql-107",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "SELECT ProductID, Name, ListPrice, StandardCost,\n       dbo.ProductMargin(ListPrice, StandardCost) AS Margin\nFROM Production.Product\nWHERE ListPrice > 0;",
+      "prompt": "On a large Production.Product table, this query runs with a single-threaded execution plan. The same query with dbo.ProductMargin(ListPrice, StandardCost) replaced by the inline expression ListPrice - StandardCost runs in parallel. What's the most likely explanation?",
+      "options": [
+        "SQL Server's optimizer treats the scalar UDF as a black box it must invoke once per row, and it often falls back to a single-threaded plan around that per-row call",
+        "Scalar UDFs always consume more CPU than inline expressions, so SQL Server throttles parallelism as a safety measure",
+        "The money return type forces a single-threaded plan regardless of how the value is computed",
+        "SQL Server only parallelizes SELECT lists where every function call is a built-in like GETDATE() or LEN()"
+      ],
+      "correctIndex": 0,
+      "explain": "The query optimizer can't see inside a scalar UDF, so it invokes dbo.ProductMargin once per row instead of folding the logic into a set-based plan — and that row-by-row call frequently forces the optimizer to fall back to a single-threaded plan, exactly the caveat the lesson warns about for large tables."
+    },
+    {
+      "id": "tsql-108",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "dbo.ProductPriceHistory's logic can be expressed entirely as one SELECT. A developer is choosing between writing it as an inline TVF or a multi-statement TVF. Which is the better choice, and why?",
+      "options": [
+        "An inline TVF, because its single-SELECT body lets the optimizer substitute it directly into the calling query — the same way it treats a parameterized view",
+        "A multi-statement TVF, because declaring the @Result table's shape up front always gives SQL Server a more accurate row-count estimate than an inline TVF",
+        "Either is equally good, since both compile into the exact same execution plan once the function exists",
+        "An inline TVF, because only inline TVFs are allowed to accept parameters"
+      ],
+      "correctIndex": 0,
+      "explain": "The rule of thumb is to prefer an inline TVF whenever a single SELECT can do the job. Because an iTVF's body is literally one SELECT, the optimizer substitutes it straight into the calling query and optimizes the whole thing as one plan. A multi-statement TVF should only be reached for when the logic genuinely needs more than one statement, since its fixed @Result shape gives the optimizer a poorly-informed, often flat row-count guess instead."
+    },
+    {
+      "id": "tsql-109",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "code": "CREATE TRIGGER trg_Product_NoNegativePrice\nON Production.Product\nAFTER UPDATE\nAS\nBEGIN\n    IF EXISTS (SELECT 1 FROM inserted WHERE ListPrice < 0)\n    BEGIN\n        RAISERROR('ListPrice cannot be negative.', 16, 1);\n        ROLLBACK TRANSACTION;\n    END\nEND;",
+      "prompt": "With this trigger in place, a developer runs: UPDATE Production.Product SET ListPrice = -5 WHERE ProductID = 707;. What actually happens to ProductID 707's row?",
+      "options": [
+        "ListPrice is never actually set to -5 — the trigger's ROLLBACK undoes the entire UPDATE statement, not just the trigger's own work",
+        "ListPrice ends up as -5, but an error is logged to the audit table for later review",
+        "The UPDATE fails to compile, because SQL Server validates trigger logic before running any DML",
+        "Only the trigger's own work is rolled back; the price change to Production.Product still commits"
+      ],
+      "correctIndex": 0,
+      "explain": "An AFTER trigger runs inside the same transaction as the statement that fired it, before that transaction commits. If the trigger body issues ROLLBACK TRANSACTION, the entire original operation is undone — the row never actually ends up negative, even though the UPDATE statement itself ran."
+    },
+    {
+      "id": "tsql-110",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the inserted and deleted pseudo-tables available inside a trigger, per the lesson.",
+      "options": [
+        "An INSERT populates inserted with the new rows, and deleted is empty",
+        "A DELETE populates deleted with the removed rows, and inserted is empty",
+        "An UPDATE populates both: deleted holds the row values before the change, inserted holds them after",
+        "inserted and deleted are permanent tables that persist after the trigger finishes, so you can query them later from outside the trigger",
+        "inserted and deleted are automatically populated and scoped to just that trigger's execution"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "inserted holds the new version of affected rows (populated on INSERT and UPDATE), and deleted holds the old version (populated on DELETE and UPDATE) — an UPDATE populates both, which is exactly how an audit trigger joins them to capture an old/new pair. Both are special, automatically populated pseudo-tables scoped to just that trigger's execution, not permanent tables you can query afterward."
+    },
+    {
+      "id": "tsql-111",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about INSTEAD OF triggers, per the lesson.",
+      "options": [
+        "An INSTEAD OF trigger fires in place of the triggering INSERT/UPDATE/DELETE — the real operation never happens unless the trigger body performs it",
+        "The classic use case is making a multi-table view, which SQL Server can't route a direct write through, updatable by routing each piece to the correct underlying table",
+        "Inside an INSTEAD OF trigger, inserted and deleted hold what would have been written, for the body to act on however it decides",
+        "Like an AFTER trigger, the underlying data change has already happened by the time an INSTEAD OF trigger body runs",
+        "An INSTEAD OF trigger with an empty body silently discards every write aimed at it"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "INSTEAD OF fires in place of the triggering action, so the real write never happens unless the body explicitly performs it — the opposite of an AFTER trigger, where the change has already happened by the time the trigger runs. Its classic use is routing writes against an otherwise-unupdatable multi-table view, using inserted/deleted to see what was intended. An INSTEAD OF trigger with an empty body silently discards the write entirely."
+    },
+    {
+      "id": "tsql-112",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a stored procedure parameter declared with a user-defined table type (a table-valued parameter) must be marked ________, since its contents can't be INSERTed, UPDATEd, or DELETEd inside the procedure body.",
+      "acceptedAnswers": [
+        "READONLY",
+        "READ ONLY"
+      ],
+      "explain": "A TVP's defining restriction is READONLY — you can SELECT from it, JOIN it, and filter it inside the procedure, but you can never modify its rows there. That's the required modifier the lesson's CREATE PROCEDURE example attaches right after the table type."
+    },
+    {
+      "id": "tsql-113",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each Chapter 7 function/parameter concept to what it actually is.",
+      "left": [
+        "Scalar UDF",
+        "Inline TVF (iTVF)",
+        "Multi-statement TVF (MSTVF)",
+        "Table-valued parameter (TVP)"
+      ],
+      "right": [
+        "A function whose single-SELECT body the optimizer substitutes directly into the calling query, like a parameterized view",
+        "A function with a BEGIN/END body that returns one scalar value, called inside a SELECT list like a built-in function",
+        "A stored procedure parameter declared with a user-defined table type, passed as a whole table of rows in one call, always READONLY",
+        "A function with a BEGIN/END body that fills a declared return table with INSERT statements, trading flexibility for weaker row-count estimates"
+      ],
+      "correctMap": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "explain": "A scalar UDF returns one value from a BEGIN/END body. An iTVF's body is a single SELECT the optimizer can see straight through. An MSTVF trades that visibility for real procedural logic, declaring its return shape up front and filling it with INSERT. A TVP passes a whole typed table of rows into a procedure in one call, and must be READONLY."
+    },
+    {
+      "id": "tsql-114",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "LAG(column, offset, default) takes two optional arguments after the column. Which call correctly reaches back two rows and substitutes 0 for rows where no such row exists?",
+      "options": [
+        "LAG(TotalDue, 2, 0)",
+        "LAG(TotalDue, 0, 2)",
+        "LEAD(TotalDue, 2, 0)",
+        "LAG(TotalDue, 2)"
+      ],
+      "correctIndex": 0,
+      "explain": "LAG(column, offset, default): offset controls how many rows back to reach (2 here), and default controls what's returned when there's no such row (0 here). LAG(TotalDue, 2, 0) reaches back exactly two rows and substitutes 0 instead of NULL when fewer than two prior rows exist.",
+      "distractorExplain": "Option D, LAG(TotalDue, 2), gets the offset right — it does reach back two rows — but omits the third default argument entirely. Without it, SQL Server still returns NULL for rows that have no row two back, which is exactly the behavior the question asks to avoid."
+    },
+    {
+      "id": "tsql-115",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "code": "SELECT Name, Color, ListPrice,\n       LAST_VALUE(Name) OVER (PARTITION BY Color ORDER BY ListPrice DESC) AS SupposedlyCheapestInColor\nFROM Production.Product;",
+      "prompt": "A developer expects SupposedlyCheapestInColor to hold the cheapest product name per color, but every row's value just equals that row's own Name. What's the cause, and the correct fix?",
+      "options": [
+        "The default frame is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, so LAST_VALUE only ever sees up to the current row; adding ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING fixes it",
+        "LAST_VALUE evaluates before ORDER BY sorts the partition, so it can't know which row is really last; switching to FIRST_VALUE fixes it",
+        "PARTITION BY Color is being silently ignored by LAST_VALUE; removing it makes the function scan the whole table correctly",
+        "LAST_VALUE needs an explicit GROUP BY Color added alongside PARTITION BY to compute correctly"
+      ],
+      "correctIndex": 0,
+      "explain": "Adding ORDER BY inside OVER() without naming a frame applies the default RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW — 'from the start of the partition up to and including the current row.' From LAST_VALUE's point of view, the last row it can see is always the current row. Explicitly framing it as ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING covers the entire partition instead, returning the true cheapest name every time."
+    },
+    {
+      "id": "tsql-116",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch09",
+      "difficulty": "advanced",
+      "code": "SELECT OrderDate, TotalDue,\n       SUM(TotalDue) OVER (\n         ORDER BY OrderDate\n         RANGE BETWEEN CURRENT ROW AND CURRENT ROW\n       ) AS SumOfRowsWithSameDate\nFROM Sales.SalesOrderHeader;",
+      "prompt": "Three different orders in Sales.SalesOrderHeader all share the exact same OrderDate. For those three tied rows, what does SumOfRowsWithSameDate actually show, and why?",
+      "options": [
+        "All three rows show the combined TotalDue of all three orders, because RANGE treats rows tied on the ORDER BY value as peers and includes every peer in each other's frame",
+        "Each of the three rows shows only its own TotalDue, because CURRENT ROW always means exactly one physical row regardless of ROWS or RANGE",
+        "The query raises an error, because RANGE can't be used when the ORDER BY column contains ties",
+        "The first of the three tied rows shows the combined total, and the other two show NULL"
+      ],
+      "correctIndex": 0,
+      "explain": "RANGE works on the logical value in the ORDER BY column, not physical position. RANGE BETWEEN CURRENT ROW AND CURRENT ROW means every row whose OrderDate equals the current row's OrderDate — tied rows are peers, and RANGE includes every peer in each one's frame, which is exactly the surprise behavior the lesson calls out as RANGE's gotcha with ties."
+    },
+    {
+      "id": "tsql-117",
+      "type": "multi-select",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about running totals and moving averages, per the lesson.",
+      "options": [
+        "A running total is built with SUM() and ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW",
+        "A moving average is built with AVG() and a fixed-size frame like ROWS BETWEEN 6 PRECEDING AND CURRENT ROW",
+        "Adding PARTITION BY to a running total restarts it at zero for each group instead of accumulating across the whole table",
+        "RANGE is the recommended choice over ROWS for running totals, since it automatically includes tied rows",
+        "Both a running total and a moving average can be computed in a single query, with no self-join, cursor, or temp table"
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "A running total uses SUM() with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, and a moving average uses AVG() with a fixed-size sliding frame like ROWS BETWEEN 6 PRECEDING AND CURRENT ROW. PARTITION BY restarts either one at zero per group. Both need ROWS, not RANGE — RANGE would unpredictably pull in extra tied rows the moment two rows shared an ORDER BY value — and both run as a single query with no self-join, cursor, or temp table."
+    },
+    {
+      "id": "tsql-118",
+      "type": "fill-in",
+      "chapter": "ch09",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: before window functions, comparing each row to the row before it meant a ________ — joining a table to itself on a 'one less than the current key' condition, which is awkward and easy to get wrong. LAG() and LEAD() eliminate the need for this.",
+      "acceptedAnswers": [
+        "self-join",
+        "self join"
+      ],
+      "explain": "LAG() and LEAD() reach into a neighboring row within the current window and pull a value from it directly, with no join at all — replacing the self-join that comparing a row to its neighbor used to require."
+    },
+    {
+      "id": "tsql-119",
+      "type": "sequencing",
+      "chapter": "ch09",
+      "difficulty": "intermediate",
+      "prompt": "Chapter 10 built its window-function toolkit in a specific order. Put these building blocks in the order the chapter introduced them.",
+      "items": [
+        "OVER() and PARTITION BY establish the window a function calculates across",
+        "ROW_NUMBER(), RANK(), DENSE_RANK(), and NTILE() rank and bucket rows within the window",
+        "LAG() and LEAD() reach to a neighboring row without a self-join",
+        "FIRST_VALUE() and LAST_VALUE() return values from the edges of the window frame",
+        "The frame clause (ROWS vs. RANGE) controls exactly which rows the function includes",
+        "Running totals and moving averages combine SUM()/AVG() with an explicit ROWS frame"
+      ],
+      "explain": "The chapter's recap lays out this exact progression: OVER()/PARTITION BY as the foundation, then the ranking functions, then LAG/LEAD for neighboring rows, then FIRST_VALUE/LAST_VALUE for the edges of a window, then the frame clause that explains why LAST_VALUE needed an explicit frame, and finally running totals and moving averages tying the frame clause together with SUM()/AVG()."
+    },
+    {
+      "id": "tsql-120",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes what an update (U) lock is compatible with, and why SQL Server uses a separate lock type instead of just using a shared lock for an UPDATE statement's initial read-to-locate-the-row phase?",
+      "options": [
+        "An update lock is compatible with a shared lock, so ordinary SELECT statements can still read the row, but it is not compatible with another update lock or with an exclusive lock — which means only one transaction at a time can be in the 'about to maybe update this row' phase, so two UPDATEs can never both get stuck waiting to upgrade to exclusive at once.",
+        "An update lock is compatible with another update lock, since both are just read locks taken during the locate phase, but it is not compatible with a shared lock.",
+        "An update lock behaves exactly like an exclusive lock from the instant it's taken, which is why an UPDATE statement blocks every reader immediately, before it has even located the row.",
+        "An update lock is only taken when the WHERE clause can't use an index and SQL Server has to fall back to a full table scan.",
+        "An update lock is compatible with everything, including an exclusive lock held by another session, because the row hasn't actually been changed yet.",
+        "SQL Server doesn't actually use a separate update lock; every UPDATE simply takes a shared lock first and then upgrades it to exclusive once it's ready to write."
+      ],
+      "correctIndex": 0,
+      "explain": "UPDATE has to find a row (a read) before it can change it (a write). If that initial find used an ordinary shared lock, two UPDATEs against the same row could each be granted a shared lock, then both try to upgrade to exclusive at the same time — a conversion deadlock neither can escape. The update lock exists specifically to close that trap: it's compatible with a shared lock (so plain reads aren't blocked) but incompatible with another update lock or an exclusive lock, so only one transaction at a time can even be in the locate-to-decide phase. Once ready to write, the update lock converts to an exclusive lock.",
+      "distractorExplain": "Option B gets the right idea backwards. If two update locks were compatible with each other, two UPDATE statements against the same row could both be granted one at the same time, and then both would try to convert to exclusive at once — recreating the exact conversion deadlock the update lock exists to prevent. The real rule is the opposite: an update lock conflicts with another update lock, which forces the second UPDATE to simply wait its turn instead of racing the first one into a deadlock."
+    },
+    {
+      "id": "tsql-121",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "code": "-- Session A\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;\n\n-- Session B, running at the same moment\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;",
+      "prompt": "Both sessions run under SQL Server's default isolation level, and no explicit transaction is open in either one. What actually happens when these two SELECT statements run against the same row at the same time?",
+      "options": [
+        "Both complete immediately without blocking each other, because a plain SELECT takes a shared lock, and shared locks are compatible with other shared locks on the same resource.",
+        "Session B blocks until Session A's SELECT finishes, because only one session can read a given row at a time.",
+        "Session B's SELECT fails with an error, because SQL Server doesn't allow two sessions to query the identical row simultaneously.",
+        "Session A's SELECT is silently cancelled in favor of Session B's, since SQL Server always lets the most recently submitted request through first."
+      ],
+      "correctIndex": 0,
+      "explain": "A plain SELECT under READ COMMITTED takes a shared (S) lock on the rows it reads. Shared locks are compatible with other shared locks, so any number of sessions can hold one on the exact same row at the same time — reading doesn't change anything, so there's nothing for two readers to corrupt by looking at once. Neither session waits on the other."
+    },
+    {
+      "id": "tsql-122",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "-- Session A\nBEGIN TRANSACTION;\nUPDATE Production.Product SET ListPrice = 25.00 WHERE ProductID = 680;\nUPDATE Production.Product SET ListPrice = 40.00 WHERE ProductID = 681;\n-- transaction still open, not yet committed\n\n-- Session B, while Session A's transaction above is still open\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;",
+      "prompt": "Session A's transaction has already run both UPDATE statements and is paused before COMMIT. Session B then runs the SELECT shown against the first row Session A updated. When does Session B's SELECT actually unblock?",
+      "options": [
+        "Not until Session A runs COMMIT TRANSACTION or ROLLBACK TRANSACTION — an exclusive lock is held for the rest of the transaction, not released once the individual UPDATE statement that took it finishes.",
+        "As soon as Session A's first UPDATE statement finishes executing, even though the transaction is still open, because every lock is released at the end of the statement that took it.",
+        "Immediately — a SELECT never waits on another session's lock, regardless of what that lock is.",
+        "Only after Session A's second UPDATE statement finishes, since that's when the first row's lock is recalculated."
+      ],
+      "correctIndex": 0,
+      "explain": "Unlike a shared lock, which READ COMMITTED releases as soon as each individual read finishes, an exclusive lock taken by an UPDATE is held for the entire remaining duration of the transaction — until COMMIT TRANSACTION or ROLLBACK TRANSACTION actually runs. Session B's SELECT needs a shared lock on a row Session A still holds an exclusive lock on, so it has to wait for Session A's transaction to end, no matter how many other statements Session A runs in between."
+    },
+    {
+      "id": "tsql-123",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "-- Session A, no explicit transaction\nUPDATE Production.Product SET ListPrice = ListPrice + 1 WHERE ProductID = 680;\n\n-- Session B, at nearly the same instant, no explicit transaction\nUPDATE Production.Product SET ListPrice = ListPrice + 1 WHERE ProductID = 680;",
+      "prompt": "Both sessions run this UPDATE against the exact same row at nearly the same instant. Given how SQL Server actually locks an UPDATE's locate-then-write phases, what happens?",
+      "options": [
+        "Whichever session is granted the row's update lock first proceeds through to an exclusive lock and finishes; the other session's request for an update lock on the same row simply waits its turn. No deadlock occurs, because only one session at a time can hold the update lock on that row.",
+        "Both sessions take a shared lock to locate the row, then both try to convert that shared lock to exclusive at the same time, and SQL Server resolves the resulting conversion deadlock by killing one of them as the deadlock victim.",
+        "Both sessions succeed instantly and simultaneously, since an UPDATE statement never takes any lock on the specific row it changes.",
+        "The second session's statement fails outright with a compile error, because SQL Server disallows two UPDATE statements from targeting the same table at the same time.",
+        "Both sessions are granted a shared lock on the row, and the final ListPrice value is simply whichever session's write happens to finish last, with no blocking at all."
+      ],
+      "correctIndex": 0,
+      "explain": "Option B describes the hypothetical trap that would exist if UPDATE used a plain shared lock for its locate phase — two shared locks could both be granted, then both upgrade attempts would deadlock. That isn't what actually happens: SQL Server uses a distinct update (U) lock for the locate phase specifically to prevent it. An update lock is incompatible with another update lock, so the second session's request simply blocks until the first session's update lock converts to exclusive and then releases at the end of that UPDATE statement — a brief wait, not a deadlock."
+    },
+    {
+      "id": "tsql-124",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about intent locks (IS, IX, SIX) in SQL Server.",
+      "options": [
+        "An intent lock is taken at a level above where the real lock actually lives — for example at the table level, when the real lock is on a row — purely to signal that a lock exists somewhere below it, without requiring a row-by-row scan to check for conflicts.",
+        "An Intent Exclusive (IX) lock on a table signals that an exclusive lock is held on some row or page underneath that table.",
+        "A Shared with Intent Exclusive (SIX) lock means the transaction holds a shared lock on the whole table so it can read all of it, while also intending to take exclusive locks on specific rows or pages within it.",
+        "Intent locks eliminate the need for row-level locks entirely once a transaction has accumulated enough of them.",
+        "Checking for an IX lock at the table level is actually slower than scanning every row individually for a conflicting lock, but SQL Server uses it anyway for consistency."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2
+      ],
+      "explain": "Intent locks are a signal flag at a higher level than the real lock, which is exactly what makes checking for a table-level conflict cheap — a constant-time check of the intent lock instead of an expensive scan of every row. IS signals a shared lock exists somewhere below; IX signals an exclusive lock exists somewhere below; SIX is a shared lock on the whole resource plus intent to take exclusive locks within it. Option D describes lock escalation, a completely different mechanism — intent locks don't replace row locks, they coexist with them. Option E has the trade-off backwards: the entire point of an intent lock is that checking it is cheaper than scanning every row, not slower."
+    },
+    {
+      "id": "tsql-125",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each lock type to what it actually does or protects.",
+      "left": [
+        "Shared (S) lock",
+        "Exclusive (X) lock",
+        "Update (U) lock",
+        "Schema modification (Sch-M) lock"
+      ],
+      "right": [
+        "Taken while locating a row to decide whether to update it; compatible with a shared lock, but not with another update lock or with an exclusive lock",
+        "Taken during DDL such as ALTER TABLE; incompatible with everything, including a schema stability lock held by an ordinary running query",
+        "Taken for ordinary reads; compatible with other shared locks on the same resource, but conflicts with an exclusive lock",
+        "Taken for INSERT, UPDATE, or DELETE; incompatible with every other lock on that resource, including another exclusive lock, and held until COMMIT or ROLLBACK"
+      ],
+      "correctMap": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "explain": "A shared lock is taken for reads and is compatible with other shared locks, but conflicts with an exclusive lock. An exclusive lock is taken for writes, conflicts with everything including another exclusive lock, and is held for the rest of the transaction. An update lock is the intermediate step an UPDATE takes to locate a row before converting to exclusive to write it — compatible with a shared lock, but not with another update lock or an exclusive lock, which is exactly what prevents the classic conversion deadlock. A schema modification lock is taken during DDL and is incompatible with everything, including the schema stability lock an ordinary query holds while running — which is why ALTER TABLE can wait on busy queries, and vice versa."
+    },
+    {
+      "id": "tsql-126",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: when a single statement's row or page locks on one table or index cross a threshold of roughly ________ locks, SQL Server automatically escalates them into one table-level lock instead.",
+      "acceptedAnswers": [
+        "5000",
+        "5,000",
+        "5000 locks",
+        "5,000 locks",
+        "approximately 5000",
+        "approximately 5,000"
+      ],
+      "explain": "Lock escalation triggers automatically once a single statement's fine-grained row or page locks on one table or index cross roughly 5,000 locks, converting them all into a single table-level lock to save on tracking overhead. There's no setting to request this — it's built-in behavior, which is why a large batch job can start out well-behaved with row locks and then suddenly start blocking everyone else partway through once it crosses that threshold."
+    },
+    {
+      "id": "tsql-127",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about lock granularity (row, page, and table locks).",
+      "options": [
+        "Row locks give the best concurrency, since two transactions touching different rows in the same table never conflict — but tracking thousands of individual row locks has real memory and CPU overhead.",
+        "Table locks have the least overhead, since it only takes one lock entry no matter how many rows are affected, but they give the worst concurrency, since nothing else can touch any row in that table while the lock is held.",
+        "A page lock can block another transaction's access to a row it never actually touched, simply because that row happens to share the same 8KB page as a locked row.",
+        "A developer always chooses the lock granularity directly, since SQL Server's optimizer has no logic of its own for picking between row, page, and table locks.",
+        "Once a statement is estimated by the optimizer to touch a very large fraction of a table, SQL Server may choose table-level locking from the very start, rather than beginning with row locks."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explain": "Row locks maximize concurrency at the cost of per-row overhead; table locks minimize overhead at the cost of blocking access to every row, even untouched ones; a page lock sits in between and can still block unrelated rows that merely share a page. SQL Server's query optimizer picks the granularity automatically based on cost estimates — how many rows a statement is expected to touch, index structure, and system conditions — and can start a statement at table-level locking from the outset if it expects a large fraction of the table to be affected. Option D is false: the optimizer makes this choice on its own; a developer isn't required to specify it."
+    },
+    {
+      "id": "tsql-128",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: the session chosen as the deadlock victim doesn't just quietly disappear — it receives SQL Server error number ________, telling it the transaction was rolled back and should be retried.",
+      "acceptedAnswers": [
+        "1205",
+        "error 1205"
+      ],
+      "explain": "SQL Server's deadlock monitor detects the cycle, picks a victim (generally whichever transaction is cheapest to roll back), kills it, and rolls it back. The victim's session receives error 1205, something like 'Transaction (Process ID n) was deadlocked on lock resources with another process and has been chosen as the deadlock victim. Rerun the transaction.' — an explicit instruction to retry, not a silent failure."
+    },
+    {
+      "id": "tsql-129",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these events in the correct order for the classic two-resource deadlock between Session A and Session B over Product 680 and Product 681.",
+      "items": [
+        "Session A begins a transaction and updates Product 680, acquiring an exclusive lock on that row",
+        "Session B begins a transaction and updates Product 681, acquiring an exclusive lock on that row",
+        "Session A attempts to update Product 681 and must wait, since Session B already holds an exclusive lock there",
+        "Session B attempts to update Product 680 and must wait, since Session A already holds an exclusive lock there",
+        "SQL Server's deadlock monitor detects the cycle, chooses one transaction as the deadlock victim, kills it, and rolls it back — letting the other transaction finally proceed"
+      ],
+      "explain": "Session A holds 680 and wants 681; Session B holds 681 and wants 680. Each is waiting on a lock the other one holds, and neither will release what it already has until it finishes — a genuine cycle with no way out on its own. SQL Server's background deadlock monitor periodically checks for exactly this kind of cycle, and once it finds one, it kills and rolls back whichever transaction it picks as the victim, which releases that transaction's locks and lets the surviving one proceed."
+    },
+    {
+      "id": "tsql-130",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes what READ COMMITTED, SQL Server's default isolation level, actually guarantees?",
+      "options": [
+        "It guarantees every read only ever sees committed data, but it does not guarantee that re-reading the same row later in the same transaction returns the same value, or that re-running the same query returns the same set of rows.",
+        "It guarantees that a transaction never experiences a dirty read, a nonrepeatable read, or a phantom read — those are only possible under stricter isolation levels than the default.",
+        "It guarantees that every row a transaction reads stays locked, and therefore unchanged, until that transaction commits or rolls back.",
+        "It behaves identically to READ UNCOMMITTED, except that it adds a warning message whenever uncommitted data is returned.",
+        "It guarantees fully serializable behavior for any query that touches a single row, but not for queries that touch multiple rows.",
+        "It is not actually SQL Server's default; REPEATABLE READ is the default unless a session changes it."
+      ],
+      "correctIndex": 0,
+      "explain": "READ COMMITTED guarantees exactly what its name says: every read only ever sees committed data, which is the one guarantee that rules out a dirty read specifically. What it does not do is hold its shared locks for the whole transaction — they're released as soon as each individual statement's read finishes — which is exactly what still leaves nonrepeatable reads and phantom reads possible. It is, in fact, SQL Server's actual default for every new connection unless something changes it.",
+      "distractorExplain": "Option B keeps the correct half of the story — READ COMMITTED does prevent dirty reads — but wrongly extends that protection to nonrepeatable and phantom reads too. Those two anomalies are still possible under READ COMMITTED precisely because its shared locks release the moment each statement's read finishes, rather than being held until the transaction ends. Only REPEATABLE READ closes the nonrepeatable-read gap, and only SERIALIZABLE closes the phantom-read gap on top of that."
+    },
+    {
+      "id": "tsql-131",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "code": "-- Session A\nSET TRANSACTION ISOLATION LEVEL REPEATABLE READ;\nBEGIN TRANSACTION;\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;\n-- transaction left open\n\n-- Session B, under the default isolation level, while Session A's transaction is still open\nUPDATE Production.Product SET ListPrice = 59.99 WHERE ProductID = 680;",
+      "prompt": "Session A's REPEATABLE READ transaction above is still open after its SELECT. Session B then runs the UPDATE shown against the same row. What happens to Session B's UPDATE?",
+      "options": [
+        "It blocks, because REPEATABLE READ holds a shared lock on every row it has read until its own transaction ends, and Session B's UPDATE needs a lock on that same row that conflicts with it.",
+        "It succeeds immediately and commits, because REPEATABLE READ only controls what Session A itself can see, not what other sessions are allowed to write.",
+        "It fails outright with an error, because REPEATABLE READ permanently prevents any other session from ever updating a table it has queried.",
+        "It succeeds immediately, but doing so automatically rolls back Session A's open transaction.",
+        "It blocks only until Session A's SELECT statement itself finishes executing, exactly as it would under READ COMMITTED."
+      ],
+      "correctIndex": 0,
+      "explain": "The entire mechanism behind REPEATABLE READ's guarantee is holding shared locks on every row it reads until the transaction ends, not releasing them after each statement the way READ COMMITTED does. Session B's UPDATE needs to take a lock on Product 680 that conflicts with Session A's shared lock, so it simply blocks and waits until Session A commits or rolls back — it doesn't fail, and it doesn't touch Session A's transaction at all."
+    },
+    {
+      "id": "tsql-132",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "-- Database already has: ALTER DATABASE AdventureWorks2012 SET ALLOW_SNAPSHOT_ISOLATION ON;\n\n-- Session A\nSET TRANSACTION ISOLATION LEVEL SNAPSHOT;\nBEGIN TRANSACTION;\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;\n-- returns, say, 34.99 -- transaction left open\n\n-- Session B, under ordinary READ COMMITTED, while Session A's transaction is still open\nUPDATE Production.Product SET ListPrice = 49.99 WHERE ProductID = 680;\nCOMMIT;\n\n-- Session A, continued, still inside its original open transaction\nSELECT ListPrice FROM Production.Product WHERE ProductID = 680;",
+      "prompt": "Does Session B's UPDATE block while Session A's SNAPSHOT transaction is open, and what does Session A's second SELECT return?",
+      "options": [
+        "Session B's UPDATE is not blocked, because SNAPSHOT reads don't take or hold a lock Session B would conflict with. Session A's second SELECT still returns 34.99, the original value, because a SNAPSHOT transaction reads from a consistent version of the data fixed as of when the transaction started.",
+        "Session B's UPDATE is not blocked, but Session A's second SELECT returns 49.99, because SNAPSHOT always reflects whatever the most recently committed value is at the moment of each individual read.",
+        "Session B's UPDATE blocks for the entire duration of Session A's transaction, because SNAPSHOT isolation takes a shared lock on every row it reads, the same as REPEATABLE READ does.",
+        "Session A's second SELECT raises error 3960, because any committed change made by another session during an open SNAPSHOT transaction counts as a write-write conflict.",
+        "Session A's second SELECT still returns 34.99, but only because Session B's UPDATE actually failed due to a conflict with Session A's open transaction."
+      ],
+      "correctIndex": 0,
+      "explain": "SNAPSHOT isolation uses row versioning instead of locking: a SNAPSHOT transaction reads from a consistent point-in-time copy of the data fixed at the moment the transaction started, no matter what anyone else commits while it's running. Because that read is served from a versioned copy rather than the live row, SNAPSHOT readers never block writers and writers never block SNAPSHOT readers. Session A's second read still shows 34.99, and Session B's UPDATE was never blocked at all. Error 3960 only happens on a genuine write-write conflict, which this scenario doesn't involve, since Session A never tried to write."
+    },
+    {
+      "id": "tsql-133",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "-- Session A\nSET TRANSACTION ISOLATION LEVEL REPEATABLE READ;\nBEGIN TRANSACTION;\nSELECT COUNT(*) AS ProductCount FROM Production.Product WHERE ListPrice BETWEEN 500 AND 1000;\n-- returns, say, 14 -- transaction left open\n\n-- Session B, while Session A's transaction is still open\nINSERT INTO Production.Product (Name, ProductNumber, ListPrice)\nVALUES ('Road Bike, New', 'BK-NEW-01', 799.00);\n-- commits immediately\n\n-- Session A, continued\nSELECT COUNT(*) AS ProductCount FROM Production.Product WHERE ListPrice BETWEEN 500 AND 1000;",
+      "prompt": "Is Session B's INSERT blocked while Session A's REPEATABLE READ transaction is open, and what does Session A's second COUNT(*) return?",
+      "options": [
+        "Session B's INSERT is not blocked, and Session A's second COUNT(*) returns 15 — one more than the first run — because REPEATABLE READ only holds locks on rows it has already read, and has no mechanism to stop a brand-new row from being inserted into the gap its WHERE clause covers.",
+        "Session B's INSERT blocks until Session A's transaction ends, because REPEATABLE READ holds a range lock over the entire ListPrice BETWEEN 500 AND 1000 predicate, the same way SERIALIZABLE does.",
+        "Session A's second COUNT(*) still returns 14, the same as the first run, because REPEATABLE READ guarantees that re-running the same query always returns the same row set.",
+        "Session B's INSERT fails immediately with an error, because REPEATABLE READ blocks any write at all to a table that currently has an open transaction reading from it.",
+        "This situation can't actually happen, because Session A's first query already locked every row that could ever come to match that WHERE clause in the future."
+      ],
+      "correctIndex": 0,
+      "explain": "This is exactly the gap that separates a phantom read from a nonrepeatable read, and exactly why REPEATABLE READ doesn't close it. REPEATABLE READ holds shared locks on rows it has already read, which stops those specific rows from changing value — but Session B's new row didn't exist yet when Session A's first query ran, so there was nothing there for REPEATABLE READ to lock. The INSERT proceeds unblocked, and Session A's second count comes back as 15, a phantom row appearing mid-transaction. Only SERIALIZABLE's range locks, which lock the entire gap a predicate covers rather than just existing matching rows, would have blocked Session B's INSERT here."
+    },
+    {
+      "id": "tsql-134",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "A database has READ_COMMITTED_SNAPSHOT turned ON. A session runs two ordinary SELECT statements against the same row, a few seconds apart, inside one transaction, with no SET TRANSACTION ISOLATION LEVEL statement anywhere in the session. Another session commits an update to that row in between the two SELECTs. What does the second SELECT return, and how would this differ if the first session had instead explicitly used SNAPSHOT isolation?",
+      "options": [
+        "Under RCSI, the second SELECT sees the newly committed value, because RCSI serves a fresh, last-committed version on every statement. Under explicit SNAPSHOT isolation, the second SELECT would instead still show the original value, because SNAPSHOT fixes one consistent version for the entire transaction, not a new one per statement.",
+        "Under RCSI, the second SELECT still shows the original value, exactly as SNAPSHOT would, because RCSI and SNAPSHOT rely on the same row-versioning mechanism and behave identically in every respect.",
+        "Under RCSI, the second SELECT blocks until the other session's UPDATE commits, exactly the same as it would without RCSI turned on at all.",
+        "Under RCSI, the second SELECT raises error 3960, since any committed change to a row being read counts as a conflict under row-versioning-based isolation.",
+        "RCSI and SNAPSHOT are simply two names for the same setting — turning on READ_COMMITTED_SNAPSHOT at the database level also automatically enables SNAPSHOT isolation for every session connecting to it."
+      ],
+      "correctIndex": 0,
+      "explain": "RCSI changes what ordinary READ COMMITTED means at the database level, with no code change required: reads are served a versioned, last-committed copy instead of taking a blocking shared lock, but each new statement still gets a fresh version — the same nonrepeatable-read behavior READ COMMITTED always had, just without blocking. Full SNAPSHOT isolation is a session-level choice that instead fixes one single consistent version for the whole transaction, start to finish. That's the precise distinction: RCSI is 'fresh per statement,' SNAPSHOT is 'fixed for the whole transaction.' Neither one raises error 3960 on a plain read; that error is specific to a genuine write-write conflict."
+    },
+    {
+      "id": "tsql-135",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SERIALIZABLE isolation.",
+      "options": [
+        "SERIALIZABLE is the only one of the four ANSI isolation levels that prevents all three classic anomalies: dirty reads, nonrepeatable reads, and phantom reads.",
+        "SERIALIZABLE prevents phantom reads using a range lock, which locks the entire gap a query's predicate covers, not just the rows that happen to exist right now.",
+        "SERIALIZABLE is implemented with row versioning instead of locking, the same underlying mechanism SNAPSHOT isolation uses.",
+        "Because it uses range locks, a SERIALIZABLE transaction can block a brand-new INSERT, as long as the inserted row's values would fall inside a range the transaction already queried.",
+        "SERIALIZABLE causes the least blocking of any of the four ANSI isolation levels, since it does the most work up front to avoid conflicts later."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "SERIALIZABLE is the strictest ANSI level and the only one that closes all three anomalies, specifically because of range locks — locks on the entire gap a predicate describes, not just rows that currently match. That's exactly what lets it block a new INSERT whose value would fall inside an already-locked range, something REPEATABLE READ's row-only locks can't do. SERIALIZABLE is pessimistic and lock-based, not row-versioning-based like SNAPSHOT, and it carries the heaviest blocking cost of any standard level, not the lightest — stricter isolation always trades away concurrency, never gains it."
+    },
+    {
+      "id": "tsql-136",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about optimistic versus pessimistic concurrency.",
+      "options": [
+        "READ UNCOMMITTED, READ COMMITTED, REPEATABLE READ, and SERIALIZABLE are all pessimistic approaches — they rely on locks to physically block other sessions before a conflict can even occur.",
+        "SNAPSHOT isolation is optimistic — it lets sessions proceed without blocking and only deals with a conflict, as error 3960, if two sessions actually try to write the same row.",
+        "A ROWVERSION (or TIMESTAMP) column is a database-engine isolation level, in the same category as SNAPSHOT or RCSI.",
+        "Optimistic concurrency assumes conflicts are rare and accepts the cost of occasional retries when one does happen; pessimistic concurrency assumes conflicts are likely and accepts the cost of blocking, even in cases where no real conflict would ever have occurred.",
+        "Pessimistic concurrency never results in a transaction being rolled back or needing to retry, which is the one advantage optimistic concurrency can never match."
+      ],
+      "correctIndices": [
+        0,
+        1,
+        3
+      ],
+      "explain": "The four ANSI isolation levels all rely on locks to block conflicts up front — pessimistic, by definition. SNAPSHOT (and RCSI, for reads) is optimistic: everyone proceeds without blocking, and SNAPSHOT only resolves an actual write-write conflict after the fact, as error 3960. That's the real trade-off: optimistic concurrency is cheap when conflicts are genuinely rare and pays in retries when they aren't; pessimistic concurrency pays in blocking even when no conflict would ever have actually happened. A ROWVERSION column is not an isolation level at all — it's an application-level pattern that applies the same optimistic idea outside the database engine. And pessimistic concurrency absolutely can still end in a rollback: a deadlock forces exactly that, killing and rolling back whichever transaction is chosen as the victim."
+    },
+    {
+      "id": "tsql-137",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: when two SNAPSHOT isolation transactions both read the same row and then both try to update it, SQL Server detects the write-write conflict and aborts the second one to attempt its write with error number ________.",
+      "acceptedAnswers": [
+        "3960",
+        "error 3960"
+      ],
+      "explain": "Row versioning solves blocking for reads, but it still has to handle two transactions both trying to write the same row starting from the same snapshot. SQL Server won't silently let the second writer overwrite a change based on stale data — it raises error 3960, 'Snapshot isolation transaction aborted due to update conflict,' on whichever transaction attempts its write second. That transaction has to be rolled back and retried; the one that committed first simply wins."
+    },
+    {
+      "id": "tsql-138",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: to turn on RCSI for a database, an administrator runs ALTER DATABASE <name> SET ________ ON;",
+      "acceptedAnswers": [
+        "READ_COMMITTED_SNAPSHOT"
+      ],
+      "explain": "READ_COMMITTED_SNAPSHOT is the database-level option name. Once it's set to ON, every session's ordinary READ COMMITTED — including code that never says SET TRANSACTION ISOLATION LEVEL at all — silently starts using row versioning instead of locking, with no application code changes required."
+    },
+    {
+      "id": "tsql-139",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "foundational",
+      "prompt": "Match each read anomaly to its correct definition.",
+      "left": [
+        "Dirty read",
+        "Nonrepeatable read",
+        "Phantom read"
+      ],
+      "right": [
+        "Reading the same row twice within one transaction and getting two different committed values, because another transaction updated and committed a change to that row in between the two reads",
+        "Running the exact same query twice within one transaction and getting a different set of rows back, because another transaction inserted or deleted a row matching the query's criteria in between the two runs",
+        "Reading another transaction's uncommitted change, which that transaction may later roll back, so you briefly believed a value that, as far as the database is concerned, never really existed at all"
+      ],
+      "correctMap": [
+        2,
+        0,
+        1
+      ],
+      "explain": "A dirty read is seeing another transaction's in-flight, uncommitted write — if that transaction rolls back, the value you read never truly existed. A nonrepeatable read is the same row giving two different real, committed values on two reads within one transaction, because another transaction committed a change in between. A phantom read is the same query returning a different set of rows — not changed values, but new rows appearing or old ones vanishing — because another transaction inserted or deleted a matching row in between the two runs."
     }
   ]
 }
