@@ -1,0 +1,60 @@
+{
+  "lesson": "handling-a-late-schema-change",
+  "questions": [
+    {
+      "q": "Why can't Sales.SalesReason be added to dw.FactProductSales as a simple SalesReasonKey foreign key column, the way the other four dimensions were added?",
+      "options": [
+        "Because Sales.SalesReason doesn't actually exist in AdventureWorks2012",
+        "Because a single order can have more than one sales reason attached at once, making it a many-to-many relationship a single column can't represent",
+        "Because SalesReasonID is a text column, not an integer",
+        "Because the fact table already has the maximum number of foreign keys allowed"
+      ],
+      "answer": 1,
+      "explain": "A single column can only hold one value per row. Since an order can legitimately have multiple sales reasons, a single FK column would have to arbitrarily discard all but one."
+    },
+    {
+      "q": "What is dw.BridgeOrderSalesReason, and how does it connect to dw.FactProductSales?",
+      "options": [
+        "A new column directly on dw.FactProductSales",
+        "A table of SalesOrderID/SalesReasonKey pairs that joins to the fact table through SalesOrderID, the existing degenerate dimension",
+        "A view that replaces dw.FactProductSales entirely",
+        "A copy of dw.DimSalesReason with no additional structure"
+      ],
+      "answer": 1,
+      "explain": "The bridge table holds key pairs and joins to the fact table through the SalesOrderID degenerate dimension already kept on dw.FactProductSales — no new column is added to the fact table itself."
+    },
+    {
+      "q": "Why can a query joining dw.FactProductSales through dw.BridgeOrderSalesReason legitimately return more rows than dw.FactProductSales itself has?",
+      "options": [
+        "This indicates a bug in the bridge table and should never happen",
+        "Because an order with multiple sales reasons fans out to multiple rows in the join, which is expected and correct for a many-to-many bridge",
+        "Because dw.FactProductSales has duplicate rows",
+        "Because the bridge table double-counts every order automatically"
+      ],
+      "answer": 1,
+      "explain": "Fan-out is expected when joining through a bridge table — an order with two reasons produces two joined rows. Any aggregation using this join has to account for that."
+    },
+    {
+      "q": "What does nothing changing about dw.FactProductSales or its original four dimensions during this schema change demonstrate?",
+      "options": [
+        "That the change is additive — every query, report, or model already built against this warehouse keeps working unmodified",
+        "That the bridge table pattern is only cosmetic and has no real effect",
+        "That dw.DimSalesReason is optional and can be skipped",
+        "That the original fact table design was wrong and needs to be rebuilt"
+      ],
+      "answer": 0,
+      "explain": "Because dw.DimSalesReason and dw.BridgeOrderSalesReason are entirely new objects, nothing that already depends on the existing fact table or dimensions is affected."
+    },
+    {
+      "q": "What real AdventureWorks2012 table proves that orders can have more than one sales reason, and how?",
+      "options": [
+        "Sales.SalesOrderHeader, by checking its TotalDue column",
+        "Sales.SalesOrderHeaderSalesReason, by grouping on SalesOrderID and finding groups with COUNT(*) > 1",
+        "Production.Product, by checking ProductSubcategoryID",
+        "Sales.Customer, by checking PersonID and StoreID"
+      ],
+      "answer": 1,
+      "explain": "Grouping Sales.SalesOrderHeaderSalesReason by SalesOrderID and filtering for COUNT(*) > 1 surfaces real orders with multiple reasons attached, proving the many-to-many relationship with real data."
+    }
+  ]
+}

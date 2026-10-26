@@ -118,7 +118,6 @@ export const CAREER_PATHS: CareerPath[] = [
           "ssrs-development",
           "power-bi",
           "data-modeling-and-data-warehousing",
-          "microsoft-bi-capstone",
         ],
       },
       {
@@ -156,6 +155,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "The pure dashboard-developer route gets harder past this point. Branch into Analytics Engineer → Senior/Staff/Principal Analytics Engineer → Data Architect to keep climbing toward $200K+.",
+    capstoneProjects: {
+      beginnerCourseSlug: "data-analyst-capstone-beginner",
+      intermediateCourseSlug: "data-analyst-capstone-intermediate",
+      advancedCourseSlug: "data-analyst-capstone-advanced",
+    },
   },
   {
     slug: "analytics-engineer",

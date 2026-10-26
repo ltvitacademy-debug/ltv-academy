@@ -46,6 +46,9 @@ import { DATA_WAREHOUSING_CHAPTERS } from "./data-warehousing-outline";
 import { MICROSOFT_BI_CAPSTONE_CHAPTERS } from "./microsoft-bi-capstone-outline";
 import { MICROSOFT_BI_CAPSTONE_BEGINNER_CHAPTERS } from "./microsoft-bi-capstone-beginner-outline";
 import { MICROSOFT_BI_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./microsoft-bi-capstone-intermediate-outline";
+import { DATA_ANALYST_CAPSTONE_BEGINNER_CHAPTERS } from "./data-analyst-capstone-beginner-outline";
+import { DATA_ANALYST_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./data-analyst-capstone-intermediate-outline";
+import { DATA_ANALYST_CAPSTONE_ADVANCED_CHAPTERS } from "./data-analyst-capstone-advanced-outline";
 import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
 import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
 import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
@@ -652,6 +655,33 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: MICROSOFT_BI_CAPSTONE_INTERMEDIATE_CHAPTERS,
     contentBase: "microsoft-bi-capstone-intermediate",
+  },
+  {
+    slug: "data-analyst-capstone-beginner",
+    title: "Data Analyst Capstone — Beginner Project",
+    tagline:
+      "Your first real project: one stakeholder, one question — pull the data with T-SQL, build a one-page Power BI dashboard, and present it.",
+    status: "available",
+    chapters: DATA_ANALYST_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "data-analyst-capstone-beginner",
+  },
+  {
+    slug: "data-analyst-capstone-intermediate",
+    title: "Data Analyst Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: two stakeholders, messy source data that needs Python before Power BI ever sees it, a multi-page model, and a real bug to find and fix before anyone trusts the numbers.",
+    status: "available",
+    chapters: DATA_ANALYST_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "data-analyst-capstone-intermediate",
+  },
+  {
+    slug: "data-analyst-capstone-advanced",
+    title: "Data Analyst Capstone — Advanced Project",
+    tagline:
+      "The full stack: one warehouse feeding a Python-automated quality layer, a Power BI dashboard, a Tableau board deck, and a Finance Excel workbook — reconciled when they disagree.",
+    status: "available",
+    chapters: DATA_ANALYST_CAPSTONE_ADVANCED_CHAPTERS,
+    contentBase: "data-analyst-capstone-advanced",
   },
   {
     slug: "python-for-ai-engineering",

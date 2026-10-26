@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-dimension-tables",
+  "questions": [
+    {
+      "q": "Why does dw.DimProduct's load use LEFT JOIN against Production.ProductSubcategory and ProductCategory instead of INNER JOIN?",
+      "options": [
+        "LEFT JOIN runs faster regardless of the data",
+        "Production.Product.ProductSubcategoryID is nullable for some real products, and an INNER JOIN would silently drop those products out of the warehouse entirely",
+        "INNER JOIN is not valid syntax in SQL Server",
+        "Because Production.ProductCategory has duplicate rows"
+      ],
+      "answer": 1,
+      "explain": "Some real products (raw materials, components) have no subcategory at all. LEFT JOIN keeps every product, with CategoryName/SubcategoryName simply NULL where there's nothing to flatten."
+    },
+    {
+      "q": "Where does dw.DimCustomer's CustomerType column come from?",
+      "options": [
+        "It's copied directly from a CustomerType column in Sales.Customer",
+        "It's derived during the load with a CASE expression based on whether StoreID is populated",
+        "It's manually entered by Finance after the load",
+        "It's calculated in Power BI, not the warehouse"
+      ],
+      "answer": 1,
+      "explain": "CustomerType doesn't exist anywhere in AdventureWorks2012 — it's derived once during the warehouse load from the real fact that StoreID is populated for store accounts and null for individuals."
+    },
+    {
+      "q": "Why is dw.DimDate built with a recursive CTE instead of a simple SELECT against a source table?",
+      "options": [
+        "Because AdventureWorks2012 has no table listing every calendar date, so the date range has to be generated",
+        "Because Sales.SalesOrderHeader.OrderDate is stored as text",
+        "Because recursive CTEs are faster than any other method for any table",
+        "Because dw.DimDate doesn't actually need every date, only order dates"
+      ],
+      "answer": 0,
+      "explain": "There's no 'table of all dates' in the OLTP source, so dw.DimDate is generated directly, covering the real range of OrderDate values with a recursive CTE."
+    },
+    {
+      "q": "Why does the recursive CTE building dw.DimDate need OPTION (MAXRECURSION 0)?",
+      "options": [
+        "To disable logging during the insert",
+        "SQL Server defaults to a 100-row recursion limit, which a multi-year date range would hit almost immediately without it",
+        "To force the dates to be generated in descending order",
+        "It has no real effect and is just a style convention"
+      ],
+      "answer": 1,
+      "explain": "MAXRECURSION 0 removes the default 100-iteration cap so the CTE can generate every date across the full multi-year range."
+    },
+    {
+      "q": "Why must Sales.SalesTerritory's Group column be written as [Group] in a T-SQL query?",
+      "options": [
+        "Because GROUP is a T-SQL reserved word and needs brackets to be used as a plain column name",
+        "Because Group is spelled differently in the real table",
+        "Because it's a computed column requiring special syntax",
+        "Brackets are only cosmetic and have no real effect"
+      ],
+      "answer": 0,
+      "explain": "GROUP is a reserved keyword in T-SQL (used in GROUP BY), so referencing a column literally named Group requires bracketing it as [Group]."
+    }
+  ]
+}
