@@ -1,0 +1,60 @@
+{
+  "lesson": "validating-both-gold-tables",
+  "questions": [
+    {
+      "q": "Why must gold.daily_sales_summary and gold.category_breakdown always reconcile with each other?",
+      "options": [
+        "Both are built from the same silver.sales_clean rows, just grouped at a different level of detail",
+        "They are unrelated tables that happen to coincidentally agree",
+        "They both read directly from bronze.sales_raw, bypassing Silver entirely",
+        "Power BI automatically keeps them in sync"
+      ],
+      "answer": 0,
+      "explain": "Both Gold tables derive from the exact same Silver rows; daily_sales_summary collapses category, category_breakdown keeps it. Same source, different grain."
+    },
+    {
+      "q": "To compare the two Gold tables, how must gold.category_breakdown be aggregated before joining?",
+      "options": [
+        "Grouped by store_id and sale_date, summing total_sales across all categories",
+        "Grouped by category only, ignoring store_id",
+        "Filtered to a single category and compared row-for-row",
+        "Left exactly as-is, since it already matches the other table's grain"
+      ],
+      "answer": 0,
+      "explain": "Rolling category_breakdown back up to the store_id/sale_date grain (summing total_sales across category) is what makes it comparable to daily_sales_summary."
+    },
+    {
+      "q": "Why does the reconciliation query check ABS(diff) > 0.01 instead of an exact inequality?",
+      "options": [
+        "To absorb tiny floating-point/decimal rounding noise without masking a real discrepancy",
+        "Because the business accepts being off by up to a dollar",
+        "Because Delta Lake rounds all currency columns to the nearest cent automatically",
+        "To make the query run faster"
+      ],
+      "answer": 0,
+      "explain": "The one-cent tolerance exists only to absorb rounding noise from summing currency at different grouping levels — not to hide genuinely wrong numbers."
+    },
+    {
+      "q": "What should the discrepancy report return when run against the pipeline as it stands in this lesson?",
+      "options": [
+        "Zero rows — both Gold tables currently reconcile cleanly",
+        "One row per store, showing a small expected difference",
+        "An error, because the two tables have incompatible schemas",
+        "Every row in gold.daily_sales_summary, for comparison"
+      ],
+      "answer": 0,
+      "explain": "At this point in the story both Gold tables were built correctly from the same incremental Silver layer, so the query should come back clean with zero discrepancy rows."
+    },
+    {
+      "q": "Why does the lesson tell you to keep this exact query instead of discarding it after this check?",
+      "options": [
+        "Because it becomes the diagnostic tool you reuse later in the course when something actually breaks",
+        "Because Power BI requires it to be saved as a stored procedure",
+        "Because it's needed to build gold.category_breakdown in the first place",
+        "Because the query must run nightly to populate bronze.sales_raw"
+      ],
+      "answer": 0,
+      "explain": "The lesson explicitly foreshadows that this same reconciliation query gets run again, for real, later in the course when the two tables actually stop agreeing."
+    }
+  ]
+}

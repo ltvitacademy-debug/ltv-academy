@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Beginner Project",
+    "titlePlain": "Writing the Bronze-to-Silver ",
+    "titleEmphasis": "Transformation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Chapter 1: First Medallion Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dedup, cast, filter -- in one pass",
+    "code": "bronze_df = spark.table(\"bronze.daily_sales_raw\")\n\nsilver_df = (\n    bronze_df\n    .dropDuplicates([\"order_id\", \"line_number\"])\n    .withColumn(\"sale_date\", to_date(col(\"sale_date\")))\n    .withColumn(\"sales_amount\",\n        col(\"sales_amount\").cast(\"decimal(12,2)\"))\n    .filter(col(\"store_id\").isNotNull()\n        & col(\"sale_date\").isNotNull()\n        & col(\"sales_amount\").isNotNull())\n)",
+    "caption": "Named business key, explicit types, required columns enforced."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Writing the clean result",
+    "code": "(silver_df.write\n    .format(\"delta\")\n    .mode(\"overwrite\")\n    .saveAsTable(\"silver.sales_transactions\"))",
+    "caption": "Overwrite, because Silver recomputes from all of Bronze each run."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three decisions, explained",
+    "titlePlain": "Why each choice ",
+    "titleEmphasis": "matters",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "dropDuplicates([order_id, line_number])", "sub": "the real business key, not every column" },
+      { "label": "Explicit casts", "sub": "Gold's sum next lesson depends on a real number" },
+      { "label": "overwrite, not append", "sub": "a known limitation -- MERGE comes later" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Writing the Silver-to-Gold ",
+    "titleEmphasis": "Aggregation",
+    "titleSuffix": "",
+    "subtitle": "Turning clean rows into one number per day."
+  }
+]

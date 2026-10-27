@@ -1,0 +1,26 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 14 confirmed the exact cause: version 47's merge matched on store_id and sale_date instead of transaction_id. Now comes the part that actually matters, fixing it correctly, and proving the fix with the same tool that caught the bug in the first place, not a new one built just for this moment."
+  },
+  {
+    "slide": "s2",
+    "text": "The fix isn't a workaround, it's restoring the match condition Lesson 5 already proved correct: transaction_id, on both sides of the ON clause, nothing else added or removed. That's the whole code change, one column swapped back. The smallest possible fix for the largest possible damage, which is exactly what a precise, confirmed root cause buys you instead of a guess."
+  },
+  {
+    "slide": "s3",
+    "text": "Fixing the ON clause only protects future runs. Every merge that ran between March 1st and today used the wrong key, so silver.sales_clean still carries corrupted data for that whole window right now. The affected Bronze rows get re-pulled, not just today's incremental batch, and re-merged with the corrected key, which re-upserts every one of them on the real unique key this time."
+  },
+  {
+    "slide": "s4",
+    "text": "Both Gold tables were already built from that corrupted Silver data, so both get rebuilt for the affected range, using the exact same aggregation logic from Lessons 7 and 8, scoped down to just the affected store and dates rather than the whole table."
+  },
+  {
+    "slide": "s5",
+    "text": "Then comes the step that actually closes the ticket. Re-run Lesson 9's reconciliation query across the full range. Every row, including March 1st and 2nd, the exact dates that were broken, now comes back with zero difference. That's the real difference between thinking it's fixed and proving it's fixed, with the same query that flagged the problem in the first place."
+  },
+  {
+    "slide": "s6",
+    "text": "This fix holds for a real reason, not luck. Transaction_id is uniqueness-guaranteed by the source system that generates every single sale. No combination of store_id, sale_date, or any other business column carries that same guarantee, because nothing stops a store from logging many transactions on one day. A match key is only as safe as the uniqueness the source system actually promises, and transaction_id is the one column here that promise was ever made for."
+  }
+]

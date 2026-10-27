@@ -1,0 +1,60 @@
+{
+  "lesson": "fixing-and-validating",
+  "questions": [
+    {
+      "q": "What is the actual fix applied to northfield-redshift-copy-role?",
+      "options": [
+        "Add a new s3:ListBucket statement on the bucket ARN, alongside the existing s3:GetObject statement",
+        "Remove the s3:GetObject statement entirely",
+        "Delete the role and create a brand-new one from scratch",
+        "Grant the role full S3 administrator access"
+      ],
+      "answer": 0,
+      "explain": "The fix is additive: the missing s3:ListBucket statement is added alongside the existing, still-correct s3:GetObject statement."
+    },
+    {
+      "q": "Why is s3:ListBucket's Resource value the bucket ARN with no object path, while s3:GetObject's Resource ends in /orders/*?",
+      "options": [
+        "ListBucket is a bucket-level operation that only makes sense against the bucket itself, while GetObject reads individual object keys",
+        "Both should actually use the exact same Resource value",
+        "This is a typo that happens to work by accident",
+        "Object-level ARNs are never valid for any S3 action"
+      ],
+      "answer": 0,
+      "explain": "Enumerating what exists under a prefix is a bucket-level operation; reading an object's bytes is an object-level operation. Each needs its own resource scope."
+    },
+    {
+      "q": "Why does s3:GetObject alone feel sufficient when creating the role, but isn't?",
+      "options": [
+        "COPY must enumerate which Parquet part-files exist under the prefix before it can fetch any of them, and enumeration is gated by a different action entirely",
+        "GetObject actually already includes ListBucket's permissions automatically",
+        "Parquet files never need to be listed, only read",
+        "COPY reads files in a fixed, pre-known order that skips enumeration"
+      ],
+      "answer": 0,
+      "explain": "Reading sounds like 'the job,' but COPY can't reach that step without first listing the prefix, which is a separate, bucket-level permission."
+    },
+    {
+      "q": "How is the fix validated after being applied?",
+      "options": [
+        "Re-run the Lesson 5 COPY manually, confirm no new sys_load_error_detail rows, then re-run the Lesson 6 row-count/sum pair against curated vs. fact_orders",
+        "Only check that the IAM console saved the policy without an error message",
+        "Delete analytics.fact_orders and assume it will repopulate correctly on its own",
+        "Only re-run the EventBridge rule and wait a full day to see if it silently worked"
+      ],
+      "answer": 0,
+      "explain": "Validation re-runs the actual failing operation by hand and checks both the error table and an exact row-count/sum match against source."
+    },
+    {
+      "q": "Why doesn't the Lesson 8 nightly scheduled refresh need its own separate fix?",
+      "options": [
+        "EventBridge, the Glue trigger, and the Python Shell load job all ultimately call through the same IAM role, so fixing that role's policy once fixes every future scheduled run",
+        "The nightly schedule uses a completely different role that was unaffected",
+        "EventBridge rules re-check IAM permissions only once per calendar month",
+        "The nightly schedule was actually already working correctly all along"
+      ],
+      "answer": 0,
+      "explain": "northfield-redshift-load re-issues the same COPY under the same role, so the single policy fix resolves every future run of the chain."
+    }
+  ]
+}

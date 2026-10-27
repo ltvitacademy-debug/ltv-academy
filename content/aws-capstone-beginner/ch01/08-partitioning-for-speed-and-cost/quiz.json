@@ -1,0 +1,60 @@
+{
+  "lesson": "partitioning-for-speed-and-cost",
+  "questions": [
+    {
+      "q": "Without partitioning, what does Athena actually do when a query filters for a single day (e.g. WHERE dt = '2026-08-15')?",
+      "options": [
+        "It still scans every file in the table, applying the date filter only after reading all the data",
+        "It automatically skips every file that doesn't match the date, with no setup required",
+        "It refuses to run the query until the table is partitioned",
+        "It only scans the single matching file, because CSV files are inherently date-aware"
+      ],
+      "answer": 0,
+      "explain": "Without partition information, the WHERE clause is just a row filter applied after scanning everything — Athena has no way to know in advance which files could match."
+    },
+    {
+      "q": "What is a \"partition column\" like `dt` in this lesson's example?",
+      "options": [
+        "A column derived from the S3 folder path (dt=2026-08-15/), not stored as data inside the CSV files",
+        "A column that must be manually typed into every row of every CSV file",
+        "A special Athena-only data type unrelated to S3 folder structure",
+        "A column that only exists in Redshift, never in Athena"
+      ],
+      "answer": 0,
+      "explain": "Partition columns come from the folder structure itself — the crawler infers dt from the dt= prefix naming convention, not from file contents."
+    },
+    {
+      "q": "After physically reorganizing the S3 files into dt= partitions, what has to happen before Athena can use them?",
+      "options": [
+        "The Glue Crawler needs to be re-run so the Catalog registers the new partitions",
+        "Nothing — Athena automatically detects any S3 folder structure change instantly",
+        "The orders_raw table must be deleted and manually recreated from scratch",
+        "The raw CSV files must be converted to JSON first"
+      ],
+      "answer": 0,
+      "explain": "Re-running the same crawler discovers the new dt= folders and registers dt as a partition column on the existing table."
+    },
+    {
+      "q": "What is \"partition pruning\"?",
+      "options": [
+        "Athena skipping entire partitions it knows can't match a query's filter, without scanning any bytes from them",
+        "Deleting old partitions automatically after 90 days",
+        "A Glue ETL step that removes duplicate rows from a partitioned table",
+        "Compressing files within a partition to save storage space"
+      ],
+      "answer": 0,
+      "explain": "Partition pruning is the mechanism that lets Athena skip whole folders based on Catalog metadata, rather than opening every file to check."
+    },
+    {
+      "q": "Why does the lesson say partitioning makes almost no visible difference at this project's current scale, but matters a great deal later?",
+      "options": [
+        "Athena bills per terabyte scanned, and the pruning ratio holds at any scale — it just costs real money and real wait time only once the dataset grows large",
+        "Partitioning only works correctly on datasets larger than 1 TB",
+        "Small datasets are exempt from Athena's per-query billing model entirely",
+        "Glue Crawlers cannot create partitions on tables under a certain row count"
+      ],
+      "answer": 0,
+      "explain": "The underlying pruning benefit is proportionally identical at any scale — it's just invisible in dollars and seconds until the dataset is large enough for the difference to show up."
+    }
+  ]
+}

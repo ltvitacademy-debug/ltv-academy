@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 4 built four tables on the northfield-analytics workgroup, but creating a table only defines its shape. Right now every one of those tables is empty, while Lesson 3's Glue ETL job has already been writing clean, typed, partitioned Parquet files to the curated S3 zone. The data Finance needs already exists in S3 — it just isn't inside Redshift yet."
+  },
+  {
+    "slide": "s2",
+    "text": "You could technically insert rows one at a time, but that's the wrong tool here. A single INSERT statement is one serial operation through the leader node, with no parallelism. Redshift's storage layer is built for large, columnar writes, and the curated zone already holds whole Parquet files partitioned by date. COPY is Redshift's purpose-built bulk-load command: point it at an S3 location, and it loads the files there in parallel, directly into the table."
+  },
+  {
+    "slide": "s3",
+    "text": "Here's the real statement. It loads analytics.fact_orders with an explicit column list, so there's no relying on positional luck. It reads from the curated zone, not the raw zone. And FORMAT AS PARQUET tells COPY to read the files' own embedded schema directly, which only works cleanly because the ETL job already wrote Parquet with Snappy compression."
+  },
+  {
+    "slide": "s4",
+    "text": "The IAM_ROLE clause is doing real work. S3 buckets don't have a username and password — so COPY assumes an IAM role on your behalf for the duration of the load. That role, northfield-redshift-copy-role, has a permissions policy that currently grants exactly the read access this COPY needs. It works correctly right now — hold onto that name, because it matters again later in this chapter."
+  },
+  {
+    "slide": "s5",
+    "text": "Run this in the Redshift Query Editor against the northfielddw database, and the statement returns once the load completes. But a clean return just means the statement ran without erroring — it doesn't prove the data is complete or correct. That's exactly what Lesson 6 checks next."
+  }
+]

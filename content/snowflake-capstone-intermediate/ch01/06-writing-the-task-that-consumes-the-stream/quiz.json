@@ -1,0 +1,60 @@
+{
+  "lesson": "writing-the-task-that-consumes-the-stream",
+  "questions": [
+    {
+      "q": "What does a Task's WHEN SYSTEM$STREAM_HAS_DATA(...) clause accomplish?",
+      "options": [
+        "The Task's warehouse only wakes up and the MERGE only runs when the Stream actually has unconsumed data",
+        "It deletes the Stream after each run",
+        "It forces the Task to run every second regardless of data",
+        "It prevents the Task from ever being suspended"
+      ],
+      "answer": 0,
+      "explain": "The WHEN clause is the efficiency gate — on a quiet day with no new data, the scheduled tick does nothing and nothing gets billed."
+    },
+    {
+      "q": "Why is ticket_facts_sync_task's MERGE described as idempotent?",
+      "options": [
+        "Its UPDATE SET branch sets columns to the same value whether it runs once or twice against the same change rows",
+        "It never actually writes any data",
+        "It only runs one time ever, by Snowflake design",
+        "It has no WHEN MATCHED branch at all"
+      ],
+      "answer": 0,
+      "explain": "An upsert MERGE with an UPDATE branch produces the same end state whether it processes the same rows once or twice."
+    },
+    {
+      "q": "Why does finance_refund_task's MERGE have no WHEN MATCHED branch?",
+      "options": [
+        "refund_events is append-only by design — each row is a distinct refund event, not a value to overwrite in place",
+        "Snowflake does not allow WHEN MATCHED in any MERGE statement",
+        "It was left out by mistake and should be added",
+        "WHEN MATCHED is only valid for VARIANT columns"
+      ],
+      "answer": 0,
+      "explain": "refund_events logs discrete refund events; only WHEN NOT MATCHED THEN INSERT fits that append-only design."
+    },
+    {
+      "q": "What state is a newly created Task in by default, before anyone resumes it?",
+      "options": [
+        "SUSPENDED",
+        "RUNNING",
+        "FAILED",
+        "DELETED"
+      ],
+      "answer": 0,
+      "explain": "Tasks are created suspended as a deliberate safety default — Lesson 7 resumes them explicitly."
+    },
+    {
+      "q": "What real risk does this lesson flag about finance_refund_task's append-only MERGE, specifically?",
+      "options": [
+        "If the same stream rows were somehow fed into it twice in overlapping windows, both runs could each insert a matching event, duplicating the ledger",
+        "It would fail to compile because it lacks a WHEN MATCHED branch",
+        "It cannot reference a VARIANT column in its USING clause",
+        "It would silently skip all refund rows with a null refund_amount"
+      ],
+      "answer": 0,
+      "explain": "Because the MERGE is not idempotent, duplicate or overlapping processing of the same Stream data can produce duplicate ledger rows — exactly the mechanism behind this chapter's later bug."
+    }
+  ]
+}

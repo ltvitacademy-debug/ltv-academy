@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Beginner Project",
+    "titlePlain": "Writing the Silver-to-Gold ",
+    "titleEmphasis": "Aggregation",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Chapter 1: First Medallion Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "groupBy, agg, write -- the whole answer",
+    "code": "gold_df = (\n    spark.table(\"silver.sales_transactions\")\n    .groupBy(\"sale_date\")\n    .agg(\n        _sum(\"sales_amount\").alias(\"total_sales_amount\"),\n        countDistinct(\"order_id\").alias(\"order_count\"),\n    )\n    .orderBy(\"sale_date\")\n)\n\n(gold_df.write.format(\"delta\").mode(\"overwrite\")\n    .saveAsTable(\"gold.daily_sales_summary\"))",
+    "caption": "One row per sale line item, collapsed into one row per day."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One order, three line items",
+    "titlePlain": "count vs. ",
+    "titleEmphasis": "countDistinct",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "count(order_id)", "sub": "3 -- wrong, inflated by line items" },
+      { "label": "countDistinct(order_id)", "sub": "1 -- correct, one real order" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same logic, as Spark SQL",
+    "code": "CREATE OR REPLACE TABLE gold.daily_sales_summary AS\nSELECT\n  sale_date,\n  SUM(sales_amount)        AS total_sales_amount,\n  COUNT(DISTINCT order_id) AS order_count\nFROM silver.sales_transactions\nGROUP BY sale_date\nORDER BY sale_date;",
+    "caption": "Identical result -- PySpark and SQL cells mix freely in either platform's notebooks."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Validating Row Counts Across ",
+    "titleEmphasis": "Layers",
+    "titleSuffix": "",
+    "subtitle": "Proving the pipeline did what it claims to."
+  }
+]

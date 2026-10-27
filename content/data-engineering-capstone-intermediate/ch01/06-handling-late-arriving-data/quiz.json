@@ -1,0 +1,60 @@
+{
+  "lesson": "handling-late-arriving-data",
+  "questions": [
+    {
+      "q": "A sale happens on June 1st, but because of a POS sync delay, it doesn't reach the source system until June 2nd's export file. Which source file does incremental Bronze ingestion read it from?",
+      "options": [
+        "June 2nd's file — because that's the new file ingestion actually picks up that day",
+        "June 1st's file — ingestion goes back and rewrites the original file",
+        "It gets discarded because its sale_date doesn't match the file's date",
+        "It gets duplicated into both June 1st's and June 2nd's Bronze partitions"
+      ],
+      "answer": 0,
+      "explain": "Incremental ingestion reads whatever new file physically landed; the late sale is inside June 2nd's file, so that's where Bronze picks it up, with its original sale_date column intact."
+    },
+    {
+      "q": "Once the late sale is in Bronze, what determines where it lands in silver.sales_clean?",
+      "options": [
+        "Its transaction_id, matched against existing rows in the MERGE INTO statement — not the date it was ingested",
+        "The file name it arrived in",
+        "Whatever today's system date happens to be",
+        "Alphabetical order of store_id"
+      ],
+      "answer": 0,
+      "explain": "The MERGE INTO matches ON transaction_id. Since this transaction_id has never been seen before, it hits WHEN NOT MATCHED and is inserted with its real sale_date untouched."
+    },
+    {
+      "q": "Why does this late sale correctly end up in June 1st's Gold totals, even though it arrived in the pipeline on June 2nd?",
+      "options": [
+        "Because Gold tables aggregate GROUP BY sale_date, which reflects when the sale actually happened, not when it was loaded",
+        "Because Gold tables have a special late-arrival correction step",
+        "Because Bronze automatically moves late rows into the correct day's partition",
+        "Because the watermark table meta.last_ingested_date overwrites sale_date"
+      ],
+      "answer": 0,
+      "explain": "Both Gold tables group by sale_date (the business date), so whenever Gold recomputes from Silver's current state, the late row folds into the day it actually happened, with no special-case logic needed."
+    },
+    {
+      "q": "What would go wrong under a naive design that matched the Silver MERGE on sale_date instead of transaction_id?",
+      "options": [
+        "The late June 1st sale could collapse into or overwrite an unrelated row already dated June 1st, since many transactions share the same sale_date",
+        "Nothing — sale_date and transaction_id are interchangeable as match keys",
+        "The MERGE statement would throw a syntax error",
+        "Bronze ingestion would fail to read the file at all"
+      ],
+      "answer": 0,
+      "explain": "sale_date is shared by many transactions, so using it as a match key risks silently merging distinct sales together — exactly the mistake Lesson 5 warns against."
+    },
+    {
+      "q": "What would go wrong under a naive design that stamped incoming rows with \"today's date\" instead of preserving their real sale_date?",
+      "options": [
+        "The late sale would be counted in June 2nd's Gold totals instead of June 1st's, inflating June 2nd and under-counting June 1st",
+        "The sale would be dropped from Bronze entirely",
+        "Gold totals would be correct for both days, since total dollar amounts never change",
+        "The transaction_id of the late sale would change"
+      ],
+      "answer": 0,
+      "explain": "Overwriting sale_date with the load date would misattribute the sale to the wrong day's aggregation, silently inflating one day's total and under-counting the other."
+    }
+  ]
+}

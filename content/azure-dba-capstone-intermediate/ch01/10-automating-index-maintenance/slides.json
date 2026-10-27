@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure DBA Capstone · Intermediate Project",
+    "titlePlain": "Automating Index ",
+    "titleEmphasis": "Maintenance",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Keeping the Fix From Quietly Expiring"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Measuring real fragmentation",
+    "code": "SELECT OBJECT_NAME(ips.object_id) AS table_name, i.name AS index_name,\n       ips.avg_fragmentation_in_percent, ips.page_count\nFROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'LIMITED') AS ips\nJOIN sys.indexes AS i ON ips.object_id = i.object_id AND ips.index_id = i.index_id\nWHERE ips.page_count > 500\nORDER BY ips.avg_fragmentation_in_percent DESC;",
+    "caption": "page_count > 500 matters as much as the fragmentation number itself."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The real decision, not a blanket rule",
+    "titlePlain": "REBUILD vs. ",
+    "titleEmphasis": "REORGANIZE",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Below 30%", "sub": "REORGANIZE — lighter, always online" },
+      { "label": "30% and above", "sub": "REBUILD WITH (ONLINE = ON) — thorough" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Applying the decision per index",
+    "code": "IF @frag >= 30.0\n    EXEC('ALTER INDEX ' + @index + ' ON dbo.' + @table\n         + ' REBUILD WITH (ONLINE = ON);');\nELSE IF @frag >= 5.0\n    EXEC('ALTER INDEX ' + @index + ' ON dbo.' + @table\n         + ' REORGANIZE;');",
+    "caption": "Mirrors the real logic behind Ola Hallengren's widely-used maintenance solution."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Scheduling the ",
+    "titleEmphasis": "Maintenance Job",
+    "titleSuffix": "",
+    "subtitle": "Running this on a real schedule, the Azure SQL Database way."
+  }
+]

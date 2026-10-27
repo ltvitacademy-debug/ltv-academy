@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "Building the Category Breakdown Gold ",
+    "titleEmphasis": "Table",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Chapter 1: Incremental Pipeline Redesign"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "A different question",
+    "titlePlain": "What the Regional Manager actually ",
+    "titleEmphasis": "asked",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Existing table", "sub": "gold.daily_sales_summary — store, day" },
+      { "label": "Missing view", "sub": "which categories are driving that total?" },
+      { "label": "New table", "sub": "gold.category_breakdown — store, category, day" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The aggregation, in PySpark",
+    "code": "category_breakdown = (\n    spark.table(\"silver.sales_clean\")\n    .groupBy(\"store_id\", \"category\", \"sale_date\")\n    .agg(\n        F.sum(\"total_amount\").alias(\"total_sales\"),\n        F.sum(\"quantity\").alias(\"total_quantity\"),\n    )\n)\n\n(category_breakdown.write\n    .format(\"delta\")\n    .mode(\"overwrite\")\n    .saveAsTable(\"gold.category_breakdown\"))",
+    "caption": "One row per store, per category, per day."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same aggregation, in SQL",
+    "code": "CREATE OR REPLACE TABLE gold.category_breakdown AS\nSELECT\n    store_id,\n    category,\n    sale_date,\n    SUM(total_amount) AS total_sales,\n    SUM(quantity)      AS total_quantity\nFROM silver.sales_clean\nGROUP BY store_id, category, sale_date",
+    "caption": "Reads from silver.sales_clean, not raw Bronze."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why a plain overwrite is safe here",
+    "titlePlain": "No MERGE needed at the Gold ",
+    "titleEmphasis": "layer",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Silver is now correct", "sub": "kept that way by Lesson 5's MERGE INTO" },
+      { "label": "Silver is small", "sub": "one clean row per transaction, not raw Bronze" },
+      { "label": "Recompute is cheap", "sub": "so a full overwrite every run is the simple, right call" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "Extending the Daily Summary Gold ",
+    "titleEmphasis": "Table",
+    "titleSuffix": "",
+    "subtitle": "Confirming the original table still just works."
+  }
+]

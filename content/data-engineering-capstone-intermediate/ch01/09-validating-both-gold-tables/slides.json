@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "Validating Both Gold ",
+    "titleEmphasis": "Tables",
+    "titleSuffix": "",
+    "subtitle": "Lesson 9 · Chapter 1: Proving two Gold tables actually agree"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same source, different grain",
+    "titlePlain": "One Silver layer, two Gold ",
+    "titleEmphasis": "shapes",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "gold.daily_sales_summary", "sub": "grouped by store_id, sale_date" },
+      { "label": "gold.category_breakdown", "sub": "grouped by store_id, category, sale_date" },
+      { "label": "silver.sales_clean", "sub": "the exact same rows feed both" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The reconciliation query",
+    "code": "WITH category_rolled_up AS (\n  SELECT store_id, sale_date,\n         SUM(total_sales) AS rolled_up_sales\n  FROM gold.category_breakdown\n  GROUP BY store_id, sale_date\n)\nSELECT d.store_id, d.sale_date,\n       d.total_sales, c.rolled_up_sales,\n       ABS(d.total_sales - c.rolled_up_sales) AS diff\nFROM gold.daily_sales_summary d\nJOIN category_rolled_up c\n  ON d.store_id = c.store_id\n AND d.sale_date = c.sale_date\nWHERE ABS(d.total_sales - c.rolled_up_sales) > 0.01",
+    "caption": "Roll category_breakdown back up, then compare to daily_sales_summary."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Same check, in PySpark",
+    "code": "rolled_up = (\n    category_breakdown\n    .groupBy(\"store_id\", \"sale_date\")\n    .agg(F.sum(\"total_sales\").alias(\"rolled_up_sales\"))\n)\n\ndiscrepancy_report = (\n    daily_summary\n    .join(rolled_up, on=[\"store_id\", \"sale_date\"])\n    .withColumn(\"diff\", F.abs(F.col(\"total_sales\")\n                              - F.col(\"rolled_up_sales\")))\n    .filter(F.col(\"diff\") > 0.01)\n)",
+    "caption": "A discrepancy report: it returns only the rows that disagree."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Right now, this should be clean",
+    "titlePlain": "Zero rows means the pipeline is ",
+    "titleEmphasis": "healthy",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Expected result today", "sub": "zero discrepancy rows, both tables agree" },
+      { "label": "Keep this query", "sub": "you'll run it again, for real, later in this course" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 10",
+    "titlePlain": "Connecting Power BI to Both ",
+    "titleEmphasis": "Tables",
+    "titleSuffix": "",
+    "subtitle": "Getting both Gold tables in front of two different stakeholders."
+  }
+]

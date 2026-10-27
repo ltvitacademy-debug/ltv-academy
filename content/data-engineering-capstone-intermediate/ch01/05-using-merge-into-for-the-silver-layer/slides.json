@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "Using MERGE INTO for the Silver ",
+    "titleEmphasis": "Layer",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Chapter 1: Incremental Pipeline Redesign"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why a full rewrite no longer works",
+    "titlePlain": "From full rewrite to a real ",
+    "titleEmphasis": "upsert",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Bronze is now incremental", "sub": "only new source files land each run" },
+      { "label": "A full Silver rebuild is wasteful", "sub": "most rows haven't changed since yesterday" },
+      { "label": "The fix: MERGE INTO", "sub": "update what changed, insert what's new" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The real Delta Lake SQL",
+    "code": "MERGE INTO silver.sales_clean AS target\nUSING bronze_incremental AS source\nON target.transaction_id = source.transaction_id\nWHEN MATCHED THEN UPDATE SET *\nWHEN NOT MATCHED THEN INSERT *",
+    "caption": "One pass over today's incremental batch, not the whole Silver table."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The same upsert, in PySpark",
+    "code": "from delta.tables import DeltaTable\n\nsilver_table = DeltaTable.forName(spark, \"silver.sales_clean\")\n\n(silver_table.alias(\"target\")\n    .merge(\n        bronze_incremental_df.alias(\"source\"),\n        \"target.transaction_id = source.transaction_id\")\n    .whenMatchedUpdateAll()\n    .whenNotMatchedInsertAll()\n    .execute())",
+    "caption": "The DeltaTable API: same logic, same match key."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Picking the match key",
+    "titlePlain": "Why transaction_id, and nothing ",
+    "titleEmphasis": "else",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "store_id — wrong", "sub": "shared by every sale at that store" },
+      { "label": "sale_date — wrong", "sub": "shared by thousands of sales on one day" },
+      { "label": "transaction_id — correct", "sub": "uniquely identifies one real sale" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Handling Late-Arriving ",
+    "titleEmphasis": "Data",
+    "titleSuffix": "",
+    "subtitle": "Why this MERGE still gets a late sale right."
+  }
+]

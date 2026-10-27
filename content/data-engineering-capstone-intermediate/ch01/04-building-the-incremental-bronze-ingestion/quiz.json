@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-incremental-bronze-ingestion",
+  "questions": [
+    {
+      "q": "What does the fallback date of \"1900-01-01\" handle when reading the watermark?",
+      "options": [
+        "The very first run against a source, when no watermark row exists yet, so everything counts as new",
+        "A corrupted watermark table that needs to be reset",
+        "A source file that was deleted after being ingested",
+        "The maximum date Delta Lake allows in a partition column"
+      ],
+      "answer": 0,
+      "explain": "When no watermark row exists yet for a source, the fallback date makes the filter treat all available data as new, which is correct since nothing has been ingested before."
+    },
+    {
+      "q": "Which line in the ingestion script is specifically responsible for turning this into an incremental job rather than a full reload?",
+      "options": [
+        "The .filter(F.col(\"sale_date\") > F.lit(last_ingested_date)) on the source read",
+        "The .withColumn(\"ingested_at\", F.current_timestamp()) call",
+        "The .select(...) listing out the business columns",
+        "The spark.read.format(\"csv\").option(\"header\", \"true\") call"
+      ],
+      "answer": 0,
+      "explain": "That filter is what prevents the job from scanning or touching any data at or before the watermark -- it's the line that turns 'reprocess everything' into 'process only what's new.'"
+    },
+    {
+      "q": "Why is .mode(\"append\") the correct write mode for bronze.sales_raw in this design?",
+      "options": [
+        "Because the source filter already guaranteed the incoming rows are new, so appending them is safe and correct",
+        "Because Delta Lake tables can never be overwritten under any circumstances",
+        "Because bronze.sales_raw has no transaction_id column to match on",
+        "Because append mode automatically deduplicates rows on write"
+      ],
+      "answer": 0,
+      "explain": "Append is safe specifically because the earlier filter on sale_date already restricted the DataFrame to rows that are new since the watermark -- Bronze stays append-only exactly like the Beginner project."
+    },
+    {
+      "q": "Why must the watermark only be advanced after the Bronze append has actually succeeded?",
+      "options": [
+        "Advancing it too early risks silently skipping real data if the run fails partway through",
+        "Delta Lake requires watermark updates to happen before any write, not after",
+        "It has no effect either way, since the watermark is only used for reporting",
+        "Advancing it early makes the next run read MORE data than it should"
+      ],
+      "answer": 0,
+      "explain": "If the watermark moves forward before the append is confirmed, a failed run could leave a gap where data was never actually ingested but the watermark claims it was."
+    },
+    {
+      "q": "What is the watermark-advance step in this lesson's code built from?",
+      "options": [
+        "A MERGE INTO against meta.last_ingested_date, inserting if the source is new and updating if it already exists",
+        "A full DROP TABLE and recreate of meta.last_ingested_date on every run",
+        "A manual edit of a configuration file outside of Spark",
+        "An UPDATE statement with no matching condition, applied to every row"
+      ],
+      "answer": 0,
+      "explain": "The watermark advance uses the same MERGE INTO idea used later for Silver -- insert the source if it's never been seen, update its date if it has -- just against a one-row-per-source bookkeeping table."
+    }
+  ]
+}

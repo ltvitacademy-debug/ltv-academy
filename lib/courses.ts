@@ -52,6 +52,15 @@ import { DATA_ANALYST_CAPSTONE_ADVANCED_CHAPTERS } from "./data-analyst-capstone
 import { ANALYTICS_ENGINEER_CAPSTONE_BEGINNER_CHAPTERS } from "./analytics-engineer-capstone-beginner-outline";
 import { ANALYTICS_ENGINEER_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./analytics-engineer-capstone-intermediate-outline";
 import { ANALYTICS_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS } from "./analytics-engineer-capstone-advanced-outline";
+import { DATA_ENGINEERING_CAPSTONE_BEGINNER_CHAPTERS } from "./data-engineering-capstone-beginner-outline";
+import { DATA_ENGINEERING_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./data-engineering-capstone-intermediate-outline";
+import { AWS_CAPSTONE_BEGINNER_CHAPTERS } from "./aws-capstone-beginner-outline";
+import { AWS_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./aws-capstone-intermediate-outline";
+import { SNOWFLAKE_CAPSTONE_BEGINNER_CHAPTERS } from "./snowflake-capstone-beginner-outline";
+import { SNOWFLAKE_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./snowflake-capstone-intermediate-outline";
+import { AZURE_DBA_CAPSTONE_BEGINNER_CHAPTERS } from "./azure-dba-capstone-beginner-outline";
+import { AZURE_DBA_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./azure-dba-capstone-intermediate-outline";
+import { AZURE_DBA_CAPSTONE_ADVANCED_CHAPTERS } from "./azure-dba-capstone-advanced-outline";
 import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
 import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
 import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
@@ -712,6 +721,87 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: ANALYTICS_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS,
     contentBase: "analytics-engineer-capstone-advanced",
+  },
+  {
+    slug: "data-engineering-capstone-beginner",
+    title: "Data Engineering Capstone — Beginner Project",
+    tagline:
+      "Your first real project: a medallion pipeline, bronze to gold, feeding a Power BI dashboard — shared by the Azure/Fabric and Databricks paths.",
+    status: "available",
+    chapters: DATA_ENGINEERING_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "data-engineering-capstone-beginner",
+  },
+  {
+    slug: "data-engineering-capstone-intermediate",
+    title: "Data Engineering Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: two stakeholders, an incremental Delta Lake pipeline with MERGE INTO, and a real bug to find and fix before anyone trusts the numbers.",
+    status: "available",
+    chapters: DATA_ENGINEERING_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "data-engineering-capstone-intermediate",
+  },
+  {
+    slug: "aws-capstone-beginner",
+    title: "AWS Capstone — Beginner Project",
+    tagline:
+      "Your first real project: land files in S3, catalog them with Glue, and answer a stakeholder's question with Athena.",
+    status: "available",
+    chapters: AWS_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "aws-capstone-beginner",
+  },
+  {
+    slug: "aws-capstone-intermediate",
+    title: "AWS Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: a real Glue ETL job, a Redshift warehouse, and two separate bugs to diagnose and fix before anyone trusts the numbers.",
+    status: "available",
+    chapters: AWS_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "aws-capstone-intermediate",
+  },
+  {
+    slug: "snowflake-capstone-beginner",
+    title: "Snowflake Capstone — Beginner Project",
+    tagline:
+      "Your first real project: load data into Snowflake, write real Snowflake SQL, and ship a clean report through Power BI.",
+    status: "available",
+    chapters: SNOWFLAKE_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "snowflake-capstone-beginner",
+  },
+  {
+    slug: "snowflake-capstone-intermediate",
+    title: "Snowflake Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: semi-structured JSON, Streams and Tasks for incremental loading, and a real bug to find and fix before anyone trusts the numbers.",
+    status: "available",
+    chapters: SNOWFLAKE_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "snowflake-capstone-intermediate",
+  },
+  {
+    slug: "azure-dba-capstone-beginner",
+    title: "Azure Database Engineer Capstone — Beginner Project",
+    tagline:
+      "Your first real project: a real backup strategy, full/differential/log backups, and a point-in-time restore drill.",
+    status: "available",
+    chapters: AZURE_DBA_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "azure-dba-capstone-beginner",
+  },
+  {
+    slug: "azure-dba-capstone-intermediate",
+    title: "Azure Database Engineer Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: real performance tuning with DMVs and execution plans, a blocking chain to resolve, and automated maintenance.",
+    status: "available",
+    chapters: AZURE_DBA_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "azure-dba-capstone-intermediate",
+  },
+  {
+    slug: "azure-dba-capstone-advanced",
+    title: "Azure Database Engineer Capstone — Advanced Project",
+    tagline:
+      "The full platform: Bicep-provisioned infrastructure, encryption and compliance, failover groups, PowerShell automation, a Data Factory feed, and a real DR drill.",
+    status: "available",
+    chapters: AZURE_DBA_CAPSTONE_ADVANCED_CHAPTERS,
+    contentBase: "azure-dba-capstone-advanced",
   },
   {
     slug: "python-for-ai-engineering",

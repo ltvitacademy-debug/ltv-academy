@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "Building the Incremental Bronze ",
+    "titleEmphasis": "Ingestion",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Chapter 1: Two Stakeholders, One Incremental Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · Read the watermark",
+    "code": "watermark_row = (\n    spark.table(\"meta.last_ingested_date\")\n    .filter(F.col(\"source_name\") == \"pos_daily_export\")\n    .select(\"last_ingested_date\")\n    .first()\n)\nlast_ingested_date = (\n    watermark_row[\"last_ingested_date\"] if watermark_row\n    else \"1900-01-01\"\n)",
+    "caption": "No watermark yet means everything is treated as new -- correctly."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · Filter to only what's new",
+    "code": "source_df = (\n    spark.read.format(\"csv\")\n    .option(\"header\", \"true\")\n    .load(\"abfss://landing@retailchain.../pos_daily_export/\")\n    .filter(F.col(\"sale_date\") > F.lit(last_ingested_date))\n)",
+    "caption": "This filter is the whole point: never touch data before the watermark."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 · Append to Bronze",
+    "code": "bronze_ready_df = (\n    source_df\n    .withColumn(\"source_file\", F.input_file_name())\n    .withColumn(\"ingested_at\", F.current_timestamp())\n)\n\n(bronze_ready_df.write\n    .format(\"delta\")\n    .mode(\"append\")\n    .saveAsTable(\"bronze.sales_raw\"))",
+    "caption": "Append-only, same as before -- just far fewer rows arrive here each night."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 4 · Advance the watermark",
+    "code": "if new_row_count > 0:\n    new_watermark_date = (\n        bronze_ready_df.agg(F.max(\"sale_date\")).first()[0]\n    )\n    spark.sql(\"\"\"MERGE INTO meta.last_ingested_date ...\"\"\")\nelse:\n    print(\"No new rows found; watermark unchanged.\")",
+    "caption": "Only advance the watermark AFTER a successful append -- never before."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 5",
+    "titlePlain": "Using MERGE INTO for the Silver ",
+    "titleEmphasis": "Layer",
+    "titleSuffix": "",
+    "subtitle": "Turning Bronze's new rows into upserts against silver.sales_clean."
+  }
+]

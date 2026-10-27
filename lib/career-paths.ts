@@ -212,6 +212,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Data Engineer → Senior → Lead → Staff → Principal Data Engineer → Data/Cloud Architect. This path's backbone already exists end to end — the advanced-stage courses are what turn it into a senior-ready skill set.",
+    capstoneProjects: {
+      beginnerCourseSlug: "data-engineering-capstone-beginner",
+      intermediateCourseSlug: "data-engineering-capstone-intermediate",
+      advancedCourseSlug: "data-engineering-career-and-capstone",
+    },
   },
   {
     slug: "databricks-lakehouse-engineer",
@@ -240,6 +245,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Databricks Data Engineer → Senior → Lead Data Engineer → Principal Databricks Engineer → Databricks/Lakehouse Architect.",
+    capstoneProjects: {
+      beginnerCourseSlug: "data-engineering-capstone-beginner",
+      intermediateCourseSlug: "data-engineering-capstone-intermediate",
+      advancedCourseSlug: "data-engineering-career-and-capstone",
+    },
   },
   {
     slug: "aws-data-engineer",
@@ -262,6 +272,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Junior Data Engineer → AWS Data Engineer → Senior Data Engineer → Lead/Staff Engineer → Principal Data Engineer → AWS Data Architect — the same $200K+ ceiling as the Azure/Fabric path, reached through AWS's own tools instead.",
+    capstoneProjects: {
+      beginnerCourseSlug: "aws-capstone-beginner",
+      intermediateCourseSlug: "aws-capstone-intermediate",
+      advancedCourseSlug: "aws-capstone",
+    },
   },
   {
     slug: "snowflake-data-engineer",
@@ -286,6 +301,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "SQL Developer → Snowflake Developer → Analytics/Data Engineer → Senior Snowflake Engineer → Lead Data Engineer → Principal Data Engineer → Snowflake/Data Architect — converging into the same ceiling as the other engineering paths.",
+    capstoneProjects: {
+      beginnerCourseSlug: "snowflake-capstone-beginner",
+      intermediateCourseSlug: "snowflake-capstone-intermediate",
+      advancedCourseSlug: "snowflake-data-engineering-capstone",
+    },
   },
   {
     slug: "azure-database-engineer",
@@ -307,6 +327,11 @@ export const CAREER_PATHS: CareerPath[] = [
     },
     destinationNote:
       "SQL Developer/DBA → Azure DBA → Senior DBA → Database Engineer → Senior Database Engineer → Principal Database Engineer → Database Architect. Even this path needs some cloud and scripting skill to reach the highest levels.",
+    capstoneProjects: {
+      beginnerCourseSlug: "azure-dba-capstone-beginner",
+      intermediateCourseSlug: "azure-dba-capstone-intermediate",
+      advancedCourseSlug: "azure-dba-capstone-advanced",
+    },
   },
   {
     slug: "sql-server-database-administrator",

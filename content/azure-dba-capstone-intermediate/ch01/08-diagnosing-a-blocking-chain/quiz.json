@@ -1,0 +1,60 @@
+{
+  "lesson": "diagnosing-a-blocking-chain",
+  "questions": [
+    {
+      "q": "What is the shape of Scheduling's symptom, compared to Billing's?",
+      "options": [
+        "Several sessions start fine and then just stop mid-request for minutes — the signature of blocking, not a bad plan",
+        "One query that runs the same amount of time every single execution",
+        "A query that returns the wrong results, not a slow one",
+        "A query that fails with a syntax error"
+      ],
+      "answer": 0,
+      "explain": "Scheduling's calendar freezing is sessions stalling mid-request, which points to blocking rather than a bad execution plan."
+    },
+    {
+      "q": "What does querying sys.dm_exec_requests WHERE blocking_session_id <> 0 reveal during the freeze?",
+      "options": [
+        "Several scheduling sessions all waiting on the same one blocking_session_id",
+        "That no sessions are connected to OverlookClinicalDB at all",
+        "That the Billing invoice query is the cause",
+        "That dbo.Appointments has no rows in it"
+      ],
+      "answer": 0,
+      "explain": "Several different scheduling sessions all show the same blocking_session_id, pointing to one session at the head of the chain."
+    },
+    {
+      "q": "What identifies the session actually responsible for the blocking chain?",
+      "options": [
+        "The one session whose own blocking_session_id is 0, with open_tran_count showing an uncommitted transaction",
+        "The session with the lowest session_id number",
+        "The session that most recently connected",
+        "Any session with status = 'sleeping'"
+      ],
+      "answer": 0,
+      "explain": "The head of the chain has blocking_session_id = 0 in its own row and open_tran_count = 1, meaning it holds an open, uncommitted transaction."
+    },
+    {
+      "q": "What is the batch job actually doing that keeps its transaction open so long?",
+      "options": [
+        "It updates appointment statuses, then waits to commit until it finishes sending confirmation messages for every row",
+        "It is running a CREATE INDEX statement that takes minutes to complete",
+        "It is performing a full database backup during business hours",
+        "It never actually opens a transaction at all"
+      ],
+      "answer": 0,
+      "explain": "The job reads and updates appointments, but delays committing until a separate, slower message-sending step finishes for every row, holding locks the whole time."
+    },
+    {
+      "q": "Why is this a genuinely different root cause than Billing's missing index?",
+      "options": [
+        "The batch job's query plan may be fine — the problem is duration, a transaction staying open across an unrelated slow step",
+        "It is actually the exact same missing-index problem as Billing's",
+        "It only affects the dbo.Invoices table",
+        "It can be fixed with the same CREATE INDEX statement from Lesson 7"
+      ],
+      "answer": 0,
+      "explain": "Nothing about this is a missing index or bad plan — it's a transaction held open too long while locks block everyone else."
+    }
+  ]
+}

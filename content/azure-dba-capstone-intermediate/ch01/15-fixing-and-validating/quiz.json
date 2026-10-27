@@ -1,0 +1,60 @@
+{
+  "lesson": "fixing-and-validating",
+  "questions": [
+    {
+      "q": "Why isn't sp_recompile alone a lasting fix?",
+      "options": [
+        "It only forces the next call to compile a fresh plan, and the same sniffing problem returns once a differently-sized provider calls it first",
+        "sp_recompile permanently disables the stored procedure",
+        "sp_recompile requires downtime to run on Azure SQL Database",
+        "sp_recompile deletes the procedure's underlying data"
+      ],
+      "answer": 0,
+      "explain": "sp_recompile just resets which value gets sniffed next — it doesn't stop sniffing from happening again."
+    },
+    {
+      "q": "What does OPTION (RECOMPILE) actually do?",
+      "options": [
+        "Forces a fresh plan to compile for this specific statement on every single execution, using that call's actual parameter value",
+        "Permanently caches one plan and never recompiles again",
+        "Deletes all statistics on the underlying tables",
+        "Only works once per day, like a scheduled job"
+      ],
+      "answer": 0,
+      "explain": "OPTION (RECOMPILE) compiles a plan fresh every execution, so no plan sniffed from a different call is ever reused."
+    },
+    {
+      "q": "What trade-off does this fix make?",
+      "options": [
+        "More CPU cost per execution, in exchange for a plan that always fits the actual parameter passed in",
+        "No trade-off at all — it is strictly free",
+        "It trades away correctness for speed",
+        "It disables the ability to ever query dbo.Appointments again"
+      ],
+      "answer": 0,
+      "explain": "Recompiling every call costs more CPU than reusing a cached plan, but it's worth it given how widely appointment counts vary per provider."
+    },
+    {
+      "q": "What is the actual proof that the fix worked?",
+      "options": [
+        "Timings for several providers stay consistent regardless of which order they're called in",
+        "The stored procedure's text looks cleaner after the edit",
+        "The query returns more rows than before",
+        "sp_recompile no longer exists as a valid command"
+      ],
+      "answer": 0,
+      "explain": "Order-independence — no call's performance depending on which ran first — is the real proof parameter sniffing is gone, not just moved."
+    },
+    {
+      "q": "Why is OPTION (RECOMPILE) not a default to reach for on every procedure?",
+      "options": [
+        "A procedure called with much more uniform parameter shapes wouldn't need it, since a cached plan would already fit well",
+        "It is illegal to use on Azure SQL Database",
+        "It can only be applied to procedures with zero parameters",
+        "It always makes every procedure faster with no downside, so there's no reason not to use it everywhere"
+      ],
+      "answer": 0,
+      "explain": "It's the right tool specifically for wildly varying parameter shapes causing real sniffing problems — not a universal default."
+    }
+  ]
+}

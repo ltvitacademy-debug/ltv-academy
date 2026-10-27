@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 11 confirmed the COPY fails, but its generic error message never said why. Redshift Serverless keeps the specific reason in a system view built for exactly this moment: sys load error detail, which you can query for the query id, file name, and error message, ordered by the most recent failed attempts. This isn't a guess or a log file to interpret loosely — it's Redshift's own precise record of what actually went wrong."
+  },
+  {
+    "slide": "s2",
+    "text": "The error message comes back shaped like an S3 Access Denied error — Redshift tried to read from the curated zone and was refused. That single fact reframes the entire investigation. This isn't a malformed Parquet file. It isn't a schema mismatch. It's a permissions problem, specifically sitting between Redshift and S3."
+  },
+  {
+    "slide": "s3",
+    "text": "So pull up the actual policy attached to northfield-redshift-copy-role, the role this COPY statement authenticates as, set up back in Lesson 5. It has exactly one statement on it: s3 GetObject, scoped to the orders prefix. Compare that against what AWS actually documents a COPY needs — the role has to both list the bucket itself, and get each individual object. This policy has the second half. The first half, s3 ListBucket on the bucket's own ARN, is missing entirely."
+  },
+  {
+    "slide": "s4",
+    "text": "That gap matches the symptom precisely. COPY doesn't know in advance which Parquet files sit under that prefix — Glue writes a different set of part files on every single run. To find them, COPY first has to list the bucket's contents, and only then issue a get request for each file it finds. A role that can get objects but can't list the bucket fails at that very first step, before it ever reads a single file."
+  },
+  {
+    "slide": "s5",
+    "text": "That's the root cause, confirmed two separate ways: the error detail points straight at S3 access, and the policy JSON shows exactly which one statement is missing. The ListBucket permission was simply never added when this role was first created back in Lesson 5 — a one-statement gap with no effect at all, until something finally depended on listing that exact bucket. Nothing gets changed yet. Next lesson makes the actual fix, and validates it properly."
+  }
+]

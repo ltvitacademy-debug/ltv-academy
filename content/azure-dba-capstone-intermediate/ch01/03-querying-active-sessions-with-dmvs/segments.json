@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Step 1 of the investigation plan, for real: seeing what's actually running against OverlookClinicalDB. Not guessing, not assuming — querying the dynamic management views that show exactly what's connected and exactly what's executing during the window both departments described."
+  },
+  {
+    "slide": "s2",
+    "text": "Sessions and requests are not the same question. sys dot dm_exec_sessions is one row per connected session, whether or not anything is actively running — a connection can sit there for hours doing nothing. sys dot dm_exec_requests is narrower: one row per request that is actively executing this instant. That's the one that actually matters for what's slow right now."
+  },
+  {
+    "slide": "s3",
+    "text": "This query joins sessions to connections, filtered to is_user_process equals 1 to drop SQL Server's own internal system sessions. What's left is real client traffic — the Billing application, the Scheduling application, anyone connected through SSMS. program_name is the fastest way to tell which department's traffic you're looking at without memorizing every login name."
+  },
+  {
+    "slide": "s4",
+    "text": "This second query is the one that matters most. Filtering session_id greater than 50 excludes SQL Server's own internal sessions. blocking_session_id is worth watching closely — a non-zero value means this request isn't slow on its own, it's waiting on another session, which is a completely different problem from a genuinely slow query."
+  },
+  {
+    "slide": "s5",
+    "text": "Run both of these during the mid-morning window and you'll see a realistic picture: Billing sessions, Scheduling sessions, and a handful of requests with unusually high total_elapsed_time. Those long-running requests are exactly what Lesson 4 narrows down to specific queries."
+  }
+]

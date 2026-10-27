@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure DBA Capstone · Intermediate Project",
+    "titlePlain": "Diagnosing a ",
+    "titleEmphasis": "Missing Index",
+    "titleSuffix": "",
+    "subtitle": "Lesson 6 · Step 4 — Confirm the Hypothesis With Evidence"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Confirming it, not just eyeballing the plan",
+    "code": "SELECT d.statement, d.equality_columns, d.included_columns,\n       s.avg_user_impact,\n       s.user_seeks + s.user_scans AS times_this_would_have_helped\nFROM sys.dm_db_missing_index_details d\nJOIN sys.dm_db_missing_index_groups g ON d.index_handle = g.index_handle\nJOIN sys.dm_db_missing_index_group_stats s ON g.index_group_handle = s.group_handle\nWHERE d.statement LIKE '%Invoices%'\nORDER BY s.avg_user_impact * (s.user_seeks + s.user_scans) DESC;",
+    "caption": "SQL Server records every time it would have benefited from an index that doesn't exist."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What it returns for dbo.Invoices",
+    "titlePlain": "The Missing ",
+    "titleEmphasis": "Pieces",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "equality_columns: PatientID", "sub": "Exactly what the query filters on" },
+      { "label": "included_columns: InvoiceDate, Amount, Status, ProviderID", "sub": "Read but not filtered — INCLUDE candidates" },
+      { "label": "avg_user_impact: ~87", "sub": "Optimizer's own estimated cost reduction" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why the existing index doesn't help",
+    "code": "Existing clustered index:  InvoiceID (primary key)\n  -- great for one invoice, useless for \"every invoice\n     for this patient\"\nNo index at all on:  PatientID",
+    "caption": "Without a PatientID index, every row must be checked by hand."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 7",
+    "titlePlain": "Creating the Index ",
+    "titleEmphasis": "and Re-Testing",
+    "titleSuffix": "",
+    "subtitle": "Step 5: the fix, then proof it actually worked."
+  }
+]

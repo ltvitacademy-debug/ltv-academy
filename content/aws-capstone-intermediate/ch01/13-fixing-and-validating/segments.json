@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 12 found the root cause. Now the fix: add the missing permission to northfield-redshift-copy-role, re-run the failed load by hand, and confirm it actually matches source before trusting the schedule again."
+  },
+  {
+    "slide": "s2",
+    "text": "The role's policy already grants s3 GetObject, scoped to individual objects under the orders prefix. What's missing is s3 ListBucket, scoped to the bucket itself, with no object path at all. Add that second statement to the same policy document and save it."
+  },
+  {
+    "slide": "s3",
+    "text": "Here's why both are required. COPY can't just start reading files — it first has to ask S3 what files actually exist under that prefix, since a partitioned Parquet dataset is an unknown number of part-files, not one object. That enumeration step is bucket-level, gated by ListBucket. Only after that can COPY fetch each object's bytes, gated by GetObject. GetObject alone feels sufficient because reading sounds like the real job, but COPY can't reach that step without completing the enumeration first — exactly the step that was failing."
+  },
+  {
+    "slide": "s4",
+    "text": "Back in the Query Editor, re-run the exact Lesson 5 COPY statement by hand. It completes without error this time. Confirm sys_load_error_detail shows no new rows, and re-run Lesson 6's row-count and sum pair against fact_orders and the curated catalog table — they now match exactly."
+  },
+  {
+    "slide": "s5",
+    "text": "No separate fix was needed for the nightly schedule itself. EventBridge, the Glue trigger, and the Redshift load job all call through this same role, so fixing its policy once fixes every future run. Next: a second bug, and this one won't throw an error anywhere."
+  }
+]

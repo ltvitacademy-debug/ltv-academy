@@ -1,0 +1,26 @@
+[
+  {
+    "slide": "s1",
+    "text": "Lesson 13 narrowed the discrepancy down to something changing around March 1st. That's a lead, not a cause, and a lead is not something to act on yet. Delta Lake keeps a real, queryable audit trail of every write to a table, and that's the next stop, not a guess, a log you can actually run a query against."
+  },
+  {
+    "slide": "s2",
+    "text": "Describe history on silver.sales_clean turns up the exact commit. Version 46, the night before, ran with transaction_id as the match key, correct, straight from Lesson 5. Version 47, the very first merge job on or after March 1st, shows a completely different ON clause in its operation parameters. That's not a theory anymore, that's the exact table version where the pipeline actually changed."
+  },
+  {
+    "slide": "s3",
+    "text": "Pulling up version 47's actual job code confirms it in full. Someone swapped the match key from transaction_id to store_id plus sale_date. It reads as simpler, two plain business columns instead of one opaque generated ID, and it would pass a quick glance in a code review. It's also wrong, and the next step proves exactly why."
+  },
+  {
+    "slide": "s4",
+    "text": "Don't stop at looks suspicious, prove it with real output. Group silver.sales_clean by store_id and sale_date, filter to counts greater than one. For Store 48 on March 2nd alone, this returns thirty-seven rows sharing that exact combination. That's the smoking gun: store_id plus sale_date is nowhere close to a unique key, and now you have the number to prove it."
+  },
+  {
+    "slide": "s5",
+    "text": "Here's the full mechanical chain. One incoming source row now matches thirty-seven target rows instead of one. Update set star can't apply a single row's values to thirty-seven different rows unambiguously, so depending on the batch it errors, overwrites several transactions with one row's values, or silently drops rows meant for the insert path. Both Gold tables inherit that corruption, but they group the data differently on the way up, which is exactly why Lesson 9's reconciliation query is the one check that catches it."
+  },
+  {
+    "slide": "s6",
+    "text": "Nothing about store_id or sale_date is wrong as columns, they're both valid, correctly populated fields elsewhere in this schema. The mistake is treating their combination as a unique key when nothing about the business ever guaranteed that. It reads fine in isolation, and only fails once you know a single store logs more than one sale a day. Next lesson: the real fix, and proving it actually worked."
+  }
+]

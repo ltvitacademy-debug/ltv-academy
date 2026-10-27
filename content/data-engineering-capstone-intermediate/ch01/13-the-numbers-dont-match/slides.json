@@ -1,0 +1,47 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "The Numbers Don't Match ",
+    "titleEmphasis": "— Now What?",
+    "titleSuffix": "",
+    "subtitle": "Lesson 13 · Diagnosing a real production bug"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The ticket",
+    "code": "\"category_breakdown for Store 48 on March 2nd adds\nup to $13,897.52. The Store Ops dashboard shows\n$15,342.18 for that same store and day. Which\nnumber is right?\"",
+    "caption": "Not enough to act on yet. First job: reproduce it, with the tool from Lesson 9."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1: reproduce it",
+    "code": "SELECT d.store_id, d.sale_date,\n       d.total_sales       AS daily_summary_sales,\n       c.rolled_up_sales   AS category_breakdown_sales,\n       ABS(d.total_sales - c.rolled_up_sales) AS diff\nFROM gold.daily_sales_summary d\nJOIN category_rolled_up c USING (store_id, sale_date)\nWHERE store_id = 48 AND sale_date = '2024-03-02';\n\n-- diff = 1444.66  (tolerance is $0.01)",
+    "caption": "Confirmed: a genuine discrepancy, not rounding noise."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Step 2: isolate the variable",
+    "titlePlain": "Widen the ",
+    "titleEmphasis": "Date Range",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Before Mar 1", "sub": "Every day reconciles clean, diff = 0.00" },
+      { "label": "Mar 1 onward", "sub": "Every day shows a nonzero diff" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The pattern that IS the tell",
+    "code": "Feb 15 - Feb 29:  diff = 0.00   (clean, every day)\nMar 01 - Mar 10:  diff > 0      (every day, growing)\n\n-- A discrepancy that starts cleanly on one date\n-- isn't random drift. It's a change that shipped.",
+    "caption": "A lead, not a conclusion — the MERGE job hasn't been opened yet."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "Finding the ",
+    "titleEmphasis": "Real Cause",
+    "titleSuffix": "",
+    "subtitle": "Following the lead to a confirmed root cause, before changing anything."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Weeks after the last fix, Finance flags something different. Their revenue-by-region report looks wrong for recent weeks, but nothing failed anywhere. No error, no alert, a clean nightly refresh every night. A pipeline can run perfectly and still produce wrong data."
+  },
+  {
+    "slide": "s2",
+    "text": "Same discipline as before: reproduce first. Run the Finance report query for a week before September fifteenth, and again for a week after. Before, region values look normal. After, some region values look like dates, and some totals are near zero. The boundary is sharp, right at that one date, which is the real clue."
+  },
+  {
+    "slide": "s3",
+    "text": "Pull one raw file from before that date and one from after, straight out of S3, and look at the headers. The older file ends in order_date, region. The newer file has a new sales_channel column inserted in the middle, right after order_date, pushing region and everything after it over by one position."
+  },
+  {
+    "slide": "s4",
+    "text": "Confirm it in the Glue table's schema history. northfield-raw-crawler is on-demand only, never part of the nightly schedule, and someone re-ran it manually after the layout changed. Sampling a mix of old and new files, it mapped the new ones positionally instead of recognizing sales_channel as a real new column — so for every row after the cutover, the column the table calls region is actually holding something else entirely."
+  },
+  {
+    "slide": "s5",
+    "text": "Nothing here is malformed from any single tool's point of view — Spark, the COPY, and the schedule all just do what the catalog tells them. The bug is in what the table believes each column means. Cause and cutover date are confirmed. Fixing it is next."
+  }
+]

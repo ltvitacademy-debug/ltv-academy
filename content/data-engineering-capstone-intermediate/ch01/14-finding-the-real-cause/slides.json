@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Data Engineering Capstone · Intermediate Project",
+    "titlePlain": "Finding the ",
+    "titleEmphasis": "Real Cause",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Confirming a hypothesis before changing anything"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1: ask the table what happened",
+    "code": "DESCRIBE HISTORY silver.sales_clean;\n\n-- version 47  2024-03-01  MERGE\n--   ON target.store_id = source.store_id\n--      AND target.sale_date = source.sale_date\n-- version 46  2024-02-29  MERGE\n--   ON target.transaction_id = source.transaction_id",
+    "caption": "Version 47 is the exact commit where the match condition changed."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2: the actual statement that shipped",
+    "code": "-- Lesson 5 -- correct\nON target.transaction_id = source.transaction_id\n\n-- Version 47 -- what actually ran\nON target.store_id = source.store_id\n   AND target.sale_date = source.sale_date",
+    "caption": "Reads simpler. Is wrong. Would pass a quick review."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3: the smoking gun",
+    "code": "SELECT store_id, sale_date, COUNT(*) AS row_count\nFROM silver.sales_clean\nGROUP BY store_id, sale_date\nHAVING COUNT(*) > 1\nORDER BY row_count DESC;\n\n-- Store 48, 2024-03-02: row_count = 37",
+    "caption": "store_id + sale_date is nowhere close to unique -- proven, not assumed."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The mechanical chain",
+    "titlePlain": "One Row ",
+    "titleEmphasis": "Matches Many",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Ambiguous match", "sub": "1 source row matches 37 target rows for that store/day" },
+      { "label": "UPDATE SET * fails", "sub": "Errors, overwrites several rows, or drops new ones silently" },
+      { "label": "Both Gold tables inherit it", "sub": "Different grouping means the damage doesn't match -- Lesson 9 catches it" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 15",
+    "titlePlain": "Fixing and ",
+    "titleEmphasis": "Validating",
+    "titleSuffix": "",
+    "subtitle": "The real fix, and proving it actually worked."
+  }
+]

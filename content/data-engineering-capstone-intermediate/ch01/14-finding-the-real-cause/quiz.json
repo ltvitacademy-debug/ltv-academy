@@ -1,0 +1,60 @@
+{
+  "lesson": "finding-the-real-cause",
+  "questions": [
+    {
+      "q": "What command finds exactly which Delta table version changed the MERGE's match condition?",
+      "options": [
+        "DESCRIBE HISTORY silver.sales_clean",
+        "SELECT * FROM silver.sales_clean LIMIT 10",
+        "VACUUM silver.sales_clean",
+        "OPTIMIZE silver.sales_clean"
+      ],
+      "answer": 0,
+      "explain": "DESCRIBE HISTORY is Delta Lake's built-in audit log, showing every write's operation and parameters, including the exact ON clause used."
+    },
+    {
+      "q": "What did version 47's operationParameters show, compared to version 46?",
+      "options": [
+        "Version 47 matched on store_id and sale_date; version 46 (and Lesson 5's original) matched on transaction_id",
+        "Both versions used the exact same transaction_id match condition",
+        "Version 47 was a VACUUM operation, not a MERGE",
+        "Version 47 ran before version 46, so it couldn't be the cause"
+      ],
+      "answer": 0,
+      "explain": "Version 47, the first MERGE run on or after March 1st, shows the changed ON clause — the exact commit where the pipeline broke."
+    },
+    {
+      "q": "What did the GROUP BY store_id, sale_date HAVING COUNT(*) > 1 query prove?",
+      "options": [
+        "store_id + sale_date is not a unique key — Store 48 on March 2nd alone had 37 rows sharing that combination",
+        "Every store_id and sale_date combination in silver.sales_clean is perfectly unique",
+        "transaction_id has duplicate values across the table",
+        "gold.daily_sales_summary and gold.category_breakdown are unrelated tables"
+      ],
+      "answer": 0,
+      "explain": "This controlled test returned a real row_count of 37 for one store/day, confirming store_id + sale_date is nowhere close to unique."
+    },
+    {
+      "q": "Mechanically, why does a non-unique match key corrupt the MERGE?",
+      "options": [
+        "One incoming source row can match many target rows, so UPDATE SET * can't apply unambiguously — it errors, overwrites several rows with one row's values, or drops rows during the insert path",
+        "Delta Lake automatically rejects any MERGE with a non-unique key, so no corruption is possible",
+        "Non-unique keys only affect SELECT queries, never MERGE statements",
+        "The MERGE simply runs slower but always produces correct results"
+      ],
+      "answer": 0,
+      "explain": "Matching one source row against many target rows makes the UPDATE branch ambiguous, which is exactly what produces the data corruption or errors seen downstream."
+    },
+    {
+      "q": "Why is this bug realistic rather than contrived?",
+      "options": [
+        "store_id and sale_date are each individually valid, correctly populated columns — the mistake is treating their combination as a unique key when the business doesn't guarantee that",
+        "Because store_id and sale_date are both invalid columns that should never be queried",
+        "Because the original transaction_id column was deleted from the schema",
+        "Because Delta Lake does not support MERGE INTO at all"
+      ],
+      "answer": 0,
+      "explain": "The new ON clause reads fine in isolation and would pass a quick review — it only fails once you know a store logs more than one sale per day."
+    }
+  ]
+}

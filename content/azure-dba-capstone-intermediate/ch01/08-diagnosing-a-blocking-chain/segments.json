@@ -1,0 +1,22 @@
+[
+  {
+    "slide": "s1",
+    "text": "Billing's fix is done, but Lesson 1 described two complaints. Scheduling's calendar freezing is a different shape of symptom: it's not one query running slowly on its own, it's several sessions that each start fine and then just stop, mid-request, for minutes at a time. That shape is the signature of blocking, not a bad plan."
+  },
+  {
+    "slide": "s2",
+    "text": "Re-running the active-requests query from Lesson 3, filtered to blocking_session_id not equal to zero, returns several rows during the mid-morning freeze — several different scheduling sessions, all waiting on exactly one session."
+  },
+  {
+    "slide": "s3",
+    "text": "Chasing that chain to its head finds a scheduling-application session running a large batch update against dbo dot Appointments, with open_tran_count equal to 1 — an open transaction that hasn't committed yet, holding locks the whole time."
+  },
+  {
+    "slide": "s4",
+    "text": "That session updates today's appointment statuses to Confirmed, but doesn't commit until a separate, slower step — sending confirmation messages — finishes for every single row. Every other session trying to read or write an appointment for today queues up behind it."
+  },
+  {
+    "slide": "s5",
+    "text": "Nothing about this is a missing index or a bad plan — the batch job's own query plan may be perfectly fine. The problem is duration: a transaction staying open across a slow, unrelated step while holding locks the whole scheduling staff needs. Lesson 9 fixes exactly that."
+  }
+]

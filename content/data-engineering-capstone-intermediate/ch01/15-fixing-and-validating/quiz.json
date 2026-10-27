@@ -1,0 +1,60 @@
+{
+  "lesson": "fixing-and-validating",
+  "questions": [
+    {
+      "q": "What is the actual code fix for this bug?",
+      "options": [
+        "Restore the MERGE's ON clause to match on transaction_id instead of store_id and sale_date",
+        "Delete gold.category_breakdown and only keep gold.daily_sales_summary",
+        "Add a WHERE clause to silver.sales_clean to filter out duplicate stores",
+        "Increase the reconciliation tolerance from $0.01 to $1.00"
+      ],
+      "answer": 0,
+      "explain": "The fix restores the exact match condition Lesson 5 already proved correct — one column swapped back on the ON clause."
+    },
+    {
+      "q": "Why isn't fixing the ON clause alone enough to resolve the ticket?",
+      "options": [
+        "Every MERGE between March 1st and the fix date already ran with the wrong key, so silver.sales_clean still carries corrupted data for that range until it's backfilled",
+        "Fixing the ON clause automatically repairs all historical data with no further action",
+        "The ON clause fix only applies to gold.category_breakdown, not silver.sales_clean",
+        "Delta Lake requires dropping and recreating the entire table after any ON clause change"
+      ],
+      "answer": 0,
+      "explain": "The fix only protects future runs — the affected date range has to be reprocessed with the corrected MERGE to repair the existing corruption."
+    },
+    {
+      "q": "After backfilling silver.sales_clean, what else must be rebuilt?",
+      "options": [
+        "Both Gold tables, since they were already built from the corrupted Silver data for that range",
+        "Nothing else — Gold tables update themselves automatically whenever Silver changes",
+        "Only gold.daily_sales_summary; gold.category_breakdown is unaffected",
+        "The original bronze.sales_raw table needs to be deleted and re-ingested"
+      ],
+      "answer": 0,
+      "explain": "Both Gold tables inherited the corruption from the bad Silver merge, so both need to be regenerated from the corrected Silver data for the affected range."
+    },
+    {
+      "q": "How is the fix actually proven to have worked?",
+      "options": [
+        "Re-running Lesson 9's exact reconciliation query across the affected date range and confirming every row returns diff = 0.00",
+        "Reading through the corrected MERGE statement once more and confirming it looks right",
+        "Asking the Regional Manager if the dashboard looks better now",
+        "Checking that the job finished without throwing an error"
+      ],
+      "answer": 0,
+      "explain": "Re-running the same diagnostic tool that caught the bug, and getting a clean result, is what separates 'I think it's fixed' from 'I proved it's fixed.'"
+    },
+    {
+      "q": "What makes transaction_id a durable match key when store_id + sale_date isn't?",
+      "options": [
+        "transaction_id is uniqueness-guaranteed by the source system; no combination of business columns like store_id and sale_date carries that same guarantee",
+        "transaction_id is simply a longer string, which always sorts more reliably",
+        "store_id and sale_date are not real columns in this schema",
+        "transaction_id is guaranteed unique only because it was chosen first in Lesson 5"
+      ],
+      "answer": 0,
+      "explain": "A match key is only as safe as the uniqueness the source system actually promises — transaction_id is the one column here that promise applies to."
+    }
+  ]
+}

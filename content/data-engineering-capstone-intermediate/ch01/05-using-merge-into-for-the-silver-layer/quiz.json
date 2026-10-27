@@ -1,0 +1,60 @@
+{
+  "lesson": "using-merge-into-for-the-silver-layer",
+  "questions": [
+    {
+      "q": "Why can Silver no longer be fully rewritten every night now that Bronze ingestion is incremental?",
+      "options": [
+        "Because Bronze now only holds new rows, and fully rebuilding Silver from everything would waste work reprocessing rows that haven't changed",
+        "Because Delta Lake tables can only be written to once per day",
+        "Because `silver.sales_clean` no longer has a schema",
+        "Because PySpark cannot read a Delta table more than once"
+      ],
+      "answer": 0,
+      "explain": "A full rewrite made sense when Bronze was small enough to fully reprocess; now it's wasteful, so Silver needs a real upsert instead."
+    },
+    {
+      "q": "In `MERGE INTO silver.sales_clean AS target USING bronze_incremental AS source ON ... WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *`, what does the `WHEN NOT MATCHED THEN INSERT *` branch do?",
+      "options": [
+        "If an incoming row's transaction_id has no match in silver.sales_clean, insert it as a new row",
+        "Deletes any row in silver.sales_clean that wasn't in today's batch",
+        "Updates every existing row in silver.sales_clean regardless of match",
+        "Skips the row entirely and logs an error"
+      ],
+      "answer": 0,
+      "explain": "WHEN NOT MATCHED means the source row's transaction_id wasn't found in the target table, so it's a brand-new transaction and gets inserted."
+    },
+    {
+      "q": "Why is `transaction_id` the correct match key for the MERGE, rather than `store_id`?",
+      "options": [
+        "Because store_id identifies a store, not a single sale — many different transactions share the same store_id, so matching on it would treat unrelated sales as the same row",
+        "Because store_id is not stored as an integer",
+        "Because transaction_id is always smaller in value than store_id",
+        "Because Delta Lake's MERGE INTO syntax requires the match key to start with the letter t"
+      ],
+      "answer": 0,
+      "explain": "A MERGE match key must uniquely identify one logical record. store_id identifies a store shared by many transactions, so it would cause incorrect overwrites or collapsed rows."
+    },
+    {
+      "q": "What is `bronze_incremental` in the MERGE statement's USING clause?",
+      "options": [
+        "Only today's new incoming Bronze rows, not the full bronze.sales_raw table",
+        "The entire bronze.sales_raw table, every row ever ingested",
+        "A copy of gold.daily_sales_summary",
+        "The watermark table meta.last_ingested_date"
+      ],
+      "answer": 0,
+      "explain": "The MERGE is deliberately scoped to just the incremental batch picked up by today's ingestion run, not the whole Bronze table."
+    },
+    {
+      "q": "What would go wrong if the MERGE matched on sale_date instead of transaction_id?",
+      "options": [
+        "Every transaction from the same store on the same day would be treated as the same row, collapsing many distinct sales into one",
+        "Nothing — sale_date and transaction_id behave identically for this table",
+        "The MERGE statement would fail to compile",
+        "It would only affect rows ingested before the watermark table existed"
+      ],
+      "answer": 0,
+      "explain": "sale_date identifies a day, not a single sale; a single store can have thousands of transactions on one day, so matching on it would silently collapse distinct rows together."
+    }
+  ]
+}

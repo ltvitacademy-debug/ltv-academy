@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-category-breakdown-table",
+  "questions": [
+    {
+      "q": "Why does the Regional Manager's request need a new Gold table instead of just reading gold.daily_sales_summary?",
+      "options": [
+        "gold.daily_sales_summary only groups by store_id and sale_date, so it can't show which categories are driving a store's numbers",
+        "gold.daily_sales_summary doesn't include total_sales",
+        "silver.sales_clean doesn't contain a category column",
+        "gold.daily_sales_summary is only refreshed once a month"
+      ],
+      "answer": 0,
+      "explain": "The existing table answers \"how did each store do\" but was never grouped by category, so it can't show a category-level breakdown."
+    },
+    {
+      "q": "What three columns does the aggregation for gold.category_breakdown GROUP BY?",
+      "options": [
+        "store_id, category, sale_date",
+        "transaction_id, store_id, category",
+        "product_id, unit_price, quantity",
+        "store_id, sale_timestamp, source_file"
+      ],
+      "answer": 0,
+      "explain": "The table is built one row per store, per category, per day, so the GROUP BY is on store_id, category, and sale_date."
+    },
+    {
+      "q": "Which source table does gold.category_breakdown get built from?",
+      "options": [
+        "silver.sales_clean",
+        "bronze.sales_raw",
+        "gold.daily_sales_summary",
+        "meta.last_ingested_date"
+      ],
+      "answer": 0,
+      "explain": "The Gold aggregation reads from the clean, upserted silver.sales_clean table, not raw Bronze or the other Gold table."
+    },
+    {
+      "q": "Why is it safe for gold.category_breakdown to be written with a plain `mode(\"overwrite\")` every run, instead of its own MERGE INTO?",
+      "options": [
+        "Because Silver is now kept correct and comparatively small by the incremental MERGE, so recomputing a group-by over all of it every run is cheap and simple",
+        "Because Delta Lake tables cannot be merged into, only overwritten",
+        "Because the Regional Manager asked for the table to be rebuilt from scratch",
+        "Because gold.category_breakdown has no sale_date column, so there's nothing to upsert against"
+      ],
+      "answer": 0,
+      "explain": "The Silver-layer redesign makes a full recompute of Gold cheap and correct; adding incremental merge logic at the Gold layer would only add complexity with no real benefit."
+    },
+    {
+      "q": "In the aggregation, what does total_sales represent, and what does total_quantity represent?",
+      "options": [
+        "total_sales is the sum of total_amount; total_quantity is the sum of quantity",
+        "total_sales is a row count; total_quantity is the sum of unit_price",
+        "total_sales is the sum of quantity; total_quantity is the sum of total_amount",
+        "Both are counts of distinct transaction_id values"
+      ],
+      "answer": 0,
+      "explain": "The aggregation sums total_amount into total_sales and sums quantity into total_quantity, matching the fixed schema for this table."
+    }
+  ]
+}
