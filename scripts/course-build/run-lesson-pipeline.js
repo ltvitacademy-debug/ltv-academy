@@ -70,8 +70,10 @@ console.log("DEBUG about to test regex for n=" + n + " slug=" + slug);
 //      L(n, "slug", "title", {\n  contentDir: "...",\n  videoUrl: "...",\n  durationLabel: "...",\n}),
 // Both shapes only ever contain contentDir/videoUrl/durationLabel and no nested braces,
 // so a non-greedy dotall match from the opening "{" to the next "}" is safe for either.
-const singleLineRe = new RegExp(`(L\\(${n}, "${slug}", "[^"]*", \\{ contentDir: "[^"]+")( \\})(\\),)`);
-const anyShapeRe = new RegExp(`(L\\(${n}, "${slug}", "[^"]*", \\{)([\\s\\S]*?)(\\}\\),)`);
+// Titles can contain escaped quotes (e.g. \"Production Ready\"), so the title
+// string must be matched as a proper JS string literal: (?:[^"\\]|\\.)*
+const singleLineRe = new RegExp(`(L\\(${n}, "${slug}", "(?:[^"\\\\]|\\\\.)*", \\{ contentDir: "[^"]+")( \\})(\\),)`);
+const anyShapeRe = new RegExp(`(L\\(${n}, "${slug}", "(?:[^"\\\\]|\\\\.)*", \\{)([\\s\\S]*?)(\\}\\),)`);
 
 let testResult = singleLineRe.test(outline);
 console.log("DEBUG singleLine testResult=" + testResult);
