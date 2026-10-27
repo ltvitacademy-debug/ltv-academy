@@ -35,7 +35,7 @@ equivalent; `AVG()` is simply the direct, built-in way to get there.
 
 ## Both ignore NULL
 
-Same behavior as `COUNT(column)` from Lesson 32: `SUM()` and `AVG()` skip
+Same behavior as `COUNT(column)` from Lesson 40: `SUM()` and `AVG()` skip
 `NULL` values entirely rather than treating them as zero. This matters a
 lot for `AVG()` specifically — if `AVG()` treated `NULL` as `0`, it would
 pull the average down artificially. Skipping `NULL` means `AVG()` reflects
@@ -50,7 +50,7 @@ FROM Production.Product;
 ## Combining with WHERE
 
 `SUM` and `AVG` work on whatever rows survive filtering — `WHERE` still
-runs first (Lesson 11), and the aggregate operates only on what's left:
+runs first (Lesson 19), and the aggregate operates only on what's left:
 
 ```sql
 SELECT AVG(ListPrice) AS AverageRedPrice

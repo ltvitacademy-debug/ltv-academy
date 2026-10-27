@@ -20,7 +20,7 @@ user database you create.
 | **master** | Records all system-level information for the whole instance: logins, configuration settings, and — critically — the existence of every other database |
 | **model** | The template SQL Server copies whenever you create a new database. Change `model`'s settings, and every future `CREATE DATABASE` inherits them |
 | **msdb** | Used by SQL Server Agent for scheduling jobs, alerts, and backup history |
-| **tempdb** | A workspace for temporary objects and intermediate result sets — this is exactly where Lesson 93's `#temp` tables and table variables actually live |
+| **tempdb** | A workspace for temporary objects and intermediate result sets — this is exactly where Lesson 148's `#temp` tables and table variables actually live |
 
 ```sql
 -- See them all in one query
@@ -34,7 +34,7 @@ ORDER BY database_id;
 
 Every local temp table, every table variable, every large sort or hash
 join that doesn't fit in memory — SQL Server stages all of it in `tempdb`.
-That's exactly the mechanism behind Lesson 93's comparison of `#temp`
+That's exactly the mechanism behind Lesson 148's comparison of `#temp`
 tables, `@table` variables, and CTEs: two of those three options are
 literally using this system database as their workspace.
 

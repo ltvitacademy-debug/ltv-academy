@@ -52,7 +52,7 @@ SELECT * FROM ActiveProducts;
 | Can add indexes? | Yes, explicitly | Only via inline PRIMARY KEY/UNIQUE constraints | No |
 | Causes recompilation? | Can, when row counts change a lot | Rarely | Not applicable — no cached plan to reuse across statements |
 | Transaction-safe? | Rolled back with an enclosing transaction | **Not** rolled back — survives a ROLLBACK | Doesn't exist outside its one statement |
-| Best for | Large intermediate sets, reused across multiple statements, need an index | Small sets, inside a stored procedure, avoiding recompiles | One-time readability, especially with recursion (Lesson 57) |
+| Best for | Large intermediate sets, reused across multiple statements, need an index | Small sets, inside a stored procedure, avoiding recompiles | One-time readability, especially with recursion (Lesson 79) |
 
 The single biggest practical difference: because SQL Server keeps real
 statistics on a `#temp` table, the optimizer can build a much smarter plan
@@ -84,7 +84,7 @@ sometimes does on its own).
 ## Lab
 
 Run against AdventureWorks2012 and compare `SET STATISTICS IO` output
-(Lesson 91) across all three approaches for the same 500+ row result:
+(Lesson 146) across all three approaches for the same 500+ row result:
 
 ```sql
 SET STATISTICS IO ON;

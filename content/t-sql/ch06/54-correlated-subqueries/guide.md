@@ -40,7 +40,7 @@ correlation. For **each** row `p1` in the outer query, the inner query
 recomputes the average price **within that specific row's own
 subcategory**, then compares. This finds products priced above average
 **for their own category**, not above the overall average across every
-product (which is what Lesson 52's plain scalar subquery computed).
+product (which is what Lesson 74's plain scalar subquery computed).
 
 ## Why the aliasing matters here
 
@@ -69,7 +69,7 @@ about how fast it runs.
 ## Lab
 
 Run the correlated subquery example above against AdventureWorks2012 and
-compare its results to Lesson 52's overall-average version — are the same
+compare its results to Lesson 74's overall-average version — are the same
 products flagged?
 
 ## Check yourself

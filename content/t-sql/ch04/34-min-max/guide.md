@@ -37,7 +37,7 @@ FROM Person.Person;
 
 ## MIN and MAX on dates
 
-Just like the comparison operators from Lesson 12, `MIN`/`MAX` treat dates
+Just like the comparison operators from Lesson 20, `MIN`/`MAX` treat dates
 the same way as numbers — earlier is "smaller":
 
 ```sql
@@ -50,7 +50,7 @@ FROM Sales.SalesOrderHeader;
 Consistent with `COUNT`, `SUM`, and `AVG`: `MIN()` and `MAX()` skip `NULL`
 values when scanning for the extreme. A `NULL` can never "win" as the
 minimum or maximum, because it isn't a comparable value at all — this
-follows directly from Lesson 16.
+follows directly from Lesson 24.
 
 ## Key terms
 

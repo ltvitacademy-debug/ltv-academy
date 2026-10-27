@@ -26,7 +26,7 @@ END
 ```
 
 A **parameter** is declared right after the procedure name, before `AS` —
-notice it looks exactly like a variable declaration (Lesson 62), because
+notice it looks exactly like a variable declaration (Lesson 84), because
 it functionally **is** one: `@Color` behaves as a normal variable
 throughout the procedure's body, just pre-populated from whatever the
 caller passes in.

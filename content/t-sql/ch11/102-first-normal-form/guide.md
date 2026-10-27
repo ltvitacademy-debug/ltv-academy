@@ -57,7 +57,7 @@ JOIN Person.PhoneNumberType AS pnt ON pnt.PhoneNumberTypeID = pp.PhoneNumberType
 WHERE p.BusinessEntityID = 285;
 ```
 
-This is exactly Lesson 100's one-to-many relationship, applied to solve a
+This is exactly Lesson 164's one-to-many relationship, applied to solve a
 1NF violation: one `Person`, many `PersonPhone` rows, each with one atomic
 phone number.
 
@@ -77,7 +77,7 @@ CREATE TABLE dbo.PersonPhone (
 ```
 
 Now `WHERE PhoneNumber = '555-2222'` is a simple, indexable, SARGable
-predicate (Lesson 87) — impossible with the crammed-together version.
+predicate (Lesson 142) — impossible with the crammed-together version.
 
 ## Key terms
 

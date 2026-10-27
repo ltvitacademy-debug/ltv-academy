@@ -16,7 +16,7 @@
 | Stage | What happens | Where T-SQL shows up |
 |---|---|---|
 | **1. Source (OLTP)** | Real transactions get recorded — orders, customers, products | Chapters 1–9: every `SELECT`, `JOIN`, subquery, and stored procedure you wrote against `AdventureWorks2012` |
-| **2. Transform (ETL/ELT)** | Raw source rows get reshaped into warehouse-ready facts and dimensions | Lesson 112: T-SQL's own `INSERT...SELECT` with dimension-key lookups **is** the transform engine in an ELT pipeline |
+| **2. Transform (ETL/ELT)** | Raw source rows get reshaped into warehouse-ready facts and dimensions | Lesson 176: T-SQL's own `INSERT...SELECT` with dimension-key lookups **is** the transform engine in an ELT pipeline |
 | **3. Warehouse (OLAP)** | Cleaned, structured, historical data lands in fact/dimension tables | Chapter 12: querying `AdventureWorksDW2014`'s star/snowflake schema, tracking Type 2 history |
 | **4. BI tools** | Power BI, Excel, or a reporting layer visualizes the result | Every chart and table those tools render is ultimately backed by a T-SQL query — sometimes one they generate themselves, sometimes one you write by hand |
 

@@ -38,7 +38,7 @@ A scan isn't automatically wrong — a query that legitimately needs 90% of a
 table is often *cheaper* to scan than to seek row-by-row. The red flag is a
 scan against a **large** table when you only expected a handful of rows back.
 That gap between "rows read" and "rows actually needed" is exactly what
-Lesson 87's SARGable rules and Lesson 88's index design exist to close.
+Lesson 142's SARGable rules and Lesson 143's index design exist to close.
 
 ```sql
 -- Turn on the plan (Ctrl+M), then run this against AdventureWorks2012
@@ -48,7 +48,7 @@ WHERE Name = N'Chainring Bolts';
 ```
 
 Without an index on `Name`, this produces a **Clustered Index Scan** — every
-row read, one by one, to find the match. Now add the index from Lesson 88 and
+row read, one by one, to find the match. Now add the index from Lesson 143 and
 run it again:
 
 ```sql

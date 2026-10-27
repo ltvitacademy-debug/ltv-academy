@@ -9,12 +9,12 @@
 - The three classic ways to handle that change: Types 1, 2, and 3
 - The real Type 2 tracking columns already sitting in
   `AdventureWorksDW2014`'s `DimProduct`
-- Why SCD Type 2 is literally how a warehouse achieves Lesson 108's
+- Why SCD Type 2 is literally how a warehouse achieves Lesson 172's
   "time-variant" property for dimensions, not just facts
 
 ## Dimensions change too
 
-Lesson 108 called a warehouse **time-variant** — but that lesson focused
+Lesson 172 called a warehouse **time-variant** — but that lesson focused
 on facts (sales history). Dimensions change too, just more slowly: a
 customer moves cities, a product gets reclassified into a new category, a
 salesperson gets promoted to a new territory. A **slowly changing
@@ -55,7 +55,7 @@ a newer `DimProduct` row with a new `ProductKey`, a fresh `StartDate`, and
 `Status = 'Current'`. Every fact row from *before* that change still
 points at the old `ProductKey`, so historical reports keep showing
 exactly what was true *at the time* — this is the mechanism that actually
-delivers Lesson 108's time-variance for dimension attributes, not just
+delivers Lesson 172's time-variance for dimension attributes, not just
 fact rows.
 
 ## Type 3 — add a column for the previous value

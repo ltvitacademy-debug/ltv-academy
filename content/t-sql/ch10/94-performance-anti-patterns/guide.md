@@ -6,7 +6,7 @@
 
 This chapter's finale: five habits that quietly wreck performance, each one
 tying back to a tool you now have to catch and fix it — execution plans
-(Lesson 90), STATISTICS IO/TIME (Lesson 91), SARGability (Lesson 87), and
+(Lesson 145), STATISTICS IO/TIME (Lesson 146), SARGability (Lesson 142), and
 indexing (Lessons 88–89).
 
 ## Anti-pattern 1 — SELECT *
@@ -20,7 +20,7 @@ SELECT SalesOrderID, ProductID, OrderQty, UnitPrice
 FROM Sales.SalesOrderDetail WHERE SalesOrderID = 43659;
 ```
 
-`SELECT *` can silently defeat a covering index (Lesson 89) — if the index
+`SELECT *` can silently defeat a covering index (Lesson 144) — if the index
 only includes the columns you actually need, but you ask for all of them,
 SQL Server has to fall back to a Key Lookup or a full scan. Naming columns
 explicitly is also what lets a narrow covering index work at all.
@@ -36,9 +36,9 @@ SELECT * FROM Person.Person WHERE UPPER(LastName) = 'SMITH';
 SELECT * FROM Production.Product WHERE ProductID = '712';
 ```
 
-Both of these were covered in depth in Lesson 87 — they belong on this list
+Both of these were covered in depth in Lesson 142 — they belong on this list
 because they're the single most common reason a "should be fast" query
-turns out to be scanning the whole table. Check Ctrl+M (Lesson 90): if you
+turns out to be scanning the whole table. Check Ctrl+M (Lesson 145): if you
 see a scan where you expected a seek, check the `WHERE` clause first.
 
 ## Anti-pattern 3 — row-by-row cursors instead of set-based logic
@@ -94,9 +94,9 @@ Before you ship a query, ask:
 2. Is every `WHERE`/`JOIN` predicate SARGable — column bare on one side, no
    wrapping function, matching data types?
 3. Could this loop be one set-based statement instead?
-4. Does a covering index (Lesson 89) already exist, or is one worth adding?
-5. Did I check the actual plan (Lesson 90) and the logical reads
-   (Lesson 91) before declaring victory?
+4. Does a covering index (Lesson 144) already exist, or is one worth adding?
+5. Did I check the actual plan (Lesson 145) and the logical reads
+   (Lesson 146) before declaring victory?
 
 ## Key terms
 
@@ -109,7 +109,7 @@ Before you ship a query, ask:
 
 ## Lab
 
-Run against AdventureWorks2012, comparing `SET STATISTICS IO` (Lesson 91)
+Run against AdventureWorks2012, comparing `SET STATISTICS IO` (Lesson 146)
 for the anti-pattern vs. the fix:
 
 ```sql

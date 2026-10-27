@@ -17,7 +17,7 @@ referenced by *many* rows on the "many" side — but each row on the "many"
 side points back to exactly one row on the "one" side. This is the shape
 behind almost every foreign key you've written so far in this course.
 
-Unlike Lesson 99's one-to-one, there's no special trick needed: it's just
+Unlike Lesson 163's one-to-one, there's no special trick needed: it's just
 an ordinary foreign key, on its own, with no extra `UNIQUE` or shared
 primary key forcing it down to one match.
 
@@ -37,7 +37,7 @@ ORDER BY d.SalesOrderDetailID;
 
 `SalesOrderDetail.SalesOrderID` is a foreign key back to
 `SalesOrderHeader.SalesOrderID` — but it's *not* unique on its own (recall
-Lesson 95: the real primary key here is the **composite** of
+Lesson 159: the real primary key here is the **composite** of
 `SalesOrderID` *and* `SalesOrderDetailID` together). That's exactly what
 allows many detail rows to share the same `SalesOrderID`.
 
@@ -65,7 +65,7 @@ CREATE TABLE dbo.Employee (
 );
 ```
 
-The difference from Lesson 99 is entirely about whether the foreign key
+The difference from Lesson 163 is entirely about whether the foreign key
 column is *also* constrained to be unique. Leave it unconstrained, and you
 get one-to-many for free — every ordinary foreign key defaults to this
 shape unless you deliberately restrict it.

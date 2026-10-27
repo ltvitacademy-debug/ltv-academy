@@ -11,7 +11,7 @@
 
 ## Local temp tables — one connection only
 
-A single `#` prefix creates a **local** temp table — the kind Lesson 93
+A single `#` prefix creates a **local** temp table — the kind Lesson 148
 already introduced. It's visible only to the session (the connection) that
 created it, plus any stored procedures that session calls. It's
 automatically dropped the moment that session disconnects, or sooner if
@@ -50,7 +50,7 @@ mid-read. There's also just one `##global` table with that name across the
 **entire server**, so a naming collision between two unrelated scripts
 running at the same time is a real possibility. For most "share data across
 calls" needs, a real permanent table (or, within one session, the `#local`
-temp table from Lesson 93) is the safer choice. Reach for `##global` only
+temp table from Lesson 148) is the safer choice. Reach for `##global` only
 when you specifically need cross-session sharing and understand the
 concurrency risk.
 

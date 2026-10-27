@@ -13,7 +13,7 @@
 
 ## Why a plain foreign key can't do this
 
-Lesson 100's one-to-many works because the "many" side has a single
+Lesson 164's one-to-many works because the "many" side has a single
 foreign key column pointing at one "one" side row. But what if **both**
 sides need to point at many of the other? One sales order can have
 multiple reasons ("Price", "On Promotion", "Manufacturer"), and one reason
@@ -46,7 +46,7 @@ CREATE TABLE dbo.SalesOrderHeaderSalesReason (
 );
 ```
 
-Notice the pattern from Lesson 95: the junction table's primary key is a
+Notice the pattern from Lesson 159: the junction table's primary key is a
 **composite** of both foreign keys together. That composite key does two
 jobs at once — it enforces referential integrity in both directions *and*
 it prevents the exact same order/reason pair from being recorded twice.

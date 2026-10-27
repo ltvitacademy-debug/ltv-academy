@@ -24,66 +24,16 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "T-SQL Foundations",
     lessons: [
-      L(1, "what-is-t-sql", "What Is T-SQL? A Tour of SSMS", {
-        contentDir: "ch01/01-what-is-t-sql",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788923886/ltv-t-sql/ch01-01-what-is-t-sql.mp4",
-        durationLabel: "3 min 54 s",
-      }),
-      L(2, "connecting-and-use", "Connecting to a Database & the USE Statement", {
-        contentDir: "ch01/02-connecting-and-use",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788924817/ltv-t-sql/ch01-02-connecting-and-use.mp4",
-        durationLabel: "2 min 59 s",
-      }),
-      L(3, "select-basics", "The SELECT Statement Basics", {
-        contentDir: "ch01/03-select-basics",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925022/ltv-t-sql/ch01-03-select-basics.mp4",
-        durationLabel: "2 min 29 s",
-      }),
-      L(4, "selecting-specific-columns", "Selecting Specific Columns", {
-        contentDir: "ch01/04-selecting-specific-columns",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952895/ltv-t-sql/ch01-04-selecting-specific-columns.mp4",
-        durationLabel: "2 min 20 s",
-      }),
-      L(5, "column-aliases", "Column Aliases (AS)", {
-        contentDir: "ch01/05-column-aliases",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925323/ltv-t-sql/ch01-05-column-aliases.mp4",
-        durationLabel: "2 min 9 s",
-      }),
-      L(6, "string-concatenation", "String Concatenation with +", {
-        contentDir: "ch01/06-string-concatenation",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925468/ltv-t-sql/ch01-06-string-concatenation.mp4",
-        durationLabel: "2 min 9 s",
-      }),
-      L(7, "case-simple", "CASE Expressions (Simple)", {
-        contentDir: "ch01/07-case-simple",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952994/ltv-t-sql/ch01-07-case-simple.mp4",
-        durationLabel: "1 min 58 s",
-      }),
-      L(8, "case-searched", "CASE Expressions (Searched)", {
-        contentDir: "ch01/08-case-searched",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925783/ltv-t-sql/ch01-08-case-searched.mp4",
-        durationLabel: "2 min 12 s",
-      }),
-      L(9, "distinct", "DISTINCT", {
-        contentDir: "ch01/09-distinct",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788925929/ltv-t-sql/ch01-09-distinct.mp4",
-        durationLabel: "2 min 11 s",
-      }),
-      L(10, "comments-formatting", "Comments & Query Formatting", {
-        contentDir: "ch01/10-comments-formatting",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926088/ltv-t-sql/ch01-10-comments-formatting.mp4",
-        durationLabel: "2 min 27 s",
-      }),
+      L(1, "what-is-t-sql", "What Is T-SQL? A Tour of SSMS", { contentDir: "ch01/01-what-is-t-sql", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-t-sql.mp4", durationLabel: "3 min 10 s" }),
+      L(2, "connecting-and-use", "Connecting to a Database & the USE Statement", { contentDir: "ch01/02-connecting-and-use", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/connecting-and-use.mp4", durationLabel: "2 min 16 s" }),
+      L(3, "select-basics", "The SELECT Statement Basics", { contentDir: "ch01/03-select-basics", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/select-basics.mp4", durationLabel: "1 min 58 s" }),
+      L(4, "selecting-specific-columns", "Selecting Specific Columns", { contentDir: "ch01/04-selecting-specific-columns", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/selecting-specific-columns.mp4", durationLabel: "1 min 56 s" }),
+      L(5, "column-aliases", "Column Aliases (AS)", { contentDir: "ch01/05-column-aliases", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/column-aliases.mp4", durationLabel: "1 min 38 s" }),
+      L(6, "string-concatenation", "String Concatenation with +", { contentDir: "ch01/06-string-concatenation", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/string-concatenation.mp4", durationLabel: "1 min 43 s" }),
+      L(7, "case-simple", "CASE Expressions (Simple)", { contentDir: "ch01/07-case-simple", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/case-simple.mp4", durationLabel: "1 min 34 s" }),
+      L(8, "case-searched", "CASE Expressions (Searched)", { contentDir: "ch01/08-case-searched", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/case-searched.mp4", durationLabel: "1 min 36 s" }),
+      L(9, "distinct", "DISTINCT", { contentDir: "ch01/09-distinct", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/distinct.mp4", durationLabel: "1 min 48 s" }),
+      L(10, "comments-formatting", "Comments & Query Formatting", { contentDir: "ch01/10-comments-formatting", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/comments-formatting.mp4", durationLabel: "1 min 59 s" }),
     ],
   },
   {
@@ -104,273 +54,68 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 3,
     title: "Filtering and Sorting",
     lessons: [
-      L(19, "where-clause", "The WHERE Clause", {
-        contentDir: "ch02/11-where-clause",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926282/ltv-t-sql/ch02-11-where-clause.mp4",
-        durationLabel: "2 min 38 s",
-      }),
-      L(20, "comparison-operators", "Relational/Comparison Operators", {
-        contentDir: "ch02/12-comparison-operators",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953112/ltv-t-sql/ch02-12-comparison-operators.mp4",
-        durationLabel: "2 min 17 s",
-      }),
-      L(21, "and-or-not", "AND, OR, NOT", {
-        contentDir: "ch02/13-and-or-not",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926597/ltv-t-sql/ch02-13-and-or-not.mp4",
-        durationLabel: "2 min 37 s",
-      }),
-      L(22, "like-wildcards", "LIKE and Wildcards", {
-        contentDir: "ch02/14-like-wildcards",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926751/ltv-t-sql/ch02-14-like-wildcards.mp4",
-        durationLabel: "2 min 29 s",
-      }),
-      L(23, "in-and-between", "IN and BETWEEN", {
-        contentDir: "ch02/15-in-and-between",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788926892/ltv-t-sql/ch02-15-in-and-between.mp4",
-        durationLabel: "2 min 12 s",
-      }),
-      L(24, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)", {
-        contentDir: "ch02/16-null-handling",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927055/ltv-t-sql/ch02-16-null-handling.mp4",
-        durationLabel: "2 min 45 s",
-      }),
-      L(25, "order-by", "ORDER BY: Ascending & Descending", {
-        contentDir: "ch02/17-order-by",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927191/ltv-t-sql/ch02-17-order-by.mp4",
-        durationLabel: "2 min 0 s",
-      }),
-      L(26, "top-top-percent", "TOP and TOP PERCENT", {
-        contentDir: "ch02/18-top-top-percent",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927329/ltv-t-sql/ch02-18-top-top-percent.mp4",
-        durationLabel: "1 min 59 s",
-      }),
-      L(27, "top-with-ties", "TOP WITH TIES", {
-        contentDir: "ch02/19-top-with-ties",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953213/ltv-t-sql/ch02-19-top-with-ties.mp4",
-        durationLabel: "2 min 10 s",
-      }),
-      L(28, "predicates", "Predicates: How SQL Server Filters Data", {
-        contentDir: "ch02/20-predicates",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788927628/ltv-t-sql/ch02-20-predicates.mp4",
-        durationLabel: "2 min 13 s",
-      }),
+      L(19, "where-clause", "The WHERE Clause", { contentDir: "ch02/11-where-clause", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/where-clause.mp4", durationLabel: "1 min 55 s" }),
+      L(20, "comparison-operators", "Relational/Comparison Operators", { contentDir: "ch02/12-comparison-operators", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/comparison-operators.mp4", durationLabel: "1 min 49 s" }),
+      L(21, "and-or-not", "AND, OR, NOT", { contentDir: "ch02/13-and-or-not", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/and-or-not.mp4", durationLabel: "1 min 48 s" }),
+      L(22, "like-wildcards", "LIKE and Wildcards", { contentDir: "ch02/14-like-wildcards", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/like-wildcards.mp4", durationLabel: "1 min 44 s" }),
+      L(23, "in-and-between", "IN and BETWEEN", { contentDir: "ch02/15-in-and-between", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/in-and-between.mp4", durationLabel: "1 min 42 s" }),
+      L(24, "null-handling", "Handling NULL (IS NULL / IS NOT NULL)", { contentDir: "ch02/16-null-handling", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/null-handling.mp4", durationLabel: "1 min 59 s" }),
+      L(25, "order-by", "ORDER BY: Ascending & Descending", { contentDir: "ch02/17-order-by", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/order-by.mp4", durationLabel: "1 min 35 s" }),
+      L(26, "top-top-percent", "TOP and TOP PERCENT", { contentDir: "ch02/18-top-top-percent", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/top-top-percent.mp4", durationLabel: "1 min 39 s" }),
+      L(27, "top-with-ties", "TOP WITH TIES", { contentDir: "ch02/19-top-with-ties", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/top-with-ties.mp4", durationLabel: "1 min 37 s" }),
+      L(28, "predicates", "Predicates: How SQL Server Filters Data", { contentDir: "ch02/20-predicates", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/predicates.mp4", durationLabel: "1 min 43 s" }),
     ],
   },
   {
     n: 4,
     title: "Joining Tables",
     lessons: [
-      L(29, "keys-review", "Table Relationships & Keys Review", {
-        contentDir: "ch03/21-keys-review",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953269/ltv-t-sql/ch03-21-keys-review.mp4",
-        durationLabel: "2 min 3 s",
-      }),
-      L(30, "inner-join", "INNER JOIN", {
-        contentDir: "ch03/22-inner-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953327/ltv-t-sql/ch03-22-inner-join.mp4",
-        durationLabel: "2 min 21 s",
-      }),
-      L(31, "left-join", "LEFT JOIN", {
-        contentDir: "ch03/23-left-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953377/ltv-t-sql/ch03-23-left-join.mp4",
-        durationLabel: "2 min 0 s",
-      }),
-      L(32, "right-join", "RIGHT JOIN", {
-        contentDir: "ch03/24-right-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928219/ltv-t-sql/ch03-24-right-join.mp4",
-        durationLabel: "1 min 38 s",
-      }),
-      L(33, "full-outer-join", "FULL OUTER JOIN", {
-        contentDir: "ch03/25-full-outer-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953435/ltv-t-sql/ch03-25-full-outer-join.mp4",
-        durationLabel: "2 min 19 s",
-      }),
-      L(34, "cross-join", "CROSS JOIN", {
-        contentDir: "ch03/26-cross-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928502/ltv-t-sql/ch03-26-cross-join.mp4",
-        durationLabel: "2 min 4 s",
-      }),
-      L(35, "self-join", "SELF JOIN", {
-        contentDir: "ch03/27-self-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928650/ltv-t-sql/ch03-27-self-join.mp4",
-        durationLabel: "1 min 47 s",
-      }),
-      L(36, "joining-three-tables", "Joining Three or More Tables", {
-        contentDir: "ch03/28-joining-three-tables",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788928785/ltv-t-sql/ch03-28-joining-three-tables.mp4",
-        durationLabel: "1 min 49 s",
-      }),
-      L(37, "cross-apply", "CROSS APPLY", {
-        contentDir: "ch03/29-cross-apply",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953485/ltv-t-sql/ch03-29-cross-apply.mp4",
-        durationLabel: "1 min 54 s",
-      }),
-      L(38, "outer-apply", "OUTER APPLY", {
-        contentDir: "ch03/30-outer-apply",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953527/ltv-t-sql/ch03-30-outer-apply.mp4",
-        durationLabel: "1 min 47 s",
-      }),
-      L(39, "choosing-the-right-join", "Choosing the Right Join", {
-        contentDir: "ch03/31-choosing-the-right-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929201/ltv-t-sql/ch03-31-choosing-the-right-join.mp4",
-        durationLabel: "2 min 2 s",
-      }),
+      L(29, "keys-review", "Table Relationships & Keys Review", { contentDir: "ch03/21-keys-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/keys-review.mp4", durationLabel: "1 min 34 s" }),
+      L(30, "inner-join", "INNER JOIN", { contentDir: "ch03/22-inner-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/inner-join.mp4", durationLabel: "1 min 40 s" }),
+      L(31, "left-join", "LEFT JOIN", { contentDir: "ch03/23-left-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/left-join.mp4", durationLabel: "1 min 37 s" }),
+      L(32, "right-join", "RIGHT JOIN", { contentDir: "ch03/24-right-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/right-join.mp4", durationLabel: "1 min 17 s" }),
+      L(33, "full-outer-join", "FULL OUTER JOIN", { contentDir: "ch03/25-full-outer-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/full-outer-join.mp4", durationLabel: "1 min 42 s" }),
+      L(34, "cross-join", "CROSS JOIN", { contentDir: "ch03/26-cross-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/cross-join.mp4", durationLabel: "1 min 34 s" }),
+      L(35, "self-join", "SELF JOIN", { contentDir: "ch03/27-self-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/self-join.mp4", durationLabel: "1 min 34 s" }),
+      L(36, "joining-three-tables", "Joining Three or More Tables", { contentDir: "ch03/28-joining-three-tables", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/joining-three-tables.mp4", durationLabel: "1 min 26 s" }),
+      L(37, "cross-apply", "CROSS APPLY", { contentDir: "ch03/29-cross-apply", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/cross-apply.mp4", durationLabel: "1 min 26 s" }),
+      L(38, "outer-apply", "OUTER APPLY", { contentDir: "ch03/30-outer-apply", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/outer-apply.mp4", durationLabel: "1 min 22 s" }),
+      L(39, "choosing-the-right-join", "Choosing the Right Join", { contentDir: "ch03/31-choosing-the-right-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/choosing-the-right-join.mp4", durationLabel: "1 min 35 s" }),
     ],
   },
   {
     n: 5,
     title: "Grouping and Aggregating",
     lessons: [
-      L(40, "count", "COUNT", {
-        contentDir: "ch04/32-count",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929356/ltv-t-sql/ch04-32-count.mp4",
-        durationLabel: "2 min 3 s",
-      }),
-      L(41, "sum-avg", "SUM and AVG", {
-        contentDir: "ch04/33-sum-avg",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929509/ltv-t-sql/ch04-33-sum-avg.mp4",
-        durationLabel: "1 min 55 s",
-      }),
-      L(42, "min-max", "MIN and MAX", {
-        contentDir: "ch04/34-min-max",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929651/ltv-t-sql/ch04-34-min-max.mp4",
-        durationLabel: "1 min 43 s",
-      }),
-      L(43, "group-by-basics", "GROUP BY Basics", {
-        contentDir: "ch04/35-group-by-basics",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953584/ltv-t-sql/ch04-35-group-by-basics.mp4",
-        durationLabel: "2 min 13 s",
-      }),
-      L(44, "group-by-multiple-columns", "GROUP BY Multiple Columns", {
-        contentDir: "ch04/36-group-by-multiple-columns",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788929938/ltv-t-sql/ch04-36-group-by-multiple-columns.mp4",
-        durationLabel: "2 min 3 s",
-      }),
-      L(45, "having-vs-where", "HAVING vs. WHERE", {
-        contentDir: "ch04/37-having-vs-where",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930084/ltv-t-sql/ch04-37-having-vs-where.mp4",
-        durationLabel: "2 min 11 s",
-      }),
-      L(46, "union-vs-union-all", "UNION vs. UNION ALL", {
-        contentDir: "ch04/38-union-vs-union-all",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953642/ltv-t-sql/ch04-38-union-vs-union-all.mp4",
-        durationLabel: "2 min 15 s",
-      }),
-      L(47, "var-statistical-aggregates", "VAR and Statistical Aggregates", {
-        contentDir: "ch04/39-var-statistical-aggregates",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930378/ltv-t-sql/ch04-39-var-statistical-aggregates.mp4",
-        durationLabel: "2 min 11 s",
-      }),
+      L(40, "count", "COUNT", { contentDir: "ch04/32-count", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/count.mp4", durationLabel: "1 min 37 s" }),
+      L(41, "sum-avg", "SUM and AVG", { contentDir: "ch04/33-sum-avg", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/sum-avg.mp4", durationLabel: "1 min 30 s" }),
+      L(42, "min-max", "MIN and MAX", { contentDir: "ch04/34-min-max", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/min-max.mp4", durationLabel: "1 min 16 s" }),
+      L(43, "group-by-basics", "GROUP BY Basics", { contentDir: "ch04/35-group-by-basics", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/group-by-basics.mp4", durationLabel: "1 min 35 s" }),
+      L(44, "group-by-multiple-columns", "GROUP BY Multiple Columns", { contentDir: "ch04/36-group-by-multiple-columns", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/group-by-multiple-columns.mp4", durationLabel: "1 min 33 s" }),
+      L(45, "having-vs-where", "HAVING vs. WHERE", { contentDir: "ch04/37-having-vs-where", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/having-vs-where.mp4", durationLabel: "1 min 44 s" }),
+      L(46, "union-vs-union-all", "UNION vs. UNION ALL", { contentDir: "ch04/38-union-vs-union-all", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/union-vs-union-all.mp4", durationLabel: "1 min 41 s" }),
+      L(47, "var-statistical-aggregates", "VAR and Statistical Aggregates", { contentDir: "ch04/39-var-statistical-aggregates", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/var-statistical-aggregates.mp4", durationLabel: "1 min 48 s" }),
       L(48, "group-by-rollup", "GROUP BY ROLLUP", { contentDir: "ch04/41-group-by-rollup", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/group-by-rollup.mp4", durationLabel: "1 min 49 s" }),
       L(49, "group-by-cube", "GROUP BY CUBE", { contentDir: "ch04/42-group-by-cube", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/group-by-cube.mp4", durationLabel: "1 min 49 s" }),
       L(50, "grouping-sets", "GROUPING SETS", { contentDir: "ch04/43-grouping-sets", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/grouping-sets.mp4", durationLabel: "1 min 54 s" }),
-      L(51, "summary-reports", "Building Summary Reports", {
-        contentDir: "ch04/40-summary-reports",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953699/ltv-t-sql/ch04-40-summary-reports.mp4",
-        durationLabel: "2 min 7 s",
-      }),
+      L(51, "summary-reports", "Building Summary Reports", { contentDir: "ch04/40-summary-reports", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/summary-reports.mp4", durationLabel: "1 min 39 s" }),
     ],
   },
   {
     n: 6,
     title: "Data Types, Strings, Dates and Modern T-SQL",
     lessons: [
-      L(52, "char-vs-varchar", "CHAR vs. VARCHAR", {
-        contentDir: "ch05/41-char-vs-varchar",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953756/ltv-t-sql/ch05-41-char-vs-varchar.mp4",
-        durationLabel: "2 min 9 s",
-      }),
-      L(53, "nvarchar-unicode", "NVARCHAR and Unicode", {
-        contentDir: "ch05/42-nvarchar-unicode",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788930839/ltv-t-sql/ch05-42-nvarchar-unicode.mp4",
-        durationLabel: "2 min 17 s",
-      }),
-      L(54, "varchar-max", "VARCHAR(MAX)", {
-        contentDir: "ch05/43-varchar-max",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953816/ltv-t-sql/ch05-43-varchar-max.mp4",
-        durationLabel: "2 min 23 s",
-      }),
-      L(55, "len-upper-lower", "LEN, UPPER, LOWER", {
-        contentDir: "ch05/44-len-upper-lower",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931139/ltv-t-sql/ch05-44-len-upper-lower.mp4",
-        durationLabel: "1 min 58 s",
-      }),
-      L(56, "substring-charindex", "SUBSTRING and CHARINDEX", {
-        contentDir: "ch05/45-substring-charindex",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931284/ltv-t-sql/ch05-45-substring-charindex.mp4",
-        durationLabel: "2 min 5 s",
-      }),
-      L(57, "stuff-vs-replace", "STUFF vs. REPLACE", {
-        contentDir: "ch05/46-stuff-vs-replace",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953867/ltv-t-sql/ch05-46-stuff-vs-replace.mp4",
-        durationLabel: "1 min 59 s",
-      }),
-      L(58, "trim-ltrim-rtrim", "TRIM, LTRIM, RTRIM", {
-        contentDir: "ch05/47-trim-ltrim-rtrim",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931575/ltv-t-sql/ch05-47-trim-ltrim-rtrim.mp4",
-        durationLabel: "2 min 5 s",
-      }),
-      L(59, "date-time-data-types", "Date and Time Data Types", {
-        contentDir: "ch05/48-date-time-data-types",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931727/ltv-t-sql/ch05-48-date-time-data-types.mp4",
-        durationLabel: "2 min 16 s",
-      }),
-      L(60, "date-functions", "Date Functions: GETDATE, DATEADD, DATEDIFF", {
-        contentDir: "ch05/49-date-functions",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788931869/ltv-t-sql/ch05-49-date-functions.mp4",
-        durationLabel: "2 min 1 s",
-      }),
-      L(61, "cast-convert", "Converting and Formatting Data (CAST/CONVERT)", {
-        contentDir: "ch05/50-cast-convert",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932007/ltv-t-sql/ch05-50-cast-convert.mp4",
-        durationLabel: "1 min 59 s",
-      }),
-      L(62, "deleting-duplicate-rows", "Deleting Duplicate Rows", {
-        contentDir: "ch05/51-deleting-duplicate-rows",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953923/ltv-t-sql/ch05-51-deleting-duplicate-rows.mp4",
-        durationLabel: "2 min 15 s",
-      }),
+      L(52, "char-vs-varchar", "CHAR vs. VARCHAR", { contentDir: "ch05/41-char-vs-varchar", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/char-vs-varchar.mp4", durationLabel: "1 min 39 s" }),
+      L(53, "nvarchar-unicode", "NVARCHAR and Unicode", { contentDir: "ch05/42-nvarchar-unicode", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/nvarchar-unicode.mp4", durationLabel: "1 min 51 s" }),
+      L(54, "varchar-max", "VARCHAR(MAX)", { contentDir: "ch05/43-varchar-max", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/varchar-max.mp4", durationLabel: "1 min 47 s" }),
+      L(55, "len-upper-lower", "LEN, UPPER, LOWER", { contentDir: "ch05/44-len-upper-lower", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/len-upper-lower.mp4", durationLabel: "1 min 34 s" }),
+      L(56, "substring-charindex", "SUBSTRING and CHARINDEX", { contentDir: "ch05/45-substring-charindex", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/substring-charindex.mp4", durationLabel: "1 min 35 s" }),
+      L(57, "stuff-vs-replace", "STUFF vs. REPLACE", { contentDir: "ch05/46-stuff-vs-replace", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/stuff-vs-replace.mp4", durationLabel: "1 min 27 s" }),
+      L(58, "trim-ltrim-rtrim", "TRIM, LTRIM, RTRIM", { contentDir: "ch05/47-trim-ltrim-rtrim", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/trim-ltrim-rtrim.mp4", durationLabel: "1 min 31 s" }),
+      L(59, "date-time-data-types", "Date and Time Data Types", { contentDir: "ch05/48-date-time-data-types", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/date-time-data-types.mp4", durationLabel: "1 min 52 s" }),
+      L(60, "date-functions", "Date Functions: GETDATE, DATEADD, DATEDIFF", { contentDir: "ch05/49-date-functions", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/date-functions.mp4", durationLabel: "1 min 35 s" }),
+      L(61, "cast-convert", "Converting and Formatting Data (CAST/CONVERT)", { contentDir: "ch05/50-cast-convert", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/cast-convert.mp4", durationLabel: "1 min 34 s" }),
+      L(62, "deleting-duplicate-rows", "Deleting Duplicate Rows", { contentDir: "ch05/51-deleting-duplicate-rows", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/deleting-duplicate-rows.mp4", durationLabel: "1 min 49 s" }),
       L(63, "coalesce", "COALESCE", { contentDir: "ch05/52-coalesce", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/coalesce.mp4", durationLabel: "1 min 15 s" }),
       L(64, "isnull-vs-coalesce", "ISNULL vs. COALESCE", { contentDir: "ch05/53-isnull-vs-coalesce", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/isnull-vs-coalesce.mp4", durationLabel: "1 min 49 s" }),
       L(65, "nullif", "NULLIF", { contentDir: "ch05/54-nullif", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/nullif.mp4", durationLabel: "1 min 24 s" }),
@@ -388,132 +133,32 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Subqueries, CTEs, and Views",
     lessons: [
-      L(74, "single-value-subqueries", "Single-Value Subqueries", {
-        contentDir: "ch06/52-single-value-subqueries",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932333/ltv-t-sql/ch06-52-single-value-subqueries.mp4",
-        durationLabel: "2 min 5 s",
-      }),
-      L(75, "multi-value-subqueries", "Multi-Value Subqueries", {
-        contentDir: "ch06/53-multi-value-subqueries",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788932495/ltv-t-sql/ch06-53-multi-value-subqueries.mp4",
-        durationLabel: "2 min 32 s",
-      }),
-      L(76, "correlated-subqueries", "Correlated Subqueries", {
-        contentDir: "ch06/54-correlated-subqueries",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788953983/ltv-t-sql/ch06-54-correlated-subqueries.mp4",
-        durationLabel: "2 min 21 s",
-      }),
-      L(77, "exists-not-exists", "EXISTS and NOT EXISTS", {
-        contentDir: "ch06/55-exists-not-exists",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954041/ltv-t-sql/ch06-55-exists-not-exists.mp4",
-        durationLabel: "2 min 17 s",
-      }),
-      L(78, "ctes", "Common Table Expressions (CTEs)", {
-        contentDir: "ch06/56-ctes",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954096/ltv-t-sql/ch06-56-ctes.mp4",
-        durationLabel: "2 min 11 s",
-      }),
-      L(79, "recursive-ctes", "Recursive CTEs", {
-        contentDir: "ch06/57-recursive-ctes",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954157/ltv-t-sql/ch06-57-recursive-ctes.mp4",
-        durationLabel: "2 min 29 s",
-      }),
-      L(80, "views", "Views: Creating and Using", {
-        contentDir: "ch06/58-views",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954226/ltv-t-sql/ch06-58-views.mp4",
-        durationLabel: "2 min 34 s",
-      }),
-      L(81, "indexed-views", "Indexed Views", {
-        contentDir: "ch06/59-indexed-views",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954282/ltv-t-sql/ch06-59-indexed-views.mp4",
-        durationLabel: "2 min 7 s",
-      }),
-      L(82, "pivot", "PIVOT", {
-        contentDir: "ch06/60-pivot",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954336/ltv-t-sql/ch06-60-pivot.mp4",
-        durationLabel: "2 min 13 s",
-      }),
-      L(83, "unpivot", "UNPIVOT", {
-        contentDir: "ch06/61-unpivot",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954384/ltv-t-sql/ch06-61-unpivot.mp4",
-        durationLabel: "1 min 59 s",
-      }),
+      L(74, "single-value-subqueries", "Single-Value Subqueries", { contentDir: "ch06/52-single-value-subqueries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/single-value-subqueries.mp4", durationLabel: "1 min 45 s" }),
+      L(75, "multi-value-subqueries", "Multi-Value Subqueries", { contentDir: "ch06/53-multi-value-subqueries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/multi-value-subqueries.mp4", durationLabel: "1 min 56 s" }),
+      L(76, "correlated-subqueries", "Correlated Subqueries", { contentDir: "ch06/54-correlated-subqueries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/correlated-subqueries.mp4", durationLabel: "1 min 51 s" }),
+      L(77, "exists-not-exists", "EXISTS and NOT EXISTS", { contentDir: "ch06/55-exists-not-exists", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/exists-not-exists.mp4", durationLabel: "1 min 44 s" }),
+      L(78, "ctes", "Common Table Expressions (CTEs)", { contentDir: "ch06/56-ctes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/ctes.mp4", durationLabel: "1 min 44 s" }),
+      L(79, "recursive-ctes", "Recursive CTEs", { contentDir: "ch06/57-recursive-ctes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/recursive-ctes.mp4", durationLabel: "1 min 54 s" }),
+      L(80, "views", "Views: Creating and Using", { contentDir: "ch06/58-views", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/views.mp4", durationLabel: "1 min 54 s" }),
+      L(81, "indexed-views", "Indexed Views", { contentDir: "ch06/59-indexed-views", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/indexed-views.mp4", durationLabel: "1 min 44 s" }),
+      L(82, "pivot", "PIVOT", { contentDir: "ch06/60-pivot", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/pivot.mp4", durationLabel: "1 min 45 s" }),
+      L(83, "unpivot", "UNPIVOT", { contentDir: "ch06/61-unpivot", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/unpivot.mp4", durationLabel: "1 min 36 s" }),
     ],
   },
   {
     n: 8,
     title: "Programming with T-SQL",
     lessons: [
-      L(84, "variables-declare", "Variables and DECLARE", {
-        contentDir: "ch07/62-variables-declare",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788933933/ltv-t-sql/ch07-62-variables-declare.mp4",
-        durationLabel: "2 min 10 s",
-      }),
-      L(85, "batches-go", "Batches and GO", {
-        contentDir: "ch07/63-batches-go",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934080/ltv-t-sql/ch07-63-batches-go.mp4",
-        durationLabel: "2 min 6 s",
-      }),
-      L(86, "if-else", "IF/ELSE", {
-        contentDir: "ch07/64-if-else",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934244/ltv-t-sql/ch07-64-if-else.mp4",
-        durationLabel: "2 min 7 s",
-      }),
-      L(87, "begin-end", "BEGIN/END Blocks", {
-        contentDir: "ch07/65-begin-end",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954434/ltv-t-sql/ch07-65-begin-end.mp4",
-        durationLabel: "2 min 0 s",
-      }),
-      L(88, "while-loops", "WHILE Loops", {
-        contentDir: "ch07/66-while-loops",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934547/ltv-t-sql/ch07-66-while-loops.mp4",
-        durationLabel: "2 min 3 s",
-      }),
-      L(89, "cursors", "Cursors: Declaring and Fetching", {
-        contentDir: "ch07/67-cursors",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954489/ltv-t-sql/ch07-67-cursors.mp4",
-        durationLabel: "2 min 7 s",
-      }),
-      L(90, "stored-procedures-creating", "Stored Procedures: Creating", {
-        contentDir: "ch07/68-stored-procedures-creating",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934837/ltv-t-sql/ch07-68-stored-procedures-creating.mp4",
-        durationLabel: "1 min 59 s",
-      }),
-      L(91, "stored-procedures-parameters", "Stored Procedures: Parameters", {
-        contentDir: "ch07/69-stored-procedures-parameters",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788934994/ltv-t-sql/ch07-69-stored-procedures-parameters.mp4",
-        durationLabel: "2 min 14 s",
-      }),
-      L(92, "dynamic-sql", "Dynamic SQL with sp_executesql", {
-        contentDir: "ch07/70-dynamic-sql",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935166/ltv-t-sql/ch07-70-dynamic-sql.mp4",
-        durationLabel: "2 min 22 s",
-      }),
-      L(93, "merge-statement", "The MERGE Statement", {
-        contentDir: "ch07/71-merge-statement",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954550/ltv-t-sql/ch07-71-merge-statement.mp4",
-        durationLabel: "2 min 26 s",
-      }),
+      L(84, "variables-declare", "Variables and DECLARE", { contentDir: "ch07/62-variables-declare", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/variables-declare.mp4", durationLabel: "1 min 45 s" }),
+      L(85, "batches-go", "Batches and GO", { contentDir: "ch07/63-batches-go", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/batches-go.mp4", durationLabel: "1 min 39 s" }),
+      L(86, "if-else", "IF/ELSE", { contentDir: "ch07/64-if-else", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/if-else.mp4", durationLabel: "1 min 40 s" }),
+      L(87, "begin-end", "BEGIN/END Blocks", { contentDir: "ch07/65-begin-end", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/begin-end.mp4", durationLabel: "1 min 33 s" }),
+      L(88, "while-loops", "WHILE Loops", { contentDir: "ch07/66-while-loops", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/while-loops.mp4", durationLabel: "1 min 45 s" }),
+      L(89, "cursors", "Cursors: Declaring and Fetching", { contentDir: "ch07/67-cursors", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/cursors.mp4", durationLabel: "1 min 50 s" }),
+      L(90, "stored-procedures-creating", "Stored Procedures: Creating", { contentDir: "ch07/68-stored-procedures-creating", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/stored-procedures-creating.mp4", durationLabel: "1 min 23 s" }),
+      L(91, "stored-procedures-parameters", "Stored Procedures: Parameters", { contentDir: "ch07/69-stored-procedures-parameters", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/stored-procedures-parameters.mp4", durationLabel: "1 min 47 s" }),
+      L(92, "dynamic-sql", "Dynamic SQL with sp_executesql", { contentDir: "ch07/70-dynamic-sql", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/dynamic-sql.mp4", durationLabel: "1 min 56 s" }),
+      L(93, "merge-statement", "The MERGE Statement", { contentDir: "ch07/71-merge-statement", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/merge-statement.mp4", durationLabel: "1 min 52 s" }),
       L(94, "scalar-udfs", "Scalar User-Defined Functions", { contentDir: "ch07/72-scalar-udfs", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/scalar-udfs.mp4", durationLabel: "2 min 3 s" }),
       L(95, "inline-table-valued-functions", "Inline Table-Valued Functions", { contentDir: "ch07/73-inline-table-valued-functions", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/inline-table-valued-functions.mp4", durationLabel: "1 min 55 s" }),
       L(96, "multi-statement-table-valued-functions", "Multi-Statement Table-Valued Functions", { contentDir: "ch07/74-multi-statement-table-valued-functions", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/multi-statement-table-valued-functions.mp4", durationLabel: "1 min 47 s" }),
@@ -526,18 +171,8 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 9,
     title: "Transactions, Locking, and Isolation Levels",
     lessons: [
-      L(100, "transactions", "Transactions: BEGIN/COMMIT/ROLLBACK", {
-        contentDir: "ch08/72-transactions",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788935785/ltv-t-sql/ch08-72-transactions.mp4",
-        durationLabel: "2 min 0 s",
-      }),
-      L(101, "acid-properties", "ACID Properties", {
-        contentDir: "ch08/73-acid-properties",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954590/ltv-t-sql/ch08-73-acid-properties.mp4",
-        durationLabel: "1 min 34 s",
-      }),
+      L(100, "transactions", "Transactions: BEGIN/COMMIT/ROLLBACK", { contentDir: "ch08/72-transactions", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/transactions.mp4", durationLabel: "1 min 43 s" }),
+      L(101, "acid-properties", "ACID Properties", { contentDir: "ch08/73-acid-properties", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/acid-properties.mp4", durationLabel: "1 min 17 s" }),
       L(102, "what-is-a-lock", "What Is a Lock, and Why SQL Server Needs Them", { contentDir: "ch08/79-what-is-a-lock", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-a-lock.mp4", durationLabel: "1 min 51 s" }),
       L(103, "shared-locks", "Shared (S) Locks", { contentDir: "ch08/80-shared-locks", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/shared-locks.mp4", durationLabel: "1 min 51 s" }),
       L(104, "exclusive-locks", "Exclusive (X) Locks", { contentDir: "ch08/81-exclusive-locks", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/exclusive-locks.mp4", durationLabel: "1 min 44 s" }),
@@ -562,60 +197,20 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
       L(123, "read-committed-snapshot", "READ COMMITTED SNAPSHOT (RCSI)", { contentDir: "ch08/100-read-committed-snapshot", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/read-committed-snapshot.mp4", durationLabel: "1 min 56 s" }),
       L(124, "optimistic-vs-pessimistic-concurrency", "Optimistic vs. Pessimistic Concurrency", { contentDir: "ch08/101-optimistic-vs-pessimistic-concurrency", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/optimistic-vs-pessimistic-concurrency.mp4", durationLabel: "1 min 59 s" }),
       L(125, "choosing-the-right-isolation-level", "Choosing the Right Isolation Level for the Job", { contentDir: "ch08/102-choosing-the-right-isolation-level", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/choosing-the-right-isolation-level.mp4", durationLabel: "2 min 0 s" }),
-      L(126, "concurrency-blocking", "Concurrency and Blocking", {
-        contentDir: "ch08/75-concurrency-blocking",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954665/ltv-t-sql/ch08-75-concurrency-blocking.mp4",
-        durationLabel: "2 min 6 s",
-      }),
-      L(127, "try-catch", "TRY/CATCH Error Handling", {
-        contentDir: "ch08/76-try-catch",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936399/ltv-t-sql/ch08-76-try-catch.mp4",
-        durationLabel: "2 min 1 s",
-      }),
-      L(128, "raiserror-throw", "RAISERROR and THROW", {
-        contentDir: "ch08/77-raiserror-throw",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788936563/ltv-t-sql/ch08-77-raiserror-throw.mp4",
-        durationLabel: "2 min 5 s",
-      }),
-      L(129, "auth-modes", "SQL Server Authentication Modes", {
-        contentDir: "ch08/78-auth-modes",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954701/ltv-t-sql/ch08-78-auth-modes.mp4",
-        durationLabel: "2 min 11 s",
-      }),
+      L(126, "concurrency-blocking", "Concurrency and Blocking", { contentDir: "ch08/75-concurrency-blocking", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/concurrency-blocking.mp4", durationLabel: "1 min 43 s" }),
+      L(127, "try-catch", "TRY/CATCH Error Handling", { contentDir: "ch08/76-try-catch", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/try-catch.mp4", durationLabel: "1 min 37 s" }),
+      L(128, "raiserror-throw", "RAISERROR and THROW", { contentDir: "ch08/77-raiserror-throw", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/raiserror-throw.mp4", durationLabel: "1 min 36 s" }),
+      L(129, "auth-modes", "SQL Server Authentication Modes", { contentDir: "ch08/78-auth-modes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/auth-modes.mp4", durationLabel: "1 min 49 s" }),
     ],
   },
   {
     n: 10,
     title: "Window and Ranking Functions",
     lessons: [
-      L(130, "over-partition-by", "OVER() and PARTITION BY", {
-        contentDir: "ch09/79-over-partition-by",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954736/ltv-t-sql/ch09-79-over-partition-by.mp4",
-        durationLabel: "2 min 9 s",
-      }),
-      L(131, "row-number", "ROW_NUMBER", {
-        contentDir: "ch09/80-row-number",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937062/ltv-t-sql/ch09-80-row-number.mp4",
-        durationLabel: "2 min 10 s",
-      }),
-      L(132, "rank-dense-rank", "RANK and DENSE_RANK", {
-        contentDir: "ch09/81-rank-dense-rank",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954775/ltv-t-sql/ch09-81-rank-dense-rank.mp4",
-        durationLabel: "2 min 27 s",
-      }),
-      L(133, "ntile", "NTILE", {
-        contentDir: "ch09/82-ntile",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788937403/ltv-t-sql/ch09-82-ntile.mp4",
-        durationLabel: "2 min 36 s",
-      }),
+      L(130, "over-partition-by", "OVER() and PARTITION BY", { contentDir: "ch09/79-over-partition-by", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/over-partition-by.mp4", durationLabel: "1 min 43 s" }),
+      L(131, "row-number", "ROW_NUMBER", { contentDir: "ch09/80-row-number", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/row-number.mp4", durationLabel: "1 min 43 s" }),
+      L(132, "rank-dense-rank", "RANK and DENSE_RANK", { contentDir: "ch09/81-rank-dense-rank", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/rank-dense-rank.mp4", durationLabel: "1 min 50 s" }),
+      L(133, "ntile", "NTILE", { contentDir: "ch09/82-ntile", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/ntile.mp4", durationLabel: "1 min 54 s" }),
       L(134, "lag-and-lead", "LAG and LEAD", { contentDir: "ch09/83-lag-and-lead", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/lag-and-lead.mp4", durationLabel: "1 min 59 s" }),
       L(135, "first-value-last-value", "FIRST_VALUE and LAST_VALUE", { contentDir: "ch09/84-first-value-last-value", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/first-value-last-value.mp4", durationLabel: "2 min 9 s" }),
       L(136, "window-frames-rows-vs-range", "Window Frames: ROWS vs. RANGE", { contentDir: "ch09/85-window-frames-rows-vs-range", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/window-frames-rows-vs-range.mp4", durationLabel: "2 min 9 s" }),
@@ -626,78 +221,18 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
     n: 11,
     title: "Performance Tuning",
     lessons: [
-      L(138, "what-is-performance-tuning", "What Is Query Performance Tuning?", {
-        contentDir: "ch10/83-what-is-performance-tuning",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954812/ltv-t-sql/ch10-83-what-is-performance-tuning.mp4",
-        durationLabel: "2 min 18 s",
-      }),
-      L(139, "cartesian-product", "The Cartesian Product: What Happens When Joins Go Wrong", {
-        contentDir: "ch10/84-cartesian-product",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954850/ltv-t-sql/ch10-84-cartesian-product.mp4",
-        durationLabel: "2 min 20 s",
-      }),
-      L(140, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why", {
-        contentDir: "ch10/85-joins-vs-subqueries",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954887/ltv-t-sql/ch10-85-joins-vs-subqueries.mp4",
-        durationLabel: "2 min 21 s",
-      }),
-      L(141, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks", {
-        contentDir: "ch10/86-exists-vs-in-vs-join",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954925/ltv-t-sql/ch10-86-exists-vs-in-vs-join.mp4",
-        durationLabel: "2 min 18 s",
-      }),
-      L(142, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses", {
-        contentDir: "ch10/87-sargable-predicates",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788954964/ltv-t-sql/ch10-87-sargable-predicates.mp4",
-        durationLabel: "2 min 20 s",
-      }),
-      L(143, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely", {
-        contentDir: "ch10/88-clustered-vs-nonclustered",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955003/ltv-t-sql/ch10-88-clustered-vs-nonclustered.mp4",
-        durationLabel: "2 min 23 s",
-      }),
-      L(144, "filtered-included-indexes", "Filtered Indexes and Included Columns", {
-        contentDir: "ch10/89-filtered-included-indexes",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788938659/ltv-t-sql/ch10-89-filtered-included-indexes.mp4",
-        durationLabel: "2 min 8 s",
-      }),
-      L(145, "execution-plans", "Reading Execution Plans: Scans vs. Seeks", {
-        contentDir: "ch10/90-execution-plans",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939159/ltv-t-sql/ch10-90-execution-plans.mp4",
-        durationLabel: "2 min 15 s",
-      }),
-      L(146, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice", {
-        contentDir: "ch10/91-set-statistics-time-io",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788939349/ltv-t-sql/ch10-91-statistics-time-io.mp4",
-        durationLabel: "2 min 10 s",
-      }),
-      L(147, "set-statistics-profile-xml", "SET STATISTICS PROFILE and XML", {
-        contentDir: "ch10/92-set-statistics-profile-xml",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955036/ltv-t-sql/ch10-92-set-statistics-profile-xml.mp4",
-        durationLabel: "1 min 58 s",
-      }),
-      L(148, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs", {
-        contentDir: "ch10/93-temp-tables-vs-variables-vs-ctes",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955076/ltv-t-sql/ch10-93-temp-tables-vs-variables-vs-ctes.mp4",
-        durationLabel: "2 min 25 s",
-      }),
-      L(149, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns", {
-        contentDir: "ch10/94-performance-anti-patterns",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955120/ltv-t-sql/ch10-94-performance-anti-patterns.mp4",
-        durationLabel: "2 min 41 s",
-      }),
+      L(138, "what-is-performance-tuning", "What Is Query Performance Tuning?", { contentDir: "ch10/83-what-is-performance-tuning", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-performance-tuning.mp4", durationLabel: "1 min 46 s" }),
+      L(139, "cartesian-product", "The Cartesian Product: What Happens When Joins Go Wrong", { contentDir: "ch10/84-cartesian-product", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/cartesian-product.mp4", durationLabel: "1 min 56 s" }),
+      L(140, "joins-vs-subqueries", "Joins vs. Subqueries: Which Is Faster, and Why", { contentDir: "ch10/85-joins-vs-subqueries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/joins-vs-subqueries.mp4", durationLabel: "1 min 53 s" }),
+      L(141, "exists-vs-in-vs-join", "EXISTS vs. IN vs. JOIN for Existence Checks", { contentDir: "ch10/86-exists-vs-in-vs-join", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/exists-vs-in-vs-join.mp4", durationLabel: "1 min 46 s" }),
+      L(142, "sargable-predicates", "SARGable vs. Non-SARGable WHERE Clauses", { contentDir: "ch10/87-sargable-predicates", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/sargable-predicates.mp4", durationLabel: "1 min 48 s" }),
+      L(143, "clustered-vs-nonclustered", "Clustered vs. Nonclustered Indexes: Choosing Wisely", { contentDir: "ch10/88-clustered-vs-nonclustered", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/clustered-vs-nonclustered.mp4", durationLabel: "1 min 50 s" }),
+      L(144, "filtered-included-indexes", "Filtered Indexes and Included Columns", { contentDir: "ch10/89-filtered-included-indexes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/filtered-included-indexes.mp4", durationLabel: "1 min 48 s" }),
+      L(145, "execution-plans", "Reading Execution Plans: Scans vs. Seeks", { contentDir: "ch10/90-execution-plans", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/execution-plans.mp4", durationLabel: "1 min 55 s" }),
+      L(146, "set-statistics-time-io", "SET STATISTICS TIME and IO in Practice", { contentDir: "ch10/91-set-statistics-time-io", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/set-statistics-time-io.mp4", durationLabel: "1 min 44 s" }),
+      L(147, "set-statistics-profile-xml", "SET STATISTICS PROFILE and XML", { contentDir: "ch10/92-set-statistics-profile-xml", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/set-statistics-profile-xml.mp4", durationLabel: "1 min 38 s" }),
+      L(148, "temp-tables-vs-variables-vs-ctes", "Temp Tables vs. Table Variables vs. CTEs: Performance Tradeoffs", { contentDir: "ch10/93-temp-tables-vs-variables-vs-ctes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/temp-tables-vs-variables-vs-ctes.mp4", durationLabel: "1 min 52 s" }),
+      L(149, "performance-anti-patterns", "Common T-SQL Performance Anti-Patterns", { contentDir: "ch10/94-performance-anti-patterns", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/performance-anti-patterns.mp4", durationLabel: "2 min 7 s" }),
     ],
   },
   {
@@ -713,156 +248,36 @@ export const TSQL_CHAPTERS: ChapterMeta[] = [
       L(156, "computed-columns", "Computed Columns", { contentDir: "ch11/113-computed-columns", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/computed-columns.mp4", durationLabel: "1 min 38 s" }),
       L(157, "create-index", "CREATE INDEX (Clustered and Nonclustered)", { contentDir: "ch11/114-create-index", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/create-index.mp4", durationLabel: "1 min 40 s" }),
       L(158, "synonyms", "Synonyms", { contentDir: "ch11/115-synonyms", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/synonyms.mp4", durationLabel: "1 min 24 s" }),
-      L(159, "primary-keys", "Primary Keys", {
-        contentDir: "ch11/95-primary-keys",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940117/ltv-t-sql/ch11-95-primary-keys.mp4",
-        durationLabel: "2 min 14 s",
-      }),
-      L(160, "foreign-keys", "Foreign Keys", {
-        contentDir: "ch11/96-foreign-keys",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940277/ltv-t-sql/ch11-96-foreign-keys.mp4",
-        durationLabel: "2 min 11 s",
-      }),
-      L(161, "unique-constraints", "UNIQUE Constraints", {
-        contentDir: "ch11/97-unique-constraints",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940426/ltv-t-sql/ch11-97-unique-constraints.mp4",
-        durationLabel: "2 min 0 s",
-      }),
-      L(162, "not-null-check", "NOT NULL and CHECK Constraints", {
-        contentDir: "ch11/98-not-null-check",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940571/ltv-t-sql/ch11-98-not-null-check.mp4",
-        durationLabel: "1 min 55 s",
-      }),
-      L(163, "one-to-one", "Table Relationships: One-to-One", {
-        contentDir: "ch11/99-one-to-one",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940716/ltv-t-sql/ch11-99-one-to-one.mp4",
-        durationLabel: "2 min 1 s",
-      }),
-      L(164, "one-to-many", "Table Relationships: One-to-Many", {
-        contentDir: "ch11/100-one-to-many",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940851/ltv-t-sql/ch11-100-one-to-many.mp4",
-        durationLabel: "1 min 33 s",
-      }),
-      L(165, "many-to-many", "Table Relationships: Many-to-Many", {
-        contentDir: "ch11/101-many-to-many",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788940997/ltv-t-sql/ch11-101-many-to-many.mp4",
-        durationLabel: "1 min 48 s",
-      }),
-      L(166, "first-normal-form", "Normalization: 1NF", {
-        contentDir: "ch11/102-first-normal-form",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941129/ltv-t-sql/ch11-102-first-normal-form.mp4",
-        durationLabel: "1 min 43 s",
-      }),
-      L(167, "second-third-normal-form", "Normalization: 2NF and 3NF", {
-        contentDir: "ch11/103-second-third-normal-form",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941284/ltv-t-sql/ch11-103-second-third-normal-form.mp4",
-        durationLabel: "2 min 2 s",
-      }),
-      L(168, "system-databases", "System Databases (master, msdb, tempdb, model)", {
-        contentDir: "ch11/104-system-databases",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955153/ltv-t-sql/ch11-104-system-databases.mp4",
-        durationLabel: "1 min 58 s",
-      }),
-      L(169, "local-vs-global-temp-tables", "Local vs. Global Temp Tables", {
-        contentDir: "ch11/105-local-vs-global-temp-tables",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788941592/ltv-t-sql/ch11-105-local-vs-global-temp-tables.mp4",
-        durationLabel: "1 min 52 s",
-      }),
-      L(170, "sql-server-profiler", "SQL Server Profiler", {
-        contentDir: "ch11/106-sql-server-profiler",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955182/ltv-t-sql/ch11-106-sql-server-profiler.mp4",
-        durationLabel: "1 min 46 s",
-      }),
+      L(159, "primary-keys", "Primary Keys", { contentDir: "ch11/95-primary-keys", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/primary-keys.mp4", durationLabel: "1 min 47 s" }),
+      L(160, "foreign-keys", "Foreign Keys", { contentDir: "ch11/96-foreign-keys", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/foreign-keys.mp4", durationLabel: "1 min 41 s" }),
+      L(161, "unique-constraints", "UNIQUE Constraints", { contentDir: "ch11/97-unique-constraints", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/unique-constraints.mp4", durationLabel: "1 min 37 s" }),
+      L(162, "not-null-check", "NOT NULL and CHECK Constraints", { contentDir: "ch11/98-not-null-check", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/not-null-check.mp4", durationLabel: "1 min 30 s" }),
+      L(163, "one-to-one", "Table Relationships: One-to-One", { contentDir: "ch11/99-one-to-one", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/one-to-one.mp4", durationLabel: "1 min 29 s" }),
+      L(164, "one-to-many", "Table Relationships: One-to-Many", { contentDir: "ch11/100-one-to-many", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/one-to-many.mp4", durationLabel: "1 min 17 s" }),
+      L(165, "many-to-many", "Table Relationships: Many-to-Many", { contentDir: "ch11/101-many-to-many", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/many-to-many.mp4", durationLabel: "1 min 24 s" }),
+      L(166, "first-normal-form", "Normalization: 1NF", { contentDir: "ch11/102-first-normal-form", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/first-normal-form.mp4", durationLabel: "1 min 20 s" }),
+      L(167, "second-third-normal-form", "Normalization: 2NF and 3NF", { contentDir: "ch11/103-second-third-normal-form", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/second-third-normal-form.mp4", durationLabel: "1 min 36 s" }),
+      L(168, "system-databases", "System Databases (master, msdb, tempdb, model)", { contentDir: "ch11/104-system-databases", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/system-databases.mp4", durationLabel: "1 min 31 s" }),
+      L(169, "local-vs-global-temp-tables", "Local vs. Global Temp Tables", { contentDir: "ch11/105-local-vs-global-temp-tables", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/local-vs-global-temp-tables.mp4", durationLabel: "1 min 31 s" }),
+      L(170, "sql-server-profiler", "SQL Server Profiler", { contentDir: "ch11/106-sql-server-profiler", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/sql-server-profiler.mp4", durationLabel: "1 min 31 s" }),
     ],
   },
   {
     n: 13,
     title: "Data Warehouse Concepts",
     lessons: [
-      L(171, "oltp-vs-olap", "OLTP vs. OLAP: Two Different Worlds", {
-        contentDir: "ch12/107-oltp-vs-olap",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788952767/ltv-t-sql/ch12-107-oltp-vs-olap.mp4",
-        durationLabel: "2 min 9 s",
-      }),
-      L(172, "what-is-a-data-warehouse", "What Is a Data Warehouse?", {
-        contentDir: "ch12/108-what-is-a-data-warehouse",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955213/ltv-t-sql/ch12-108-what-is-a-data-warehouse.mp4",
-        durationLabel: "1 min 48 s",
-      }),
-      L(173, "what-is-a-data-mart", "What Is a Data Mart?", {
-        contentDir: "ch12/109-what-is-a-data-mart",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955240/ltv-t-sql/ch12-109-what-is-a-data-mart.mp4",
-        durationLabel: "1 min 37 s",
-      }),
-      L(174, "what-is-a-data-lake", "What Is a Data Lake?", {
-        contentDir: "ch12/110-what-is-a-data-lake",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788942370/ltv-t-sql/ch12-110-what-is-a-data-lake.mp4",
-        durationLabel: "1 min 33 s",
-      }),
-      L(175, "warehouse-vs-lake-vs-mart", "Data Warehouse vs. Data Lake vs. Data Mart", {
-        contentDir: "ch12/111-warehouse-vs-lake-vs-mart",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955270/ltv-t-sql/ch12-111-warehouse-vs-lake-vs-mart.mp4",
-        durationLabel: "1 min 42 s",
-      }),
-      L(176, "etl-vs-elt", "ETL vs. ELT", {
-        contentDir: "ch12/112-etl-vs-elt",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955303/ltv-t-sql/ch12-112-etl-vs-elt.mp4",
-        durationLabel: "2 min 1 s",
-      }),
-      L(177, "fact-dimension-tables", "Fact Tables and Dimension Tables", {
-        contentDir: "ch12/113-fact-dimension-tables",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955333/ltv-t-sql/ch12-113-fact-dimension-tables.mp4",
-        durationLabel: "1 min 48 s",
-      }),
-      L(178, "star-schema", "Star Schema", {
-        contentDir: "ch12/114-star-schema",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955362/ltv-t-sql/ch12-114-star-schema.mp4",
-        durationLabel: "1 min 42 s",
-      }),
-      L(179, "snowflake-schema", "Snowflake Schema", {
-        contentDir: "ch12/115-snowflake-schema",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955392/ltv-t-sql/ch12-115-snowflake-schema.mp4",
-        durationLabel: "1 min 47 s",
-      }),
-      L(180, "slowly-changing-dimensions", "Slowly Changing Dimensions (SCD)", {
-        contentDir: "ch12/116-slowly-changing-dimensions",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955424/ltv-t-sql/ch12-116-slowly-changing-dimensions.mp4",
-        durationLabel: "1 min 54 s",
-      }),
-      L(181, "surrogate-vs-natural-keys", "Surrogate Keys vs. Natural Keys", {
-        contentDir: "ch12/117-surrogate-vs-natural-keys",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955729/ltv-t-sql/ch12-117-surrogate-vs-natural-keys.mp4",
-        durationLabel: "1 min 54 s",
-      }),
-      L(182, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline", {
-        contentDir: "ch12/118-t-sql-in-the-bi-pipeline",
-        videoUrl:
-          "https://res.cloudinary.com/gmgfbpxh/video/upload/v1788955888/ltv-t-sql/ch12-118-t-sql-in-the-bi-pipeline.mp4",
-        durationLabel: "1 min 50 s",
-      }),
+      L(171, "oltp-vs-olap", "OLTP vs. OLAP: Two Different Worlds", { contentDir: "ch12/107-oltp-vs-olap", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/oltp-vs-olap.mp4", durationLabel: "1 min 40 s" }),
+      L(172, "what-is-a-data-warehouse", "What Is a Data Warehouse?", { contentDir: "ch12/108-what-is-a-data-warehouse", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-a-data-warehouse.mp4", durationLabel: "1 min 33 s" }),
+      L(173, "what-is-a-data-mart", "What Is a Data Mart?", { contentDir: "ch12/109-what-is-a-data-mart", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-a-data-mart.mp4", durationLabel: "1 min 21 s" }),
+      L(174, "what-is-a-data-lake", "What Is a Data Lake?", { contentDir: "ch12/110-what-is-a-data-lake", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/what-is-a-data-lake.mp4", durationLabel: "1 min 21 s" }),
+      L(175, "warehouse-vs-lake-vs-mart", "Data Warehouse vs. Data Lake vs. Data Mart", { contentDir: "ch12/111-warehouse-vs-lake-vs-mart", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/warehouse-vs-lake-vs-mart.mp4", durationLabel: "1 min 20 s" }),
+      L(176, "etl-vs-elt", "ETL vs. ELT", { contentDir: "ch12/112-etl-vs-elt", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/etl-vs-elt.mp4", durationLabel: "1 min 33 s" }),
+      L(177, "fact-dimension-tables", "Fact Tables and Dimension Tables", { contentDir: "ch12/113-fact-dimension-tables", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/fact-dimension-tables.mp4", durationLabel: "1 min 17 s" }),
+      L(178, "star-schema", "Star Schema", { contentDir: "ch12/114-star-schema", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/star-schema.mp4", durationLabel: "1 min 28 s" }),
+      L(179, "snowflake-schema", "Snowflake Schema", { contentDir: "ch12/115-snowflake-schema", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/snowflake-schema.mp4", durationLabel: "1 min 32 s" }),
+      L(180, "slowly-changing-dimensions", "Slowly Changing Dimensions (SCD)", { contentDir: "ch12/116-slowly-changing-dimensions", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/slowly-changing-dimensions.mp4", durationLabel: "1 min 35 s" }),
+      L(181, "surrogate-vs-natural-keys", "Surrogate Keys vs. Natural Keys", { contentDir: "ch12/117-surrogate-vs-natural-keys", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/surrogate-vs-natural-keys.mp4", durationLabel: "1 min 37 s" }),
+      L(182, "t-sql-in-the-bi-pipeline", "Where T-SQL Fits in the BI/Warehousing Pipeline", { contentDir: "ch12/118-t-sql-in-the-bi-pipeline", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-t-sql/t-sql-in-the-bi-pipeline.mp4", durationLabel: "1 min 32 s" }),
     ],
   },
 ];

@@ -13,7 +13,7 @@
 
 ## Second Normal Form (2NF)
 
-2NF applies to tables with a **composite** primary key (Lesson 95). It
+2NF applies to tables with a **composite** primary key (Lesson 159). It
 requires that every non-key column depend on the **entire** key — not just
 part of it. A column that only depends on part of a composite key is a
 *partial dependency*, and it's a 2NF violation.

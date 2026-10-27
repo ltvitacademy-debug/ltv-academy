@@ -12,7 +12,7 @@
 ## What is a variable?
 
 A **variable** is a named storage location that holds a single value for
-the duration of a batch (Lesson 63 covers batches properly) — a way to
+the duration of a batch (Lesson 85 covers batches properly) — a way to
 compute or capture something once and reuse it, instead of repeating an
 expression or hard-coding a value multiple times.
 
@@ -60,7 +60,7 @@ FROM Production.Product
 WHERE ListPrice > @AveragePrice;
 ```
 
-This is functionally similar to the scalar subquery from Lesson 52, but
+This is functionally similar to the scalar subquery from Lesson 74, but
 splits it into two steps: **capture** the value into a variable, **then**
 use that variable — useful when you need the same computed value multiple
 times in a longer script without recalculating it.

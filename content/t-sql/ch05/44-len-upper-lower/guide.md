@@ -33,7 +33,7 @@ SELECT LEN('Hello   ') AS Length; -- returns 5, not 8
 
 Leading spaces **do** count; trailing ones don't. This rarely matters with
 `VARCHAR` data (which doesn't naturally have trailing spaces), but it's a
-real trap if you're working with `CHAR` columns from Lesson 41 — remember,
+real trap if you're working with `CHAR` columns from Lesson 52 — remember,
 `CHAR` pads with trailing spaces, and `LEN()` will not count that padding.
 
 ## UPPER and LOWER — changing case

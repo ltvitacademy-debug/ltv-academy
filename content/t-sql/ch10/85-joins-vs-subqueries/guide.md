@@ -11,7 +11,7 @@
 
 ## Two equivalent queries
 
-Recall Lesson 54's correlated subquery — products priced above their own
+Recall Lesson 76's correlated subquery — products priced above their own
 category's average:
 
 ```sql
@@ -43,7 +43,7 @@ Both return **identical** results.
 
 ## Why the JOIN version usually wins
 
-The correlated subquery, per Lesson 54, re-evaluates its inner query
+The correlated subquery, per Lesson 76, re-evaluates its inner query
 **once for every row** of the outer query. The `JOIN` version computes
 each category's average **once**, in the CTE, and then joins that small,
 pre-computed result against the main table a single time. For a table
@@ -56,10 +56,10 @@ average calculations; the join version does `M` — a real difference once
 Not every subquery has a faster join equivalent — and readability matters
 too:
 
-- A **scalar** subquery (Lesson 52) computing one simple, table-wide
+- A **scalar** subquery (Lesson 74) computing one simple, table-wide
   value is often just as fast as any alternative, and clearer to read.
 - Some logic (particularly `EXISTS`/`NOT EXISTS`, covered fully in
-  Lesson 86) doesn't have a meaningfully faster join equivalent at all.
+  Lesson 141) doesn't have a meaningfully faster join equivalent at all.
 
 ## The optimizer sometimes rewrites it for you
 
@@ -68,14 +68,14 @@ as literally written — for simpler cases, it may internally transform a
 subquery into a join-like execution plan on its own. This doesn't mean
 the choice never matters (correlated subqueries are the case where it
 usually still does), but it does mean the honest answer to "which is
-faster" is sometimes "check the execution plan" (Lesson 90) rather than
+faster" is sometimes "check the execution plan" (Lesson 145) rather than
 assuming from syntax alone.
 
 ## Key terms
 
 | Term | Meaning |
 |---|---|
-| Correlated subquery cost | Re-evaluates once per outer row — Lesson 54's core cost |
+| Correlated subquery cost | Re-evaluates once per outer row — Lesson 76's core cost |
 | Query optimizer | The component that decides how a query actually executes, sometimes rewriting it internally |
 
 ## Lab

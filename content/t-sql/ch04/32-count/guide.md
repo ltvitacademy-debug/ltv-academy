@@ -40,7 +40,7 @@ FROM Production.Product;
 This is different from `COUNT(*)`: `COUNT(column)` only counts rows where
 **that specific column** is **not** `NULL`. If 200 products have no color
 recorded, `COUNT(Color)` will be 200 less than `COUNT(*)` on the same
-table. This ties directly back to Lesson 16 — `NULL` means "unknown," and
+table. This ties directly back to Lesson 24 — `NULL` means "unknown," and
 aggregate functions consistently skip it rather than treating it as a
 value to count.
 

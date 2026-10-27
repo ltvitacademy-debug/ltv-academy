@@ -45,7 +45,7 @@ This returns:
 
 ## Finding rows unmatched on either side
 
-Just like `LEFT JOIN` + `IS NULL` found one-sided gaps (Lesson 23),
+Just like `LEFT JOIN` + `IS NULL` found one-sided gaps (Lesson 31),
 `FULL OUTER JOIN` + `IS NULL` on **both** join columns finds every gap,
 from either direction, in a single query:
 

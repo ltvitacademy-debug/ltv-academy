@@ -36,7 +36,7 @@ individual product rows entirely.
 
 ## PARTITION BY — you've already seen this
 
-Lesson 51 previewed `PARTITION BY` to solve the duplicate-rows problem —
+Lesson 62 previewed `PARTITION BY` to solve the duplicate-rows problem —
 now it's time to understand it properly. `PARTITION BY` divides the rows
 into groups (**partitions**), the same way `GROUP BY` does, but purely
 for the purpose of the window function's calculation — the row-level

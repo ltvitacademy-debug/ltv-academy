@@ -12,8 +12,8 @@
 
 ## What Profiler does differently
 
-Every performance tool from Chapter 10 — the execution plan (Lesson 90),
-`STATISTICS TIME`/`IO` (Lesson 91) — analyzes **one query you already
+Every performance tool from Chapter 10 — the execution plan (Lesson 145),
+`STATISTICS TIME`/`IO` (Lesson 146) — analyzes **one query you already
 picked**, one at a time. **SQL Server Profiler** does the opposite: it
 watches the **entire server**, capturing every query from every session,
 in real time, as a **trace** — useful for exactly the situation those other
@@ -30,7 +30,7 @@ login connecting — with columns like:
 | TextData | The actual T-SQL statement that ran |
 | Duration | How long it took, in milliseconds |
 | CPU | Processor time consumed |
-| Reads / Writes | Logical reads and writes — the same concept as Lesson 91 |
+| Reads / Writes | Logical reads and writes — the same concept as Lesson 146 |
 | LoginName | Who ran it |
 | DatabaseName | Which database it ran against |
 
@@ -41,7 +41,7 @@ wrapped in `SET STATISTICS` yourself.
 ## Why it's deprecated
 
 Microsoft has officially deprecated SQL Server Profiler and the underlying
-SQL Trace feature — the same fate as Lesson 92's `SET STATISTICS PROFILE`.
+SQL Trace feature — the same fate as Lesson 147's `SET STATISTICS PROFILE`.
 The modern replacement is **Extended Events**, a lighter-weight tracing
 engine with far less server overhead, accessible in SSMS through the
 **XEvent Profiler** (right-click a server in Object Explorer → *Start PAG

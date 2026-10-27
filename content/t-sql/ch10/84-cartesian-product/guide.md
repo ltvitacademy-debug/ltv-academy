@@ -4,14 +4,14 @@
 
 ## What you'll learn
 
-- A deeper look at the Cartesian product, beyond Lesson 26's introduction
+- A deeper look at the Cartesian product, beyond Lesson 34's introduction
 - Exactly how it happens by accident in real, otherwise-reasonable code
 - Measuring the real cost with row-count math
 - How to catch one before it reaches production
 
 ## A quick recap
 
-Lesson 26 introduced `CROSS JOIN` and the Cartesian product: every row of
+Lesson 34 introduced `CROSS JOIN` and the Cartesian product: every row of
 one table paired with every row of another, with row counts
 **multiplying**, not adding. This lesson goes deeper — specifically into
 how a Cartesian product sneaks into **real** queries that were never

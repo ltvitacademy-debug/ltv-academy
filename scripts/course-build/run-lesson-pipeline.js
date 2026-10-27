@@ -63,15 +63,36 @@ const durationLabel = mins > 0 ? `${mins} min ${secs} s` : `${secs} s`;
 
 let outline = fs.readFileSync(outlineFile, "utf8");
 console.log("DEBUG about to test regex for n=" + n + " slug=" + slug);
-const lineRe = new RegExp(`(L\\(${n}, "${slug}", "[^"]*", \\{ contentDir: "[^"]+")( \\})(\\),)`);
-const testResult = lineRe.test(outline);
-console.log("DEBUG testResult=" + testResult);
-if (!testResult) {
-  console.error("Could not find outline line to patch for n=" + n + " slug=" + slug);
-  process.exit(1);
+
+// Two known entry shapes in this outline:
+//  (a) single-line, newly-inserted lessons: L(n, "slug", "title", { contentDir: "..." }),
+//  (b) multi-line legacy lessons that already carry videoUrl/durationLabel:
+//      L(n, "slug", "title", {\n  contentDir: "...",\n  videoUrl: "...",\n  durationLabel: "...",\n}),
+// Both shapes only ever contain contentDir/videoUrl/durationLabel and no nested braces,
+// so a non-greedy dotall match from the opening "{" to the next "}" is safe for either.
+const singleLineRe = new RegExp(`(L\\(${n}, "${slug}", "[^"]*", \\{ contentDir: "[^"]+")( \\})(\\),)`);
+const anyShapeRe = new RegExp(`(L\\(${n}, "${slug}", "[^"]*", \\{)([\\s\\S]*?)(\\}\\),)`);
+
+let testResult = singleLineRe.test(outline);
+console.log("DEBUG singleLine testResult=" + testResult);
+if (testResult) {
+  outline = outline.replace(singleLineRe, `$1, videoUrl: "${secureUrl}", durationLabel: "${durationLabel}" }$3`);
+} else {
+  const anyMatch = anyShapeRe.exec(outline);
+  console.log("DEBUG anyShape testResult=" + !!anyMatch);
+  if (!anyMatch) {
+    console.error("Could not find outline line to patch for n=" + n + " slug=" + slug);
+    process.exit(1);
+  }
+  const contentDirMatch = anyMatch[2].match(/contentDir:\s*"([^"]+)"/);
+  if (!contentDirMatch) {
+    console.error("Found entry but could not extract contentDir for n=" + n + " slug=" + slug);
+    process.exit(1);
+  }
+  const rebuiltBody = ` contentDir: "${contentDirMatch[1]}", videoUrl: "${secureUrl}", durationLabel: "${durationLabel}" `;
+  outline = outline.replace(anyShapeRe, `$1${rebuiltBody}$3`);
 }
 console.log("DEBUG about to replace+write");
-outline = outline.replace(lineRe, `$1, videoUrl: "${secureUrl}", durationLabel: "${durationLabel}" }$3`);
 fs.writeFileSync(outlineFile, outline);
 console.log(`PATCHED outline: n=${n} slug=${slug} videoUrl=${secureUrl} durationLabel=${durationLabel}`);
 console.log("DEBUG write complete, about to exit normally");

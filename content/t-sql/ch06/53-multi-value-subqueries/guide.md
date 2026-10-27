@@ -11,7 +11,7 @@
 
 ## The problem: a hard-coded list goes stale
 
-Recall `IN` from Lesson 15 — a hard-coded list of values:
+Recall `IN` from Lesson 23 — a hard-coded list of values:
 
 ```sql
 SELECT Name FROM Production.Product WHERE ProductSubcategoryID IN (1, 2, 3);
@@ -44,7 +44,7 @@ maintain.
 
 Read `IN (subquery)` as plain English: "where `ProductSubcategoryID` is
 **in** the set of values this inner query returns." Unlike the scalar
-subquery from Lesson 52, this one can return **any number of rows** — `IN`
+subquery from Lesson 74, this one can return **any number of rows** — `IN`
 is built to handle a list.
 
 ## NOT IN and its NULL trap
@@ -62,9 +62,9 @@ WHERE ProductSubcategoryID NOT IN (
 );
 ```
 
-This traces back to Lesson 16: `NULL` means unknown, and "is this value
+This traces back to Lesson 24: `NULL` means unknown, and "is this value
 NOT equal to unknown?" can never be resolved to `TRUE`. The safe fix
-(preview of Lesson 55) is `NOT EXISTS` instead of `NOT IN` whenever `NULL`
+(preview of Lesson 77) is `NOT EXISTS` instead of `NOT IN` whenever `NULL`
 is a possibility.
 
 ## Key terms

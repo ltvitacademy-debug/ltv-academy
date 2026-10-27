@@ -8,7 +8,7 @@
 - How to define one inline, and how to add one after the fact
 - **Composite** primary keys — when one column isn't enough to be unique
 - Why creating a primary key usually creates a clustered index too
-  (tying back to Lesson 88)
+  (tying back to Lesson 143)
 
 ## What a primary key guarantees
 
@@ -71,11 +71,11 @@ ADD CONSTRAINT PK_OrderLine PRIMARY KEY (OrderID, LineNumber);
 Neither `OrderID` nor `LineNumber` alone is unique across the whole table —
 order 1001 has a line 1, and so does order 1002 — but the *pair* always is.
 
-## The hidden connection to Lesson 88
+## The hidden connection to Lesson 143
 
 When you create a primary key without saying otherwise, SQL Server builds
 it as a **clustered** index by default — the same clustered index concept
-from Lesson 88, physically sorting the table's rows by that key. That's why
+from Lesson 143, physically sorting the table's rows by that key. That's why
 a good primary key should also be narrow, unique, and ever-increasing: it's
 not just an identity guarantee, it's your table's physical sort order too.
 

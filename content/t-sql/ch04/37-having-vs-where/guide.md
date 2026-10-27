@@ -22,7 +22,7 @@ WHERE AVG(ListPrice) > 500
 GROUP BY Color;
 ```
 
-This fails. Recall from Lesson 11 that `WHERE` is evaluated **before**
+This fails. Recall from Lesson 19 that `WHERE` is evaluated **before**
 `GROUP BY` even runs — at that point, groups (and their averages) don't
 exist yet. `WHERE` filters individual **rows**, not the aggregated result
 of a group.

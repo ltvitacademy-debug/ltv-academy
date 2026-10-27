@@ -7,7 +7,7 @@
 - What a **natural key** is, versus a **surrogate key**
 - The real pair of columns already sitting in `AdventureWorksDW2014`'s
   `DimProduct` that shows both at once
-- Why Lesson 116's Type 2 slowly changing dimension **requires** a
+- Why Lesson 180's Type 2 slowly changing dimension **requires** a
   surrogate key to work at all
 
 ## Two different kinds of "identifier"
@@ -37,7 +37,7 @@ FROM dbo.DimProduct;
 
 ## Why Type 2 SCDs need a surrogate key to work at all
 
-Recall Lesson 116: a Type 2 change inserts a *new row with a new key* while
+Recall Lesson 180: a Type 2 change inserts a *new row with a new key* while
 keeping the old row around with an `EndDate`. If `DimProduct` used the
 natural key (`ProductAlternateKey`) as its primary key, that would be
 **impossible** — a primary key can't repeat, so you could never have two

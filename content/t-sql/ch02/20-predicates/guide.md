@@ -12,7 +12,7 @@
 ## What is a predicate?
 
 A **predicate** is any expression that evaluates to `TRUE`, `FALSE`, or
-`UNKNOWN` (the special case `NULL` comparisons produce, from Lesson 16).
+`UNKNOWN` (the special case `NULL` comparisons produce, from Lesson 24).
 In plain terms: **a predicate is how you filter data.** Every condition
 you've written in a `WHERE` clause this entire chapter has been a
 predicate.
