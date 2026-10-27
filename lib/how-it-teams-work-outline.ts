@@ -26,47 +26,19 @@ export const HOW_IT_TEAMS_WORK_CHAPTERS: ChapterMeta[] = [
     n: 1,
     title: "How Work Gets Done",
     lessons: [
-      L(1, "agile-vs-waterfall", "Agile vs. Waterfall", {
-        contentDir: "ch01/01-agile-vs-waterfall",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139388/ltv-how-it-teams-work/agile-vs-waterfall.mp4",
-        durationLabel: "2 min 21 s",
-      }),
-      L(2, "scrum-sprints-and-user-stories", "Scrum, Sprints & User Stories", {
-        contentDir: "ch01/02-scrum-sprints-and-user-stories",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139482/ltv-how-it-teams-work/scrum-sprints-and-user-stories.mp4",
-        durationLabel: "2 min 19 s",
-      }),
-      L(3, "kanban-boards-and-work-management", "Kanban Boards & Work Management", {
-        contentDir: "ch01/03-kanban-boards-and-work-management",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139569/ltv-how-it-teams-work/kanban-boards-and-work-management.mp4",
-        durationLabel: "2 min 31 s",
-      }),
-      L(4, "sdlc-dev-qa-uat-and-production", "SDLC: Dev, QA, UAT & Production", {
-        contentDir: "ch01/04-sdlc-dev-qa-uat-and-production",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139653/ltv-how-it-teams-work/sdlc-dev-qa-uat-and-production.mp4",
-        durationLabel: "2 min 12 s",
-      }),
-      L(5, "version-control-with-git", "Version Control with Git", {
-        contentDir: "ch01/05-version-control-with-git",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139736/ltv-how-it-teams-work/version-control-with-git.mp4",
-        durationLabel: "2 min 14 s",
-      }),
-      L(6, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", {
-        contentDir: "ch01/06-releases-deployments-and-cicd",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139831/ltv-how-it-teams-work/releases-deployments-and-cicd.mp4",
-        durationLabel: "2 min 31 s",
-      }),
+      L(1, "agile-vs-waterfall", "Agile vs. Waterfall", { contentDir: "ch01/01-agile-vs-waterfall", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/agile-vs-waterfall.mp4", durationLabel: "1 min 48 s" }),
+      L(2, "scrum-sprints-and-user-stories", "Scrum, Sprints & User Stories", { contentDir: "ch01/02-scrum-sprints-and-user-stories", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/scrum-sprints-and-user-stories.mp4", durationLabel: "1 min 49 s" }),
+      L(3, "kanban-boards-and-work-management", "Kanban Boards & Work Management", { contentDir: "ch01/03-kanban-boards-and-work-management", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/kanban-boards-and-work-management.mp4", durationLabel: "1 min 59 s" }),
+      L(4, "sdlc-dev-qa-uat-and-production", "SDLC: Dev, QA, UAT & Production", { contentDir: "ch01/04-sdlc-dev-qa-uat-and-production", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/sdlc-dev-qa-uat-and-production.mp4", durationLabel: "1 min 40 s" }),
+      L(5, "version-control-with-git", "Version Control with Git", { contentDir: "ch01/05-version-control-with-git", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/version-control-with-git.mp4", durationLabel: "1 min 52 s" }),
+      L(6, "releases-deployments-and-cicd", "Releases, Deployments & CI/CD", { contentDir: "ch01/06-releases-deployments-and-cicd", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/releases-deployments-and-cicd.mp4", durationLabel: "2 min 3 s" }),
     ],
   },
   {
     n: 2,
     title: "Capstone",
     lessons: [
-      L(7, "real-world-it-project-simulation", "Real-World IT Project Simulation", {
-        contentDir: "ch02/07-real-world-it-project-simulation",
-        videoUrl: "https://res.cloudinary.com/gmgfbpxh/video/upload/v1792139918/ltv-how-it-teams-work/real-world-it-project-simulation.mp4",
-        durationLabel: "2 min 15 s",
-      }),
+      L(7, "real-world-it-project-simulation", "Real-World IT Project Simulation", { contentDir: "ch02/07-real-world-it-project-simulation", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-how-it-teams-work/real-world-it-project-simulation.mp4", durationLabel: "1 min 45 s" }),
     ],
   },
 ];
