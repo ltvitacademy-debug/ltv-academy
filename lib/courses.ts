@@ -5,6 +5,8 @@ import { NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS } from "./networking-linux
 import { IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS } from "./it-networking-cybersecurity-fundamentals-outline";
 import { WINDOWS_LINUX_SECURITY_ADMINISTRATION_CHAPTERS } from "./windows-linux-security-administration-outline";
 import { MICROSOFT_AZURE_ADMINISTRATION_CHAPTERS } from "./microsoft-azure-administration-outline";
+import { NETWORK_SECURITY_THREAT_DETECTION_CHAPTERS } from "./network-security-threat-detection-outline";
+import { AWS_CLOUD_INFRASTRUCTURE_ADMINISTRATION_CHAPTERS } from "./aws-cloud-infrastructure-administration-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2420,7 +2422,8 @@ export const COURSES: CourseMeta[] = [
     slug: "network-security-threat-detection",
     title: "Network Security, Endpoint Protection & Threat Detection",
     tagline: "Firewalls, network segmentation, endpoint protection, intrusion detection, and the attack patterns a SOC is built to catch.",
-    status: "coming-soon",
+    status: "available",
+    chapters: NETWORK_SECURITY_THREAT_DETECTION_CHAPTERS,
   },
   {
     slug: "soc-operations-siem-fundamentals",
@@ -2508,7 +2511,8 @@ export const COURSES: CourseMeta[] = [
     slug: "aws-cloud-infrastructure-administration",
     title: "AWS Cloud Infrastructure & Administration",
     tagline: "Core AWS administration — compute, networking, storage, and identity across the AWS console and CLI.",
-    status: "coming-soon",
+    status: "available",
+    chapters: AWS_CLOUD_INFRASTRUCTURE_ADMINISTRATION_CHAPTERS,
   },
   {
     slug: "identity-networking-cloud-security",
