@@ -35,10 +35,10 @@ export const IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = 
     n: 2,
     title: "Networking Fundamentals II: IP Addressing & Routing",
     lessons: [
-      L(5, "ipv4-addressing-and-subnetting", "IPv4 Addressing and Subnetting", { contentDir: "ch02/05-ipv4-addressing-and-subnetting" }),
-      L(6, "ipv6-addressing-fundamentals", "IPv6 Addressing Fundamentals", { contentDir: "ch02/06-ipv6-addressing-fundamentals" }),
-      L(7, "routing-basics-how-packets-find-their-way", "Routing Basics: How Packets Find Their Way", { contentDir: "ch02/07-routing-basics-how-packets-find-their-way" }),
-      L(8, "nat-dhcp-and-dns-in-practice", "NAT, DHCP, and DNS in Practice", { contentDir: "ch02/08-nat-dhcp-and-dns-in-practice" }),
+      L(5, "ipv4-addressing-and-subnetting", "IPv4 Addressing and Subnetting", { contentDir: "ch02/05-ipv4-addressing-and-subnetting", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-it-networking-cybersecurity-fundamentals/ipv4-addressing-and-subnetting.mp4", durationLabel: "1 min 55 s" }),
+      L(6, "ipv6-addressing-fundamentals", "IPv6 Addressing Fundamentals", { contentDir: "ch02/06-ipv6-addressing-fundamentals", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-it-networking-cybersecurity-fundamentals/ipv6-addressing-fundamentals.mp4", durationLabel: "1 min 48 s" }),
+      L(7, "routing-basics-how-packets-find-their-way", "Routing Basics: How Packets Find Their Way", { contentDir: "ch02/07-routing-basics-how-packets-find-their-way", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-it-networking-cybersecurity-fundamentals/routing-basics-how-packets-find-their-way.mp4", durationLabel: "1 min 41 s" }),
+      L(8, "nat-dhcp-and-dns-in-practice", "NAT, DHCP, and DNS in Practice", { contentDir: "ch02/08-nat-dhcp-and-dns-in-practice", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-it-networking-cybersecurity-fundamentals/nat-dhcp-and-dns-in-practice.mp4", durationLabel: "1 min 45 s" }),
     ],
   },
   {
