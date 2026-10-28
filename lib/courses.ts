@@ -9,6 +9,7 @@ import { NETWORK_SECURITY_THREAT_DETECTION_CHAPTERS } from "./network-security-t
 import { AWS_CLOUD_INFRASTRUCTURE_ADMINISTRATION_CHAPTERS } from "./aws-cloud-infrastructure-administration-outline";
 import { SOC_OPERATIONS_SIEM_FUNDAMENTALS_CHAPTERS } from "./soc-operations-siem-fundamentals-outline";
 import { IDENTITY_NETWORKING_CLOUD_SECURITY_CHAPTERS } from "./identity-networking-cloud-security-outline";
+import { MICROSOFT_SENTINEL_DEFENDER_XDR_CHAPTERS } from "./microsoft-sentinel-defender-xdr-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2438,7 +2439,8 @@ export const COURSES: CourseMeta[] = [
     slug: "microsoft-sentinel-defender-xdr",
     title: "Microsoft Sentinel, Defender XDR & KQL",
     tagline: "Real-world detection and response with Microsoft's cloud-native SIEM, extended detection tooling, and KQL queries.",
-    status: "coming-soon",
+    status: "available",
+    chapters: MICROSOFT_SENTINEL_DEFENDER_XDR_CHAPTERS,
   },
   {
     slug: "incident-response-soc-capstone",

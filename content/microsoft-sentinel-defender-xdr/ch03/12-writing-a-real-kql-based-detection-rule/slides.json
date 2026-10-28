@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Microsoft Sentinel, Defender XDR & KQL · Chapter 3",
+    "titlePlain": "Writing a Real ",
+    "titleEmphasis": "KQL-Based",
+    "titleSuffix": " Detection Rule",
+    "subtitle": "Lesson 12 · Analytics Rules & Detection Engineering"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step one — count the failures",
+    "code": "SigninLogs\n| where ResultType != \"0\"\n| summarize FailedCount = count()\n    by UserPrincipalName, bin(TimeGenerated, 10m)\n| where FailedCount > 5",
+    "caption": "A real, runnable query — but on its own, it only counts. It doesn't check what came after."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The gap this leaves open",
+    "titlePlain": "Count-only ",
+    "titleEmphasis": "isn't sequence-aware",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "5 fails, then success", "sub": "matches — looks like a brute-force guess" },
+      { "label": "1 fail, success, 4 fails", "sub": "also matches this query — but it's unrelated typos" },
+      { "label": "Missing piece", "sub": "whether a success actually followed the cluster" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step two — add the success-after check",
+    "code": "let Failures = SigninLogs\n  | where ResultType != \"0\"\n  | summarize FailedCount = count(),\n      LastFailure = max(TimeGenerated)\n      by UserPrincipalName, bin(TimeGenerated, 10m)\n  | where FailedCount > 5;\nlet Successes = SigninLogs\n  | where ResultType == \"0\"\n  | project SuccessTime = TimeGenerated,\n      UserPrincipalName, IPAddress;\nFailures\n| join kind=inner Successes on UserPrincipalName\n| where SuccessTime > LastFailure\n    and SuccessTime < LastFailure + 10m",
+    "caption": "The join plus the SuccessTime check is the \"after the failures\" rule, now enforced in KQL."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Where this query lands",
+    "titlePlain": "Every piece from this chapter, ",
+    "titleEmphasis": "one rule",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Schedule", "sub": "Run query every / Lookup data from the last — Lesson 9" },
+      { "label": "Threshold", "sub": "alert fires when the query returns a row" },
+      { "label": "Entity mapping", "sub": "UserPrincipalName -> Account, IPAddress -> IP — Lesson 11" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 4, Lesson 13",
+    "titlePlain": "What a Sentinel ",
+    "titleEmphasis": "Workbook",
+    "titleSuffix": " Actually Does",
+    "subtitle": "Turning this incident's data into something a team can actually watch."
+  }
+]
