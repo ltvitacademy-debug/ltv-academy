@@ -77,28 +77,28 @@ export const NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS: ChapterMeta[] = [
     n: 6,
     title: "Cloud Computing Fundamentals",
     lessons: [
-      L(23, "iaas-paas-and-saas-the-service-models", "IaaS, PaaS & SaaS: The Cloud Service Models", { contentDir: "ch06/23-iaas-paas-and-saas-the-service-models" }),
-      L(24, "the-shared-responsibility-model", "The Shared Responsibility Model", { contentDir: "ch06/24-the-shared-responsibility-model" }),
-      L(25, "public-private-and-hybrid-cloud", "Public, Private & Hybrid Cloud", { contentDir: "ch06/25-public-private-and-hybrid-cloud" }),
-      L(26, "regions-availability-zones-and-why-they-matter", "Regions, Availability Zones & Why They Matter", { contentDir: "ch06/26-regions-availability-zones-and-why-they-matter" }),
+      L(23, "iaas-paas-and-saas-the-service-models", "IaaS, PaaS & SaaS: The Cloud Service Models", { contentDir: "ch06/23-iaas-paas-and-saas-the-service-models", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/iaas-paas-and-saas-the-service-models.mp4", durationLabel: "2 min 36 s" }),
+      L(24, "the-shared-responsibility-model", "The Shared Responsibility Model", { contentDir: "ch06/24-the-shared-responsibility-model", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/the-shared-responsibility-model.mp4", durationLabel: "2 min 30 s" }),
+      L(25, "public-private-and-hybrid-cloud", "Public, Private & Hybrid Cloud", { contentDir: "ch06/25-public-private-and-hybrid-cloud", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/public-private-and-hybrid-cloud.mp4", durationLabel: "2 min 29 s" }),
+      L(26, "regions-availability-zones-and-why-they-matter", "Regions, Availability Zones & Why They Matter", { contentDir: "ch06/26-regions-availability-zones-and-why-they-matter", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/regions-availability-zones-and-why-they-matter.mp4", durationLabel: "2 min 20 s" }),
     ],
   },
   {
     n: 7,
     title: "Cloud Networking & Storage Concepts",
     lessons: [
-      L(27, "virtual-networks-vpcs-and-vnets", "Virtual Networks: VPCs and VNets", { contentDir: "ch07/27-virtual-networks-vpcs-and-vnets" }),
-      L(28, "subnets-routing-tables-and-security-groups-in-the-cloud", "Subnets, Routing Tables & Security Groups in the Cloud", { contentDir: "ch07/28-subnets-routing-tables-and-security-groups-in-the-cloud" }),
-      L(29, "load-balancing-fundamentals", "Load Balancing Fundamentals", { contentDir: "ch07/29-load-balancing-fundamentals" }),
-      L(30, "cloud-storage-types-object-block-and-file", "Cloud Storage Types: Object, Block & File", { contentDir: "ch07/30-cloud-storage-types-object-block-and-file" }),
+      L(27, "virtual-networks-vpcs-and-vnets", "Virtual Networks: VPCs and VNets", { contentDir: "ch07/27-virtual-networks-vpcs-and-vnets", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/virtual-networks-vpcs-and-vnets.mp4", durationLabel: "2 min 16 s" }),
+      L(28, "subnets-routing-tables-and-security-groups-in-the-cloud", "Subnets, Routing Tables & Security Groups in the Cloud", { contentDir: "ch07/28-subnets-routing-tables-and-security-groups-in-the-cloud", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/subnets-routing-tables-and-security-groups-in-the-cloud.mp4", durationLabel: "2 min 8 s" }),
+      L(29, "load-balancing-fundamentals", "Load Balancing Fundamentals", { contentDir: "ch07/29-load-balancing-fundamentals", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/load-balancing-fundamentals.mp4", durationLabel: "2 min 28 s" }),
+      L(30, "cloud-storage-types-object-block-and-file", "Cloud Storage Types: Object, Block & File", { contentDir: "ch07/30-cloud-storage-types-object-block-and-file", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/cloud-storage-types-object-block-and-file.mp4", durationLabel: "2 min 14 s" }),
     ],
   },
   {
     n: 8,
     title: "Bringing It Together",
     lessons: [
-      L(31, "lab-provisioning-and-networking-a-linux-vm-end-to-end", "Lab: Provisioning and Networking a Linux VM End to End", { contentDir: "ch08/31-lab-provisioning-and-networking-a-linux-vm-end-to-end" }),
-      L(32, "foundations-capstone-diagnosing-a-connectivity-problem", "Foundations Capstone: Diagnosing a Connectivity Problem", { contentDir: "ch08/32-foundations-capstone-diagnosing-a-connectivity-problem" }),
+      L(31, "lab-provisioning-and-networking-a-linux-vm-end-to-end", "Lab: Provisioning and Networking a Linux VM End to End", { contentDir: "ch08/31-lab-provisioning-and-networking-a-linux-vm-end-to-end", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/lab-provisioning-and-networking-a-linux-vm-end-to-end.mp4", durationLabel: "2 min 34 s" }),
+      L(32, "foundations-capstone-diagnosing-a-connectivity-problem", "Foundations Capstone: Diagnosing a Connectivity Problem", { contentDir: "ch08/32-foundations-capstone-diagnosing-a-connectivity-problem", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-networking-linux-cloud-fundamentals/foundations-capstone-diagnosing-a-connectivity-problem.mp4", durationLabel: "2 min 46 s" }),
     ],
   },
 ];
