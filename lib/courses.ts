@@ -4,6 +4,7 @@ import { marked } from "marked";
 import { NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS } from "./networking-linux-cloud-fundamentals-outline";
 import { IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS } from "./it-networking-cybersecurity-fundamentals-outline";
 import { WINDOWS_LINUX_SECURITY_ADMINISTRATION_CHAPTERS } from "./windows-linux-security-administration-outline";
+import { MICROSOFT_AZURE_ADMINISTRATION_CHAPTERS } from "./microsoft-azure-administration-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2500,7 +2501,8 @@ export const COURSES: CourseMeta[] = [
     slug: "microsoft-azure-administration",
     title: "Microsoft Azure Administration, Compute & Storage",
     tagline: "Core Azure administration — compute, storage, networking, and identity in the Azure portal and CLI.",
-    status: "coming-soon",
+    status: "available",
+    chapters: MICROSOFT_AZURE_ADMINISTRATION_CHAPTERS,
   },
   {
     slug: "aws-cloud-infrastructure-administration",

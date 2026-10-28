@@ -1,0 +1,50 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Microsoft Azure Administration, Compute & Storage · Chapter 8",
+    "titlePlain": "Troubleshooting a ",
+    "titleEmphasis": "Cost Spike",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Capstone: Deploying and Administering an Azure Environment"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The alert says how much, not what",
+    "code": "az consumption budget list --resource-group briarcliff-rg -o table\n\naz costmanagement query --type ActualCost --timeframe MonthToDate \\\n  --dataset-aggregation '{\"totalCost\":{\"name\":\"PreTaxCost\",\"function\":\"Sum\"}}' \\\n  --dataset-grouping name=ResourceId type=Dimension \\\n  --scope \"subscriptions/<sub-id>/resourceGroups/briarcliff-rg\"",
+    "caption": "Cost by resource ranks every resource by actual spend — one line sits far above the rest."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Diagnosing loadtest-vm1",
+    "code": "az vm show --resource-group briarcliff-rg --name loadtest-vm1 \\\n  --query \"{size:hardwareProfile.vmSize, state:instanceView.statuses[1].displayStatus}\" \\\n  -d -o table\n# Standard_D4s_v3, PowerState/running\n\naz disk list --resource-group briarcliff-rg \\\n  --query \"[?name=='loadtest-vm1_OsDisk']\" -o table\n# Premium_LRS",
+    "caption": "A 4-vCPU VM, still running two weeks after a load test, on a premium SSD."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix",
+    "code": "az vm deallocate --resource-group briarcliff-rg --name loadtest-vm1\naz vm resize --resource-group briarcliff-rg --name loadtest-vm1 \\\n  --size Standard_B2s\naz disk update --resource-group briarcliff-rg \\\n  --name loadtest-vm1_OsDisk --sku StandardSSD_LRS",
+    "caption": "Deallocate to stop compute billing now, then resize the VM and disk to match reality."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The sequence that found it",
+    "titlePlain": "Narrow, don't ",
+    "titleEmphasis": "guess",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Budget alert", "sub": "80% of $150, day 19" },
+      { "label": "Cost by resource", "sub": "loadtest-vm1 far above the rest" },
+      { "label": "az vm show", "sub": "D4s_v3, running 2 weeks unattended" },
+      { "label": "az disk list", "sub": "Premium_LRS on a dev/test box" },
+      { "label": "Fix", "sub": "deallocate, resize, re-tier disk" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "Azure Administration ",
+    "titleEmphasis": "Review",
+    "titleSuffix": "",
+    "subtitle": "Tying governance, compute, networking, and monitoring back together."
+  }
+]
