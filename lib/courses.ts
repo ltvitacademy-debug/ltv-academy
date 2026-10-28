@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { marked } from "marked";
+import { NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS } from "./networking-linux-cloud-fundamentals-outline";
+import { IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS } from "./it-networking-cybersecurity-fundamentals-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2402,7 +2404,8 @@ export const COURSES: CourseMeta[] = [
     slug: "it-networking-cybersecurity-fundamentals",
     title: "IT, Networking & Cybersecurity Fundamentals",
     tagline: "Networking and IT fundamentals through a security lens — the foundation every SOC analyst starts from.",
-    status: "coming-soon",
+    status: "available",
+    chapters: IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS,
   },
   {
     slug: "windows-linux-security-administration",
@@ -2488,7 +2491,8 @@ export const COURSES: CourseMeta[] = [
     slug: "networking-linux-cloud-fundamentals",
     title: "Networking, Linux, Virtualization & Cloud Fundamentals",
     tagline: "Networking, Linux, and virtualization fundamentals as the foundation for cloud infrastructure work.",
-    status: "coming-soon",
+    status: "available",
+    chapters: NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS,
   },
   {
     slug: "microsoft-azure-administration",
