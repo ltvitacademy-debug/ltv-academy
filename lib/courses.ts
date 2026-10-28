@@ -7,6 +7,8 @@ import { WINDOWS_LINUX_SECURITY_ADMINISTRATION_CHAPTERS } from "./windows-linux-
 import { MICROSOFT_AZURE_ADMINISTRATION_CHAPTERS } from "./microsoft-azure-administration-outline";
 import { NETWORK_SECURITY_THREAT_DETECTION_CHAPTERS } from "./network-security-threat-detection-outline";
 import { AWS_CLOUD_INFRASTRUCTURE_ADMINISTRATION_CHAPTERS } from "./aws-cloud-infrastructure-administration-outline";
+import { SOC_OPERATIONS_SIEM_FUNDAMENTALS_CHAPTERS } from "./soc-operations-siem-fundamentals-outline";
+import { IDENTITY_NETWORKING_CLOUD_SECURITY_CHAPTERS } from "./identity-networking-cloud-security-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2429,7 +2431,8 @@ export const COURSES: CourseMeta[] = [
     slug: "soc-operations-siem-fundamentals",
     title: "SOC Operations, SIEM & Log Analysis",
     tagline: "How a security operations center actually runs — SIEM platforms, log analysis, alert triage, and analyst workflow.",
-    status: "coming-soon",
+    status: "available",
+    chapters: SOC_OPERATIONS_SIEM_FUNDAMENTALS_CHAPTERS,
   },
   {
     slug: "microsoft-sentinel-defender-xdr",
@@ -2518,7 +2521,8 @@ export const COURSES: CourseMeta[] = [
     slug: "identity-networking-cloud-security",
     title: "Cloud Networking, Identity & Security",
     tagline: "Cloud networking, identity management, and security fundamentals across cloud environments.",
-    status: "coming-soon",
+    status: "available",
+    chapters: IDENTITY_NETWORKING_CLOUD_SECURITY_CHAPTERS,
   },
   {
     slug: "python-powershell-infrastructure-automation",
