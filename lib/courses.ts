@@ -3,6 +3,7 @@ import path from "path";
 import { marked } from "marked";
 import { NETWORKING_LINUX_CLOUD_FUNDAMENTALS_CHAPTERS } from "./networking-linux-cloud-fundamentals-outline";
 import { IT_NETWORKING_CYBERSECURITY_FUNDAMENTALS_CHAPTERS } from "./it-networking-cybersecurity-fundamentals-outline";
+import { WINDOWS_LINUX_SECURITY_ADMINISTRATION_CHAPTERS } from "./windows-linux-security-administration-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2411,7 +2412,8 @@ export const COURSES: CourseMeta[] = [
     slug: "windows-linux-security-administration",
     title: "Windows, Linux & Security Administration",
     tagline: "Hardening, user/permission management, and security administration across both major operating systems.",
-    status: "coming-soon",
+    status: "available",
+    chapters: WINDOWS_LINUX_SECURITY_ADMINISTRATION_CHAPTERS,
   },
   {
     slug: "network-security-threat-detection",
