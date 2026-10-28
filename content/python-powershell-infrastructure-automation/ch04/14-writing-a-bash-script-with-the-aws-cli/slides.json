@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell, Python, Azure CLI & Infrastructure Automation · Chapter 4",
+    "titlePlain": "A Bash Script with the ",
+    "titleEmphasis": "AWS CLI",
+    "titleSuffix": "",
+    "subtitle": "Lesson 14 · Multi-Cloud CLI Scripting"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Listing every EC2 instance",
+    "code": "INSTANCE_IDS=$(aws ec2 describe-instances \\\n  --query \"Reservations[].Instances[].InstanceId\" \\\n  --output text)",
+    "caption": "AWS nests instances inside reservations — one more [] than az's flatter resource group list."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same bash, new CLI",
+    "titlePlain": "Nothing New ",
+    "titleEmphasis": "About bash",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "$(...)", "sub": "still captures aws output as a value" },
+      { "label": "Reservations[].Instances[]", "sub": "AWS's nesting, same JMESPath language" },
+      { "label": "--output text", "sub": "AWS's -o tsv equivalent — plain lines" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "State and owner tag, per instance",
+    "code": "STATE=$(aws ec2 describe-instances --instance-ids \"$ID\" \\\n  --query \"Reservations[0].Instances[0].State.Name\" --output text)\n\nOWNER=$(aws ec2 describe-instances --instance-ids \"$ID\" \\\n  --query \"Reservations[0].Instances[0].Tags[?Key=='Owner'].Value | [0]\" \\\n  --output text)\n\nif [ \"$OWNER\" == \"None\" ]; then\n  echo \"MISSING TAG: $ID is $STATE with no Owner tag\"\nelse\n  echo \"OK: $ID is $STATE, owned by $OWNER\"\nfi",
+    "caption": "A missing AWS text value prints the literal word None — the check has to match that string, not -z."
+  },
+  {
+    "type": "code",
+    "eyebrow": "check-ec2-owners.sh, start to finish",
+    "code": "#!/bin/bash\nINSTANCE_IDS=$(aws ec2 describe-instances \\\n  --query \"Reservations[].Instances[].InstanceId\" --output text)\n\nfor ID in $INSTANCE_IDS; do\n  STATE=$(aws ec2 describe-instances --instance-ids \"$ID\" \\\n    --query \"Reservations[0].Instances[0].State.Name\" --output text)\n  OWNER=$(aws ec2 describe-instances --instance-ids \"$ID\" \\\n    --query \"Reservations[0].Instances[0].Tags[?Key=='Owner'].Value | [0]\" \\\n    --output text)\n  if [ \"$OWNER\" == \"None\" ]; then\n    echo \"MISSING TAG: $ID is $STATE with no Owner tag\"\n  else\n    echo \"OK: $ID is $STATE, owned by $OWNER\"\n  fi\ndone",
+    "caption": "List, loop, check, report — the identical structure as Lesson 13's check-tags.sh, aimed at AWS."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 15",
+    "titlePlain": "Parsing JSON ",
+    "titleEmphasis": "with jq",
+    "titleSuffix": "",
+    "subtitle": "Why fragile text parsing isn't the only option for either CLI's output."
+  }
+]

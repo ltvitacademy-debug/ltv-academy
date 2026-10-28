@@ -10,6 +10,7 @@ import { AWS_CLOUD_INFRASTRUCTURE_ADMINISTRATION_CHAPTERS } from "./aws-cloud-in
 import { SOC_OPERATIONS_SIEM_FUNDAMENTALS_CHAPTERS } from "./soc-operations-siem-fundamentals-outline";
 import { IDENTITY_NETWORKING_CLOUD_SECURITY_CHAPTERS } from "./identity-networking-cloud-security-outline";
 import { MICROSOFT_SENTINEL_DEFENDER_XDR_CHAPTERS } from "./microsoft-sentinel-defender-xdr-outline";
+import { PYTHON_POWERSHELL_INFRASTRUCTURE_AUTOMATION_CHAPTERS } from "./python-powershell-infrastructure-automation-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2530,7 +2531,8 @@ export const COURSES: CourseMeta[] = [
     slug: "python-powershell-infrastructure-automation",
     title: "PowerShell, Python, Azure CLI & Infrastructure Automation",
     tagline: "Scripting real infrastructure automation with PowerShell, Python, and the Azure CLI across cloud platforms.",
-    status: "coming-soon",
+    status: "available",
+    chapters: PYTHON_POWERSHELL_INFRASTRUCTURE_AUTOMATION_CHAPTERS,
   },
   {
     slug: "cloud-infrastructure-deployment-capstone",

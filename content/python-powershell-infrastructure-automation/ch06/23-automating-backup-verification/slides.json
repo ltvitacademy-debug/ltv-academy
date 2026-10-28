@@ -1,0 +1,53 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "PowerShell, Python, Azure CLI & Infrastructure Automation · Chapter 6",
+    "titlePlain": "Automating Backup ",
+    "titleEmphasis": "Verification",
+    "titleSuffix": "",
+    "subtitle": "Lesson 23 · Automating Operational Tasks"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two different claims",
+    "titlePlain": "A Policy Existing vs. a Backup ",
+    "titleEmphasis": "Happening",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Policy configured", "sub": "looks correct in the portal, says \"back up nightly\"" },
+      { "label": "Job actually runs", "sub": "can fail silently — agent timeout, permission change" },
+      { "label": "Discovered too late", "sub": "a common real cause of data loss, found during a restore" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Checking the last 24 hours",
+    "code": "$vault = Get-AzRecoveryServicesVault -ResourceGroupName \"rg-backup\" -Name \"vault-prod\"\n\n$jobs = Get-AzRecoveryServicesBackupJob -VaultId $vault.ID `\n    -From (Get-Date).AddHours(-24) -To (Get-Date)",
+    "caption": "A rolling 24-hour window — always checks yesterday's activity, regardless of when it runs."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Flagging anything that didn't complete",
+    "code": "$failed = $jobs | Where-Object { $_.Status -ne \"Completed\" }\n\nif ($failed) {\n    Write-Output \"ALERT: $($failed.Count) job(s) did not complete:\"\n    $failed | Select-Object WorkloadName, Operation, Status\n}",
+    "caption": "-ne \"Completed\" catches cancelled or stuck jobs too, not just the obvious \"Failed\" status."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why it has to be a separate script",
+    "titlePlain": "Checked From the ",
+    "titleEmphasis": "Outside",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Same pipeline", "sub": "a failure that breaks the backup could break the check too" },
+      { "label": "Separate daily runbook", "sub": "catches a failure within 24 hours, not three weeks later" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 24",
+    "titlePlain": "Automating a Simple Incident ",
+    "titleEmphasis": "Response",
+    "titleSuffix": " Action",
+    "subtitle": "A well-understood, reversible action that's genuinely safe to automate."
+  }
+]
