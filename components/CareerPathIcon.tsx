@@ -84,6 +84,19 @@ const ICONS: Record<string, React.ReactNode> = {
       <path d="m9 12 2.2 2.2L15.5 9.5" />
     </>
   ),
+  "cybersecurity-analyst-security-engineer": (
+    <>
+      <path d="M12 3.5 5 6v5.5c0 4.3 2.9 7.5 7 9 4.1-1.5 7-4.7 7-9V6l-7-2.5Z" />
+      <circle cx="12" cy="10.6" r="1.6" />
+      <path d="M12 12.2v2.4" />
+    </>
+  ),
+  "cloud-engineer-cloud-architect": (
+    <>
+      <path d="M7.5 17.5a4 4 0 0 1-.5-7.9 5.5 5.5 0 0 1 10.6-1.9A4.2 4.2 0 0 1 17 17.5H7.5Z" />
+      <path d="M12 10.5v5M9.8 13.2 12 11l2.2 2.2" />
+    </>
+  ),
 
   // Destinations without a single defining platform
   "bi-to-data-architect": (

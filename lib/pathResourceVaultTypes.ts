@@ -21,8 +21,16 @@ export type PathResource = {
   title: string;
   description: string;
   fileType: ResourceFileType;
-  fileName: string; // file name under public/downloads/path/<pathSlug>/
+  fileName?: string; // file name under public/downloads/path/<pathSlug>/ — required for a self-hosted resource, omitted for an external one
   relatedCourseSlugs?: string[]; // which of the path's courses this applies to
+  // Optional third-party resource (e.g. a TryHackMe room, an AWS Skill
+  // Builder lab) — nothing is downloaded or hosted by LTV Academy for these.
+  // When isExternal is true, `url`/`provider` describe the resource and
+  // `fileName` is unused. See lib/pathResourceVault.ts for how this resolves.
+  isExternal?: boolean;
+  url?: string; // external resource URL
+  provider?: string; // e.g. "TryHackMe", "Hack The Box Academy", "Microsoft Learn"
+  free?: boolean; // true = free, false = requires a separate paid subscription/purchase
 };
 
 export type PathResourceVaultBank = {

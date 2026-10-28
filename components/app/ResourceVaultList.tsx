@@ -18,7 +18,7 @@ type VaultResourceWithFile = {
   title: string;
   description: string;
   fileType: ResourceFileType;
-  fileName: string;
+  fileName?: string;
   downloadHref: string;
   fileSizeLabel: string | null;
 };

@@ -2050,6 +2050,72 @@ export const CAREER_PATHS: CareerPath[] = [
     destinationNote:
       "ServiceNow Administrator → ServiceNow Developer → ServiceNow Technical Architect. Administrator and Developer are realistic, earlier destinations on this same path — students don't need to finish the Technical Architecture course to pursue them. Technical Architect (CTA) is the long-term destination this path builds toward, requiring substantial real-world implementation experience beyond any coursework.",
   },
+  {
+    slug: "cybersecurity-analyst-security-engineer",
+    title: "Cybersecurity Analyst → Security Engineer",
+    targetJobs: ["Junior SOC Analyst", "Cybersecurity Analyst", "Security Engineer"],
+    description:
+      "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering — from a SOC analyst's first shift through the automation and architecture work a Security Engineer owns. Framework is live; course content for this path is still in production.",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "SOC-analyst fundamentals — networking, system hardening, threat detection, SIEM operations, and incident response",
+        courseSlugs: [
+          "it-networking-cybersecurity-fundamentals",
+          "windows-linux-security-administration",
+          "network-security-threat-detection",
+          "soc-operations-siem-fundamentals",
+          "microsoft-sentinel-defender-xdr",
+          "incident-response-soc-capstone",
+        ],
+      },
+      {
+        label: "Advanced",
+        note: "Security engineering — identity, cloud security, automation, and zero-trust architecture",
+        courseSlugs: [
+          "security-engineering-identity-management",
+          "azure-aws-cloud-security",
+          "python-security-automation-devsecops",
+          "zero-trust-enterprise-security-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+  },
+  {
+    slug: "cloud-engineer-cloud-architect",
+    title: "Cloud Engineer → Cloud Architect",
+    targetJobs: ["Cloud Support Engineer", "Junior Cloud Engineer", "Cloud Engineer", "Cloud Architect"],
+    description:
+      "A progressive cloud infrastructure training pathway covering networking, Linux, Microsoft Azure, AWS, identity management, infrastructure deployment, scripting, automation, containers, cloud reliability, and enterprise cloud architecture. Framework is live; course content for this path is still in production.",
+    stages: [
+      {
+        label: "Job Ready",
+        note: "Cloud-support fundamentals — networking, Linux, Azure and AWS administration, identity, and automation",
+        courseSlugs: [
+          "networking-linux-cloud-fundamentals",
+          "microsoft-azure-administration",
+          "aws-cloud-infrastructure-administration",
+          "identity-networking-cloud-security",
+          "python-powershell-infrastructure-automation",
+          "cloud-infrastructure-deployment-capstone",
+        ],
+      },
+      {
+        label: "Advanced",
+        note: "Cloud architecture — infrastructure as code, containers, reliability/FinOps, and enterprise design",
+        courseSlugs: [
+          "terraform-iac-for-cloud-architects",
+          "docker-kubernetes-container-platforms",
+          "cloud-reliability-monitoring-finops",
+          "enterprise-cloud-architecture-capstone",
+        ],
+      },
+    ],
+    destinationNote:
+      "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+  },
 ];
 
 export const getCareerPath = (slug: string) => CAREER_PATHS.find((p) => p.slug === slug);

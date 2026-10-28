@@ -28,11 +28,16 @@ export function loadPathResources(pathSlug: string): PathResourceWithFile[] {
   if (!Array.isArray(bank.resources)) return [];
 
   return bank.resources.map((r) => {
-    const filePath = path.join(process.cwd(), "public", "downloads", "path", pathSlug, r.fileName);
-    const exists = fs.existsSync(filePath);
+    // External third-party resource (TryHackMe, AWS Skill Builder, etc.) —
+    // nothing hosted on disk, so point the download href straight at it.
+    if (r.isExternal && r.url) {
+      return { ...r, downloadHref: r.url, fileSizeLabel: null };
+    }
+    const filePath = path.join(process.cwd(), "public", "downloads", "path", pathSlug, r.fileName ?? "");
+    const exists = Boolean(r.fileName) && fs.existsSync(filePath);
     return {
       ...r,
-      downloadHref: `/downloads/path/${pathSlug}/${r.fileName}`,
+      downloadHref: `/downloads/path/${pathSlug}/${r.fileName ?? ""}`,
       fileSizeLabel: exists ? formatFileSize(fs.statSync(filePath).size) : null,
     };
   });
