@@ -119,6 +119,21 @@ export const COURSE_CERTIFICATIONS: Record<string, CourseCertInfo> = {
   "salesforce-apis": { logo: "salesforce" },
   "salesforce-dx": { logo: "salesforce" },
   "salesforce-and-crm-foundations": { logo: "salesforce" },
+
+  // Cybersecurity Analyst → Security Engineer
+  "it-networking-cybersecurity-fundamentals": { certification: "CompTIA Security+ (selected topics)" },
+  "microsoft-sentinel-defender-xdr": { logo: "microsoft", certification: "SC-200: Microsoft Security Operations Analyst" },
+  "azure-aws-cloud-security": { logo: "azure" },
+  "ethical-hacking-penetration-testing-purple-team": { certification: "CompTIA PenTest+ (selected topics)" },
+  "enterprise-security-architecture-grc-risk-management": { certification: "CISSP (selected topics)" },
+
+  // Cloud Engineer → Cloud Architect
+  "networking-linux-cloud-fundamentals": { certification: "CompTIA Network+ (selected topics)" },
+  "microsoft-azure-administration": { logo: "azure", certification: "AZ-104: Microsoft Azure Administrator" },
+  "aws-cloud-infrastructure-administration": { logo: "aws", certification: "AWS Certified SysOps Administrator – Associate" },
+  "terraform-iac-for-cloud-architects": { logo: "terraform", certification: "HashiCorp Certified: Terraform Associate" },
+  "docker-kubernetes-container-platforms": { logo: "kubernetes", certification: "CKA: Certified Kubernetes Administrator" },
+  "enterprise-cloud-architecture-capstone": { logo: "azure", certification: "AZ-305: Designing Microsoft Azure Infrastructure Solutions" },
 };
 
 /** Collects the deduplicated set of real certifications implied by a list of course slugs. */

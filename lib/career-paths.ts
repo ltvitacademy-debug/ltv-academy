@@ -2055,10 +2055,10 @@ export const CAREER_PATHS: CareerPath[] = [
     title: "Cybersecurity Analyst → Security Engineer",
     targetJobs: ["Junior SOC Analyst", "Cybersecurity Analyst", "Security Engineer"],
     description:
-      "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering — from a SOC analyst's first shift through the automation and architecture work a Security Engineer owns. Framework is live; course content for this path is still in production.",
+      "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering, through to digital forensics, penetration testing, AI security, and enterprise security architecture — from a SOC analyst's first shift through the specialized disciplines a senior security engineer or architect draws on. Framework is live; course content for this path is still in production.",
     stages: [
       {
-        label: "Job Ready",
+        label: "Job-Ready Foundation",
         note: "SOC-analyst fundamentals — networking, system hardening, threat detection, SIEM operations, and incident response",
         courseSlugs: [
           "it-networking-cybersecurity-fundamentals",
@@ -2070,7 +2070,7 @@ export const CAREER_PATHS: CareerPath[] = [
         ],
       },
       {
-        label: "Advanced",
+        label: "Advanced Specialization",
         note: "Security engineering — identity, cloud security, automation, and zero-trust architecture",
         courseSlugs: [
           "security-engineering-identity-management",
@@ -2079,19 +2079,29 @@ export const CAREER_PATHS: CareerPath[] = [
           "zero-trust-enterprise-security-capstone",
         ],
       },
+      {
+        label: "Expert Specialization",
+        note: "Specialized disciplines for senior and architecture-track roles — forensics, offensive security, AI security, and GRC. These four build on the Advanced stage but not on each other, so they can be taken in any order once it's complete.",
+        courseSlugs: [
+          "digital-forensics-malware-analysis",
+          "ethical-hacking-penetration-testing-purple-team",
+          "ai-security-engineering-adversarial-ai-defense",
+          "enterprise-security-architecture-grc-risk-management",
+        ],
+      },
     ],
     destinationNote:
-      "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+      "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer, with Expert Specialization opening doors toward Digital Forensics Analyst, Penetration Tester, AI Security Engineer, or Security Architect / GRC roles. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
   },
   {
     slug: "cloud-engineer-cloud-architect",
     title: "Cloud Engineer → Cloud Architect",
     targetJobs: ["Cloud Support Engineer", "Junior Cloud Engineer", "Cloud Engineer", "Cloud Architect"],
     description:
-      "A progressive cloud infrastructure training pathway covering networking, Linux, Microsoft Azure, AWS, identity management, infrastructure deployment, scripting, automation, containers, cloud reliability, and enterprise cloud architecture. Framework is live; course content for this path is still in production.",
+      "A progressive cloud infrastructure training pathway covering networking, Linux, Microsoft Azure, AWS, identity management, infrastructure deployment, scripting, automation, containers, cloud reliability, and enterprise cloud architecture, through to platform engineering and GitOps, hybrid/multi-cloud architecture, AI infrastructure, and site reliability engineering — from cloud-support fundamentals through the specialized disciplines a senior cloud architect or SRE draws on. Framework is live; course content for this path is still in production.",
     stages: [
       {
-        label: "Job Ready",
+        label: "Job-Ready Foundation",
         note: "Cloud-support fundamentals — networking, Linux, Azure and AWS administration, identity, and automation",
         courseSlugs: [
           "networking-linux-cloud-fundamentals",
@@ -2103,7 +2113,7 @@ export const CAREER_PATHS: CareerPath[] = [
         ],
       },
       {
-        label: "Advanced",
+        label: "Advanced Specialization",
         note: "Cloud architecture — infrastructure as code, containers, reliability/FinOps, and enterprise design",
         courseSlugs: [
           "terraform-iac-for-cloud-architects",
@@ -2112,9 +2122,19 @@ export const CAREER_PATHS: CareerPath[] = [
           "enterprise-cloud-architecture-capstone",
         ],
       },
+      {
+        label: "Expert Specialization",
+        note: "Specialized disciplines for senior and architecture-track roles — platform engineering, multi-cloud, AI infrastructure, and SRE. These four build on the Advanced stage but not on each other, so they can be taken in any order once it's complete.",
+        courseSlugs: [
+          "advanced-platform-engineering-gitops-cicd",
+          "hybrid-multi-cloud-enterprise-architecture",
+          "ai-cloud-infrastructure-gpu-computing-mlops",
+          "advanced-sre-disaster-recovery-resilience",
+        ],
+      },
     ],
     destinationNote:
-      "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+      "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect, with Expert Specialization opening doors toward Platform Engineer, Multi-Cloud/Enterprise Architect, AI Infrastructure Engineer, or Site Reliability Engineer roles. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
   },
 ];
 
