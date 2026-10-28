@@ -2056,6 +2056,24 @@ export const CAREER_PATHS: CareerPath[] = [
     targetJobs: ["Junior SOC Analyst", "Cybersecurity Analyst", "Security Engineer"],
     description:
       "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering, through to digital forensics, penetration testing, AI security, and enterprise security architecture — from a SOC analyst's first shift through the specialized disciplines a senior security engineer or architect draws on. Framework is live; course content for this path is still in production.",
+    labRequirement: {
+      eyebrow: "Read this before you enroll",
+      heading: "Recommended Hands-On Lab Subscription",
+      intro: [
+        "This career path is built around real hands-on labs — SOC simulations, threat-hunting exercises, and, in the Expert Specialization level, penetration-testing and purple-team labs. A meaningful amount of that hands-on lab time is NOT included with your Lifting the Veil IT Academy subscription.",
+        "Students get the deepest hands-on practice from TryHackMe, a third-party cybersecurity training platform with both free and paid tiers. A free account covers some material, but the paid Premium tier unlocks the guided learning paths and extended lab time this curriculum leans on most.",
+      ],
+      optionLabel: "Recommended option",
+      optionLines: ["TryHackMe Premium", "Around $10–$14 per month (annual vs. monthly billing)", "Purchased directly from TryHackMe"],
+      buttonLabel: "Get TryHackMe Premium",
+      buttonUrl: "https://tryhackme.com/pricing",
+      importantNote:
+        "TryHackMe is a third-party provider and is separate from Lifting the Veil IT Academy. Lab pricing, availability, features, and terms are controlled by TryHackMe and may change. LTV Academy tuition does not include this fee. Nothing on this page implies sponsorship or endorsement of LTV Academy by TryHackMe, and LTV Academy does not own, operate, resell, or provide the TryHackMe platform. Hack The Box Academy, LetsDefend, Microsoft Learn, and AWS Skill Builder are other labs this path may reference later — some free, some paid — and each is an independent third-party provider under the same terms.",
+      whenHeading: "When should I subscribe?",
+      whenText:
+        "Don't subscribe just because you enrolled in LTV Academy. Begin the Job-Ready Foundation courses first — early lessons lean on free-tier labs and Microsoft's and AWS's own free learning platforms. The course will tell you when you reach the labs that need a paid TryHackMe subscription.",
+      verifiedNote: "Third-party pricing last verified October 2026 from TryHackMe's own pricing page. Verify current pricing with TryHackMe before you purchase.",
+    },
     stages: [
       {
         label: "Job-Ready Foundation",
