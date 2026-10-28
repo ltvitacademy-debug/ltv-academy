@@ -2059,8 +2059,9 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job-Ready Foundation",
-        note: "SOC-analyst fundamentals — networking, system hardening, threat detection, SIEM operations, and incident response",
+        note: "SOC-analyst fundamentals — how IT teams work, networking, system hardening, threat detection, SIEM operations, and incident response",
         courseSlugs: [
+          "how-it-teams-work",
           "it-networking-cybersecurity-fundamentals",
           "windows-linux-security-administration",
           "network-security-threat-detection",
@@ -2102,8 +2103,9 @@ export const CAREER_PATHS: CareerPath[] = [
     stages: [
       {
         label: "Job-Ready Foundation",
-        note: "Cloud-support fundamentals — networking, Linux, Azure and AWS administration, identity, and automation",
+        note: "Cloud-support fundamentals — how IT teams work, networking, Linux, Azure and AWS administration, identity, and automation",
         courseSlugs: [
+          "how-it-teams-work",
           "networking-linux-cloud-fundamentals",
           "microsoft-azure-administration",
           "aws-cloud-infrastructure-administration",
