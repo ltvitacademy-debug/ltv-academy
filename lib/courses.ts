@@ -11,6 +11,8 @@ import { SOC_OPERATIONS_SIEM_FUNDAMENTALS_CHAPTERS } from "./soc-operations-siem
 import { IDENTITY_NETWORKING_CLOUD_SECURITY_CHAPTERS } from "./identity-networking-cloud-security-outline";
 import { MICROSOFT_SENTINEL_DEFENDER_XDR_CHAPTERS } from "./microsoft-sentinel-defender-xdr-outline";
 import { PYTHON_POWERSHELL_INFRASTRUCTURE_AUTOMATION_CHAPTERS } from "./python-powershell-infrastructure-automation-outline";
+import { INCIDENT_RESPONSE_SOC_CAPSTONE_CHAPTERS } from "./incident-response-soc-capstone-outline";
+import { CLOUD_INFRASTRUCTURE_DEPLOYMENT_CAPSTONE_CHAPTERS } from "./cloud-infrastructure-deployment-capstone-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2447,7 +2449,8 @@ export const COURSES: CourseMeta[] = [
     slug: "incident-response-soc-capstone",
     title: "Incident Response, Threat Hunting & SOC Capstone",
     tagline: "A full incident response lifecycle, proactive threat hunting, and a job-ready capstone closing out the SOC Analyst foundation.",
-    status: "coming-soon",
+    status: "available",
+    chapters: INCIDENT_RESPONSE_SOC_CAPSTONE_CHAPTERS,
   },
   {
     slug: "security-engineering-identity-management",
@@ -2538,7 +2541,8 @@ export const COURSES: CourseMeta[] = [
     slug: "cloud-infrastructure-deployment-capstone",
     title: "Cloud Deployment, Monitoring, Backup & Job-Ready Capstone",
     tagline: "Deploying real cloud infrastructure end to end — monitoring and backup included — closing out the Cloud Engineer foundation with a capstone.",
-    status: "coming-soon",
+    status: "available",
+    chapters: CLOUD_INFRASTRUCTURE_DEPLOYMENT_CAPSTONE_CHAPTERS,
   },
   {
     slug: "terraform-iac-for-cloud-architects",
