@@ -47,7 +47,7 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
     title: "Scanning and Enumeration",
     lessons: [
       L(9, "network-scanning-fundamentals-with-nmap", "Network Scanning Fundamentals with Nmap", { contentDir: "ch03/09-network-scanning-fundamentals-with-nmap", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/network-scanning-fundamentals-with-nmap.mp4", durationLabel: "3 min 0 s" }),
-      L(10, "service-and-version-enumeration-beyond-just-open-ports", "Service and Version Enumeration Beyond Just Open Ports", { contentDir: "ch03/10-service-and-version-enumeration-beyond-just-open-ports" }),
+      L(10, "service-and-version-enumeration-beyond-just-open-ports", "Service and Version Enumeration Beyond Just Open Ports", { contentDir: "ch03/10-service-and-version-enumeration-beyond-just-open-ports", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/service-and-version-enumeration-beyond-just-open-ports.mp4", durationLabel: "2 min 42 s" }),
       L(11, "vulnerability-scanning-and-why-a-scanner-isnt-a-pentest", "Vulnerability Scanning, and Why a Scanner Isn't a Pentest", { contentDir: "ch03/11-vulnerability-scanning-and-why-a-scanner-isnt-a-pentest" }),
       L(12, "prioritizing-findings-before-you-ever-attempt-exploitation", "Prioritizing Findings Before You Ever Attempt Exploitation", { contentDir: "ch03/12-prioritizing-findings-before-you-ever-attempt-exploitation" }),
     ],
