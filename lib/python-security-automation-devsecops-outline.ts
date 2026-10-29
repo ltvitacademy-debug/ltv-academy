@@ -89,16 +89,16 @@ export const PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(25, "secrets-scanning-and-preventing-leaked-credentials-in-commits", "Secrets Scanning and Preventing Leaked Credentials in Commits", { contentDir: "ch07/25-secrets-scanning-and-preventing-leaked-credentials-in-commits", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/secrets-scanning-and-preventing-leaked-credentials-in-commits.mp4", durationLabel: "2 min 45 s" }),
       L(26, "least-privilege-for-ci-cd-service-accounts-and-runners", "Least Privilege for CI/CD Service Accounts and Runners", { contentDir: "ch07/26-least-privilege-for-ci-cd-service-accounts-and-runners", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/least-privilege-for-ci-cd-service-accounts-and-runners.mp4", durationLabel: "3 min 5 s" }),
-      L(27, "software-bill-of-materials-sbom-and-supply-chain-basics", "Software Bill of Materials (SBOM) and Supply Chain Basics", { contentDir: "ch07/27-software-bill-of-materials-sbom-and-supply-chain-basics" }),
-      L(28, "a-pipeline-security-checklist-before-it-ships-to-production", "A Pipeline Security Checklist Before It Ships to Production", { contentDir: "ch07/28-a-pipeline-security-checklist-before-it-ships-to-production" }),
+      L(27, "software-bill-of-materials-sbom-and-supply-chain-basics", "Software Bill of Materials (SBOM) and Supply Chain Basics", { contentDir: "ch07/27-software-bill-of-materials-sbom-and-supply-chain-basics", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/software-bill-of-materials-sbom-and-supply-chain-basics.mp4", durationLabel: "2 min 51 s" }),
+      L(28, "a-pipeline-security-checklist-before-it-ships-to-production", "A Pipeline Security Checklist Before It Ships to Production", { contentDir: "ch07/28-a-pipeline-security-checklist-before-it-ships-to-production", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/a-pipeline-security-checklist-before-it-ships-to-production.mp4", durationLabel: "2 min 44 s" }),
     ],
   },
   {
     n: 8,
     title: "Capstone: An Automated Detection-to-Response Pipeline",
     lessons: [
-      L(29, "lab-building-an-end-to-end-detection-to-containment-script", "Lab: Building an End-to-End Detection-to-Containment Script", { contentDir: "ch08/29-lab-building-an-end-to-end-detection-to-containment-script" }),
-      L(30, "lab-adding-a-security-gate-to-a-real-ci-cd-pipeline", "Lab: Adding a Security Gate to a Real CI/CD Pipeline", { contentDir: "ch08/30-lab-adding-a-security-gate-to-a-real-ci-cd-pipeline" }),
+      L(29, "lab-building-an-end-to-end-detection-to-containment-script", "Lab: Building an End-to-End Detection-to-Containment Script", { contentDir: "ch08/29-lab-building-an-end-to-end-detection-to-containment-script", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/lab-building-an-end-to-end-detection-to-containment-script.mp4", durationLabel: "2 min 23 s" }),
+      L(30, "lab-adding-a-security-gate-to-a-real-ci-cd-pipeline", "Lab: Adding a Security Gate to a Real CI/CD Pipeline", { contentDir: "ch08/30-lab-adding-a-security-gate-to-a-real-ci-cd-pipeline", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/lab-adding-a-security-gate-to-a-real-ci-cd-pipeline.mp4", durationLabel: "2 min 11 s" }),
       L(31, "case-study-an-automation-script-that-made-an-incident-worse", "Case Study: An Automation Script That Made an Incident Worse", { contentDir: "ch08/31-case-study-an-automation-script-that-made-an-incident-worse" }),
       L(32, "chapter-capstone-security-automation-and-devsecops-review", "Chapter Capstone: Security Automation and DevSecOps Review", { contentDir: "ch08/32-chapter-capstone-security-automation-and-devsecops-review" }),
     ],

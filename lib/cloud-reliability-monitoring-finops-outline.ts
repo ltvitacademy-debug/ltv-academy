@@ -88,17 +88,17 @@ export const CLOUD_RELIABILITY_MONITORING_FINOPS_CHAPTERS: ChapterMeta[] = [
     title: "Site Reliability Engineering Fundamentals",
     lessons: [
       L(25, "slis-slos-and-error-budgets-in-plain-terms", "SLIs, SLOs, and Error Budgets in Plain Terms", { contentDir: "ch07/25-slis-slos-and-error-budgets-in-plain-terms", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/slis-slos-and-error-budgets-in-plain-terms.mp4", durationLabel: "2 min 8 s" }),
-      L(26, "setting-an-slo-that-the-business-actually-agrees-with", "Setting an SLO That the Business Actually Agrees With", { contentDir: "ch07/26-setting-an-slo-that-the-business-actually-agrees-with" }),
-      L(27, "incident-management-severity-roles-and-a-real-timeline", "Incident Management: Severity, Roles, and a Real Timeline", { contentDir: "ch07/27-incident-management-severity-roles-and-a-real-timeline" }),
-      L(28, "blameless-postmortems-and-closing-the-loop-on-an-incident", "Blameless Postmortems, and Closing the Loop on an Incident", { contentDir: "ch07/28-blameless-postmortems-and-closing-the-loop-on-an-incident" }),
+      L(26, "setting-an-slo-that-the-business-actually-agrees-with", "Setting an SLO That the Business Actually Agrees With", { contentDir: "ch07/26-setting-an-slo-that-the-business-actually-agrees-with", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/setting-an-slo-that-the-business-actually-agrees-with.mp4", durationLabel: "2 min 4 s" }),
+      L(27, "incident-management-severity-roles-and-a-real-timeline", "Incident Management: Severity, Roles, and a Real Timeline", { contentDir: "ch07/27-incident-management-severity-roles-and-a-real-timeline", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/incident-management-severity-roles-and-a-real-timeline.mp4", durationLabel: "2 min 5 s" }),
+      L(28, "blameless-postmortems-and-closing-the-loop-on-an-incident", "Blameless Postmortems, and Closing the Loop on an Incident", { contentDir: "ch07/28-blameless-postmortems-and-closing-the-loop-on-an-incident", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/blameless-postmortems-and-closing-the-loop-on-an-incident.mp4", durationLabel: "2 min 10 s" }),
     ],
   },
   {
     n: 8,
     title: "Capstone: Operating a Production Cloud Environment",
     lessons: [
-      L(29, "lab-instrumenting-an-application-with-logs-metrics-and-traces", "Lab: Instrumenting an Application with Logs, Metrics, and Traces", { contentDir: "ch08/29-lab-instrumenting-an-application-with-logs-metrics-and-traces" }),
-      L(30, "lab-building-a-cost-dashboard-and-a-budget-alert", "Lab: Building a Cost Dashboard and a Budget Alert", { contentDir: "ch08/30-lab-building-a-cost-dashboard-and-a-budget-alert" }),
+      L(29, "lab-instrumenting-an-application-with-logs-metrics-and-traces", "Lab: Instrumenting an Application with Logs, Metrics, and Traces", { contentDir: "ch08/29-lab-instrumenting-an-application-with-logs-metrics-and-traces", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/lab-instrumenting-an-application-with-logs-metrics-and-traces.mp4", durationLabel: "2 min 47 s" }),
+      L(30, "lab-building-a-cost-dashboard-and-a-budget-alert", "Lab: Building a Cost Dashboard and a Budget Alert", { contentDir: "ch08/30-lab-building-a-cost-dashboard-and-a-budget-alert", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-cloud-reliability-monitoring-finops/lab-building-a-cost-dashboard-and-a-budget-alert.mp4", durationLabel: "2 min 26 s" }),
       L(31, "case-study-an-slo-violation-that-was-actually-a-cost-cutting-decision", "Case Study: An SLO Violation That Was Actually a Cost-Cutting Decision", { contentDir: "ch08/31-case-study-an-slo-violation-that-was-actually-a-cost-cutting-decision" }),
       L(32, "chapter-capstone-cloud-operations-and-finops-review", "Chapter Capstone: Cloud Operations and FinOps Review", { contentDir: "ch08/32-chapter-capstone-cloud-operations-and-finops-review" }),
     ],

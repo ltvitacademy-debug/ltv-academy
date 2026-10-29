@@ -68,16 +68,16 @@ export const ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS: ChapterMeta[] =
     lessons: [
       L(17, "multi-stage-pipelines-build-test-scan-deploy", "Multi-Stage Pipelines: Build, Test, Scan, Deploy", { contentDir: "ch05/17-multi-stage-pipelines-build-test-scan-deploy", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/multi-stage-pipelines-build-test-scan-deploy.mp4", durationLabel: "2 min 32 s" }),
       L(18, "canary-and-blue-green-deployments-in-practice", "Canary and Blue-Green Deployments in Practice", { contentDir: "ch05/18-canary-and-blue-green-deployments-in-practice", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/canary-and-blue-green-deployments-in-practice.mp4", durationLabel: "2 min 40 s" }),
-      L(19, "progressive-delivery-with-automated-rollback-on-a-bad-signal", "Progressive Delivery with Automated Rollback on a Bad Signal", { contentDir: "ch05/19-progressive-delivery-with-automated-rollback-on-a-bad-signal" }),
-      L(20, "feature-flags-and-decoupling-deploy-from-release", "Feature Flags and Decoupling Deploy from Release", { contentDir: "ch05/20-feature-flags-and-decoupling-deploy-from-release" }),
+      L(19, "progressive-delivery-with-automated-rollback-on-a-bad-signal", "Progressive Delivery with Automated Rollback on a Bad Signal", { contentDir: "ch05/19-progressive-delivery-with-automated-rollback-on-a-bad-signal", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/progressive-delivery-with-automated-rollback-on-a-bad-signal.mp4", durationLabel: "2 min 25 s" }),
+      L(20, "feature-flags-and-decoupling-deploy-from-release", "Feature Flags and Decoupling Deploy from Release", { contentDir: "ch05/20-feature-flags-and-decoupling-deploy-from-release", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/feature-flags-and-decoupling-deploy-from-release.mp4", durationLabel: "2 min 19 s" }),
     ],
   },
   {
     n: 6,
     title: "Pipeline-as-Code at Scale",
     lessons: [
-      L(21, "reusable-pipeline-templates-across-many-repos", "Reusable Pipeline Templates Across Many Repos", { contentDir: "ch06/21-reusable-pipeline-templates-across-many-repos" }),
-      L(22, "shared-pipeline-libraries-and-versioning-them-safely", "Shared Pipeline Libraries, and Versioning Them Safely", { contentDir: "ch06/22-shared-pipeline-libraries-and-versioning-them-safely" }),
+      L(21, "reusable-pipeline-templates-across-many-repos", "Reusable Pipeline Templates Across Many Repos", { contentDir: "ch06/21-reusable-pipeline-templates-across-many-repos", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/reusable-pipeline-templates-across-many-repos.mp4", durationLabel: "2 min 44 s" }),
+      L(22, "shared-pipeline-libraries-and-versioning-them-safely", "Shared Pipeline Libraries, and Versioning Them Safely", { contentDir: "ch06/22-shared-pipeline-libraries-and-versioning-them-safely", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/shared-pipeline-libraries-and-versioning-them-safely.mp4", durationLabel: "2 min 38 s" }),
       L(23, "enforcing-standards-without-blocking-every-team-on-every-change", "Enforcing Standards Without Blocking Every Team on Every Change", { contentDir: "ch06/23-enforcing-standards-without-blocking-every-team-on-every-change" }),
       L(24, "rolling-out-a-pipeline-change-to-hundreds-of-repos", "Rolling Out a Pipeline Change to Hundreds of Repos", { contentDir: "ch06/24-rolling-out-a-pipeline-change-to-hundreds-of-repos" }),
     ],

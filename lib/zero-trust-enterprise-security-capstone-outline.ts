@@ -78,9 +78,9 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     title: "Measuring Zero Trust Maturity",
     lessons: [
       L(21, "the-cisa-zero-trust-maturity-model", "The CISA Zero Trust Maturity Model", { contentDir: "ch06/21-the-cisa-zero-trust-maturity-model", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/the-cisa-zero-trust-maturity-model.mp4", durationLabel: "3 min 17 s" }),
-      L(22, "scoring-your-own-environment-against-a-maturity-model", "Scoring Your Own Environment Against a Maturity Model", { contentDir: "ch06/22-scoring-your-own-environment-against-a-maturity-model" }),
-      L(23, "metrics-that-prove-zero-trust-is-working-not-just-implemented", "Metrics That Prove Zero Trust Is Working, Not Just Implemented", { contentDir: "ch06/23-metrics-that-prove-zero-trust-is-working-not-just-implemented" }),
-      L(24, "reporting-zero-trust-progress-to-people-who-arent-engineers", "Reporting Zero Trust Progress to People Who Aren't Engineers", { contentDir: "ch06/24-reporting-zero-trust-progress-to-people-who-arent-engineers" }),
+      L(22, "scoring-your-own-environment-against-a-maturity-model", "Scoring Your Own Environment Against a Maturity Model", { contentDir: "ch06/22-scoring-your-own-environment-against-a-maturity-model", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/scoring-your-own-environment-against-a-maturity-model.mp4", durationLabel: "2 min 46 s" }),
+      L(23, "metrics-that-prove-zero-trust-is-working-not-just-implemented", "Metrics That Prove Zero Trust Is Working, Not Just Implemented", { contentDir: "ch06/23-metrics-that-prove-zero-trust-is-working-not-just-implemented", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/metrics-that-prove-zero-trust-is-working-not-just-implemented.mp4", durationLabel: "2 min 45 s" }),
+      L(24, "reporting-zero-trust-progress-to-people-who-arent-engineers", "Reporting Zero Trust Progress to People Who Aren't Engineers", { contentDir: "ch06/24-reporting-zero-trust-progress-to-people-who-arent-engineers", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/reporting-zero-trust-progress-to-people-who-arent-engineers.mp4", durationLabel: "2 min 52 s" }),
     ],
   },
   {
@@ -88,8 +88,8 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     title: "Building a Zero Trust Roadmap",
     lessons: [
       L(25, "sequencing-a-multi-year-zero-trust-rollout", "Sequencing a Multi-Year Zero Trust Rollout", { contentDir: "ch07/25-sequencing-a-multi-year-zero-trust-rollout" }),
-      L(26, "what-to-fix-first-when-you-cant-fix-everything-at-once", "What to Fix First When You Can't Fix Everything at Once", { contentDir: "ch07/26-what-to-fix-first-when-you-cant-fix-everything-at-once" }),
-      L(27, "getting-budget-and-buy-in-for-a-zero-trust-program", "Getting Budget and Buy-In for a Zero Trust Program", { contentDir: "ch07/27-getting-budget-and-buy-in-for-a-zero-trust-program" }),
+      L(26, "what-to-fix-first-when-you-cant-fix-everything-at-once", "What to Fix First When You Can't Fix Everything at Once", { contentDir: "ch07/26-what-to-fix-first-when-you-cant-fix-everything-at-once", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/what-to-fix-first-when-you-cant-fix-everything-at-once.mp4", durationLabel: "2 min 22 s" }),
+      L(27, "getting-budget-and-buy-in-for-a-zero-trust-program", "Getting Budget and Buy-In for a Zero Trust Program", { contentDir: "ch07/27-getting-budget-and-buy-in-for-a-zero-trust-program", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/getting-budget-and-buy-in-for-a-zero-trust-program.mp4", durationLabel: "2 min 18 s" }),
       L(28, "avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", "Avoiding \"Zero Trust Theater\": Implementation That Doesn't Change Outcomes", { contentDir: "ch07/28-avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes" }),
     ],
   },
