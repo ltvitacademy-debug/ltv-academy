@@ -79,16 +79,16 @@ export const ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS: ChapterMeta[] =
     lessons: [
       L(21, "designing-an-on-call-rotation-that-doesnt-burn-people-out", "Designing an On-Call Rotation That Doesn't Burn People Out", { contentDir: "ch06/21-designing-an-on-call-rotation-that-doesnt-burn-people-out", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/designing-an-on-call-rotation-that-doesnt-burn-people-out.mp4", durationLabel: "2 min 22 s" }),
       L(22, "runbooks-that-actually-get-used-at-3am", "Runbooks That Actually Get Used at 3 A.M.", { contentDir: "ch06/22-runbooks-that-actually-get-used-at-3am", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/runbooks-that-actually-get-used-at-3am.mp4", durationLabel: "2 min 32 s" }),
-      L(23, "operational-readiness-reviews-before-a-service-goes-to-production", "Operational Readiness Reviews Before a Service Goes to Production", { contentDir: "ch06/23-operational-readiness-reviews-before-a-service-goes-to-production" }),
-      L(24, "measuring-operational-excellence-beyond-uptime", "Measuring Operational Excellence Beyond Uptime", { contentDir: "ch06/24-measuring-operational-excellence-beyond-uptime" }),
+      L(23, "operational-readiness-reviews-before-a-service-goes-to-production", "Operational Readiness Reviews Before a Service Goes to Production", { contentDir: "ch06/23-operational-readiness-reviews-before-a-service-goes-to-production", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/operational-readiness-reviews-before-a-service-goes-to-production.mp4", durationLabel: "2 min 37 s" }),
+      L(24, "measuring-operational-excellence-beyond-uptime", "Measuring Operational Excellence Beyond Uptime", { contentDir: "ch06/24-measuring-operational-excellence-beyond-uptime", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/measuring-operational-excellence-beyond-uptime.mp4", durationLabel: "2 min 37 s" }),
     ],
   },
   {
     n: 7,
     title: "Building an SRE Practice and Culture",
     lessons: [
-      L(25, "introducing-sre-into-an-organization-that-doesnt-have-it-yet", "Introducing SRE into an Organization That Doesn't Have It Yet", { contentDir: "ch07/25-introducing-sre-into-an-organization-that-doesnt-have-it-yet" }),
-      L(26, "the-real-tension-between-reliability-and-feature-velocity", "The Real Tension Between Reliability and Feature Velocity", { contentDir: "ch07/26-the-real-tension-between-reliability-and-feature-velocity" }),
+      L(25, "introducing-sre-into-an-organization-that-doesnt-have-it-yet", "Introducing SRE into an Organization That Doesn't Have It Yet", { contentDir: "ch07/25-introducing-sre-into-an-organization-that-doesnt-have-it-yet", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/introducing-sre-into-an-organization-that-doesnt-have-it-yet.mp4", durationLabel: "2 min 43 s" }),
+      L(26, "the-real-tension-between-reliability-and-feature-velocity", "The Real Tension Between Reliability and Feature Velocity", { contentDir: "ch07/26-the-real-tension-between-reliability-and-feature-velocity", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/the-real-tension-between-reliability-and-feature-velocity.mp4", durationLabel: "2 min 51 s" }),
       L(27, "blameless-culture-in-practice-not-just-in-the-postmortem-template", "Blameless Culture in Practice, Not Just in the Postmortem Template", { contentDir: "ch07/27-blameless-culture-in-practice-not-just-in-the-postmortem-template" }),
       L(28, "scaling-an-sre-team-as-the-organization-grows", "Scaling an SRE Team as the Organization Grows", { contentDir: "ch07/28-scaling-an-sre-team-as-the-organization-grows" }),
     ],

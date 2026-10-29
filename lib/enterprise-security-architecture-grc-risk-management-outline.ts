@@ -78,17 +78,17 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     title: "Third-Party and Vendor Risk Management",
     lessons: [
       L(21, "why-your-vendors-risk-is-your-risk", "Why Your Vendor's Risk Is Your Risk", { contentDir: "ch06/21-why-your-vendors-risk-is-your-risk", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/why-your-vendors-risk-is-your-risk.mp4", durationLabel: "2 min 49 s" }),
-      L(22, "vendor-security-assessments-and-questionnaires-that-work", "Vendor Security Assessments and Questionnaires That Work", { contentDir: "ch06/22-vendor-security-assessments-and-questionnaires-that-work" }),
-      L(23, "contractual-security-requirements-and-right-to-audit-clauses", "Contractual Security Requirements and Right-to-Audit Clauses", { contentDir: "ch06/23-contractual-security-requirements-and-right-to-audit-clauses" }),
-      L(24, "ongoing-vendor-monitoring-not-just-a-one-time-review", "Ongoing Vendor Monitoring, Not Just a One-Time Review", { contentDir: "ch06/24-ongoing-vendor-monitoring-not-just-a-one-time-review" }),
+      L(22, "vendor-security-assessments-and-questionnaires-that-work", "Vendor Security Assessments and Questionnaires That Work", { contentDir: "ch06/22-vendor-security-assessments-and-questionnaires-that-work", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/vendor-security-assessments-and-questionnaires-that-work.mp4", durationLabel: "2 min 43 s" }),
+      L(23, "contractual-security-requirements-and-right-to-audit-clauses", "Contractual Security Requirements and Right-to-Audit Clauses", { contentDir: "ch06/23-contractual-security-requirements-and-right-to-audit-clauses", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/contractual-security-requirements-and-right-to-audit-clauses.mp4", durationLabel: "2 min 20 s" }),
+      L(24, "ongoing-vendor-monitoring-not-just-a-one-time-review", "Ongoing Vendor Monitoring, Not Just a One-Time Review", { contentDir: "ch06/24-ongoing-vendor-monitoring-not-just-a-one-time-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/ongoing-vendor-monitoring-not-just-a-one-time-review.mp4", durationLabel: "2 min 22 s" }),
     ],
   },
   {
     n: 7,
     title: "Security Metrics and Board Reporting",
     lessons: [
-      L(25, "metrics-that-mean-something-to-a-board-not-just-engineers", "Metrics That Mean Something to a Board, Not Just Engineers", { contentDir: "ch07/25-metrics-that-mean-something-to-a-board-not-just-engineers" }),
-      L(26, "translating-technical-risk-into-business-risk-language", "Translating Technical Risk into Business Risk Language", { contentDir: "ch07/26-translating-technical-risk-into-business-risk-language" }),
+      L(25, "metrics-that-mean-something-to-a-board-not-just-engineers", "Metrics That Mean Something to a Board, Not Just Engineers", { contentDir: "ch07/25-metrics-that-mean-something-to-a-board-not-just-engineers", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/metrics-that-mean-something-to-a-board-not-just-engineers.mp4", durationLabel: "2 min 36 s" }),
+      L(26, "translating-technical-risk-into-business-risk-language", "Translating Technical Risk into Business Risk Language", { contentDir: "ch07/26-translating-technical-risk-into-business-risk-language", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/translating-technical-risk-into-business-risk-language.mp4", durationLabel: "2 min 32 s" }),
       L(27, "building-a-real-board-level-security-report", "Building a Real Board-Level Security Report", { contentDir: "ch07/27-building-a-real-board-level-security-report" }),
       L(28, "when-and-how-to-report-a-significant-security-incident-upward", "When and How to Report a Significant Security Incident Upward", { contentDir: "ch07/28-when-and-how-to-report-a-significant-security-incident-upward" }),
     ],
