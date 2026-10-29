@@ -86,9 +86,9 @@ export const ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS: ChapterMeta[] =
     n: 7,
     title: "Platform Observability and Developer Experience",
     lessons: [
-      L(25, "deployment-frequency-lead-time-and-the-dora-metrics", "Deployment Frequency, Lead Time, and the DORA Metrics", { contentDir: "ch07/25-deployment-frequency-lead-time-and-the-dora-metrics" }),
-      L(26, "measuring-developer-experience-not-just-system-uptime", "Measuring Developer Experience, Not Just System Uptime", { contentDir: "ch07/26-measuring-developer-experience-not-just-system-uptime" }),
-      L(27, "instrumenting-the-platform-itself-not-just-what-runs-on-it", "Instrumenting the Platform Itself, Not Just What Runs on It", { contentDir: "ch07/27-instrumenting-the-platform-itself-not-just-what-runs-on-it" }),
+      L(25, "deployment-frequency-lead-time-and-the-dora-metrics", "Deployment Frequency, Lead Time, and the DORA Metrics", { contentDir: "ch07/25-deployment-frequency-lead-time-and-the-dora-metrics", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/deployment-frequency-lead-time-and-the-dora-metrics.mp4", durationLabel: "2 min 55 s" }),
+      L(26, "measuring-developer-experience-not-just-system-uptime", "Measuring Developer Experience, Not Just System Uptime", { contentDir: "ch07/26-measuring-developer-experience-not-just-system-uptime", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/measuring-developer-experience-not-just-system-uptime.mp4", durationLabel: "2 min 44 s" }),
+      L(27, "instrumenting-the-platform-itself-not-just-what-runs-on-it", "Instrumenting the Platform Itself, Not Just What Runs on It", { contentDir: "ch07/27-instrumenting-the-platform-itself-not-just-what-runs-on-it", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/instrumenting-the-platform-itself-not-just-what-runs-on-it.mp4", durationLabel: "2 min 44 s" }),
       L(28, "using-platform-metrics-to-decide-what-to-build-next", "Using Platform Metrics to Decide What to Build Next", { contentDir: "ch07/28-using-platform-metrics-to-decide-what-to-build-next" }),
     ],
   },

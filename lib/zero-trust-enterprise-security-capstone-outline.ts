@@ -98,9 +98,9 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     title: "Capstone: Designing and Defending an Enterprise Zero Trust Architecture",
     lessons: [
       L(29, "lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise", "Lab: Designing a Zero Trust Architecture for a Hybrid Enterprise", { contentDir: "ch08/29-lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise.mp4", durationLabel: "3 min 3 s" }),
-      L(30, "lab-building-the-maturity-scorecard-and-rollout-roadmap", "Lab: Building the Maturity Scorecard and Rollout Roadmap", { contentDir: "ch08/30-lab-building-the-maturity-scorecard-and-rollout-roadmap" }),
-      L(31, "case-study-a-zero-trust-rollout-that-looked-complete-on-paper", "Case Study: A Zero Trust Rollout That Looked Complete on Paper", { contentDir: "ch08/31-case-study-a-zero-trust-rollout-that-looked-complete-on-paper" }),
-      L(32, "chapter-capstone-advanced-specialization-review-and-whats-next", "Chapter Capstone: Advanced Specialization Review and What's Next", { contentDir: "ch08/32-chapter-capstone-advanced-specialization-review-and-whats-next" }),
+      L(30, "lab-building-the-maturity-scorecard-and-rollout-roadmap", "Lab: Building the Maturity Scorecard and Rollout Roadmap", { contentDir: "ch08/30-lab-building-the-maturity-scorecard-and-rollout-roadmap", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/lab-building-the-maturity-scorecard-and-rollout-roadmap.mp4", durationLabel: "2 min 30 s" }),
+      L(31, "case-study-a-zero-trust-rollout-that-looked-complete-on-paper", "Case Study: A Zero Trust Rollout That Looked Complete on Paper", { contentDir: "ch08/31-case-study-a-zero-trust-rollout-that-looked-complete-on-paper", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/case-study-a-zero-trust-rollout-that-looked-complete-on-paper.mp4", durationLabel: "2 min 49 s" }),
+      L(32, "chapter-capstone-advanced-specialization-review-and-whats-next", "Chapter Capstone: Advanced Specialization Review and What's Next", { contentDir: "ch08/32-chapter-capstone-advanced-specialization-review-and-whats-next", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/chapter-capstone-advanced-specialization-review-and-whats-next.mp4", durationLabel: "2 min 47 s" }),
     ],
   },
 ];

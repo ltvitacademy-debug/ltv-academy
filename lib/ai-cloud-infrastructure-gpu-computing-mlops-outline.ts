@@ -26,9 +26,9 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
     n: 1,
     title: "GPU Computing Fundamentals for Cloud Architects",
     lessons: [
-      L(1, "why-gpus-and-what-actually-makes-them-fast-for-ai", "Why GPUs, and What Actually Makes Them Fast for AI", { contentDir: "ch01/01-why-gpus-and-what-actually-makes-them-fast-for-ai" }),
-      L(2, "gpu-memory-and-why-it-becomes-the-real-bottleneck", "GPU Memory, and Why It Becomes the Real Bottleneck", { contentDir: "ch01/02-gpu-memory-and-why-it-becomes-the-real-bottleneck" }),
-      L(3, "the-real-gpu-instance-families-on-azure-and-aws", "The Real GPU Instance Families on Azure and AWS", { contentDir: "ch01/03-the-real-gpu-instance-families-on-azure-and-aws" }),
+      L(1, "why-gpus-and-what-actually-makes-them-fast-for-ai", "Why GPUs, and What Actually Makes Them Fast for AI", { contentDir: "ch01/01-why-gpus-and-what-actually-makes-them-fast-for-ai", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/why-gpus-and-what-actually-makes-them-fast-for-ai.mp4", durationLabel: "3 min 19 s" }),
+      L(2, "gpu-memory-and-why-it-becomes-the-real-bottleneck", "GPU Memory, and Why It Becomes the Real Bottleneck", { contentDir: "ch01/02-gpu-memory-and-why-it-becomes-the-real-bottleneck", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/gpu-memory-and-why-it-becomes-the-real-bottleneck.mp4", durationLabel: "2 min 53 s" }),
+      L(3, "the-real-gpu-instance-families-on-azure-and-aws", "The Real GPU Instance Families on Azure and AWS", { contentDir: "ch01/03-the-real-gpu-instance-families-on-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/the-real-gpu-instance-families-on-azure-and-aws.mp4", durationLabel: "2 min 51 s" }),
       L(4, "when-a-workload-actually-needs-a-gpu-and-when-it-doesnt", "When a Workload Actually Needs a GPU, and When It Doesn't", { contentDir: "ch01/04-when-a-workload-actually-needs-a-gpu-and-when-it-doesnt" }),
     ],
   },

@@ -38,15 +38,15 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
     lessons: [
       L(5, "passive-reconnaissance-what-you-can-learn-without-touching-the-target", "Passive Reconnaissance: What You Can Learn Without Touching the Target", { contentDir: "ch02/05-passive-reconnaissance-what-you-can-learn-without-touching-the-target", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/passive-reconnaissance-what-you-can-learn-without-touching-the-target.mp4", durationLabel: "2 min 48 s" }),
       L(6, "osint-techniques-for-a-real-engagement", "OSINT Techniques for a Real Engagement", { contentDir: "ch02/06-osint-techniques-for-a-real-engagement", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/osint-techniques-for-a-real-engagement.mp4", durationLabel: "2 min 35 s" }),
-      L(7, "active-reconnaissance-and-where-passive-recon-stops-being-enough", "Active Reconnaissance, and Where Passive Recon Stops Being Enough", { contentDir: "ch02/07-active-reconnaissance-and-where-passive-recon-stops-being-enough" }),
-      L(8, "turning-recon-into-an-attack-surface-map", "Turning Recon into an Attack Surface Map", { contentDir: "ch02/08-turning-recon-into-an-attack-surface-map" }),
+      L(7, "active-reconnaissance-and-where-passive-recon-stops-being-enough", "Active Reconnaissance, and Where Passive Recon Stops Being Enough", { contentDir: "ch02/07-active-reconnaissance-and-where-passive-recon-stops-being-enough", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/active-reconnaissance-and-where-passive-recon-stops-being-enough.mp4", durationLabel: "2 min 21 s" }),
+      L(8, "turning-recon-into-an-attack-surface-map", "Turning Recon into an Attack Surface Map", { contentDir: "ch02/08-turning-recon-into-an-attack-surface-map", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/turning-recon-into-an-attack-surface-map.mp4", durationLabel: "2 min 20 s" }),
     ],
   },
   {
     n: 3,
     title: "Scanning and Enumeration",
     lessons: [
-      L(9, "network-scanning-fundamentals-with-nmap", "Network Scanning Fundamentals with Nmap", { contentDir: "ch03/09-network-scanning-fundamentals-with-nmap" }),
+      L(9, "network-scanning-fundamentals-with-nmap", "Network Scanning Fundamentals with Nmap", { contentDir: "ch03/09-network-scanning-fundamentals-with-nmap", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/network-scanning-fundamentals-with-nmap.mp4", durationLabel: "3 min 0 s" }),
       L(10, "service-and-version-enumeration-beyond-just-open-ports", "Service and Version Enumeration Beyond Just Open Ports", { contentDir: "ch03/10-service-and-version-enumeration-beyond-just-open-ports" }),
       L(11, "vulnerability-scanning-and-why-a-scanner-isnt-a-pentest", "Vulnerability Scanning, and Why a Scanner Isn't a Pentest", { contentDir: "ch03/11-vulnerability-scanning-and-why-a-scanner-isnt-a-pentest" }),
       L(12, "prioritizing-findings-before-you-ever-attempt-exploitation", "Prioritizing Findings Before You Ever Attempt Exploitation", { contentDir: "ch03/12-prioritizing-findings-before-you-ever-attempt-exploitation" }),
@@ -99,4 +99,7 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
       L(29, "lab-a-full-recon-to-exploitation-engagement", "Lab: A Full Recon-to-Exploitation Engagement", { contentDir: "ch08/29-lab-a-full-recon-to-exploitation-engagement" }),
       L(30, "lab-writing-a-professional-penetration-test-report", "Lab: Writing a Professional Penetration Test Report", { contentDir: "ch08/30-lab-writing-a-professional-penetration-test-report" }),
       L(31, "case-study-a-finding-the-client-didnt-want-to-hear", "Case Study: A Finding the Client Didn't Want to Hear", { contentDir: "ch08/31-case-study-a-finding-the-client-didnt-want-to-hear" }),
-      L(32, "chapter-capstone-ethical-hacking-and-purple-t
+      L(32, "chapter-capstone-ethical-hacking-and-purple-team-review", "Chapter Capstone: Ethical Hacking and Purple Team Review", { contentDir: "ch08/32-chapter-capstone-ethical-hacking-and-purple-team-review" }),
+    ],
+  },
+];

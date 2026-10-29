@@ -37,9 +37,9 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     title: "Multi-Cloud Strategy",
     lessons: [
       L(5, "why-companies-actually-go-multi-cloud-and-why-some-shouldnt", "Why Companies Actually Go Multi-Cloud, and Why Some Shouldn't", { contentDir: "ch02/05-why-companies-actually-go-multi-cloud-and-why-some-shouldnt", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/why-companies-actually-go-multi-cloud-and-why-some-shouldnt.mp4", durationLabel: "2 min 41 s" }),
-      L(6, "best-of-breed-vs-redundancy-driven-multi-cloud", "Best-of-Breed vs. Redundancy-Driven Multi-Cloud", { contentDir: "ch02/06-best-of-breed-vs-redundancy-driven-multi-cloud" }),
-      L(7, "the-real-cost-of-multi-cloud-complexity", "The Real Cost of Multi-Cloud Complexity", { contentDir: "ch02/07-the-real-cost-of-multi-cloud-complexity" }),
-      L(8, "avoiding-vendor-lock-in-without-over-engineering-for-it", "Avoiding Vendor Lock-In Without Over-Engineering for It", { contentDir: "ch02/08-avoiding-vendor-lock-in-without-over-engineering-for-it" }),
+      L(6, "best-of-breed-vs-redundancy-driven-multi-cloud", "Best-of-Breed vs. Redundancy-Driven Multi-Cloud", { contentDir: "ch02/06-best-of-breed-vs-redundancy-driven-multi-cloud", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/best-of-breed-vs-redundancy-driven-multi-cloud.mp4", durationLabel: "2 min 39 s" }),
+      L(7, "the-real-cost-of-multi-cloud-complexity", "The Real Cost of Multi-Cloud Complexity", { contentDir: "ch02/07-the-real-cost-of-multi-cloud-complexity", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/the-real-cost-of-multi-cloud-complexity.mp4", durationLabel: "2 min 26 s" }),
+      L(8, "avoiding-vendor-lock-in-without-over-engineering-for-it", "Avoiding Vendor Lock-In Without Over-Engineering for It", { contentDir: "ch02/08-avoiding-vendor-lock-in-without-over-engineering-for-it", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/avoiding-vendor-lock-in-without-over-engineering-for-it.mp4", durationLabel: "2 min 42 s" }),
     ],
   },
   {

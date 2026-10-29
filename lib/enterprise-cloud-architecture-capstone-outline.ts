@@ -97,9 +97,9 @@ export const ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Capstone: Designing and Defending an Enterprise Cloud Architecture",
     lessons: [
-      L(29, "lab-designing-a-landing-zone-and-network-for-a-multi-team-org", "Lab: Designing a Landing Zone and Network for a Multi-Team Org", { contentDir: "ch08/29-lab-designing-a-landing-zone-and-network-for-a-multi-team-org" }),
-      L(30, "lab-writing-the-adrs-and-dr-plan-for-your-design", "Lab: Writing the ADRs and DR Plan for Your Design", { contentDir: "ch08/30-lab-writing-the-adrs-and-dr-plan-for-your-design" }),
-      L(31, "case-study-an-architecture-that-passed-review-and-failed-in-production", "Case Study: An Architecture That Passed Review and Failed in Production", { contentDir: "ch08/31-case-study-an-architecture-that-passed-review-and-failed-in-production" }),
+      L(29, "lab-designing-a-landing-zone-and-network-for-a-multi-team-org", "Lab: Designing a Landing Zone and Network for a Multi-Team Org", { contentDir: "ch08/29-lab-designing-a-landing-zone-and-network-for-a-multi-team-org", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/lab-designing-a-landing-zone-and-network-for-a-multi-team-org.mp4", durationLabel: "2 min 38 s" }),
+      L(30, "lab-writing-the-adrs-and-dr-plan-for-your-design", "Lab: Writing the ADRs and DR Plan for Your Design", { contentDir: "ch08/30-lab-writing-the-adrs-and-dr-plan-for-your-design", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/lab-writing-the-adrs-and-dr-plan-for-your-design.mp4", durationLabel: "2 min 28 s" }),
+      L(31, "case-study-an-architecture-that-passed-review-and-failed-in-production", "Case Study: An Architecture That Passed Review and Failed in Production", { contentDir: "ch08/31-case-study-an-architecture-that-passed-review-and-failed-in-production", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/case-study-an-architecture-that-passed-review-and-failed-in-production.mp4", durationLabel: "2 min 37 s" }),
       L(32, "chapter-capstone-advanced-specialization-review-and-whats-next", "Chapter Capstone: Advanced Specialization Review and What's Next", { contentDir: "ch08/32-chapter-capstone-advanced-specialization-review-and-whats-next" }),
     ],
   },
