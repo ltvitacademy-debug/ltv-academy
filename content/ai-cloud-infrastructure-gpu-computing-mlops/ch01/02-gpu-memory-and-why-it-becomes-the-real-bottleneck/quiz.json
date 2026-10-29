@@ -1,0 +1,60 @@
+{
+  "lesson": "gpu-memory-and-why-it-becomes-the-real-bottleneck",
+  "questions": [
+    {
+      "q": "Besides the model's own weights, what else must fit in GPU memory at the same time during training?",
+      "options": [
+        "Gradients, optimizer state, and activations — all held in VRAM alongside the weights",
+        "Nothing else; only the trained weights need to be on the GPU during training",
+        "Only the training dataset's raw text files",
+        "The GPU driver source code"
+      ],
+      "answer": 0,
+      "explain": "Training requires weights, gradients (one value per parameter), optimizer state (e.g. Adam's momentum and variance), and activations from the forward pass to all reside in VRAM simultaneously."
+    },
+    {
+      "q": "Why is 'CUDA out of memory' described as the most common training failure, rather than the job simply running too slowly?",
+      "options": [
+        "Because GPU clock speed degrades over time and eventually halts training",
+        "Because the combined working set — weights, gradients, optimizer state, and activations — frequently exceeds the VRAM physically installed on the card, which stops the job outright rather than just slowing it down",
+        "Because Python raises this error whenever a script has a syntax error",
+        "Because cloud providers intentionally throttle memory to force customers onto larger instances"
+      ],
+      "answer": 1,
+      "explain": "Unlike a slow job that still finishes, running out of VRAM capacity stops training entirely — which is why memory, not raw compute speed, is the more common practical constraint."
+    },
+    {
+      "q": "In the worked example, why can fine-tuning a 7B-parameter model need 80-100+ GB of VRAM when the FP16 weights alone are only about 14 GB?",
+      "options": [
+        "Because FP16 training always doubles the stated model size for no specific reason",
+        "Because the GPU reserves half its memory for the operating system",
+        "Because gradients (~14 GB) and Adam's FP32 optimizer state (~56 GB, from momentum and variance per parameter) stack on top of the weights, plus additional activation memory",
+        "Because the dataset itself must be fully loaded into VRAM"
+      ],
+      "answer": 2,
+      "explain": "Gradients roughly match the weights in size, and Adam's optimizer state (kept in FP32 for stability) is often the single largest consumer — together with activations, this is why the real memory footprint is far larger than the weights alone."
+    },
+    {
+      "q": "What is gradient checkpointing used for?",
+      "options": [
+        "Saving model weights to disk at regular intervals for backup purposes",
+        "Checking that gradients sum to zero before an optimizer step",
+        "Compressing gradients for faster network transfer between GPUs",
+        "Recomputing activations during the backward pass instead of storing all of them during the forward pass, trading extra compute time for reduced memory usage"
+      ],
+      "answer": 3,
+      "explain": "Gradient checkpointing discards most activations after the forward pass and recomputes them as needed during backprop, directly reducing the memory pressure that causes out-of-memory failures."
+    },
+    {
+      "q": "What is the difference between GPU memory capacity and GPU memory bandwidth?",
+      "options": [
+        "Capacity is how much total VRAM is on the card (determining whether a workload fits at all); bandwidth is how fast data moves between that memory and the compute cores (determining whether cores sit idle waiting on data)",
+        "They are two names for the exact same specification",
+        "Capacity only matters for inference, and bandwidth only matters for training",
+        "Bandwidth refers to network bandwidth between separate GPU servers, unrelated to a single card's memory"
+      ],
+      "answer": 0,
+      "explain": "Capacity (e.g. 80 GB on an A100-80GB) decides if a job's working set fits; bandwidth (e.g. ~2 TB/s via HBM2e) decides how fast that memory can feed the thousands of parallel compute cores. A job can be bound by either, and the fixes differ."
+    }
+  ]
+}

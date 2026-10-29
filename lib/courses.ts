@@ -25,6 +25,8 @@ import { DIGITAL_FORENSICS_MALWARE_ANALYSIS_CHAPTERS } from "./digital-forensics
 import { ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS } from "./advanced-platform-engineering-gitops-cicd-outline";
 import { ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS } from "./ethical-hacking-penetration-testing-purple-team-outline";
 import { HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS } from "./hybrid-multi-cloud-enterprise-architecture-outline";
+import { AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS } from "./ai-security-engineering-adversarial-ai-defense-outline";
+import { AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS } from "./ai-cloud-infrastructure-gpu-computing-mlops-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2510,7 +2512,8 @@ export const COURSES: CourseMeta[] = [
     slug: "ai-security-engineering-adversarial-ai-defense",
     title: "AI Security Engineering & Adversarial AI Defense",
     tagline: "Expert specialization: securing AI/LLM systems against prompt injection, data poisoning, and adversarial attacks.",
-    status: "coming-soon",
+    status: "available",
+    chapters: AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS,
   },
   {
     slug: "enterprise-security-architecture-grc-risk-management",
@@ -2608,7 +2611,8 @@ export const COURSES: CourseMeta[] = [
     slug: "ai-cloud-infrastructure-gpu-computing-mlops",
     title: "AI Cloud Infrastructure, GPU Computing & MLOps",
     tagline: "Expert specialization: GPU compute infrastructure and MLOps pipelines for AI workloads in the cloud.",
-    status: "coming-soon",
+    status: "available",
+    chapters: AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS,
   },
   {
     slug: "advanced-sre-disaster-recovery-resilience",

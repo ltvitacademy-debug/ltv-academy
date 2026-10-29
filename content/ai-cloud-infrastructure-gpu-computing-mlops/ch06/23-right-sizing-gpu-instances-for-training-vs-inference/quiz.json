@@ -1,0 +1,60 @@
+{
+  "lesson": "right-sizing-gpu-instances-for-training-vs-inference",
+  "questions": [
+    {
+      "q": "Why does right-sizing a GPU workload split into two genuinely different problems?",
+      "options": [
+        "Because training and inference always run on exactly the same GPU model, so sizing is identical",
+        "Because inference is always more expensive than training and therefore needs the bigger GPU",
+        "Because training must hold parameters, optimizer state, activations, and gradients simultaneously in memory, while inference only needs parameters and current activations - a much smaller footprint",
+        "Because cloud providers only sell one GPU size, so there is no real sizing decision to make"
+      ],
+      "answer": 2,
+      "explain": "Training's memory bill includes optimizer state, retained activations for backpropagation, and gradients on top of parameters. Inference drops all of that, needing only parameters and activations for the current request."
+    },
+    {
+      "q": "What does the Adam optimizer add to a training job's GPU memory requirement that inference never needs?",
+      "options": [
+        "Nothing; Adam has no memory overhead compared to inference",
+        "A running first and second moment estimate per parameter - commonly two extra copies of the parameter count",
+        "A duplicate copy of the entire training dataset held in GPU memory",
+        "An additional GPU driver that only Adam-based models require"
+      ],
+      "answer": 1,
+      "explain": "Adam tracks per-parameter moment estimates, commonly adding roughly two extra copies of the parameter count to memory - overhead that exists only during training, never during inference."
+    },
+    {
+      "q": "Why can inference frequently run on a smaller, cheaper GPU - or even a CPU - compared to the hardware used to train the same model?",
+      "options": [
+        "Inference discards each layer's activations immediately since there is no backward pass, and needs no optimizer state or gradients at all, leaving a much smaller memory footprint",
+        "Inference requests are always smaller in data volume than training batches",
+        "GPUs cannot be used for inference under any circumstances, only for training",
+        "Inference always uses a different, incompatible model format than training"
+      ],
+      "answer": 0,
+      "explain": "Without optimizer state, retained activations for backprop, or gradients, inference's memory footprint for the same model can be dramatically smaller than what training required, sometimes small enough to run acceptably on CPU."
+    },
+    {
+      "q": "What is the recommended practice for sizing a GPU inference endpoint, according to the lesson?",
+      "options": [
+        "Inherit whatever GPU tier the training job used, without further testing",
+        "Always provision the largest available GPU to guarantee the lowest latency regardless of cost",
+        "Never use a GPU for inference under any circumstance",
+        "Load-test the actual serving endpoint against realistic traffic and measure whether a smaller GPU tier (or CPU) still meets latency/throughput targets before moving up a tier"
+      ],
+      "answer": 3,
+      "explain": "Inference sizing should be based on its own load testing against real traffic patterns, moving up a tier only once there's evidence a smaller option falls short - not inherited from the training job's hardware."
+    },
+    {
+      "q": "What metrics does the lesson recommend tracking during a real training run to decide whether a job is oversized?",
+      "options": [
+        "Only the total dollar cost of the cloud bill at the end of the month",
+        "The number of code commits made during the training project",
+        "GPU memory utilization and compute utilization (e.g., via nvidia-smi or cloud-native GPU metrics) across the actual run",
+        "The number of engineers assigned to the training project"
+      ],
+      "answer": 2,
+      "explain": "Tracking GPU memory and compute utilization across a real run reveals whether there's large unused headroom and consistently low compute usage - the signal that the job is paying for more GPU (or more GPUs) than it needs."
+    }
+  ]
+}

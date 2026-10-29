@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Security Engineering & Adversarial AI Defense · Chapter 6",
+    "titlePlain": "Secrets and Credential Handling in ",
+    "titleEmphasis": "AI Applications",
+    "titleSuffix": "",
+    "subtitle": "Lesson 24 · Securing AI Application Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "If it's in the prompt, treat it as leaked",
+    "code": "# WRONG — the model is handed the credential directly\ntool_schema = {\n    \"name\": \"call_crm_api\",\n    \"args\": {\"api_key\": \"sk-live-...\", \"endpoint\": \"...\"}\n}\n\n# a context window can be logged, traced, summarized into memory,\n# or read back out via prompt injection — assume it already has",
+    "caption": "A secret that enters the context window is a secret that has already leaked."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The architectural fix",
+    "titlePlain": "Separate the ",
+    "titleEmphasis": "reasoning",
+    "titleSuffix": " plane from the credential plane",
+    "steps": [
+      { "label": "The model decides intent and parameters", "sub": "\"look up order 4471\" — never the credential itself" },
+      { "label": "The orchestration layer holds real credentials", "sub": "injected only at the moment a tool actually executes" },
+      { "label": "Credentials never re-enter the model's context", "sub": "not in the tool call, and not in the tool's result" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The right pattern",
+    "code": "# RIGHT — the model only supplies intent and parameters\ntool_schema = {\"name\": \"lookup_order\", \"args\": {\"order_id\": \"4471\"}}\n\ndef lookup_order(order_id):\n    token = get_managed_identity_token(scope=\"orders:read\")  # injected here\n    return crm_client.get(order_id, auth=token)\n\n# the model never sees `token`",
+    "caption": "Managed identity from Course 9: a short-lived token, no long-lived key stored anywhere."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What's left after managed identity",
+    "titlePlain": "Vault the ",
+    "titleEmphasis": "few",
+    "titleSuffix": " secrets that remain",
+    "steps": [
+      { "label": "Third-party keys with no identity federation", "sub": "go in Key Vault / Secrets Manager / HashiCorp Vault, not a config file" },
+      { "label": "Rotate without a code change", "sub": "a vault makes that routine instead of a deploy" },
+      { "label": "Scan training, fine-tuning, and RAG data", "sub": "an embedded secret can resurface later through ordinary model output" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 6 complete",
+    "titlePlain": "On to Chapter 7: ",
+    "titleEmphasis": "Governance & Red-Teaming",
+    "titleSuffix": "",
+    "subtitle": "AI-specific threat modeling, red-teaming, and emerging regulation."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "securing-a-rag-pipeline-end-to-end",
+  "questions": [
+    {
+      "q": "Why is a RAG pipeline best understood primarily as a data-access system rather than purely an AI feature?",
+      "options": [
+        "Because it is really a document-retrieval system — chunking, embedding, similarity search, and access control — with a model summarizing the results at the end",
+        "Because RAG pipelines never involve a language model at any stage",
+        "Because vector databases are not real databases and have no access-control concerns",
+        "Because retrieval only happens after the model has already generated its answer"
+      ],
+      "answer": 0,
+      "explain": "Underneath the natural-language interface, RAG is document retrieval — who can see which chunks, and what happens when untrusted retrieved content reaches the model — with generation added at the end."
+    },
+    {
+      "q": "What is wrong with running a similarity search against the full vector index and then filtering out unauthorized results afterward, in application code?",
+      "options": [
+        "Nothing — post-query filtering is the recommended production pattern for RAG access control",
+        "It is wrong only because it is slower than filtering during the query",
+        "It is unreliable: if top-k results are dominated by unauthorized documents, filtering afterward can leave nothing relevant, or a filtering bug can leak a result before anyone notices",
+        "It is wrong because vector stores do not support metadata at all"
+      ],
+      "answer": 2,
+      "explain": "Post-filtering is the vector-search equivalent of running a SQL query with no WHERE clause and trusting the application layer to hide unauthorized rows afterward — it's structurally unreliable, not just slow."
+    },
+    {
+      "q": "What does pushing authorization into the vector-store query itself (pre-query filtering) achieve?",
+      "options": [
+        "It allows the system prompt to enforce access control instead of the database",
+        "It ensures a document the user cannot access is never eligible to be returned as a result in the first place, rather than being removed after the fact",
+        "It makes the client responsible for deciding which documents it is allowed to see",
+        "It removes the need for any access-control metadata on indexed chunks"
+      ],
+      "answer": 1,
+      "explain": "Attaching ACL metadata at index time and requiring every query to include a server-side filter scoped to the authenticated user's permitted IDs means unauthorized chunks are excluded from the search itself, the same way row-level security scopes a SQL query."
+    },
+    {
+      "q": "Why should retrieved chunks in a RAG pipeline be treated as untrusted content rather than trusted instructions?",
+      "options": [
+        "Because vector stores automatically strip all text formatting from indexed content",
+        "Because retrieval only returns numerical embeddings, never text",
+        "Because retrieved chunks are always encrypted and therefore unreadable by the model",
+        "Because retrieved chunks can contain crafted, instruction-like phrasing — the same indirect-prompt-injection pattern from Chapter 2 — introduced through documents like uploads, scraped pages, or support tickets"
+      ],
+      "answer": 3,
+      "explain": "Any content that entered the index from an uploaded, scraped, or forwarded source is untrusted the same way indirect prompt injection sources are — a chunk can contain phrasing crafted to be read as an instruction rather than reference material."
+    },
+    {
+      "q": "Where should the access-control filter value (such as a user's group IDs) used in a retrieval query come from?",
+      "options": [
+        "From the vector store's default configuration, which applies the same filter to every user",
+        "From the authenticated user's server-side session, never from a client-supplied or prompt-supplied value",
+        "From the retrieved document's own metadata as written by whoever uploaded it",
+        "From a parameter embedded in the user's prompt, since that is simplest to implement"
+      ],
+      "answer": 1,
+      "explain": "Building the filter from a client- or prompt-controlled value creates an authorization bypass — the retrieval-stage equivalent of prompt injection. The filter must be derived from the authenticated session on the server."
+    }
+  ]
+}

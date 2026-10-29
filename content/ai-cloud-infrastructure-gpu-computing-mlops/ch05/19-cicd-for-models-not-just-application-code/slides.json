@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 5",
+    "titlePlain": "CI/CD for Models, Not Just ",
+    "titleEmphasis": "Application Code",
+    "titleSuffix": "",
+    "subtitle": "Lesson 3 · MLOps Pipelines for Model Lifecycle Management"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same shape, different artifact",
+    "titlePlain": "What changes from ",
+    "titleEmphasis": "course 12",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "\"Commit\" becomes new data or a drift alert", "sub": "not only a code push — fresh data or a monitoring signal can trigger a run" },
+      { "label": "\"Tests\" become the evaluation gate", "sub": "compare the new model's metrics against the current production model's" },
+      { "label": "\"Deployment\" becomes a registry promotion", "sub": "transition_model_version_stage, not a container rollout" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Three retraining triggers",
+    "code": "on:\n  schedule:\n    - cron: \"0 3 * * 0\"       # weekly scheduled retrain\n  repository_dispatch:\n    types: [drift-alert]       # fired by monitoring\n  push:\n    paths: [\"training/**\"]     # training code/config change\njobs:\n  retrain:\n    steps:\n      - run: python train.py\n      - run: python evaluate.py --gate-against=production",
+    "caption": "A schedule, a drift alert, or a code change — any one of the three kicks off the pipeline."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The gate, automated",
+    "code": "new_metrics = evaluate(new_model, test_set)\nprod_version = registry.get_model_version(\n    \"fraud-model\", stage=\"Production\")\nprod_metrics = registry.get_metrics(prod_version)\n\nif new_metrics[\"f1\"] <= prod_metrics[\"f1\"]:\n    sys.exit(1)   # pipeline fails here, nothing promotes",
+    "caption": "A failed gate is the pipeline working correctly, not breaking — it blocked a worse model."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "When the gate passes",
+    "titlePlain": "Promotion as a ",
+    "titleEmphasis": "pipeline step",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "No manual command needed", "sub": "the passing pipeline calls the same registry promotion from lesson 18 itself" },
+      { "label": "This is GitOps for models", "sub": "desired state declared in the registry, reached without a manual production change" },
+      { "label": "Rollback is just as automatic", "sub": "point the Production alias back at the previous version" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 20",
+    "titlePlain": "Model Monitoring and Detecting ",
+    "titleEmphasis": "Drift",
+    "titleSuffix": " in Production",
+    "subtitle": "The signal that fires the drift-triggered retrain you just saw."
+  }
+]

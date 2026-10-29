@@ -1,0 +1,60 @@
+{
+  "lesson": "running-gpu-workloads-on-kubernetes",
+  "questions": [
+    {
+      "q": "Out of the box, how does the Kubernetes scheduler see a node with 8 physical GPUs attached?",
+      "options": [
+        "Identically to a node with 0 GPUs — Kubernetes has no native concept of a GPU",
+        "As a node with 8 extra CPU cores",
+        "As a node that automatically gets nvidia.com/gpu capacity without any additional setup",
+        "As a node that must be manually excluded from scheduling"
+      ],
+      "answer": 0,
+      "explain": "Kubernetes' built-in resource model only understands CPU and memory. Without a device plugin, GPUs are invisible to the scheduler regardless of how many are physically attached."
+    },
+    {
+      "q": "What does the NVIDIA device plugin do once deployed as a DaemonSet?",
+      "options": [
+        "It installs the NVIDIA driver on every node automatically",
+        "It discovers the physical GPUs on each node and reports them to the kubelet as the nvidia.com/gpu extended resource",
+        "It enables Multi-Instance GPU partitioning by default",
+        "It replaces the Kubernetes scheduler with a GPU-aware scheduler"
+      ],
+      "answer": 1,
+      "explain": "The device plugin's job is discovery and advertisement: it finds the GPUs on its node and reports them as the nvidia.com/gpu extended resource so the scheduler can account for them. It assumes the driver and Container Toolkit are already installed."
+    },
+    {
+      "q": "In a pod spec, how must nvidia.com/gpu be requested?",
+      "options": [
+        "Only under resources.requests, never resources.limits",
+        "As a fractional value such as 0.5, by default",
+        "Under resources.limits, with requests and limits required to be equal",
+        "As a separate top-level gpuCount field on the pod spec"
+      ],
+      "answer": 2,
+      "explain": "nvidia.com/gpu is only meaningful as a limits entry, and requests/limits must match — there's no built-in way to request less than a full GPU and get a fractional limit."
+    },
+    {
+      "q": "What is the real purpose of combining a node taint on GPU nodes with a nodeSelector on GPU pods?",
+      "options": [
+        "The taint is purely cosmetic and has no scheduling effect",
+        "The nodeSelector alone is sufficient; the taint is optional in every cluster",
+        "Taints only apply to control-plane nodes, never worker nodes with GPUs",
+        "The taint keeps non-GPU pods off GPU nodes, while the selector pulls GPU pods onto them — the two need each other"
+      ],
+      "answer": 3,
+      "explain": "A nodeSelector alone pulls the right pods toward GPU nodes but doesn't stop an unrelated pod from landing there too. The taint is what actively excludes pods without a matching toleration, protecting expensive GPU capacity."
+    },
+    {
+      "q": "By default, how many physical GPUs does a pod requesting nvidia.com/gpu: 1 receive?",
+      "options": [
+        "Shared access to all GPUs on the node",
+        "Exclusive use of one entire physical GPU",
+        "One MIG instance automatically",
+        "A time-sliced tenth of one GPU"
+      ],
+      "answer": 1,
+      "explain": "By default, nvidia.com/gpu is allocated as a whole integer — a pod requesting 1 gets exclusive use of one entire physical GPU, never a fraction, unless additional sharing mechanisms are configured (covered in the next lesson)."
+    }
+  ]
+}

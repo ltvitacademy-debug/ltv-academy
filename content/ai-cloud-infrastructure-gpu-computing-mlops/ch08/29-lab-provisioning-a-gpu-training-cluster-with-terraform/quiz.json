@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-provisioning-a-gpu-training-cluster-with-terraform",
+  "questions": [
+    {
+      "q": "What should you check before running terraform apply to provision six Standard_NC24ads_A100_v4 VMs?",
+      "options": [
+        "That the region's GPU family quota can actually support six VMs of that size",
+        "Nothing -- Terraform automatically requests quota increases on your behalf",
+        "That the VMs are tagged with a cost center",
+        "That Kubernetes is already running a device plugin"
+      ],
+      "answer": 0,
+      "explain": "GPU quota is checked before writing Terraform at all -- a fleet of six GPU VMs that exceeds the region's quota fails apply partway through, not cleanly up front."
+    },
+    {
+      "q": "In this lab's Terraform config, what does the custom_data bootstrap script do on each GPU VM?",
+      "options": [
+        "Only installs a monitoring agent",
+        "Only joins the VM to the Kubernetes cluster, with no driver setup",
+        "Nothing -- custom_data is unused by azurerm_linux_virtual_machine",
+        "Installs the NVIDIA driver and Container Toolkit, then runs the kubeadm join command, so the node is both driver-ready and a cluster member when it finishes booting"
+      ],
+      "answer": 3,
+      "explain": "Running both steps in the same bootstrap script means a node only finishes booting once it's genuinely ready for GPU workloads and already part of the cluster."
+    },
+    {
+      "q": "Why does the lab apply both a node label (accelerator=nvidia-a100) and a taint (nvidia.com/gpu=present:NoSchedule) to the GPU nodes?",
+      "options": [
+        "The taint alone is sufficient and the label is only cosmetic",
+        "The label is required only for billing reports",
+        "The label pulls GPU-requesting pods onto the nodes via nodeSelector, while the taint keeps ordinary pods from landing there by accident -- both are needed together",
+        "Labels and taints do the exact same thing, so either one works alone"
+      ],
+      "answer": 2,
+      "explain": "A selector alone pulls the right pods in; a taint is what actively keeps the wrong ones out. The pairing is what makes GPU nodes safe to share a cluster with everything else."
+    },
+    {
+      "q": "If kubectl describe node shows nvidia.com/gpu: 0 on a newly joined node, what does this lab say to check first?",
+      "options": [
+        "Re-run terraform apply from scratch",
+        "The device plugin pod's logs on that specific node -- it likely didn't start cleanly",
+        "The VM's admin_username setting",
+        "The Azure subscription's billing status"
+      ],
+      "answer": 1,
+      "explain": "A node reporting zero GPU capacity almost always means its device plugin pod failed to start correctly, not that the hardware or driver is missing."
+    },
+    {
+      "q": "What is the actual end-to-end proof this lab is built around?",
+      "options": [
+        "terraform apply completing with no errors",
+        "nvidia-smi printing a GPU table on one single VM",
+        "The device plugin DaemonSet showing as deployed in kubectl get pods",
+        "A real training Job (defect-model-training-run-42) scheduling onto a GPU node and reaching the Running state, not just each setup step succeeding in isolation"
+      ],
+      "answer": 3,
+      "explain": "Each individual step succeeding doesn't guarantee the whole chain works -- only a real workload actually scheduling and running on a real GPU proves quota, Terraform, drivers, and scheduling all line up."
+    }
+  ]
+}

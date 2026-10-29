@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 2",
+    "titlePlain": "GPU Scheduling and Sharing a ",
+    "titleEmphasis": "Single GPU",
+    "titleSuffix": "",
+    "subtitle": "Lesson 8 · Provisioning GPU Infrastructure"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The problem",
+    "titlePlain": "One pod, one whole ",
+    "titleEmphasis": "GPU",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Default model: whole integers only", "sub": "a request for 1 GPU claims an entire physical card" },
+      { "label": "A100s and H100s are enormous", "sub": "small inference workloads often use a fraction of that" },
+      { "label": "Two real fixes", "sub": "time-slicing (software) and MIG (hardware), different tradeoffs" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Time-slicing: software sharing",
+    "code": "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: nvidia-device-plugin-config\n  namespace: kube-system\ndata:\n  config.yaml: |\n    version: v1\n    sharing:\n      timeSlicing:\n        resources:\n          - name: nvidia.com/gpu\n            replicas: 4",
+    "caption": "4 pods can now share 1 physical GPU — but with no memory or fault isolation between them."
+  },
+  {
+    "type": "code",
+    "eyebrow": "MIG: hardware partitioning",
+    "code": "nvidia-smi -mig 1\nnvidia-smi mig -cgi 19,19,19 -C\n# profile IDs vary — nvidia-smi mig -lgip lists what's available\n\n# requesting a MIG slice in a pod:\nresources:\n  limits:\n    nvidia.com/mig-1g.10gb: 1",
+    "caption": "A100/H100-class GPUs only — carves the physical card into isolated GPU instances."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Which one, when",
+    "titlePlain": "Isolation vs. ",
+    "titleEmphasis": "simplicity",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Time-slicing", "sub": "any NVIDIA GPU, simple, no isolation — fine for light/forgiving workloads" },
+      { "label": "MIG", "sub": "supported GPUs only, fixed profiles, real hardware isolation" },
+      { "label": "Training still wants a whole GPU", "sub": "sharing is squarely an inference/multi-tenant concern" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 2 complete",
+    "titlePlain": "On to Chapter 3: ",
+    "titleEmphasis": "Distributed Training",
+    "titleSuffix": "",
+    "subtitle": "Why one GPU stops being enough, and what changes with more than one."
+  }
+]

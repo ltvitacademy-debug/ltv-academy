@@ -1,0 +1,60 @@
+{
+  "lesson": "secrets-and-credential-handling-in-ai-applications",
+  "questions": [
+    {
+      "q": "Why should an API key or password never be placed directly into a prompt or system prompt?",
+      "options": [
+        "A context window can be logged, traced, summarized into memory, or read back out through prompt injection, so a secret placed there should be treated as already leaked",
+        "Prompts are always encrypted automatically by every LLM provider",
+        "Placing secrets in a prompt is fine as long as the application has no internet access",
+        "Models are physically incapable of repeating any text from their own context window"
+      ],
+      "answer": 0,
+      "explain": "A context window isn't a private scratchpad — it can surface through logging, observability traces, memory summarization, or an attacker-induced repetition via prompt injection, so a secret placed there counts as exposed."
+    },
+    {
+      "q": "What is the core architectural fix this lesson describes for keeping credentials away from a model's reasoning?",
+      "options": [
+        "Encrypting the prompt text so the model cannot read its own instructions",
+        "Giving the model a separate, lower-privilege copy of every credential it might need",
+        "Separating the reasoning plane from the credential plane, so the model only supplies intent and parameters while the orchestration layer injects real credentials at tool-execution time",
+        "Removing all tools from the agent so it never needs any credentials"
+      ],
+      "answer": 2,
+      "explain": "The model decides that a tool should be called and with what arguments, but never holds or sees the credential — the orchestration layer around it holds and injects real credentials only at the moment a tool actually executes."
+    },
+    {
+      "q": "What does managed identity / workload identity federation (from Course 9's cloud security content) provide for an AI application's service-to-service calls?",
+      "options": [
+        "A way to encrypt long-lived API keys so they are safe to store in a prompt",
+        "A faster way to generate static API keys for every tool an agent uses",
+        "A requirement that every tool call be approved by a human before it runs",
+        "Authentication based on an identity tied to the compute resource itself, with short-lived tokens issued automatically — removing the need for a stored long-lived key entirely"
+      ],
+      "answer": 3,
+      "explain": "Managed identity ties authentication to the compute resource rather than a stored secret, so there's no long-lived key to leak through a log, config file, or container image — the token is short-lived and automatically rotated."
+    },
+    {
+      "q": "When does a dedicated secrets vault (such as Key Vault, Secrets Manager, or HashiCorp Vault) still earn its place in an AI application, even after adopting managed identity broadly?",
+      "options": [
+        "Never — managed identity always eliminates every secret an AI application could need",
+        "Only for secrets used during model training, never for production credentials",
+        "For the remaining credentials that managed identity can't replace, such as a third-party API that only accepts a static key or a legacy system with no identity federation support",
+        "Only when the application has no tool-calling capability at all"
+      ],
+      "answer": 2,
+      "explain": "Managed identity doesn't eliminate every secret — some third-party or legacy systems still require a static key. For those, a vault provides encryption at rest, auditable access, and rotation without a code change."
+    },
+    {
+      "q": "Why should training, fine-tuning, and RAG-indexing data be scanned for accidentally embedded secrets before use?",
+      "options": [
+        "Because scanning data for secrets is required only by RAG pipelines, never by fine-tuning pipelines",
+        "Because a credential baked into training data or an indexed document can resurface later through ordinary model output, the same way other memorized training data can leak back out",
+        "Because training data is never stored anywhere after a model finishes training",
+        "Because fine-tuning pipelines automatically redact any sensitive data without configuration"
+      ],
+      "answer": 1,
+      "explain": "A secret embedded in data used to train, fine-tune, or populate an index becomes part of what the model can memorize and later reproduce through normal use — the same training-data-leakage risk covered earlier in the course, applied to credentials specifically."
+    }
+  ]
+}

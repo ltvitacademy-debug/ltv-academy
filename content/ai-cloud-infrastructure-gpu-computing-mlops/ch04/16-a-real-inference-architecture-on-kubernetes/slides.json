@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 4",
+    "titlePlain": "A Real Inference ",
+    "titleEmphasis": "Architecture",
+    "titleSuffix": " on Kubernetes",
+    "subtitle": "Lesson 16 · Model Serving and Inference Infrastructure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The Deployment: GPU scheduling + readiness",
+    "code": "spec:\n  replicas: 2\n  template:\n    spec:\n      nodeSelector:\n        workload-type: gpu-inference\n      containers:\n        - name: triton\n          readinessProbe:\n            httpGet: { path: /v2/health/ready, port: 8000 }\n            initialDelaySeconds: 60\n          resources:\n            limits:\n              nvidia.com/gpu: 1",
+    "caption": "60s initialDelaySeconds — model loading into VRAM is not a 5-second startup."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Service + Ingress: course 9's pattern, unchanged",
+    "code": "apiVersion: v1\nkind: Service\nmetadata: { name: model-server }\nspec:\n  selector: { app: model-server }\n  ports: [{ port: 80, targetPort: 8000 }]\n---\nkind: Ingress\nspec:\n  rules:\n    - host: inference.internal.example.com\n      http:\n        paths: [{ path: /, backend: { service: { name: model-server } } }]",
+    "caption": "Nothing GPU-specific here — same routing, pointed at a GPU-backed Deployment."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Scaling and surviving disruption",
+    "titlePlain": "HPA + ",
+    "titleEmphasis": "PodDisruptionBudget",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "DCGM exporter", "sub": "reports real GPU utilization" },
+      { "label": "HPA scales on it", "sub": "DCGM_FI_DEV_GPU_UTIL, not CPU" },
+      { "label": "PDB: minAvailable 1", "sub": "survives node drains and upgrades" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 4 complete · Up next · Chapter 5",
+    "titlePlain": "MLOps Pipelines for ",
+    "titleEmphasis": "Model Lifecycle",
+    "titleSuffix": "",
+    "subtitle": "From data and training through evaluation, deployment, and monitoring."
+  }
+]

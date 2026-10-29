@@ -1,0 +1,60 @@
+{
+  "lesson": "high-speed-interconnects-and-why-network-topology-matters",
+  "questions": [
+    {
+      "q": "Why does NVLink exist as a separate interconnect from the standard PCIe bus inside a GPU server?",
+      "options": [
+        "PCIe's roughly 64GB/s bandwidth is nowhere near enough for distributed training's gradient and activation traffic, so NVLink provides a direct, much higher-bandwidth GPU-to-GPU path that bypasses PCIe and the CPU",
+        "NVLink is only a marketing term for PCIe running at a higher clock speed",
+        "PCIe is actually faster than NVLink, but NVLink uses less power",
+        "NVLink exists solely to connect GPUs to storage devices, not to other GPUs"
+      ],
+      "answer": 0,
+      "explain": "Standard PCIe tops out around 64GB/s, far too little for the volume of GPU-to-GPU traffic distributed training generates. NVLink, often combined with NVSwitch, delivers hundreds of GB/s to nearly 1TB/s per GPU instead."
+    },
+    {
+      "q": "What does GPUDirect RDMA specifically enable in a multi-machine training cluster?",
+      "options": [
+        "It compresses gradients before sending them over Ethernet",
+        "It lets one machine's GPU write data directly into another machine's GPU memory, without routing through either machine's CPU or main system memory",
+        "It replaces InfiniBand entirely with a CPU-based networking stack",
+        "It only works for storing checkpoints, not for gradient synchronization"
+      ],
+      "answer": 1,
+      "explain": "GPUDirect RDMA removes the CPU and main memory from the path entirely, cutting latency and CPU overhead for cross-machine gradient exchange — a major reason InfiniBand plus RDMA is standard for between-machine training traffic."
+    },
+    {
+      "q": "What does \"bisection bandwidth\" measure in a training cluster's network topology, and why does it matter?",
+      "options": [
+        "The total storage capacity of the cluster's parallel filesystem",
+        "The number of GPUs a single server chassis can physically hold",
+        "The bandwidth available between the two halves of a cluster if it were split in two; low bisection bandwidth creates a bottleneck exactly where large collective operations like AllReduce need to move the most data",
+        "The clock speed of the switches used in the network fabric"
+      ],
+      "answer": 2,
+      "explain": "Bisection bandwidth reveals whether a topology can actually sustain large collective communication patterns at scale. Fat-tree and rail-optimized designs exist specifically to keep this bandwidth high as clusters grow."
+    },
+    {
+      "q": "Why can adding more GPUs to a training job stop improving training speed, even when every GPU is individually fast?",
+      "options": [
+        "GPUs have a hard-coded limit of 8 units per training job regardless of network design",
+        "More GPUs causes the optimizer to recompute the entire model from scratch each step",
+        "Adding more GPUs always increases speed with no exceptions; this scenario cannot occur in practice",
+        "As GPU count grows, each GPU's share of per-step compute shrinks, but AllReduce still has to move every gradient across the network every step — past a certain scale, communication time can exceed compute time"
+      ],
+      "answer": 3,
+      "explain": "Communication scales differently than compute as GPU count grows. Once gradient-synchronization time exceeds per-step compute time, the network — not the GPUs — becomes the limiting factor on training throughput."
+    },
+    {
+      "q": "Why does NCCL implement AllReduce using ring or tree-structured communication patterns instead of a naive \"everyone send to everyone\" approach?",
+      "options": [
+        "Ring and tree algorithms are specifically designed to use the available network topology efficiently, keeping gradient synchronization from dominating total training time as cluster size grows",
+        "Ring and tree patterns were chosen arbitrarily and offer no measurable advantage over naive broadcasting",
+        "NCCL only supports ring and tree patterns because InfiniBand hardware cannot route any other pattern",
+        "A naive all-to-all pattern is actually faster, but NCCL avoids it for licensing reasons"
+      ],
+      "answer": 0,
+      "explain": "Naive all-to-all communication doesn't scale efficiently with cluster size. Ring and tree-structured AllReduce algorithms are engineered to match the physical topology and minimize the communication overhead that would otherwise bottleneck training."
+    }
+  ]
+}

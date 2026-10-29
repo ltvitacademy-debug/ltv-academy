@@ -1,0 +1,60 @@
+{
+  "lesson": "batch-inference-vs-real-time-inference-infrastructure",
+  "questions": [
+    {
+      "q": "What metric does real-time (online) inference infrastructure typically optimize for?",
+      "options": [
+        "Total records scored per hour, regardless of any single response's delay",
+        "The size of the container image",
+        "p99 latency — how slow the slowest 1% of requests are",
+        "The number of GPU nodes in the cluster"
+      ],
+      "answer": 2,
+      "explain": "Real-time inference serves a caller who is blocked waiting right now, so the metric that matters is p99 latency rather than aggregate throughput."
+    },
+    {
+      "q": "Why is a Kubernetes Job (or CronJob), rather than a long-running Deployment, usually the right primitive for batch inference?",
+      "options": [
+        "Jobs run on CPU-only nodes and cannot use GPUs at all",
+        "The batch workload starts, processes a known amount of work, and stops — it doesn't need anything running continuously",
+        "Deployments cannot mount persistent storage",
+        "Jobs automatically retrain the model after scoring finishes"
+      ],
+      "answer": 1,
+      "explain": "Batch inference scores a known set of inputs on a schedule and then stops, which matches a Job/CronJob's run-to-completion model rather than a Deployment's always-running one."
+    },
+    {
+      "q": "Why do Spot/preemptible GPU instances make more sense for nightly batch scoring than for a live, user-facing inference Deployment?",
+      "options": [
+        "Spot GPUs are only available for CPU workloads",
+        "Batch jobs are not allowed to request GPU resources under any cloud provider's quota system",
+        "Spot instances always cost more than on-demand instances",
+        "An interruption during a batch job just means a retry from a checkpoint, while an interruption mid-request on the live path is a failed user-facing call"
+      ],
+      "answer": 3,
+      "explain": "A batch job can tolerate preemption by retrying; a real-time request that's interrupted mid-flight becomes a failed response to a waiting user, so the cost of an interruption is very different."
+    },
+    {
+      "q": "What does \"dynamic (request) batching\" do in a real-time serving path?",
+      "options": [
+        "It permanently stores every request in a database for later batch reprocessing",
+        "It converts all real-time traffic into an overnight batch job",
+        "It groups several near-simultaneous requests into one GPU call for a few milliseconds, raising throughput without breaking the latency budget",
+        "It disables autoscaling so the pod count never changes"
+      ],
+      "answer": 2,
+      "explain": "Dynamic batching holds incoming requests for a short window, processes them together in one GPU call, and returns each caller its own result — getting some of batch inference's throughput benefit inside a real-time latency budget."
+    },
+    {
+      "q": "Why can't a real-time inference Deployment scale from zero replicas the way a batch Job can start from nothing?",
+      "options": [
+        "A cold GPU process can take minutes to load model weights into VRAM and warm up, which a synchronous caller waiting on a response can't tolerate",
+        "Kubernetes Deployments are physically incapable of running on GPU nodes",
+        "Real-time traffic never varies, so scaling is never needed",
+        "readinessProbe fields are only valid on Jobs, not Deployments"
+      ],
+      "answer": 0,
+      "explain": "Because loading weights and warming CUDA kernels can take minutes, real-time serving typically keeps a baseline of warm replicas rather than scaling reactively from zero per request."
+    }
+  ]
+}

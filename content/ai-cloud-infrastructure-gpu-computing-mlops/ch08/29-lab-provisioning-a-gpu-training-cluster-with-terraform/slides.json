@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 8",
+    "titlePlain": "Provisioning a GPU ",
+    "titleEmphasis": "Training Cluster",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: Building Production AI Infrastructure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Terraform: six GPU worker nodes",
+    "code": "resource \"azurerm_linux_virtual_machine\" \"gpu_worker\" {\n  count  = 6\n  size   = \"Standard_NC24ads_A100_v4\"\n\n  custom_data = base64encode(templatefile(\n    \"${path.module}/bootstrap-gpu-node.sh.tftpl\",\n    { kubeadm_join_command = var.kubeadm_join_command }\n  ))\n\n  tags = {\n    role        = \"gpu-training\"\n    accelerator = \"nvidia-a100\"\n  }\n}",
+    "caption": "One bootstrap script installs drivers AND joins the Kubernetes cluster -- in the same terraform apply."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Label, taint, then the device plugin",
+    "code": "kubectl label nodes gpu-worker-0 ... gpu-worker-5 \\\n  accelerator=nvidia-a100\n\nkubectl taint nodes gpu-worker-0 ... gpu-worker-5 \\\n  nvidia.com/gpu=present:NoSchedule\n\nkubectl apply -f nvidia-device-plugin-daemonset.yaml\n\nkubectl describe node gpu-worker-0 | grep -A3 Capacity:",
+    "caption": "Label pulls GPU pods in; taint keeps everything else out. Capacity should show nvidia.com/gpu: 1."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Six steps, one working cluster",
+    "titlePlain": "From Quota ",
+    "titleEmphasis": "to Running Job",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1-2. Quota, then Terraform", "sub": "Check GPU family quota, then provision 6 bootstrapped GPU VMs" },
+      { "label": "3-4. Verify, then device plugin", "sub": "nvidia-smi per node, then label + taint + deploy the device plugin" },
+      { "label": "5-6. Capacity, then a real Job", "sub": "Confirm nvidia.com/gpu capacity, then schedule a real training Job" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The proof: a real training Job",
+    "code": "apiVersion: batch/v1\nkind: Job\nmetadata:\n  name: defect-model-training-run-42\nspec:\n  template:\n    spec:\n      nodeSelector:\n        accelerator: nvidia-a100\n      tolerations:\n        - key: nvidia.com/gpu\n          operator: Exists\n          effect: NoSchedule\n      containers:\n        - name: trainer\n          resources:\n            limits:\n              nvidia.com/gpu: 4\n      restartPolicy: Never",
+    "caption": "Reaching Running state is the real proof -- quota, Terraform, drivers, and scheduling all lined up."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Deploying an Autoscaling ",
+    "titleEmphasis": "Serving Endpoint",
+    "titleSuffix": "",
+    "subtitle": "From a training cluster to a model-serving endpoint that scales to zero."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "slos-for-inference-latency-throughput-and-availability",
+  "questions": [
+    {
+      "q": "Why does inference typically need three separate SLOs — latency, throughput, and availability — instead of one combined 'is it up' target?",
+      "options": [
+        "Because each one can be violated while the other two still look fine, so a single combined metric would hide real problems",
+        "Because cloud providers require exactly three SLOs per service by policy",
+        "Because latency, throughput, and availability are actually the same measurement under different names",
+        "Because a single SLO is technically impossible to configure in any monitoring tool"
+      ],
+      "answer": 0,
+      "explain": "A service can be fast and under-loaded yet unavailable due to a crash, or available and fast on average yet failing a latency SLO in its tail — the three fail independently."
+    },
+    {
+      "q": "Why is p99 latency, rather than average latency, the metric a tail-latency SLO is usually written against?",
+      "options": [
+        "Average latency is always higher than p99 latency",
+        "p99 latency and average latency always move together, so it doesn't matter which is used",
+        "Average latency can look fine while a meaningful fraction of callers experience the slowest responses, which an average hides",
+        "p99 latency is simpler to calculate than an average"
+      ],
+      "answer": 2,
+      "explain": "An average can hide a tail-latency problem entirely; p99 latency captures the experience of the slowest 1% of requests, which is where real user pain shows up first."
+    },
+    {
+      "q": "Why should a throughput SLO be defined conditionally on latency, rather than as a standalone 'requests per second' number?",
+      "options": [
+        "A sustained rate achieved only by making every request slower isn't meeting a useful throughput target — it's trading the latency SLO away to hit the throughput number",
+        "Throughput cannot be measured on GPU-backed services at all",
+        "Latency and throughput are unrelated metrics with no connection",
+        "Standalone throughput numbers are always more accurate than conditional ones"
+      ],
+      "answer": 0,
+      "explain": "A raw req/sec number is meaningless without saying what happens to latency at that load; the real target is the highest sustained rate the service can serve while still meeting its latency SLO."
+    },
+    {
+      "q": "What GPU-specific failure mode does this lesson say a generic 'process is running' health check can miss?",
+      "options": [
+        "A disk running out of space on a stateless web server",
+        "A missing TLS certificate on a load balancer",
+        "A DNS misconfiguration unrelated to the model at all",
+        "An out-of-memory crash or driver fault that keeps the process technically running but the model unable to actually serve requests"
+      ],
+      "answer": 3,
+      "explain": "A health check that doesn't actually exercise the model can report healthy even when a GPU-specific failure (OOM, driver fault, failed model load) has made the service unable to really serve requests."
+    },
+    {
+      "q": "Why should a latency SLO be measured across scaling events, including cold starts, rather than only in steady state?",
+      "options": [
+        "Cold starts never affect latency on GPU-backed services",
+        "A replica that hasn't finished loading model weights into VRAM can take minutes to become ready, producing a real tail-latency spike that a steady-state-only measurement would miss",
+        "Scaling events are irrelevant to any SLO",
+        "Steady-state measurement is always more representative than any other window"
+      ],
+      "answer": 1,
+      "explain": "Cold starts on GPU-backed replicas can take minutes, which is exactly the kind of real-world latency spike a steady-state-only SLO measurement would fail to catch."
+    }
+  ]
+}

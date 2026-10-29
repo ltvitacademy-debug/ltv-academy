@@ -1,0 +1,60 @@
+{
+  "lesson": "data-parallelism-vs-model-parallelism-the-real-difference",
+  "questions": [
+    {
+      "q": "In data parallelism, what does each GPU hold and process?",
+      "options": [
+        "A different slice of the model's layers, processing the full dataset",
+        "A single shared copy of the model that all GPUs write to simultaneously without synchronization",
+        "No model at all — GPUs only store gradients computed elsewhere",
+        "A complete copy of the entire model, each processing a different shard of the training data"
+      ],
+      "answer": 3,
+      "explain": "Data parallelism replicates the full model on every GPU. Each replica trains independently on its own slice of the data, and the replicas are kept in sync through gradient synchronization."
+    },
+    {
+      "q": "What does the AllReduce operation accomplish in data-parallel training?",
+      "options": [
+        "It deletes gradients from all but one GPU to save memory",
+        "It splits the model into smaller pieces across GPUs",
+        "It sums/averages each GPU's locally computed gradients across all GPUs and broadcasts the result back, so every replica applies the identical update",
+        "It compresses the training dataset before each epoch"
+      ],
+      "answer": 2,
+      "explain": "Without reconciling gradients, each GPU's model replica would drift apart after independent updates. AllReduce combines gradients across all GPUs and returns the same result to each, keeping replicas identical."
+    },
+    {
+      "q": "Why does model parallelism exist as a separate strategy from data parallelism?",
+      "options": [
+        "Model parallelism is simply a faster version of data parallelism with no functional difference",
+        "Model parallelism addresses the case where the model itself doesn't fit on a single GPU, so replicating the whole model everywhere isn't possible in the first place",
+        "Model parallelism is only used for inference, never for training",
+        "Model parallelism replaces the need for any GPU-to-GPU communication entirely"
+      ],
+      "answer": 1,
+      "explain": "Data parallelism assumes the model already fits on one GPU. When it doesn't — no matter how small the batch — replication isn't an option, so the model itself has to be split across GPUs instead."
+    },
+    {
+      "q": "What distinguishes tensor parallelism from pipeline parallelism?",
+      "options": [
+        "Tensor parallelism splits individual layers' weight matrices across GPUs with every GPU participating in every layer; pipeline parallelism splits the model by groups of layers, with data flowing stage by stage",
+        "Tensor parallelism and pipeline parallelism are two names for the exact same technique",
+        "Pipeline parallelism splits individual weight matrices, while tensor parallelism assigns whole layers to different GPUs",
+        "Tensor parallelism is used only for data loading, never for model computation"
+      ],
+      "answer": 0,
+      "explain": "Tensor parallelism cuts within a layer — e.g. splitting a weight matrix's columns across GPUs that all compute part of the same layer. Pipeline parallelism cuts across layers, assigning groups of layers to different GPUs as pipeline stages."
+    },
+    {
+      "q": "Why do production-scale training clusters typically combine data, tensor, and pipeline parallelism together (\"3D parallelism\") rather than using just one?",
+      "options": [
+        "Because regulations require at least three forms of parallelism for any model above a certain size",
+        "Because each form of parallelism solves a different piece of the memory-and-time problem, and combining them lets training scale across both GPUs within a machine and across many machines",
+        "Because using only one form of parallelism is technically impossible on modern hardware",
+        "Because 3D parallelism eliminates the need for GPUs entirely by shifting compute to CPUs"
+      ],
+      "answer": 1,
+      "explain": "Tensor parallelism handles fast intra-layer splits best suited to NVLink-connected GPUs; pipeline parallelism tolerates slower inter-machine links; data parallelism replicates the resulting shard across groups of machines. Together they address memory limits and training time at the largest scales."
+    }
+  ]
+}

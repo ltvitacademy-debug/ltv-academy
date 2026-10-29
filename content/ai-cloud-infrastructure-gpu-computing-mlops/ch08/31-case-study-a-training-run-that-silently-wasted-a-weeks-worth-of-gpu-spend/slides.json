@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 8",
+    "titlePlain": "A Week of Silently ",
+    "titleEmphasis": "Wasted GPU Spend",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · An Illustrative Case Study, Not a Real Incident"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The gap: process alive, training long done",
+    "code": "# training_job.py (simplified)\ndef train():\n    for epoch in range(40):\n        run_epoch()\n    save_final_checkpoint()\n    # training loop returns here --\n    # but a non-daemon upload thread\n    # launched earlier never exited\n\n# Kubernetes still sees the container\n# as Running -- the Job is never\n# marked Completed",
+    "caption": "A non-daemon thread keeps the process alive long after the real work finished."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two signals, watched by nobody",
+    "code": "Job status:        Running  (for 4 extra days)\nDCGM GPU_UTIL:      ~1-2%    (for 4 extra days)\n\nNo alert on job duration\nNo alert on idle GPU utilization\n\n-> discovered Thursday, via the weekly cloud bill",
+    "caption": "Status alone can't tell a healthy long job from a stalled one -- only elapsed time and real GPU utilization can."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What should have caught it",
+    "titlePlain": "Two Alerts, ",
+    "titleEmphasis": "Either One Enough",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "TrainingJobRunningTooLong", "sub": "Fires when a Job runs far longer than its expected duration" },
+      { "label": "TrainingGPUIdle", "sub": "Fires when DCGM GPU_UTIL stays under 5% for 30+ minutes on a training node" },
+      { "label": "Together", "sub": "Each catches a failure shape the other one would miss" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The idle-GPU alert rule",
+    "code": "- alert: TrainingGPUIdle\n  expr: avg_over_time(\n    DCGM_FI_DEV_GPU_UTIL{node_role=\"gpu-training\"}[30m]\n  ) < 5\n  for: 30m\n  annotations:\n    summary: >\n      GPU utilization under 5% for 30+ min --\n      job likely stalled or finished without exiting",
+    "caption": "Would have fired within an hour of the job actually finishing, not four days later."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "The Chapter ",
+    "titleEmphasis": "Capstone Review",
+    "titleSuffix": "",
+    "subtitle": "Tracing all eight chapters of this course through the lens of this capstone."
+  }
+]

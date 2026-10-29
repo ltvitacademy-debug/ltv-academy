@@ -1,0 +1,60 @@
+{
+  "lesson": "a-real-inference-architecture-on-kubernetes",
+  "questions": [
+    {
+      "q": "In the lesson's Deployment, why is readinessProbe.initialDelaySeconds set much higher (60) than a typical stateless web app would use?",
+      "options": [
+        "Kubernetes requires all GPU pods to use the same fixed probe delay",
+        "Higher values make the Ingress route traffic faster",
+        "It has no real effect and is purely cosmetic",
+        "Loading model weights into GPU memory genuinely takes time, and a short delay would mark the pod unready, or kill it, before loading finishes"
+      ],
+      "answer": 3,
+      "explain": "Model loading into VRAM can take real time, so the readiness probe needs enough initial delay to avoid flagging the pod as unready, or restarting it, before the model server has actually finished loading."
+    },
+    {
+      "q": "What does the podAntiAffinity rule in the Deployment accomplish?",
+      "options": [
+        "It increases the GPU memory available to each pod",
+        "It spreads replicas across different nodes so a single GPU node failure or drain doesn't take out every replica at once",
+        "It forces all replicas onto a single node for lower network latency between them",
+        "It disables the HPA for this Deployment"
+      ],
+      "answer": 1,
+      "explain": "Pod anti-affinity prefers scheduling replicas onto different nodes, so losing one node doesn't take down every replica of the serving Deployment simultaneously."
+    },
+    {
+      "q": "What signal does the HPA in this lesson's architecture actually scale on, and where does it come from?",
+      "options": [
+        "Container restart count, read directly from the kubelet",
+        "Ingress request count only, with no GPU signal involved",
+        "GPU utilization (DCGM_FI_DEV_GPU_UTIL), sourced from the DCGM exporter and surfaced to HPA via Prometheus and the Prometheus Adapter",
+        "The number of nodes currently in the cluster"
+      ],
+      "answer": 2,
+      "explain": "The HPA scales on a real GPU-utilization custom metric, which the DCGM exporter reports to Prometheus and the Prometheus Adapter exposes in a form HPA can read."
+    },
+    {
+      "q": "What does the PodDisruptionBudget (minAvailable: 1) protect against in this architecture?",
+      "options": [
+        "A node drain or cluster upgrade accidentally dropping every replica of the model-serving Deployment at once",
+        "Slow readiness probe response times",
+        "The HPA scaling below minReplicas during low traffic",
+        "Ingress TLS certificate expiration"
+      ],
+      "answer": 0,
+      "explain": "A PodDisruptionBudget guarantees a minimum number of replicas remain available during voluntary disruptions, such as node drains or upgrades, protecting availability specifically."
+    },
+    {
+      "q": "Which parts of this lesson's architecture are described as directly reusing patterns already taught in course 9, applied to a GPU-backed Deployment instead of a stateless CPU one?",
+      "options": [
+        "Only the readiness probe configuration",
+        "Only the PodDisruptionBudget",
+        "The Service and Ingress routing pattern",
+        "Only the HorizontalPodAutoscaler's metric type"
+      ],
+      "answer": 2,
+      "explain": "The lesson explicitly notes that nothing in the Service/Ingress pair is GPU-specific — it's the same routing pattern from course 9, just pointed at a GPU-backed Deployment."
+    }
+  ]
+}

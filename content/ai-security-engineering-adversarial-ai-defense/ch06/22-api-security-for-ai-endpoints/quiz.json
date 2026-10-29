@@ -1,0 +1,60 @@
+{
+  "lesson": "api-security-for-ai-endpoints",
+  "questions": [
+    {
+      "q": "According to this lesson, what is the correct starting mental model for an endpoint that fronts a language model?",
+      "options": [
+        "It is still an ordinary HTTP API first, requiring the same authentication, rate limiting, input validation, and output handling any API needs, tuned for AI-specific behavior",
+        "It needs an entirely new security model with no relationship to standard API security practices",
+        "It does not need authentication because the model itself decides who is authorized",
+        "It only needs TLS in transit and nothing else, since the model handles all other security internally"
+      ],
+      "answer": 0,
+      "explain": "An AI endpoint is still an HTTP API — authentication, authorization, rate limiting, and input/output handling all still apply. The lesson covers where AI-specific behavior changes how those fundamentals get tuned, not whether they apply."
+    },
+    {
+      "q": "Why does a traditional fixed requests-per-minute rate limit fail to protect an AI endpoint the way it protects a typical REST API?",
+      "options": [
+        "Because rate limiting is only relevant to databases, not APIs",
+        "Because AI endpoints cannot be rate limited by any method",
+        "Because a request-count limit assumes similar cost per request, but AI calls vary enormously in compute cost, letting an attacker stay under the limit while running up cost through large-context requests",
+        "Because language models never receive more than one request per session"
+      ],
+      "answer": 2,
+      "explain": "A two-sentence prompt and a context-window-filling prompt both count as 'one request' under a count-based limit, even though their compute cost differs by orders of magnitude — the gap a denial-of-wallet attack exploits."
+    },
+    {
+      "q": "What is a denial-of-wallet attack against an AI endpoint?",
+      "options": [
+        "Using a stolen API key to impersonate an administrator",
+        "Stealing a user's payment card number through a vulnerable checkout API",
+        "Exhausting a database's storage quota through repeated writes",
+        "Sending oversized or expensive requests at a rate that stays under a request-count limit, deliberately running up inference cost rather than taking the service down"
+      ],
+      "answer": 3,
+      "explain": "Denial of wallet targets cost rather than availability — it exploits the fact that request-count limits don't account for how much compute (and therefore money) each individual AI call actually consumes."
+    },
+    {
+      "q": "What should a token-based rate limit track, in addition to or instead of raw request count?",
+      "options": [
+        "Only the caller's IP address, regardless of request content",
+        "Consumed or estimated input and output tokens against a rolling cost budget per caller",
+        "Only the time of day the requests arrive",
+        "The number of database tables the request touches"
+      ],
+      "answer": 1,
+      "explain": "Measuring tokens or estimated compute cost over a rolling window lets a system throttle once a caller's cost budget is exhausted, not just once a request count is exhausted — closing the gap a denial-of-wallet attack exploits."
+    },
+    {
+      "q": "Why does a model's response need an output-filtering stage before it reaches the caller?",
+      "options": [
+        "Output filtering only matters for image-generating models, not text models",
+        "Model output is always identical to the exact prompt that was sent, so no new checks are needed",
+        "Generated text can contain things that weren't supposed to leave the system — leaked content from an access-control bug, reproduced PII, or raw markup that becomes a client-side risk if rendered untrusted",
+        "Output filtering is unnecessary once input validation has been applied"
+      ],
+      "answer": 2,
+      "explain": "Because a response is generated text rather than a value the application constructed, it needs its own security check on the way out: content screening, schema validation, and safe handling of any markup the client will render."
+    }
+  ]
+}

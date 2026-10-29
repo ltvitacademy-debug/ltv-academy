@@ -1,0 +1,60 @@
+{
+  "lesson": "gpu-scheduling-and-sharing-a-single-gpu-across-workloads",
+  "questions": [
+    {
+      "q": "What problem do time-slicing and MIG both exist to solve?",
+      "options": [
+        "That large training jobs cannot use more than one GPU at a time",
+        "That GPU quota requests take too long to approve",
+        "That Terraform cannot provision more than one GPU VM per region",
+        "That a pod given a whole GPU under the default model often leaves most of that GPU's capacity idle"
+      ],
+      "answer": 3,
+      "explain": "Since nvidia.com/gpu is allocated as a whole unit by default, a workload needing only a fraction of a GPU's capacity still claims the entire thing, leaving the rest idle. Time-slicing and MIG are two different answers to that waste."
+    },
+    {
+      "q": "What does GPU time-slicing actually provide, and what does it NOT provide?",
+      "options": [
+        "It provides hardware-level memory isolation between sharing pods",
+        "It only works on GPUs with MIG support",
+        "It provides software-based sharing of one physical GPU across multiple pods, but no memory or fault isolation between them",
+        "It permanently partitions the GPU into separate physical devices"
+      ],
+      "answer": 2,
+      "explain": "Time-slicing lets the device plugin advertise multiple replicas of nvidia.com/gpu mapped to the same physical card, with the GPU's scheduler context-switching between them — but all sharing pods still share the full memory pool with no isolation."
+    },
+    {
+      "q": "What makes Multi-Instance GPU (MIG) fundamentally different from time-slicing?",
+      "options": [
+        "MIG is a pure software scheduling feature with no hardware involvement",
+        "MIG partitions the GPU at the hardware level into isolated instances with dedicated memory and compute, available only on supporting GPUs like the A100 and H100",
+        "MIG is only usable outside of Kubernetes",
+        "MIG allows unlimited partitions on any NVIDIA GPU"
+      ],
+      "answer": 1,
+      "explain": "MIG is a hardware capability of specific GPUs (A100, H100-class) that creates genuinely isolated GPU instances with their own memory and compute slices — real isolation, not just scheduling fairness, and limited to supporting hardware."
+    },
+    {
+      "q": "In a MIG profile name like 1g.10gb, what do the two parts of the name represent?",
+      "options": [
+        "The compute-slice fraction and the memory allotted to that instance",
+        "The GPU generation and the driver version",
+        "The number of pods allowed and the node's total memory",
+        "The time-slicing replica count and the CUDA version"
+      ],
+      "answer": 0,
+      "explain": "The number before \"g\" is the fraction of compute slices assigned to that GPU instance, and the number after is the amount of dedicated memory — e.g. 1g.10gb is one compute slice with 10 GB of memory."
+    },
+    {
+      "q": "Which workload is the best fit for GPU sharing (time-slicing or MIG) rather than a dedicated whole GPU?",
+      "options": [
+        "A single large model-training job that needs maximum throughput from one GPU",
+        "A distributed training run spanning multiple GPU VMs",
+        "A checkpoint-and-resume training job recovering from a failure",
+        "Several small, low/medium-traffic inference services that each use only a fraction of a GPU's capacity"
+      ],
+      "answer": 3,
+      "explain": "Sharing mechanisms exist to avoid wasting idle GPU capacity on light workloads. Large training jobs still want a whole GPU, or several, dedicated to themselves — sharing is squarely an inference and multi-tenant problem."
+    }
+  ]
+}

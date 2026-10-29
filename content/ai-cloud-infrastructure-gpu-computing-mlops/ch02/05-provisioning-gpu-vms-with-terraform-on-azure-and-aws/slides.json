@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 2",
+    "titlePlain": "Provisioning GPU VMs with Terraform on ",
+    "titleEmphasis": "Azure and AWS",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Provisioning GPU Infrastructure"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Before you write any HCL",
+    "titlePlain": "Check GPU ",
+    "titleEmphasis": "quota",
+    "titleSuffix": " first",
+    "steps": [
+      { "label": "az vm list-usage --location eastus -o table", "sub": "find the GPU family's current vCPU quota, e.g. NCADSA100v4" },
+      { "label": "Azure Portal → Quotas", "sub": "request an increase scoped to the exact family and region" },
+      { "label": "AWS Service Quotas → EC2", "sub": "raise the P-series running-instance quota before you plan a run" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Azure NC A100 v4 GPU VM",
+    "code": "resource \"azurerm_linux_virtual_machine\" \"gpu_train\" {\n  name                = \"gpu-train-01\"\n  resource_group_name = azurerm_resource_group.ml.name\n  location            = azurerm_resource_group.ml.location\n  size                = \"Standard_NC24ads_A100_v4\"\n  admin_username      = \"mladmin\"\n\n  network_interface_ids = [azurerm_network_interface.gpu.id]\n\n  source_image_reference {\n    publisher = \"microsoft-dsvm\"\n    offer     = \"ubuntu-hpc\"\n    sku       = \"2204\"\n    version   = \"latest\"\n  }\n}",
+    "caption": "Same azurerm_linux_virtual_machine resource — size is what makes it a GPU VM."
+  },
+  {
+    "type": "code",
+    "eyebrow": "AWS P4d GPU instance",
+    "code": "data \"aws_ami\" \"deep_learning\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"Deep Learning AMI GPU PyTorch*\"]\n  }\n}\n\nresource \"aws_instance\" \"gpu_train\" {\n  ami           = data.aws_ami.deep_learning.id\n  instance_type = \"p4d.24xlarge\"\n  subnet_id     = aws_subnet.training.id\n  key_name      = aws_key_pair.ml.key_name\n}",
+    "caption": "p4d.24xlarge: 8x NVIDIA A100 with NVLink — AWS's mainstream multi-GPU trainer."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "GPU Drivers, CUDA & the ",
+    "titleEmphasis": "Container Toolkit",
+    "titleSuffix": "",
+    "subtitle": "What actually has to be installed before that VM can run a GPU workload."
+  }
+]

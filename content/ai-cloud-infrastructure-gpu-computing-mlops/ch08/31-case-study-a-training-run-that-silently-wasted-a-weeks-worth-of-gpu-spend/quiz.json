@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-a-training-run-that-silently-wasted-a-weeks-worth-of-gpu-spend",
+  "questions": [
+    {
+      "q": "Why did Solari's training Job keep showing Running in Kubernetes for days after the actual training work had finished?",
+      "options": [
+        "A non-daemon background thread (the async image-upload thread) kept the process alive even after the main training loop returned, so the container never exited and the Job was never marked Completed",
+        "Kubernetes has a known bug that never marks any Job as Completed",
+        "The training script crashed and automatically restarted itself in an infinite loop",
+        "The cluster autoscaler refused to release the GPU nodes on purpose"
+      ],
+      "answer": 0,
+      "explain": "From Kubernetes' perspective nothing was wrong -- the process simply never exited, because a non-daemon thread was still technically alive, so the Job's status stayed Running."
+    },
+    {
+      "q": "What is the key distinction this case study draws between Job status and GPU utilization?",
+      "options": [
+        "They are always the same signal and monitoring either one is sufficient",
+        "GPU utilization is only meaningful for inference workloads, never for training jobs",
+        "Job status cannot be observed in Kubernetes at all",
+        "A Job can show Running in Kubernetes while its GPUs are doing no real work at all -- status alone can't tell a healthy long job from a stalled one"
+      ],
+      "answer": 3,
+      "explain": "Status and GPU utilization are independent signals; this case study's whole point is that watching only one of them misses a stalled job that the other would catch."
+    },
+    {
+      "q": "What finally surfaced this incident at Solari?",
+      "options": [
+        "A Kubernetes alert fired automatically the moment the job stalled",
+        "The ML engineer noticed immediately on Monday morning",
+        "A Thursday cloud-bill review -- four days after the job should have finished",
+        "The DCGM idle-GPU alert in this lesson, which was already running at the time"
+      ],
+      "answer": 2,
+      "explain": "Neither alert from this lesson existed yet at the time of the incident -- the week's cloud-bill review is what actually caught the unfamiliar spike, days late."
+    },
+    {
+      "q": "What does the TrainingGPUIdle alert rule in this lesson actually check?",
+      "options": [
+        "Whether a training Job's YAML manifest contains a valid resource limit",
+        "Whether the Kubernetes API server is reachable",
+        "Whether a node has been provisioned longer than 8 hours",
+        "Whether average GPU utilization on a training node has stayed under 5% for 30 or more minutes, which suggests a job has stalled or finished without exiting"
+      ],
+      "answer": 3,
+      "explain": "The alert is scoped to DCGM_FI_DEV_GPU_UTIL averaged over a 30-minute window on training nodes, catching sustained low utilization regardless of what the Job's status says."
+    },
+    {
+      "q": "Why does the lesson argue for having both the job-duration alert and the idle-GPU alert, rather than just one?",
+      "options": [
+        "Because Kubernetes requires at least two PrometheusRules per namespace",
+        "The duration alert catches 'this took too long' regardless of cause, while the utilization alert catches 'this GPU isn't doing real work' regardless of what Kubernetes' status reports -- together they cover failure modes either one alone would miss",
+        "Having two alerts halves the cost of each individual GPU",
+        "Only the duration alert is actually useful; the utilization alert is redundant"
+      ],
+      "answer": 1,
+      "explain": "The two alerts watch different signals and catch different failure shapes -- together they close the gap that let this incident run four days before anyone noticed."
+    }
+  ]
+}

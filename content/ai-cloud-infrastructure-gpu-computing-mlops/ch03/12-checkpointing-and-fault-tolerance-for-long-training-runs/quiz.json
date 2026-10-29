@@ -1,0 +1,60 @@
+{
+  "lesson": "checkpointing-and-fault-tolerance-for-long-training-runs",
+  "questions": [
+    {
+      "q": "Why does hardware failure become a near-certainty, rather than a rare edge case, on a large training cluster running for days or weeks?",
+      "options": [
+        "GPUs manufactured for AI training are inherently less reliable than GPUs used for graphics",
+        "With hundreds or thousands of components (GPUs, NICs, nodes) each carrying some nonzero failure rate, running continuously over many GPU-hours makes at least one failure increasingly likely",
+        "Training clusters are intentionally built with unreliable hardware to reduce cost",
+        "Hardware failure is actually rare at scale and checkpointing is unnecessary in practice"
+      ],
+      "answer": 1,
+      "explain": "At large scale and long duration, the sheer number of components and GPU-hours involved means the probability that at least one component fails during the run climbs sharply, even if any single component is individually reliable."
+    },
+    {
+      "q": "Besides the model weights, what else must a training checkpoint capture to resume correctly?",
+      "options": [
+        "Only the model architecture definition, since weights and optimizer state can be regenerated automatically",
+        "Nothing else is needed; weights alone are sufficient to resume training exactly where it left off",
+        "A complete copy of every previous checkpoint ever saved during the run",
+        "Optimizer state, the training step/epoch counter, RNG state, and the data loader's position — without these, resumed training effectively restarts key parts of the process and can destabilize"
+      ],
+      "answer": 3,
+      "explain": "A checkpoint has to reproduce the full training state, not just the weights: optimizer state (e.g. Adam's moments), step/epoch counters, RNG state, and data position all matter for correct, stable resumption."
+    },
+    {
+      "q": "What is the core trade-off involved in choosing how often to checkpoint during a long training run?",
+      "options": [
+        "Checkpointing more often always improves training speed with no downside",
+        "Checkpoint frequency has no effect on either safety or performance",
+        "Checkpointing less often increases the progress lost on failure; checkpointing more often increases I/O overhead that can slow down training even when nothing fails",
+        "Checkpoint frequency only matters for inference workloads, not training"
+      ],
+      "answer": 2,
+      "explain": "There's a genuine balance: infrequent checkpoints risk losing more GPU-hours of progress to a single failure, while frequent checkpoints add I/O overhead that can eat into training throughput if it blocks the training loop."
+    },
+    {
+      "q": "What does asynchronous checkpointing specifically do to address the checkpoint-frequency trade-off?",
+      "options": [
+        "It eliminates the need to ever save optimizer state",
+        "It writes checkpoint data to fast local/host memory first and lets training continue immediately, flushing to durable storage in the background rather than blocking on the full write",
+        "It saves checkpoints only once, at the very end of training, regardless of duration",
+        "It requires training to pause completely until the checkpoint write to durable storage finishes"
+      ],
+      "answer": 1,
+      "explain": "Asynchronous checkpointing decouples the slow durable-storage write from the training critical path, letting teams checkpoint more frequently without paying the full I/O cost in blocked GPU time on every checkpoint."
+    },
+    {
+      "q": "How does checkpoint interval map onto the RPO/RTO language from this path's resilience and disaster-recovery content?",
+      "options": [
+        "Checkpoint interval corresponds to RPO (maximum acceptable progress loss); the time to detect a failure and resume from the last checkpoint corresponds to RTO (maximum acceptable downtime)",
+        "RPO and RTO apply only to databases and have no meaningful equivalent in model training",
+        "Checkpoint interval corresponds to RTO, and the number of GPUs corresponds to RPO",
+        "RPO and RTO are interchangeable terms that both refer to the total length of the training run"
+      ],
+      "answer": 0,
+      "explain": "A checkpoint interval of 30 minutes caps progress loss at 30 minutes on any single failure — that's the training-job equivalent of RPO. How long it takes to detect the failure, restart, and reload the checkpoint is the training-job equivalent of RTO."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 8",
+    "titlePlain": "Deploying an Autoscaling ",
+    "titleEmphasis": "Serving Endpoint",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: Building Production AI Infrastructure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The inference Deployment",
+    "code": "spec:\n  replicas: 1   # temporary -- KEDA takes over\n  template:\n    spec:\n      nodeSelector:\n        workload-type: gpu-inference\n      containers:\n        - name: triton\n          readinessProbe:\n            initialDelaySeconds: 60\n          resources:\n            limits:\n              nvidia.com/gpu: 1",
+    "caption": "Same GPU constraints as Chapter 4 -- but replicas stop being this Deployment's job next."
+  },
+  {
+    "type": "code",
+    "eyebrow": "KEDA: two triggers, two jobs",
+    "code": "apiVersion: keda.sh/v1alpha1\nkind: ScaledObject\nspec:\n  minReplicaCount: 0\n  maxReplicaCount: 8\n  cooldownPeriod: 300\n  triggers:\n    - type: prometheus   # 0 -> 1\n      metadata:\n        metricName: inference_queue_depth\n        threshold: \"1\"\n    - type: prometheus   # 1 -> many\n      metadata:\n        metricName: DCGM_FI_DEV_GPU_UTIL\n        threshold: \"70\"",
+    "caption": "Queue depth decides if any replica should exist; GPU utilization decides how many beyond one."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The real tension",
+    "titlePlain": "Scale-to-Zero vs. ",
+    "titleEmphasis": "PodDisruptionBudgets",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "PDB minAvailable: 1", "sub": "Guarantees a replica survives a drain -- Chapter 4's pattern" },
+      { "label": "Scale-to-zero", "sub": "Deliberately runs zero replicas during idle windows" },
+      { "label": "This lab's call", "sub": "No PDB here -- accept drain risk during idle, lean on cooldownPeriod instead" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Proving both halves work",
+    "code": "kubectl get deployment defect-model-server      # 0 replicas, idle\ncurl https://inspect.solarivision.ai/v2/health/ready\nkubectl get deployment defect-model-server -w   # 0 -> 1\n\n# during a load test:\nkubectl get hpa -w                               # 1 -> many on GPU_UTIL",
+    "caption": "Three distinct states, each verified against real traffic: zero, one, and scaled-up."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "The Week of ",
+    "titleEmphasis": "Wasted GPU Spend",
+    "titleSuffix": "",
+    "subtitle": "A case study in what happens without monitoring on job completion or idle GPU utilization."
+  }
+]

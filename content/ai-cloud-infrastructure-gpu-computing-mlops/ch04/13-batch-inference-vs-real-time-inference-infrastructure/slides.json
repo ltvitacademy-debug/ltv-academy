@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "AI Cloud Infrastructure, GPU Computing & MLOps · Chapter 4",
+    "titlePlain": "Batch vs. ",
+    "titleEmphasis": "Real-Time",
+    "titleSuffix": " Inference",
+    "subtitle": "Lesson 13 · Model Serving and Inference Infrastructure"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Batch: run to completion, optimize for throughput",
+    "code": "apiVersion: batch/v1\nkind: Job\nmetadata:\n  name: nightly-fraud-scoring\nspec:\n  backoffLimit: 2\n  template:\n    spec:\n      restartPolicy: OnFailure\n      containers:\n        - name: batch-scorer\n          image: registry.internal/fraud-scorer:2.3.0\n          args: [\"--batch-size\", \"512\"]\n          resources:\n            limits:\n              nvidia.com/gpu: 1",
+    "caption": "No one is waiting synchronously — a failed Job just retries, so Spot GPUs are fine here."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Real-time: stay warm, optimize for p99 latency",
+    "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: realtime-inference\nspec:\n  replicas: 3\n  template:\n    spec:\n      containers:\n        - name: model-server\n          readinessProbe:\n            httpGet: { path: /v2/health/ready, port: 8000 }\n            initialDelaySeconds: 30\n          resources:\n            limits:\n              nvidia.com/gpu: 1",
+    "caption": "A caller is blocked on this response right now — replicas stay warm instead of scaling from zero."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Dynamic batching: throughput inside a latency budget",
+    "titlePlain": "The millisecond-scale ",
+    "titleEmphasis": "batch window",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Request arrives", "sub": "caller is already blocked, waiting" },
+      { "label": "Hold a few ms", "sub": "server collects concurrent requests" },
+      { "label": "One GPU call", "sub": "batched together for efficiency" },
+      { "label": "Return per-caller", "sub": "each request gets its own slice back" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 14",
+    "titlePlain": "Model Serving ",
+    "titleEmphasis": "Frameworks",
+    "titleSuffix": "",
+    "subtitle": "What Triton, TorchServe, and KServe actually solve for you."
+  }
+]

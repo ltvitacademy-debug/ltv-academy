@@ -1,0 +1,60 @@
+{
+  "lesson": "spot-gpus-and-the-real-interruption-tradeoffs-for-training",
+  "questions": [
+    {
+      "q": "What is a Spot Instance (AWS) or Spot VM (Azure), fundamentally?",
+      "options": [
+        "A dedicated, guaranteed GPU instance billed at a premium rate for mission-critical workloads",
+        "Spare cloud GPU capacity sold at a lower price, which the provider can reclaim with short notice",
+        "A free tier of GPU access offered only to new cloud accounts",
+        "A GPU instance type that physically cannot be interrupted once a job starts"
+      ],
+      "answer": 1,
+      "explain": "Both clouds sell unused, spare capacity at a discount under the condition that it can be reclaimed on short notice when on-demand/reserved demand needs it, or (on Azure) when the spot price exceeds your max price."
+    },
+    {
+      "q": "On AWS, roughly how much warning does EC2 give before reclaiming a Spot Instance?",
+      "options": [
+        "No warning at all; the instance is terminated without any notice",
+        "Exactly 24 hours of advance notice in every case",
+        "One full week, matching the standard billing cycle",
+        "A commonly cited interruption notice on the order of about two minutes before reclamation"
+      ],
+      "answer": 3,
+      "explain": "AWS delivers a short interruption notice, commonly around two minutes, before reclaiming a Spot Instance - not instantaneous, but far too short to manually save multi-hour training progress without automation."
+    },
+    {
+      "q": "Why is losing a spot GPU instance mid-training a much bigger problem than losing a spot CPU instance mid-batch-job?",
+      "options": [
+        "GPU instances cannot be relaunched once interrupted, while CPU instances can always be restarted",
+        "Spot CPU instances are never actually interrupted in practice",
+        "Training runs accumulate expensive, hours-long GPU compute as unsaved state; losing that state means redoing hours of work at the GPU's high rate, not just restarting a cheap batch job",
+        "CPU batch jobs are billed at the same rate as GPU training jobs, so there is no cost difference"
+      ],
+      "answer": 2,
+      "explain": "A stateless CPU batch job loses only a few minutes of cheap, easily-redone work on interruption. A training job accumulates hours of expensive GPU compute in unsaved model/optimizer state, so losing it without a checkpoint means starting over from nothing."
+    },
+    {
+      "q": "What specific practice from this course turns spot GPUs into a reasonable cost-optimization tool for training rather than a gamble?",
+      "options": [
+        "Checkpointing model and optimizer state to durable storage at a reasonable interval, combined with automatic resume on new capacity after an interruption",
+        "Always running training jobs on exactly one GPU to minimize risk",
+        "Disabling spot pricing entirely and paying on-demand for every training job",
+        "Running every job twice simultaneously on two different spot instances"
+      ],
+      "answer": 0,
+      "explain": "Checkpointing (covered in Chapter 3) means a spot interruption only costs the work done since the last checkpoint. Paired with a resumable job design, this is what makes the spot discount worth taking on training workloads."
+    },
+    {
+      "q": "Why does the lesson say spot GPUs are generally a poor fit for real-time inference serving?",
+      "options": [
+        "Inference workloads never run on GPUs, only on CPUs",
+        "Real-time serving workloads cannot tolerate an unscheduled eviction the way a checkpointed training job can - an interruption there means dropped requests, not a delayed training step",
+        "Spot pricing is not available for inference workloads on any cloud",
+        "Real-time serving is always cheaper than training, so the discount provides no benefit"
+      ],
+      "answer": 1,
+      "explain": "Serving workloads generally need continuously available capacity with no tolerance for a gap; an eviction causes dropped requests immediately, unlike a checkpointed training job that can simply resume from its last saved state."
+    }
+  ]
+}

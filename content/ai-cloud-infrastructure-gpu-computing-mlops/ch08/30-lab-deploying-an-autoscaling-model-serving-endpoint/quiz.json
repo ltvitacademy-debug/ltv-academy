@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-deploying-an-autoscaling-model-serving-endpoint",
+  "questions": [
+    {
+      "q": "Why does the defect-model-server Deployment start with replicas: 1 even though the lab's whole point is scale-to-zero?",
+      "options": [
+        "It's a typo and should be replicas: 0",
+        "Kubernetes requires at least one replica in every Deployment manifest forever",
+        "KEDA, not the Deployment spec, owns the actual replica count once the ScaledObject is applied -- the starting value is temporary",
+        "replicas: 1 is required for the readiness probe to function at all"
+      ],
+      "answer": 2,
+      "explain": "Once the ScaledObject is wired in, KEDA manages the Deployment's replica count directly, including taking it to zero -- the manifest's starting value stops mattering."
+    },
+    {
+      "q": "What question does the queue-depth trigger in this lab's ScaledObject answer, versus the GPU-utilization trigger?",
+      "options": [
+        "Both triggers answer the exact same question redundantly",
+        "The queue-depth trigger answers whether any replica should exist at all (0 to 1); the GPU-utilization trigger answers whether the warm replica is saturated enough to add more (1 to many)",
+        "The GPU-utilization trigger controls scale-to-zero, and queue depth controls scaling beyond one replica",
+        "Neither trigger has anything to do with replica count"
+      ],
+      "answer": 1,
+      "explain": "The two triggers split the problem cleanly: one governs the zero floor, the other governs scaling above a single warm replica."
+    },
+    {
+      "q": "What does cooldownPeriod: 300 actually control in the ScaledObject?",
+      "options": [
+        "How long a pod has to pass its readiness probe before serving traffic",
+        "How many GPUs a single replica can request",
+        "The timeout for the Ingress TLS certificate renewal",
+        "How long KEDA waits during an idle window before scaling replicas back down to zero, trading a little idle cost for fewer cold starts"
+      ],
+      "answer": 3,
+      "explain": "cooldownPeriod is the deliberate buffer that keeps a short lull between bursts from triggering a fresh cold start on the very next request."
+    },
+    {
+      "q": "Why doesn't this lab attach a PodDisruptionBudget with minAvailable: 1 to the scale-to-zero endpoint?",
+      "options": [
+        "PodDisruptionBudgets are only supported for StatefulSets",
+        "minAvailable: 1 can't be guaranteed on an endpoint that's deliberately allowed to run zero replicas -- the two are in direct tension",
+        "The endpoint doesn't use a Service, so a PDB wouldn't apply",
+        "PodDisruptionBudgets are deprecated in current Kubernetes versions"
+      ],
+      "answer": 1,
+      "explain": "A PDB's minimum-available guarantee cannot coexist with a scaler whose whole point is legitimately running zero replicas some of the time."
+    },
+    {
+      "q": "What does a clean end-to-end test of this endpoint show, according to the lab?",
+      "options": [
+        "Replicas stay at a constant 2 the entire time, regardless of traffic",
+        "Replicas only ever go from 0 to 1 and never scale further",
+        "Zero replicas while idle, exactly one replica after the first request's cold start clears, and more than one replica once GPU utilization crosses 70% under sustained load",
+        "The Ingress returns an error whenever replicas are at zero"
+      ],
+      "answer": 2,
+      "explain": "A correct test demonstrates both halves of the scaler working: the zero-to-one cold start and the one-to-many GPU-utilization scale-up under real load."
+    }
+  ]
+}

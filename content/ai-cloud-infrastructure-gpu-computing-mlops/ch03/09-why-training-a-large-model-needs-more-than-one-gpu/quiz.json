@@ -1,0 +1,60 @@
+{
+  "lesson": "why-training-a-large-model-needs-more-than-one-gpu",
+  "questions": [
+    {
+      "q": "A 7-billion-parameter model stored in FP16 is only about 14GB. Why does training it still require far more than 80GB of GPU memory?",
+      "options": [
+        "FP16 weights silently double in size the moment training starts",
+        "Training also has to hold gradients and optimizer state (e.g. Adam's per-parameter moment estimates, usually in FP32), plus activations — together far larger than the weights alone",
+        "GPU memory is only usable at half capacity once CUDA is loaded",
+        "It doesn't — 14GB is already enough to train that model on a single GPU"
+      ],
+      "answer": 1,
+      "explain": "Parameters are the smallest line item. Gradients match parameter size, and Adam's optimizer state (two FP32 moments per parameter) typically adds roughly 4x the parameter memory on top — before activations are even counted."
+    },
+    {
+      "q": "Why does Adam's optimizer state usually consume more memory than the model's parameters themselves?",
+      "options": [
+        "Adam keeps a first and second moment estimate per parameter, typically in FP32, which adds roughly two full-precision copies of every parameter on top of the weights and gradients",
+        "Adam stores a complete copy of the entire training dataset in GPU memory",
+        "Adam requires activations to be duplicated across every layer",
+        "Adam's optimizer state is actually smaller than the parameters, not larger"
+      ],
+      "answer": 0,
+      "explain": "Adam tracks per-parameter first and second moment estimates for stability, usually kept in FP32 even when the model itself trains in mixed precision — that's the single biggest memory line item in most training setups."
+    },
+    {
+      "q": "What makes activation memory different from parameter, gradient, and optimizer-state memory?",
+      "options": [
+        "Activation memory is fixed and never changes regardless of training configuration",
+        "Activation memory scales with batch size and sequence length, not just model/parameter size, and can rival or exceed the weights themselves at long context lengths",
+        "Activations are stored on CPU RAM exclusively and never touch the GPU",
+        "Activations only exist during inference, never during training"
+      ],
+      "answer": 1,
+      "explain": "Unlike parameters, gradients, and optimizer state (which scale with model size), activations scale with batch size and sequence length — making them a major, variable memory cost, especially for transformers with long context."
+    },
+    {
+      "q": "A model fits entirely in one GPU's memory, including optimizer state and activations. Why might it still need multiple GPUs to train?",
+      "options": [
+        "Models that fit in memory never need more than one GPU under any circumstances",
+        "A single GPU cannot legally be used for training under any cloud provider's terms of service",
+        "Training compute scales with both model size and dataset size; processing trillions of tokens on one GPU can take an impractical number of GPU-days even when memory isn't the limiter",
+        "GPUs cannot run backpropagation unless networked with at least one other GPU"
+      ],
+      "answer": 2,
+      "explain": "Memory and time are separate pressures. Even a model that fits comfortably can require splitting the work across many GPUs simply to finish training in a practical amount of wall-clock time."
+    },
+    {
+      "q": "Based on this lesson, which parallelism strategy addresses which problem?",
+      "options": [
+        "Model parallelism and data parallelism solve identical problems and are interchangeable in every scenario",
+        "Data parallelism is used when the model doesn't fit on a GPU; model parallelism is used when training simply takes too long",
+        "Both strategies apply only to inference, never to training",
+        "Data parallelism replicates the model across GPUs to speed up training when the model already fits; model parallelism splits the model itself across GPUs when it does not fit"
+      ],
+      "answer": 3,
+      "explain": "Data parallelism tackles the time problem by replicating a model that already fits and splitting the dataset. Model parallelism tackles the memory problem by splitting a model that doesn't fit onto multiple GPUs in the first place."
+    }
+  ]
+}

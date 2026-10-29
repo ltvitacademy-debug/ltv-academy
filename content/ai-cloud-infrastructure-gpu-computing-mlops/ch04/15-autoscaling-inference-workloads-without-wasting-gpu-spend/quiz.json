@@ -1,0 +1,60 @@
+{
+  "lesson": "autoscaling-inference-workloads-without-wasting-gpu-spend",
+  "questions": [
+    {
+      "q": "Why is CPU-utilization-based HPA scaling, as used elsewhere in the path, usually the wrong signal for GPU inference pods?",
+      "options": [
+        "HPA cannot be attached to Deployments that request a GPU resource",
+        "A model server can be saturating its GPU while CPU usage looks fine, so CPU-based scaling never triggers when it should",
+        "CPU metrics are not exposed by Kubernetes at all",
+        "GPU pods are not allowed to report any metrics to Prometheus"
+      ],
+      "answer": 1,
+      "explain": "The resource actually constraining an inference pod is GPU utilization, not CPU — a GPU-bound model server can look idle on CPU metrics while its GPU is fully saturated."
+    },
+    {
+      "q": "Why does naive reactive autoscaling waste more money for GPU workloads specifically than for typical CPU workloads?",
+      "options": [
+        "GPU nodes are both expensive and slow to provision (often minutes to add a node, pull the image, and load weights), so scaling reactively either leaves capacity idle or arrives too late",
+        "GPUs cannot be billed hourly, only by the year",
+        "Kubernetes refuses to run more than one GPU pod per cluster",
+        "GPU instances never support Spot pricing"
+      ],
+      "answer": 0,
+      "explain": "GPU nodes are expensive to run idle and slow to provision from scratch, so naive autoscaling tends to either leave expensive idle capacity running or scale too late to meet latency needs."
+    },
+    {
+      "q": "What does a KEDA ScaledObject with minReplicaCount: 0 trade off in exchange for paying nothing during idle periods?",
+      "options": [
+        "It permanently disables the Kubernetes scheduler",
+        "It removes the need for a readinessProbe on the pod",
+        "It accepts cold-start latency on the first request after an idle period",
+        "It guarantees zero latency on every request regardless of traffic pattern"
+      ],
+      "answer": 2,
+      "explain": "Scale-to-zero means the first request after idle time has to wait for a replica to cold-start, which is the deliberate tradeoff for not paying for idle GPU capacity."
+    },
+    {
+      "q": "When is pre-warming (keeping a baseline of warm replicas via minReplicas or a scheduled scaler) the better pattern than scale-to-zero?",
+      "options": [
+        "Only when the workload has no GPU requirement at all",
+        "Only when running entirely on Spot instances",
+        "Never — scale-to-zero is always strictly better for every inference workload",
+        "When traffic follows a known, predictable daily shape, so capacity can already be warm before the expected surge arrives"
+      ],
+      "answer": 3,
+      "explain": "Pre-warming suits predictable traffic patterns, keeping replicas warm ahead of a known peak instead of absorbing scale-to-zero's cold-start cost right when traffic resumes."
+    },
+    {
+      "q": "Why do pod-level autoscaling (HPA/KEDA) and node-level autoscaling (Cluster Autoscaler/Karpenter) need to be tuned together for GPU inference?",
+      "options": [
+        "If HPA adds replicas faster than the node autoscaler can provision GPU nodes, new pods sit Pending for minutes, defeating the point of scaling for latency-sensitive traffic",
+        "Node-level autoscaling is deprecated and no longer used in Kubernetes",
+        "Pod-level and node-level autoscaling cannot coexist in the same cluster under any configuration",
+        "Karpenter and Cluster Autoscaler only work with CPU nodes, never GPU nodes"
+      ],
+      "answer": 0,
+      "explain": "HPA/KEDA decide the desired pod count, but a node with a free GPU still has to exist to run them on — if node provisioning lags, pods queue up Pending regardless of how aggressively the pod-level autoscaler scales."
+    }
+  ]
+}
