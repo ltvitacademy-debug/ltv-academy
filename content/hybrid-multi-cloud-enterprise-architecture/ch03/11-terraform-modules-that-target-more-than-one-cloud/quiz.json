@@ -1,0 +1,60 @@
+{
+  "lesson": "terraform-modules-that-target-more-than-one-cloud",
+  "questions": [
+    {
+      "q": "Why can't a single Terraform resource block conditionally become either azurerm_virtual_network or aws_vpc at apply time?",
+      "options": [
+        "A resource block's type is fixed in the configuration; the branching has to happen at the resource-selection level instead, not inside one resource",
+        "Terraform does not allow declaring both the azurerm and aws providers in the same configuration",
+        "Only one provider can ever appear in a required_providers block",
+        "Resource blocks can only be used with the azurerm provider, never with aws"
+      ],
+      "answer": 0,
+      "explain": "A resource block's type (e.g. azurerm_virtual_network) is fixed; it can never transform into a different resource type like aws_vpc at apply time. Multi-cloud modules branch by conditionally creating zero or one of each resource, not by mutating one resource into another."
+    },
+    {
+      "q": "In the count-per-cloud pattern shown in this lesson, what does `count = var.cloud == \"azure\" ? 1 : 0` actually do?",
+      "options": [
+        "It deletes the aws_vpc resource from the Terraform registry",
+        "It creates exactly one instance of that resource when var.cloud is \"azure\", and zero instances (so it doesn't exist in state) otherwise",
+        "It always creates exactly one instance of the resource regardless of var.cloud's value",
+        "It duplicates the resource across both clouds simultaneously"
+      ],
+      "answer": 1,
+      "explain": "count evaluates to 1 or 0 based on the cloud variable; when it's 0, Terraform creates zero instances of that resource block, so only the matching cloud's branch actually provisions anything."
+    },
+    {
+      "q": "What is the actual portability payoff of giving a multi-cloud module a unified output like `network_id`?",
+      "options": [
+        "It makes the Terraform state file smaller",
+        "It removes the need for a cloud variable entirely",
+        "It automatically migrates existing resources from one cloud to another",
+        "Calling code that uses the module doesn't need its own cloud == \"azure\" branch, because the module already normalized the attribute name regardless of which cloud produced it"
+      ],
+      "answer": 3,
+      "explain": "The output block maps either azurerm_virtual_network.this[0].id or aws_vpc.this[0].id to the same network_id name, so modules consuming this one don't need to know or care which cloud actually created the network."
+    },
+    {
+      "q": "Why does this lesson recommend composing multi-cloud logic as child modules rather than inlining both clouds' resources with ternaries throughout a flat configuration?",
+      "options": [
+        "Child modules run faster at apply time than flat configurations",
+        "Terraform requires child modules for any configuration with more than one provider",
+        "It keeps the cloud-branching logic contained and reviewable in one place instead of spreading var.cloud == \"azure\" ? ... : ... ternaries through every resource",
+        "Child modules are the only way to declare a variable named cloud"
+      ],
+      "answer": 2,
+      "explain": "Nesting the count-per-cloud pattern inside dedicated child modules, with var.cloud threaded down once from the root, keeps a multi-cloud codebase maintainable instead of scattering conditionals through every resource."
+    },
+    {
+      "q": "When would you reach for provider aliasing (e.g. `provider = aws.secondary`) instead of the count-per-cloud pattern?",
+      "options": [
+        "When you want to rename a resource without changing its type",
+        "When you never intend to use more than one cloud",
+        "When you want Terraform to automatically pick whichever cloud is cheaper",
+        "When a single apply genuinely needs to create resources on both clouds at once, rather than conditionally choosing one"
+      ],
+      "answer": 3,
+      "explain": "Provider aliasing is for the different scenario where both resources should exist on every apply — no conditional at all, just two providers and two resources living in the same state."
+    }
+  ]
+}

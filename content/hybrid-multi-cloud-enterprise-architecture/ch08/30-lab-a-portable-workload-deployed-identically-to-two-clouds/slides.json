@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Hybrid & Multi-Cloud Enterprise Architecture · Chapter 8",
+    "titlePlain": "A Portable Workload Deployed Identically to ",
+    "titleEmphasis": "Two Clouds",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: Designing a Hybrid/Multi-Cloud Architecture"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Reusing the Chapter 3 module, not rewriting it",
+    "code": "module \"cluster_azure\" {\n  source       = \"../../modules/k8s-cluster/azure\"\n  cluster_name = \"alderney-burst-aks\"\n  node_count   = 3\n}\n\nmodule \"cluster_aws\" {\n  source       = \"../../modules/k8s-cluster/aws\"\n  cluster_name = \"alderney-burst-eks\"\n  node_count   = 3\n}",
+    "caption": "Same module source, called twice -- only the inputs each cloud genuinely requires differ."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The portable core, unchanged",
+    "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: claims-burst-worker\nspec:\n  replicas: 3\n  template:\n    spec:\n      containers:\n        - name: claims-burst-worker\n          image: registry.alderney.example/claims-burst-worker:2.3.0\n\n# kubectl --context aks-alderney apply -f claims-burst-worker.yaml\n# kubectl --context eks-alderney apply -f claims-burst-worker.yaml",
+    "caption": "Same file, same kubectl apply, two different clusters."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The seams Lesson 9 warned about",
+    "titlePlain": "Isolate What ",
+    "titleEmphasis": "Doesn't Travel",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "values-aks.yaml", "sub": "storageClassName: managed-csi" },
+      { "label": "values-eks.yaml", "sub": "storageClassName: gp3" },
+      { "label": "Portable core stays in one file", "sub": "Only the genuinely cloud-specific value lives in two small files" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Verifying, not assuming",
+    "code": "kubectl --context aks-alderney get deployment claims-burst-worker -o wide\nkubectl --context eks-alderney get deployment claims-burst-worker -o wide\n\nkubectl --context aks-alderney exec deploy/claims-burst-worker -- curl -s localhost:8080/healthz\nkubectl --context eks-alderney exec deploy/claims-burst-worker -- curl -s localhost:8080/healthz",
+    "caption": "Same replica count, same ready status, same healthz response on both clusters."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "When Multi-Cloud ",
+    "titleEmphasis": "Costs More",
+    "titleSuffix": "",
+    "subtitle": "A case study in reaching for these tools without a requirement behind them.",
+    "caption": "Illustrative scenario -- Brennick Retail Holdings is fictional."
+  }
+]

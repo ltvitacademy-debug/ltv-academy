@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Hybrid & Multi-Cloud Enterprise Architecture · Chapter 3",
+    "titlePlain": "Abstracting Cloud-Specific Services ",
+    "titleEmphasis": "Behind a Common Interface",
+    "titleSuffix": "",
+    "subtitle": "Lesson 10 · Workload Portability Across Clouds"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The interface, not the SDK",
+    "code": "from abc import ABC, abstractmethod\n\nclass MessageQueue(ABC):\n    @abstractmethod\n    def send(self, payload: dict) -> None: ...\n\n    @abstractmethod\n    def receive(self, max_messages: int = 10) -> list[dict]: ...\n\n    @abstractmethod\n    def ack(self, message_id: str) -> None: ...",
+    "caption": "Business logic depends on this interface — never on ServiceBusClient or boto3 directly."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Adapter per cloud",
+    "titlePlain": "One interface, ",
+    "titleEmphasis": "two adapters",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "AzureServiceBusQueue", "sub": "implements MessageQueue using azure.servicebus" },
+      { "label": "SqsQueue", "sub": "implements MessageQueue using boto3" },
+      { "label": "build_queue() factory", "sub": "one place reads CLOUD_PROVIDER and picks the adapter" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Where the decision lives",
+    "code": "def build_queue() -> MessageQueue:\n    cloud = os.environ[\"CLOUD_PROVIDER\"]\n    if cloud == \"azure\":\n        return AzureServiceBusQueue(os.environ[\"SB_CONN_STR\"], \"orders\")\n    if cloud == \"aws\":\n        return SqsQueue(os.environ[\"SQS_QUEUE_URL\"])\n    raise ValueError(f\"unsupported cloud: {cloud}\")",
+    "caption": "The same pattern applies to a database behind an OrderRepository interface."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 11",
+    "titlePlain": "Terraform Modules That Target ",
+    "titleEmphasis": "More Than One Cloud",
+    "titleSuffix": "",
+    "subtitle": "Provisioning the infrastructure these adapters run against, from one configuration."
+  }
+]

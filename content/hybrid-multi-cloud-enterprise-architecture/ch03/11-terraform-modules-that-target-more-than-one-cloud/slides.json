@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Hybrid & Multi-Cloud Enterprise Architecture · Chapter 3",
+    "titlePlain": "Terraform Modules That Target ",
+    "titleEmphasis": "More Than One Cloud",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Workload Portability Across Clouds"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The count-per-cloud pattern",
+    "code": "variable \"cloud\" {\n  type = string\n  validation {\n    condition     = contains([\"azure\", \"aws\"], var.cloud)\n    error_message = \"cloud must be \\\"azure\\\" or \\\"aws\\\".\"\n  }\n}\n\nresource \"azurerm_virtual_network\" \"this\" {\n  count = var.cloud == \"azure\" ? 1 : 0\n  # ...\n}\n\nresource \"aws_vpc\" \"this\" {\n  count = var.cloud == \"aws\" ? 1 : 0\n  # ...\n}",
+    "caption": "A resource block's type is fixed — you can't morph one into the other, only create zero or one of each."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A unified output",
+    "code": "output \"network_id\" {\n  value = var.cloud == \"azure\"\n    ? azurerm_virtual_network.this[0].id\n    : aws_vpc.this[0].id\n}",
+    "caption": "Callers of this module never branch on cloud themselves — the module already normalized it away."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Scaling it up",
+    "titlePlain": "Compose, ",
+    "titleEmphasis": "don't inline",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Root passes var.cloud once", "sub": "threaded down through every child module" },
+      { "label": "module \"network\" { cloud = var.cloud }", "sub": "each child applies the same count pattern internally" },
+      { "label": "Provider aliases for dual-apply", "sub": "when both clouds must be created on every apply, not chosen between" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "What Genuinely Doesn't Port, ",
+    "titleEmphasis": "and When to Stop Trying",
+    "titleSuffix": "",
+    "subtitle": "An honest accounting of where portability stops paying for itself."
+  }
+]

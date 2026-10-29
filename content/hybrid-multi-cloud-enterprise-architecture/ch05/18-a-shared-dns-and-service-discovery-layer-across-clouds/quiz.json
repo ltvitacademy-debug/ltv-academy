@@ -1,0 +1,60 @@
+{
+  "lesson": "a-shared-dns-and-service-discovery-layer-across-clouds",
+  "questions": [
+    {
+      "q": "Why isn't the connectivity built in Lesson 17 (a VPN tunnel or colocation meet-point) enough on its own for services to find each other?",
+      "options": [
+        "It solves routing between the two networks, but it does not solve name resolution — services still can't look each other up by name",
+        "It only works for traffic initiated from AWS toward Azure, never the other direction",
+        "It automatically breaks once more than one subnet is added to either VNet or VPC",
+        "It requires both clouds to use the exact same IP address range before any traffic can flow"
+      ],
+      "answer": 0,
+      "explain": "A VPN tunnel or meet-point gets packets from a VNet to a VPC, but Azure's DNS has never heard of AWS's private zones and vice versa, so name resolution is a separate problem entirely."
+    },
+    {
+      "q": "Why is hardcoding a cross-cloud private IP address into configuration specifically risky?",
+      "options": [
+        "Private IP addresses are not allowed to cross a VPN tunnel under any circumstances",
+        "Hardcoded IPs are always rejected by both clouds' network security groups",
+        "Those IPs typically sit behind a load balancer, NAT gateway, or autoscaling group, so they can change at the next scale event",
+        "AWS and Azure use identical private IP ranges by default, causing an immediate conflict"
+      ],
+      "answer": 2,
+      "explain": "Cross-cloud private IPs usually sit behind infrastructure that can reassign them, so a hardcoded address that worked at deploy time can silently break later."
+    },
+    {
+      "q": "In the cross-cloud DNS pattern described, what changes from the on-premises hybrid-DNS pattern in Lesson 11?",
+      "options": [
+        "The entire Resolver inbound/outbound endpoint model is replaced by a different mechanism",
+        "The same inbound/outbound endpoint model is reused, but the 'outside' query source is now the other cloud instead of on-premises",
+        "Only Azure needs a Resolver configured; AWS resolves everything automatically",
+        "DNS forwarding rules are no longer needed because BGP handles name resolution"
+      ],
+      "answer": 1,
+      "explain": "The building blocks are identical to hybrid DNS architecture — Azure's Private DNS Resolver and AWS's Route 53 Resolver — just pointed at each other across the Lesson 17 link instead of at on-premises."
+    },
+    {
+      "q": "Why does this lesson configure forwarding in both directions (Azure-to-AWS and AWS-to-Azure) rather than just one?",
+      "options": [
+        "Because name resolution across a cross-cloud link is not automatically bidirectional just because the network path is",
+        "Because AWS's Route 53 Resolver cannot send queries, only receive them",
+        "Because Azure's Private DNS Resolver only supports inbound endpoints, never outbound",
+        "Bidirectional forwarding is only needed when more than two clouds are involved"
+      ],
+      "answer": 0,
+      "explain": "Each side's outbound endpoint and forwarding rule has to be configured independently; a working path in one direction says nothing about the other direction."
+    },
+    {
+      "q": "What is the recommended way to decide which cloud's DNS zone is authoritative for a given cross-cloud internal name?",
+      "options": [
+        "Run one unified zone split evenly across both clouds' native DNS services",
+        "Let whichever cloud resolves the query first become the source of truth for that query",
+        "Avoid giving any names ownership and resolve everything through static IP lists instead",
+        "Split ownership explicitly by domain, so each cloud's private zone is authoritative for its own names and a clear naming convention marks which is which"
+      ],
+      "answer": 3,
+      "explain": "A workable pattern splits ownership cleanly by domain — e.g. azure.internal owned by Azure, aws.internal owned by AWS — because no single cloud's native zone can be sole source of truth for records the other cloud's control plane needs to write."
+    }
+  ]
+}

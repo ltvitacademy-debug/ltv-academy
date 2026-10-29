@@ -1,0 +1,60 @@
+{
+  "lesson": "kubernetes-as-the-real-portability-layer",
+  "questions": [
+    {
+      "q": "Why is a Kubernetes Deployment manifest genuinely portable across AKS, EKS, and an on-prem cluster?",
+      "options": [
+        "Because all three clouds run the identical physical hardware under the hood",
+        "Because the Kubernetes API is a conformant, versioned contract that every CNCF-conformant distribution implements identically",
+        "Because Kubernetes automatically rewrites the YAML to match whichever cloud it's deployed to",
+        "Because Deployments do not actually run containers, so there is nothing cloud-specific to vary"
+      ],
+      "answer": 1,
+      "explain": "CNCF conformance testing guarantees that object kinds like Deployment behave identically across distributions, which is why the same manifest produces the same rolling-update and probe behavior everywhere."
+    },
+    {
+      "q": "What actually happens when you apply a Service manifest with `type: LoadBalancer` to a cluster?",
+      "options": [
+        "The cloud controller manager for that specific cluster provisions a cloud-specific load balancer, so the same YAML produces different real infrastructure on Azure vs. AWS vs. bare metal",
+        "Nothing — LoadBalancer is a deprecated field that modern Kubernetes ignores",
+        "Kubernetes core directly provisions a generic load balancer identical on every cloud",
+        "It silently converts itself into an Ingress resource"
+      ],
+      "answer": 0,
+      "explain": "type: LoadBalancer is a real API field, but the behind-the-scenes provisioning is handled by a provider-specific cloud controller manager, so identical YAML produces an Azure Load Balancer, an AWS NLB/CLB, or nothing at all on bare metal without an add-on like MetalLB."
+    },
+    {
+      "q": "Why can a PersistentVolumeClaim that works on AKS fail to bind on an EKS cluster using the identical manifest?",
+      "options": [
+        "PersistentVolumeClaims are an AKS-only API object",
+        "EKS does not support persistent storage of any kind",
+        "AWS requires all storage requests to be made through the AWS CLI instead of Kubernetes manifests",
+        "StorageClass names are not standardized across clouds, so a referenced StorageClass like managed-csi may simply not exist on the EKS cluster"
+      ],
+      "answer": 3,
+      "explain": "StorageClass names such as managed-csi (AKS) or gp3/ebs-sc (EKS) are cluster-specific; a PVC referencing a name that doesn't exist on the target cluster fails to bind even though the manifest itself is otherwise identical."
+    },
+    {
+      "q": "Which of these is an example of a Kubernetes-API field whose real-world behavior is provider-specific even though the field itself is generic?",
+      "options": [
+        "The `replicas` field on a Deployment",
+        "The `selector.matchLabels` field on a Deployment",
+        "Ingress annotations, since different Ingress controllers (nginx vs. the AWS Load Balancer Controller) only honor their own annotation set",
+        "The `metadata.labels` field on a Pod template"
+      ],
+      "answer": 2,
+      "explain": "Ingress is a standard API kind, but its annotations are interpreted by whichever controller is installed, so an nginx-specific annotation does nothing on a cluster running a different controller."
+    },
+    {
+      "q": "What is the practical takeaway for treating Kubernetes workloads as portable?",
+      "options": [
+        "Rewrite the entire manifest from scratch for every cloud instead of reusing any of it",
+        "Treat the core workload objects (Deployment, Service, ConfigMap, Secret) as the genuinely portable layer, and manage StorageClass names, Ingress annotations, and LoadBalancer behavior deliberately as an environment-specific overlay",
+        "Avoid Kubernetes entirely since nothing about it is actually portable",
+        "Assume every object in a manifest is fully portable and never review it per cluster"
+      ],
+      "answer": 1,
+      "explain": "The lesson's core distinction is that the workload-definition layer travels unchanged, while storage, ingress, and load-balancer behavior are cloud-specific and need deliberate per-environment handling, often via overlays or per-cloud values files."
+    }
+  ]
+}

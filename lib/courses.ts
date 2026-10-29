@@ -23,6 +23,8 @@ import { ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS } from "./zero-trust-e
 import { ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS } from "./enterprise-cloud-architecture-capstone-outline";
 import { DIGITAL_FORENSICS_MALWARE_ANALYSIS_CHAPTERS } from "./digital-forensics-malware-analysis-outline";
 import { ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS } from "./advanced-platform-engineering-gitops-cicd-outline";
+import { ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS } from "./ethical-hacking-penetration-testing-purple-team-outline";
+import { HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS } from "./hybrid-multi-cloud-enterprise-architecture-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2501,7 +2503,8 @@ export const COURSES: CourseMeta[] = [
     slug: "ethical-hacking-penetration-testing-purple-team",
     title: "Ethical Hacking, Penetration Testing & Purple Team Operations",
     tagline: "Expert specialization: offensive security methodology, penetration testing, and collaborative purple-team exercises.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS,
   },
   {
     slug: "ai-security-engineering-adversarial-ai-defense",
@@ -2598,7 +2601,8 @@ export const COURSES: CourseMeta[] = [
     slug: "hybrid-multi-cloud-enterprise-architecture",
     title: "Hybrid & Multi-Cloud Enterprise Architecture",
     tagline: "Expert specialization: designing enterprise architecture that spans on-premises, hybrid, and multiple cloud providers.",
-    status: "coming-soon",
+    status: "available",
+    chapters: HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS,
   },
   {
     slug: "ai-cloud-infrastructure-gpu-computing-mlops",

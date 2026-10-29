@@ -1,0 +1,60 @@
+{
+  "lesson": "abstracting-cloud-specific-services-behind-a-common-interface",
+  "questions": [
+    {
+      "q": "Why isn't workload-level Kubernetes portability enough to make an application cloud-portable on its own?",
+      "options": [
+        "Because Kubernetes Deployments cannot run on more than one cloud at a time",
+        "Because if application code calls a cloud SDK like boto3 or ServiceBusClient directly, the business logic is welded to that one provider regardless of where the container runs",
+        "Because Kubernetes does not support environment variables",
+        "Because every cloud requires a completely different programming language for its SDKs"
+      ],
+      "answer": 1,
+      "explain": "Portability at the orchestration layer doesn't help if the application's own code directly imports and calls a cloud-specific SDK — that coupling exists independent of where the container is scheduled."
+    },
+    {
+      "q": "In the MessageQueue interface example, what does application business logic actually call?",
+      "options": [
+        "queue.send(payload) against the MessageQueue interface, never a cloud SDK method directly",
+        "sqs.send_message(...) directly, since that is the only method available",
+        "ServiceBusClient.from_connection_string(...) every time a message needs to be sent",
+        "A GraphQL endpoint that wraps both Service Bus and SQS"
+      ],
+      "answer": 0,
+      "explain": "Business logic depends only on the MessageQueue interface's send/receive/ack methods; which concrete adapter (AzureServiceBusQueue or SqsQueue) is behind that call is decided elsewhere, not in the calling code."
+    },
+    {
+      "q": "Where does the decision of which cloud adapter to instantiate (Azure Service Bus vs. AWS SQS) typically live?",
+      "options": [
+        "Scattered across every file that needs to send a message",
+        "Hardcoded separately into each business-logic function",
+        "In a single factory function that reads configuration (like an environment variable) and returns the right concrete adapter",
+        "Inside the Kubernetes Deployment's readiness probe"
+      ],
+      "answer": 2,
+      "explain": "A factory function centralizes the provider decision in one place, typically based on an environment variable like CLOUD_PROVIDER, so the rest of the codebase only ever depends on the interface."
+    },
+    {
+      "q": "What is a real cost of abstracting a cloud service behind a common interface, according to this lesson?",
+      "options": [
+        "It is always free and has no downsides whatsoever",
+        "It automatically improves application performance on every cloud",
+        "It eliminates the need for integration testing entirely",
+        "The interface narrows to the lowest common denominator, so a provider-specific feature like SQS FIFO deduplication or Service Bus sessions can't be fully exposed without the abstraction becoming leaky"
+      ],
+      "answer": 3,
+      "explain": "An interface built to work with multiple providers can only expose the capabilities common to all of them; features unique to one provider either get left out or leak through, undermining the abstraction."
+    },
+    {
+      "q": "When does building a clean adapter-pattern interface for a cloud service actually pay for itself?",
+      "options": [
+        "Only when you will genuinely use more than one concrete implementation — otherwise it's overhead with no real payoff",
+        "Always, for every single cloud dependency in any application, with no exceptions",
+        "Only for compute workloads, never for queues or databases",
+        "Only when the team has fewer than two engineers"
+      ],
+      "answer": 0,
+      "explain": "The lesson is explicit that building and maintaining a clean interface and multiple adapters is a bet on an actual multi-cloud deployment or future migration — for a workload that will only ever run on one cloud, it's pure added cost."
+    }
+  ]
+}
