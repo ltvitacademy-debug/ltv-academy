@@ -46,8 +46,8 @@ export const AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS: ChapterMet
     n: 3,
     title: "Data Poisoning and Training-Time Attacks",
     lessons: [
-      L(9, "what-data-poisoning-actually-targets", "What Data Poisoning Actually Targets", { contentDir: "ch03/09-what-data-poisoning-actually-targets" }),
-      L(10, "supply-chain-risk-in-training-data-and-pretrained-models", "Supply Chain Risk in Training Data and Pretrained Models", { contentDir: "ch03/10-supply-chain-risk-in-training-data-and-pretrained-models" }),
+      L(9, "what-data-poisoning-actually-targets", "What Data Poisoning Actually Targets", { contentDir: "ch03/09-what-data-poisoning-actually-targets", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/what-data-poisoning-actually-targets.mp4", durationLabel: "2 min 52 s" }),
+      L(10, "supply-chain-risk-in-training-data-and-pretrained-models", "Supply Chain Risk in Training Data and Pretrained Models", { contentDir: "ch03/10-supply-chain-risk-in-training-data-and-pretrained-models", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/supply-chain-risk-in-training-data-and-pretrained-models.mp4", durationLabel: "2 min 58 s" }),
       L(11, "backdoor-attacks-and-how-theyre-detected", "Backdoor Attacks, and How They're Detected", { contentDir: "ch03/11-backdoor-attacks-and-how-theyre-detected" }),
       L(12, "data-provenance-and-validation-as-a-defense", "Data Provenance and Validation as a Defense", { contentDir: "ch03/12-data-provenance-and-validation-as-a-defense" }),
     ],

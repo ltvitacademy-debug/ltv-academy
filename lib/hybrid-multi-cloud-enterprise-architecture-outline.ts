@@ -57,8 +57,8 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     title: "Hybrid Identity at Enterprise Scale",
     lessons: [
       L(13, "unifying-identity-across-on-prem-azure-and-aws", "Unifying Identity Across On-Prem, Azure, and AWS", { contentDir: "ch04/13-unifying-identity-across-on-prem-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/unifying-identity-across-on-prem-azure-and-aws.mp4", durationLabel: "2 min 28 s" }),
-      L(14, "federation-patterns-for-a-true-multi-cloud-org", "Federation Patterns for a True Multi-Cloud Org", { contentDir: "ch04/14-federation-patterns-for-a-true-multi-cloud-org" }),
-      L(15, "a-single-conditional-access-policy-spanning-every-environment", "A Single Conditional Access Policy Spanning Every Environment", { contentDir: "ch04/15-a-single-conditional-access-policy-spanning-every-environment" }),
+      L(14, "federation-patterns-for-a-true-multi-cloud-org", "Federation Patterns for a True Multi-Cloud Org", { contentDir: "ch04/14-federation-patterns-for-a-true-multi-cloud-org", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/federation-patterns-for-a-true-multi-cloud-org.mp4", durationLabel: "2 min 19 s" }),
+      L(15, "a-single-conditional-access-policy-spanning-every-environment", "A Single Conditional Access Policy Spanning Every Environment", { contentDir: "ch04/15-a-single-conditional-access-policy-spanning-every-environment", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-single-conditional-access-policy-spanning-every-environment.mp4", durationLabel: "2 min 19 s" }),
       L(16, "identity-as-the-glue-that-holds-a-hybrid-architecture-together", "Identity as the Glue That Holds a Hybrid Architecture Together", { contentDir: "ch04/16-identity-as-the-glue-that-holds-a-hybrid-architecture-together" }),
     ],
   },

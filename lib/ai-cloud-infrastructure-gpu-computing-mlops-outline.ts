@@ -39,14 +39,14 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
       L(5, "provisioning-gpu-vms-with-terraform-on-azure-and-aws", "Provisioning GPU VMs with Terraform on Azure and AWS", { contentDir: "ch02/05-provisioning-gpu-vms-with-terraform-on-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/provisioning-gpu-vms-with-terraform-on-azure-and-aws.mp4", durationLabel: "2 min 44 s" }),
       L(6, "gpu-drivers-cuda-and-the-container-toolkit", "GPU Drivers, CUDA, and the Container Toolkit", { contentDir: "ch02/06-gpu-drivers-cuda-and-the-container-toolkit", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/gpu-drivers-cuda-and-the-container-toolkit.mp4", durationLabel: "2 min 13 s" }),
       L(7, "running-gpu-workloads-on-kubernetes", "Running GPU Workloads on Kubernetes", { contentDir: "ch02/07-running-gpu-workloads-on-kubernetes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/running-gpu-workloads-on-kubernetes.mp4", durationLabel: "2 min 22 s" }),
-      L(8, "gpu-scheduling-and-sharing-a-single-gpu-across-workloads", "GPU Scheduling and Sharing a Single GPU Across Workloads", { contentDir: "ch02/08-gpu-scheduling-and-sharing-a-single-gpu-across-workloads" }),
+      L(8, "gpu-scheduling-and-sharing-a-single-gpu-across-workloads", "GPU Scheduling and Sharing a Single GPU Across Workloads", { contentDir: "ch02/08-gpu-scheduling-and-sharing-a-single-gpu-across-workloads", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/gpu-scheduling-and-sharing-a-single-gpu-across-workloads.mp4", durationLabel: "2 min 40 s" }),
     ],
   },
   {
     n: 3,
     title: "Distributed Training Infrastructure",
     lessons: [
-      L(9, "why-training-a-large-model-needs-more-than-one-gpu", "Why Training a Large Model Needs More Than One GPU", { contentDir: "ch03/09-why-training-a-large-model-needs-more-than-one-gpu" }),
+      L(9, "why-training-a-large-model-needs-more-than-one-gpu", "Why Training a Large Model Needs More Than One GPU", { contentDir: "ch03/09-why-training-a-large-model-needs-more-than-one-gpu", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/why-training-a-large-model-needs-more-than-one-gpu.mp4", durationLabel: "2 min 25 s" }),
       L(10, "data-parallelism-vs-model-parallelism-the-real-difference", "Data Parallelism vs. Model Parallelism: The Real Difference", { contentDir: "ch03/10-data-parallelism-vs-model-parallelism-the-real-difference" }),
       L(11, "high-speed-interconnects-and-why-network-topology-matters", "High-Speed Interconnects, and Why Network Topology Matters", { contentDir: "ch03/11-high-speed-interconnects-and-why-network-topology-matters" }),
       L(12, "checkpointing-and-fault-tolerance-for-long-training-runs", "Checkpointing and Fault Tolerance for Long Training Runs", { contentDir: "ch03/12-checkpointing-and-fault-tolerance-for-long-training-runs" }),

@@ -57,8 +57,8 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
     title: "Exploitation Fundamentals",
     lessons: [
       L(13, "how-a-real-exploit-actually-works-at-a-conceptual-level", "How a Real Exploit Actually Works, at a Conceptual Level", { contentDir: "ch04/13-how-a-real-exploit-actually-works-at-a-conceptual-level", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/how-a-real-exploit-actually-works-at-a-conceptual-level.mp4", durationLabel: "3 min 2 s" }),
-      L(14, "using-a-known-exploit-safely-and-responsibly-in-a-test-environment", "Using a Known Exploit Safely and Responsibly in a Test Environment", { contentDir: "ch04/14-using-a-known-exploit-safely-and-responsibly-in-a-test-environment" }),
-      L(15, "metasploit-framework-fundamentals", "Metasploit Framework Fundamentals", { contentDir: "ch04/15-metasploit-framework-fundamentals" }),
+      L(14, "using-a-known-exploit-safely-and-responsibly-in-a-test-environment", "Using a Known Exploit Safely and Responsibly in a Test Environment", { contentDir: "ch04/14-using-a-known-exploit-safely-and-responsibly-in-a-test-environment", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/using-a-known-exploit-safely-and-responsibly-in-a-test-environment.mp4", durationLabel: "2 min 54 s" }),
+      L(15, "metasploit-framework-fundamentals", "Metasploit Framework Fundamentals", { contentDir: "ch04/15-metasploit-framework-fundamentals", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/metasploit-framework-fundamentals.mp4", durationLabel: "3 min 5 s" }),
       L(16, "when-not-to-exploit-risk-decisions-during-a-live-engagement", "When Not to Exploit: Risk Decisions During a Live Engagement", { contentDir: "ch04/16-when-not-to-exploit-risk-decisions-during-a-live-engagement" }),
     ],
   },
