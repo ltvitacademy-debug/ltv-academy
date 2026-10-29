@@ -27,6 +27,8 @@ import { ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS } from "./ethi
 import { HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS } from "./hybrid-multi-cloud-enterprise-architecture-outline";
 import { AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS } from "./ai-security-engineering-adversarial-ai-defense-outline";
 import { AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS } from "./ai-cloud-infrastructure-gpu-computing-mlops-outline";
+import { ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS } from "./enterprise-security-architecture-grc-risk-management-outline";
+import { ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS } from "./advanced-sre-disaster-recovery-resilience-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2519,7 +2521,8 @@ export const COURSES: CourseMeta[] = [
     slug: "enterprise-security-architecture-grc-risk-management",
     title: "Enterprise Security Architecture, GRC & Risk Management",
     tagline: "Expert specialization: enterprise security architecture, governance, risk, compliance, and risk management frameworks.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS,
   },
   // Cloud Engineer → Cloud Architect — framework/course shells only, no
   // chapters yet. See lib/career-paths.ts "cloud-engineer-cloud-architect".
@@ -2618,7 +2621,8 @@ export const COURSES: CourseMeta[] = [
     slug: "advanced-sre-disaster-recovery-resilience",
     title: "Advanced Site Reliability Engineering, Disaster Recovery & Resilience",
     tagline: "Expert specialization: advanced SRE practice, disaster recovery planning, and enterprise resilience engineering.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS,
   },
   ...TRACKS.filter((t) => t.slug !== "blockchain").map((t) => ({
     slug: t.slug,

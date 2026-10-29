@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced SRE, Disaster Recovery & Resilience · Chapter 8",
+    "titlePlain": "Designing and Testing a ",
+    "titleEmphasis": "Disaster Recovery Plan",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: Building a Resilient Enterprise System"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dependency map, tiered by business impact",
+    "code": "tier_1_checkout:\n  services: [storefront-web, checkout-api, payment-integration]\n  data_stores: [orders-db, session-cache]\n  impact: \"Revenue stops the instant this is down.\"\n\ntier_2_catalog:\n  services: [inventory-api, catalog-search]\n  impact: \"Browsing degrades; existing carts still check out.\"\n\ntier_3_reporting:\n  services: [nightly-analytics-job, reporting-dashboard]\n  impact: \"Internal only. Next business day is fine.\"",
+    "caption": "Lesson 14's dependency map, extended with one new field: how much this tier actually costs the business when it's down."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "RTO and RPO, set per tier",
+    "titlePlain": "Three Tiers, ",
+    "titleEmphasis": "Three Targets",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Tier 1 -- Checkout", "sub": "RTO 5 minutes, RPO 1 minute -- direct revenue, money mid-transaction" },
+      { "label": "Tier 2 -- Catalog", "sub": "RTO 30 minutes, RPO 15 minutes -- degraded experience, not blocked revenue" },
+      { "label": "Tier 3 -- Reporting", "sub": "RTO 24 hours, RPO 24 hours -- internal, next business day is fine" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Automate the failover, don't document it",
+    "code": "#!/usr/bin/env bash\n# failover-tier1.sh\nset -euo pipefail\n\naz postgres flexible-server replica promote \\\n  --name wrenhaven-orders-db-replica-centralus \\\n  --resource-group rg-wrenhaven-dr\n\naz afd origin update \\\n  --resource-group rg-wrenhaven-dr \\\n  --profile-name wrenhaven-afd \\\n  --origin-group-name checkout-origins \\\n  --origin-name checkout-centralus \\\n  --priority 1\n\ncurl -sf https://checkout.wrenhaven.com/health",
+    "caption": "A script that runs the same way every time, instead of a runbook a tired on-call engineer reads at 3 a.m."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Testing it for real",
+    "titlePlain": "A ",
+    "titleEmphasis": "Scoped",
+    "titleSuffix": " Failover Test",
+    "steps": [
+      { "label": "1. Announce a Tier 1-only test window", "sub": "In the incident channel, not a surprise to on-call" },
+      { "label": "2. Fail over a 5% canary slice", "sub": "Front Door weighted routing, not the whole platform" },
+      { "label": "3. Measure, don't assume", "sub": "4m 12s to healthy against a 5-minute RTO target: PASS" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Chaos Experiment ",
+    "titleEmphasis": "& Game Day",
+    "titleSuffix": "",
+    "subtitle": "Testing Tier 1's resilience under a real fault, then rehearsing the whole team's response."
+  }
+]

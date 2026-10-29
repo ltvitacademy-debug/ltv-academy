@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-a-resilient-architecture-that-still-had-a-single-point-of-failure",
+  "questions": [
+    {
+      "q": "Why did Wrenhaven's checkout-api fail to start in Central US during the drill, even though the database and routing had already failed over successfully?",
+      "options": [
+        "Front Door failed to route any traffic to Central US at all",
+        "The database replica in Central US had never actually been created",
+        "It could not reach the single Key Vault instance it depended on for secrets, which lived only in the unreachable primary region",
+        "Checkout-api had no code deployed in Central US"
+      ],
+      "answer": 2,
+      "explain": "Compute, database, and cache were all genuinely redundant -- but every service in both regions depended on one unreplicated Key Vault instance in the primary region."
+    },
+    {
+      "q": "What made this scenario a genuine case of a hidden single point of failure, rather than just an incomplete architecture?",
+      "options": [
+        "The application-layer architecture was actually redundant at every layer a typical dependency check covers -- the gap was one layer below it, in shared supporting infrastructure",
+        "Wrenhaven never built any redundancy at all before this incident",
+        "The chaos experiment from Lesson 30 had already predicted this exact failure",
+        "Front Door itself was the single point of failure in this scenario"
+      ],
+      "answer": 0,
+      "explain": "Compute, database, and cache redundancy were all real and correctly built; the single point of failure was a shared dependency underneath that layer, not a missing one within it."
+    },
+    {
+      "q": "Why did Chapter 4's original dependency map fail to catch this gap?",
+      "options": [
+        "It recorded that checkout-api depended on Key Vault but never asked whether that dependency was itself region-redundant, or just assumed to be",
+        "The dependency map was never built for this project at all",
+        "Dependency maps are only required for database dependencies, not secrets stores",
+        "The dependency map incorrectly listed Key Vault as redundant when it wasn't"
+      ],
+      "answer": 0,
+      "explain": "The map recorded a true but incomplete edge -- it stopped at \"depends on,\" without asking whether the dependency's own redundancy matched the service calling it."
+    },
+    {
+      "q": "According to this case study, what other kinds of shared infrastructure commonly hide the exact same failure mode as the unreplicated Key Vault?",
+      "options": [
+        "Container registries and build pipelines",
+        "Load balancer health check configurations",
+        "Monitoring dashboards and alerting rules",
+        "A shared DNS provider or a single identity provider tenant that both \"redundant\" regions call to authenticate"
+      ],
+      "answer": 3,
+      "explain": "The lesson calls out DNS and identity providers as common disguises for the same pattern: application redundancy sitting on top of one unredundant shared dependency."
+    },
+    {
+      "q": "What is the actual lesson behind the fix, beyond deploying a second Key Vault instance in Central US?",
+      "options": [
+        "That Key Vault should never be used for secrets management in a multi-region architecture",
+        "That re-running the dependency-mapping exercise against every existing edge -- asking if the other end is itself redundant -- is what actually closes this class of gap, not just fixing one vault",
+        "That game days should be run only once per year to avoid team fatigue",
+        "That chaos experiments should replace game days entirely going forward"
+      ],
+      "answer": 1,
+      "explain": "Fixing one vault doesn't prevent the next hidden single point of failure; re-asking the redundancy question against every dependency edge is the real, repeatable fix."
+    }
+  ]
+}

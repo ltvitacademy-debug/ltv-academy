@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced SRE, Disaster Recovery & Resilience · Chapter 8",
+    "titlePlain": "Resilient on Paper, One ",
+    "titleEmphasis": "Shared Dependency",
+    "titleSuffix": " Away From Failure",
+    "subtitle": "Lesson 31 · Capstone: Building a Resilient Enterprise System"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The architecture genuinely was redundant",
+    "code": "East US 2 (primary)        Central US (secondary)\n  checkout-api                checkout-api\n  orders-db (primary) <-->    orders-db (replica)\n  Redis cache                 Redis cache (geo-rep)\n  Front Door (global) -- routes to whichever is healthy",
+    "caption": "Compute, database, cache, routing -- every layer a dependency check usually looks at was real and correctly built."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What the game day actually exposed",
+    "code": "checkout-api (centralus) startup log:\n  Fetching secret \"payment-gateway-api-key\"\n    from vault: wrenhaven-kv-eastus2\n  ERROR: Unable to reach wrenhaven-kv-eastus2\n  Fetching secret \"orders-db-connection-string\"\n    from vault: wrenhaven-kv-eastus2\n  ERROR: Unable to reach wrenhaven-kv-eastus2\n  checkout-api failed to start: no secrets available.",
+    "caption": "Both regions pulled secrets from one unreplicated Key Vault instance -- sitting inside the exact region that just went down."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why the dependency map missed it",
+    "titlePlain": "One Edge, ",
+    "titleEmphasis": "Not Deep Enough",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "\"checkout-api depends on Key Vault\"", "sub": "True, but it never asked which region, or whether that vault was itself redundant" },
+      { "label": "The same blind spot, three disguises", "sub": "A shared DNS provider, or a single identity tenant, fail the exact same way" },
+      { "label": "App-layer redundancy isn't enough", "sub": "Every redundant copy still shared one invisible, unredundant dependency" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The fix",
+    "titlePlain": "Replicate the ",
+    "titleEmphasis": "Dependency",
+    "titleSuffix": ", Then Re-Ask the Question",
+    "steps": [
+      { "label": "1. Deploy wrenhaven-kv-centralus", "sub": "A real, monitored second vault -- not a one-time manual copy" },
+      { "label": "2-3. Local-first, tested fallback", "sub": "Each region reads its own vault, never one hardcoded reference" },
+      { "label": "4. Re-run the dependency map", "sub": "Ask of every edge: is the other end itself redundant, or just assumed to be?" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "The Whole Path, ",
+    "titleEmphasis": "Reviewed",
+    "titleSuffix": "",
+    "subtitle": "From Cloud Support to Cloud Architect -- closing this course, and the entire 15-course path."
+  }
+]

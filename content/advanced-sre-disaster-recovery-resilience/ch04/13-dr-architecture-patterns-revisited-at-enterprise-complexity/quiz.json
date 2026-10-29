@@ -1,0 +1,60 @@
+{
+  "lesson": "dr-architecture-patterns-revisited-at-enterprise-complexity",
+  "questions": [
+    {
+      "q": "Why does enterprise DR architecture typically mix active-active, warm standby, and cold/backup-restore patterns across the same estate rather than standardizing on one?",
+      "options": [
+        "Cloud providers only allow one DR pattern per subscription or account",
+        "Active-active is always cheaper than active-passive, so it should be used for low-tier workloads",
+        "Each workload tier's own RTO/RPO targets justify a different level of standing DR cost, and running everything active-active would mean paying for duplicate capacity nothing needs",
+        "Mixing patterns is a workaround for a technical limitation, not a deliberate architectural choice"
+      ],
+      "answer": 2,
+      "explain": "Real enterprises tier workloads and let each tier's RTO/RPO targets dictate its pattern, the same per-workload reasoning from the capstone course applied at service granularity, so cost is spent only where the targets justify it."
+    },
+    {
+      "q": "Checkout runs active-active across two regions and calls a pricing service that is active-passive with one primary. A region fails, and checkout's own failover completes instantly. Why can the checkout flow still break for customers?",
+      "options": [
+        "Checkout's effective RTO is bounded by the pricing service's slower failover, so calls into pricing can hit a region that hasn't promoted its standby yet",
+        "Active-active services cannot call active-passive services under any circumstances",
+        "This can only happen if checkout and pricing are owned by the same team",
+        "DNS propagation delay only affects active-passive services, never active-active ones"
+      ],
+      "answer": 0,
+      "explain": "A service's real-world RTO is bounded by the slowest dependency it calls during failover, not by its own standby tier — checkout's instant failover doesn't help if a dependency it calls hasn't finished promoting."
+    },
+    {
+      "q": "What is a \"failover domain\" in enterprise DR architecture?",
+      "options": [
+        "The Azure or AWS region where a service's primary infrastructure runs",
+        "A billing boundary used to separate DR costs by team",
+        "The DNS zone a service's failover record lives in",
+        "A set of services grouped by real dependency that must fail over together, rather than independently, during a regional event"
+      ],
+      "answer": 3,
+      "explain": "Failover domains group services by actual dependency so that related services move together during a regional event, preventing the kind of boundary failure where one service fails over cleanly but a dependency it relies on hasn't."
+    },
+    {
+      "q": "Why do cross-cutting dependencies like DNS, identity/IAM, and secrets management matter even more at enterprise complexity than at single-workload scale?",
+      "options": [
+        "Every service's failover, across every tier, routes through these shared systems, so an unaddressed DR gap in one of them silently undermines every individual service's DR plan at once",
+        "They only matter for Tier 0 workloads and can be ignored for lower tiers",
+        "They are automatically made resilient by any cloud provider and require no DR planning",
+        "They only affect active-active patterns, never active-passive ones"
+      ],
+      "answer": 0,
+      "explain": "Shared infrastructure like DNS, IAM, and secrets management sits underneath every service's failover regardless of tier, so a single point of failure there undermines many individually well-planned service-level DR postures simultaneously."
+    },
+    {
+      "q": "A Tier 2 search service has an RTO measured in hours and no strict RPO requirement. According to the tiering approach in this lesson, what DR posture is appropriate for it?",
+      "options": [
+        "A hot standby running at full production capacity continuously",
+        "A cold, backup-restore posture, since its own RTO/RPO targets don't justify standing DR infrastructure",
+        "Active-active across at least three regions regardless of cost",
+        "No DR posture should ever be assigned to a Tier 2 workload"
+      ],
+      "answer": 1,
+      "explain": "A workload's own RTO/RPO targets dictate its posture — an hours-level RTO with a loose RPO is genuinely met by a cold, backup-restore approach, and paying for more would be spending money the business never quantified a need for."
+    }
+  ]
+}
