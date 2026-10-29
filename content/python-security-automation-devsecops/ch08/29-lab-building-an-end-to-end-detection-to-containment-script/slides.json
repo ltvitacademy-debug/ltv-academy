@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 8",
+    "titlePlain": "Building an End-to-End ",
+    "titleEmphasis": "Detection-to-Containment",
+    "titleSuffix": " Script",
+    "subtitle": "Lesson 29 · Capstone: An Automated Detection-to-Response Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Polling for only what's new",
+    "code": "PROCESSED_FILE = Path(\"processed_findings.json\")\nSEVERITY_FLOOR = {\"High\", \"Critical\"}\n\ndef poll_sentinel_incidents(sentinel_client, since_iso):\n    incidents = sentinel_client.incidents.list(\n        filter=f\"properties/createdTimeUtc ge {since_iso}\"\n    )\n    return [i for i in incidents if i.properties.severity in SEVERITY_FLOOR]",
+    "caption": "A processed-IDs file plus a rolling time window stop the loop from reprocessing old incidents."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Enrich before deciding anything",
+    "code": "def enrich_incident(incident, graph_client, intel_client):\n    user = incident.properties.owner.user_principal_name\n    recent_sign_ins = graph_client.sign_ins.list(user_id=user, top=10)\n    unfamiliar_ips = [s.ip_address for s in recent_sign_ins if s.risk_level != \"none\"]\n    intel_hits = [intel_client.lookup_ip(ip) for ip in unfamiliar_ips]\n    return {\"incident_id\": incident.name, \"user\": user, \"intel_hits\": intel_hits}",
+    "caption": "Read-only lookups -- sign-ins and IP reputation. Nothing here can touch the account."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The one function allowed to act",
+    "titlePlain": "Two guardrails, ",
+    "titleEmphasis": "stacked",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "dry_run=True", "sub": "the function's default -- a careless run only logs the intended action" },
+      { "label": "approved_by=None", "sub": "still refuses to run, even with dry_run turned off" },
+      { "label": "Only then", "sub": "does graph_client.users.revoke_sign_in_sessions() actually get called" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wiring the loop together",
+    "code": "def run_pipeline(sentinel_client, graph_client, intel_client, dry_run=True):\n    processed = load_processed_ids()\n    for incident in poll_sentinel_incidents(sentinel_client, since_iso()):\n        if incident.name in processed:\n            continue\n        enriched = enrich_incident(incident, graph_client, intel_client)\n        action = propose_containment(enriched)\n        post_to_approval_channel(action)\n        execute_containment(action, graph_client, dry_run=dry_run)\n        processed.add(incident.name)\n    save_processed_ids(processed)",
+    "caption": "Poll, enrich, propose, post for approval, gate -- in that order, every time."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "A Security Gate for ",
+    "titleEmphasis": "the Script Itself",
+    "titleSuffix": "",
+    "subtitle": "Adding a real CI/CD security gate to the pipeline that ships this code."
+  }
+]

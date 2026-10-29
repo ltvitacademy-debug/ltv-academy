@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 2",
+    "titlePlain": "A Python Script That Correlates Findings Across ",
+    "titleEmphasis": "Both Clouds",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Automating with Security APIs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two schemas, one question",
+    "titlePlain": "Normalize ",
+    "titleEmphasis": "before",
+    "titleSuffix": " you compare",
+    "steps": [
+      { "label": "Sentinel incidents", "sub": "relatedEntities nested under properties" },
+      { "label": "ASFF findings", "sub": "IPs nested under Resources[].Details" },
+      { "label": "One common record shape", "sub": "source, id, severity, title, ips, users" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1: normalize each source",
+    "code": "def normalize_sentinel_incident(incident):\n    props = incident[\"properties\"]\n    ips = {e[\"properties\"][\"address\"]\n           for e in props[\"relatedEntities\"]\n           if e[\"kind\"] == \"Ip\"}\n    return {\"source\": \"sentinel\", \"id\": incident[\"name\"],\n            \"severity\": props[\"severity\"], \"ips\": ips}\n\ndef normalize_asff_finding(finding):\n    ips = {ip for r in finding.get(\"Resources\", [])\n           for ip in r[\"Details\"].get(\"AwsEc2Instance\", {})\n               .get(\"IpV4Addresses\", [])}\n    return {\"source\": \"security_hub\", \"id\": finding[\"Id\"],\n            \"severity\": finding[\"Severity\"][\"Label\"], \"ips\": ips}",
+    "caption": "Each function absorbs its own schema's mess, returns the same flat shape."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2: correlate with a set intersection",
+    "code": "def correlate(sentinel_items, aws_items):\n    matches = []\n    for s in sentinel_items:\n        for a in aws_items:\n            shared = s[\"ips\"] & a[\"ips\"]\n            if shared:\n                matches.append({\n                    \"sentinel_incident\": s[\"id\"],\n                    \"security_hub_finding\": a[\"id\"],\n                    \"shared_ips\": sorted(shared),\n                })\n    return matches\n\ncorrelated = correlate(sentinel_incidents, aws_findings)",
+    "caption": "No fuzzy matching -- just checking whether a concrete IP appears on both sides."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What the script deliberately doesn't do",
+    "titlePlain": "Enrichment, ",
+    "titleEmphasis": "not",
+    "titleSuffix": " response",
+    "steps": [
+      { "label": "No incident gets closed", "sub": "the script only reports the correlation" },
+      { "label": "No host gets isolated", "sub": "same principle from Chapter 1, applied for real" },
+      { "label": "A human reads both severities", "sub": "and decides what the shared IP actually means" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Chapter 3",
+    "titlePlain": "What SOAR Actually ",
+    "titleEmphasis": "Automates",
+    "titleSuffix": ", and What It Doesn't",
+    "subtitle": "Turning scripts like this one into gated SOAR playbooks."
+  }
+]

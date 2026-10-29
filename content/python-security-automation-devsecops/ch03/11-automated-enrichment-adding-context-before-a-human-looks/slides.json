@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 3",
+    "titlePlain": "Automated Enrichment: Adding Context Before a Human ",
+    "titleEmphasis": "Looks",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · Building SOAR Playbooks"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three enrichment points worth automating",
+    "titlePlain": "Facts, not ",
+    "titleEmphasis": "decisions",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "User risk score", "sub": "Entra ID Protection's low/medium/high classification" },
+      { "label": "Asset criticality", "sub": "is this a workstation, or a tier-1 domain controller" },
+      { "label": "Geo-IP on entity IPs", "sub": "compared against the user's normal sign-in geography" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pulling the user risk score",
+    "code": "AADUserRiskEvents\n| where TimeGenerated > ago(30d)\n| where UserPrincipalName == \"{incident_user_upn}\"\n| summarize LatestRiskLevel =\n    arg_max(TimeGenerated, RiskLevel, RiskDetail)",
+    "caption": "A high-risk account changes how urgently the incident deserves attention."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Asset criticality lookup, called from the playbook",
+    "code": "def get_asset_criticality(hostname, api_base, token):\n    resp = requests.get(\n        f\"{api_base}/assets/{hostname}\",\n        headers={\"Authorization\": f\"Bearer {token}\"},\n        timeout=10,\n    )\n    resp.raise_for_status()\n    return resp.json().get(\"criticality\", \"unknown\")",
+    "caption": "An Azure Function the Logic App calls over HTTP as an enrichment step."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Writing enrichment back onto the incident",
+    "code": "{\n  \"message\": \"Automated enrichment:\\n- User risk: High (impossible travel)\\n- Asset criticality: tier-1 (domain controller)\\n- Source IP country: RO (typical: US)\"\n}",
+    "caption": "Nothing here decided anything -- it assembled facts for the analyst's first look."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Automated Containment Actions, and the Approval Gate They ",
+    "titleEmphasis": "Need",
+    "titleSuffix": "",
+    "subtitle": "The one step in this chapter that actually changes system state."
+  }
+]

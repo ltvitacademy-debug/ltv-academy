@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 1",
+    "titlePlain": "Calling REST APIs: Auth, Pagination, and Rate ",
+    "titleEmphasis": "Limits",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Python for Security Automation Fundamentals"
+  },
+  {
+    "type": "code",
+    "eyebrow": "OAuth2 client credentials flow",
+    "code": "def get_access_token(client_id, client_secret, token_url):\n    response = requests.post(\n        token_url,\n        data={\n            \"grant_type\": \"client_credentials\",\n            \"client_id\": client_id,\n            \"client_secret\": client_secret,\n        },\n        timeout=10,\n    )\n    response.raise_for_status()\n    return response.json()[\"access_token\"]",
+    "caption": "The machine-to-machine OAuth2 grant -- no human user, a client ID/secret traded for a token."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pagination with next-page tokens",
+    "code": "def get_all_indicators(base_url, headers):\n    all_items = []\n    params = {\"page_size\": 100}\n    while True:\n        r = requests.get(base_url, headers=headers, params=params, timeout=10)\n        r.raise_for_status()\n        payload = r.json()\n        all_items.extend(payload[\"results\"])\n        next_token = payload.get(\"next_page_token\")\n        if not next_token:\n            break\n        params[\"page_token\"] = next_token\n    return all_items",
+    "caption": "Never assume one call returns everything -- loop until the API says there's no next page."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Handling HTTP 429 with backoff",
+    "code": "def get_with_backoff(url, headers, params, max_retries=5):\n    delay = 1\n    for attempt in range(max_retries):\n        r = requests.get(url, headers=headers, params=params, timeout=10)\n        if r.status_code == 429:\n            retry_after = int(r.headers.get(\"Retry-After\", delay))\n            time.sleep(retry_after)\n            delay *= 2\n            continue\n        r.raise_for_status()\n        return r.json()\n    raise RuntimeError(f\"Exceeded {max_retries} retries against {url}\")",
+    "caption": "Respect Retry-After when given; otherwise double the delay each retry."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three habits for every API call",
+    "titlePlain": "Build these in from the ",
+    "titleEmphasis": "start",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Always pass timeout=", "sub": "a hung request with no timeout can stall a script forever" },
+      { "label": "Always call raise_for_status()", "sub": "never assume a response succeeded" },
+      { "label": "Cache OAuth2 tokens until near expiry", "sub": "don't fetch a fresh token on every single call" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 1 complete",
+    "titlePlain": "Next: Chapter 2, Building Your First Security ",
+    "titleEmphasis": "Automation Scripts",
+    "titleSuffix": "",
+    "subtitle": "You now have the parsing, data-model, and API fundamentals to build on."
+  }
+]

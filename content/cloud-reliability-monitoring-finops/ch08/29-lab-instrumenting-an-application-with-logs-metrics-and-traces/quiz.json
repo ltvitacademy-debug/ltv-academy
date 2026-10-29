@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-instrumenting-an-application-with-logs-metrics-and-traces",
+  "questions": [
+    {
+      "q": "What is the main problem with order-service's original print() logging, as this lab frames it?",
+      "options": [
+        "It writes to stdout instead of stderr",
+        "It runs too slowly under load",
+        "It only works on Windows containers",
+        "It carries no timestamp discipline, no request correlation, and nothing machine-queryable"
+      ],
+      "answer": 3,
+      "explain": "Plain print() lines have no structure a query engine can filter on and no shared ID tying lines from the same request together -- exactly what the JSON formatter and request_id fix."
+    },
+    {
+      "q": "Why does the lab add a custom order_checkout_duration_seconds histogram instead of relying only on AKS's built-in CPU and memory metrics?",
+      "options": [
+        "Because AKS metrics are always wrong",
+        "Because platform metrics can't see inside the request to measure how long the application's own checkout logic actually took",
+        "Because histograms are required for every Kubernetes pod",
+        "Because CPU and memory metrics are deprecated"
+      ],
+      "answer": 1,
+      "explain": "Platform defaults show resource usage, not application-level behavior -- a custom histogram is the only way to measure checkout duration from the application's own point of view."
+    },
+    {
+      "q": "Why does charge_card get its own trace span instead of being left as untimed code inside the checkout handler?",
+      "options": [
+        "Spans are mandatory for every function call in Python",
+        "It's the riskiest, most likely-to-be-slow downstream call, so isolating it shows whether it dominates the parent request's total time",
+        "Trace spans replace the need for logging entirely",
+        "Azure Monitor refuses to accept traces without a child span"
+      ],
+      "answer": 1,
+      "explain": "Wrapping the risky call in its own span is what lets a slow payment call show up as the one child span dominating the parent's duration, the same pattern Lesson 1's inventory-service example demonstrated."
+    },
+    {
+      "q": "What does configure_azure_monitor(), called once at process startup, actually do?",
+      "options": [
+        "It deletes old telemetry from Application Insights",
+        "It only configures logging, not metrics or traces",
+        "It points the OpenTelemetry SDK's exporters at the Application Insights resource using one connection string, for all three signal types",
+        "It replaces the need for a connection string entirely"
+      ],
+      "answer": 2,
+      "explain": "One configuration call wires structured logs, the custom histogram, and trace spans all through the same Application Insights connection string."
+    },
+    {
+      "q": "In the verification KQL query, what does filtering on one OperationId actually prove?",
+      "options": [
+        "That the three pillars were pulled back out correlated together, from the same real checkout, using one shared ID",
+        "That Application Insights has unlimited storage",
+        "That logs and metrics cannot share an ID with traces",
+        "That the query only works if traces are disabled"
+      ],
+      "answer": 0,
+      "explain": "The real proof of the lab isn't that each pillar exists in isolation -- it's that one OperationId retrieves the log line, the metric recording, and the span for the same request, in order."
+    }
+  ]
+}

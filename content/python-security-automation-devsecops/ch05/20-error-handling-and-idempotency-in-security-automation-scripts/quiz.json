@@ -1,0 +1,60 @@
+{
+  "lesson": "error-handling-and-idempotency-in-security-automation-scripts",
+  "questions": [
+    {
+      "q": "Why does this lesson say a security automation script should treat failure as the normal case rather than the exception?",
+      "options": [
+        "Because Python itself crashes on any network call by default",
+        "Because external systems it calls can fail for reasons unrelated to the script's own code, and a silently swallowed exception mid-playbook can leave a case half updated or an alert nobody saw",
+        "Because failure handling is only a cosmetic concern with no real consequence",
+        "Because retry logic is required by the HTTP specification"
+      ],
+      "answer": 1,
+      "explain": "A happy-path-only script is actively dangerous for automation with real side effects, since a swallowed exception can leave work partially done with no one aware."
+    },
+    {
+      "q": "Why is retrying a permanent error, such as a 401 Unauthorized, worse than not retrying at all?",
+      "options": [
+        "It will likely succeed on the second attempt, so this concern doesn't actually apply",
+        "A 401 always resolves itself automatically after one retry",
+        "Permanent errors are a sign the retry loop's jitter value is set too low",
+        "Permanent errors recur identically on retry, so retrying wastes time and can trip rate limits or alerting on the receiving system without ever succeeding"
+      ],
+      "answer": 3,
+      "explain": "A permanent error like bad credentials or a malformed request will fail the same way every time, so retrying only burns time and risk for no benefit."
+    },
+    {
+      "q": "What does exponential backoff with jitter accomplish that an immediate retry does not?",
+      "options": [
+        "It waits progressively longer between attempts and adds randomness, avoiding adding more load to an already-struggling service and preventing many retrying callers from synchronizing their attempts",
+        "It guarantees the request will always succeed on the next attempt",
+        "It removes the need for any error classification logic",
+        "It converts a permanent error into a transient one"
+      ],
+      "answer": 0,
+      "explain": "Backing off avoids piling more load onto a service that's already failing, and jitter keeps many retrying clients from hammering it in lockstep."
+    },
+    {
+      "q": "Why must an idempotency key be generated once, outside the retry loop, and reused for every retry attempt of the same logical action?",
+      "options": [
+        "Generating it inside the loop is more efficient and has no downside",
+        "Idempotency keys are only required for GET requests, never for POST",
+        "A fresh key per attempt would stop the receiving API from recognizing retries as the same action, defeating the whole purpose of using an idempotency key to avoid duplicating the side effect",
+        "Idempotency keys must change on each attempt to pass validation"
+      ],
+      "answer": 2,
+      "explain": "The key only protects against duplicate side effects if the same key is reused across retries of one logical action; a new key each time would let the API treat each retry as a brand-new action."
+    },
+    {
+      "q": "What advantage does logging failures as structured JSON (including the event_id) give over a plain print() statement inside a try/except?",
+      "options": [
+        "JSON logs run faster than any other log format at runtime",
+        "It removes the need for any retry logic at all",
+        "It automatically fixes the underlying error without human intervention",
+        "It lets an on-call analyst or log aggregator filter and alert on specific failures, and trace one alert's entire journey across every step it touched using its event_id"
+      ],
+      "answer": 3,
+      "explain": "Structured logs with a consistent event_id let a human trace one alert across webhook receipt, ticketing, chat notification, and any remediation step, which matters most when a playbook fails partway through."
+    }
+  ]
+}

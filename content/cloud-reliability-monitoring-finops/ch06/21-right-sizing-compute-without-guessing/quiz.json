@@ -1,0 +1,60 @@
+{
+  "lesson": "right-sizing-compute-without-guessing",
+  "questions": [
+    {
+      "q": "What is the main risk of right-sizing a VM based on its average CPU utilization over a month?",
+      "options": [
+        "Average utilization cannot be queried from Azure Monitor or CloudWatch at all",
+        "A bursty workload — idle most of the day, pegged during a nightly batch job — can average out to a low number that hides the real peak",
+        "Averages are always higher than the real peak, so you'd oversize instead of undersize",
+        "Average utilization only applies to memory, never to CPU"
+      ],
+      "answer": 1,
+      "explain": "A workload idle 23 hours and pegged for 1 hour can still average around 12% CPU; sizing off that average risks the batch job missing its window or falling over."
+    },
+    {
+      "q": "Why do right-sizing workflows typically use p95 utilization instead of the mean?",
+      "options": [
+        "p95 reflects real peak usage without letting one rare outlier dictate the whole sizing decision",
+        "p95 is simply another name for the average and the two numbers are interchangeable",
+        "p95 is only available in CloudWatch, never in Azure Monitor",
+        "p95 always equals the maximum observed value, so it's the safest possible number to use"
+      ],
+      "answer": 0,
+      "explain": "p95 means utilization is below that value 95% of the time — it captures real peaks while being more stable than the raw max, unlike the mean which hides bursty load shapes entirely."
+    },
+    {
+      "q": "In the Log Analytics KQL example in this lesson, what does `summarize p95 = percentile(CounterValue, 95) by Computer` actually produce?",
+      "options": [
+        "A single p95 value across the entire subscription with no per-machine breakdown",
+        "The percentage of machines currently above 95% CPU",
+        "The 95th-percentile value of the CounterValue column, computed separately for each Computer",
+        "A list of every raw CounterValue reading, sorted from lowest to highest"
+      ],
+      "answer": 2,
+      "explain": "The `by Computer` clause groups the percentile calculation per machine, giving a p95 CPU value for each VM over the queried window."
+    },
+    {
+      "q": "A VM shows p95 CPU around 18% but p95 memory around 85% over a full month. What does this lesson say to do?",
+      "options": [
+        "Resize the whole instance down uniformly, since CPU is the lower number",
+        "Ignore memory entirely — CPU is the only metric that matters for right-sizing",
+        "Delete the VM, since mismatched CPU and memory usage always indicates a misconfigured resource",
+        "Look for a SKU family with a different vCPU-to-memory ratio instead of resizing both dimensions the same way"
+      ],
+      "answer": 3,
+      "explain": "When CPU and memory utilization point in different directions, a uniform resize either wastes CPU or starves memory — the fix is a SKU with a different ratio of the two."
+    },
+    {
+      "q": "Why does this lesson recommend treating right-sizing as a recurring monthly or quarterly review rather than a one-time cleanup?",
+      "options": [
+        "Azure Monitor and CloudWatch automatically delete utilization history after 30 days",
+        "Percentile queries only work correctly the first time they are run",
+        "New workloads tend to get provisioned generously again over time, so sizing drifts back upward unless it's re-checked on a cadence",
+        "Cloud providers change VM SKU pricing every month, making old right-sizing decisions invalid"
+      ],
+      "answer": 2,
+      "explain": "A one-time right-sizing pass decays the same way the original drift happened — without a recurring review, new resources get provisioned generously again and the waste comes back."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "secrets-scanning-and-preventing-leaked-credentials-in-commits",
+  "questions": [
+    {
+      "q": "What gap does entropy-based secret detection cover that pure regex pattern matching does not?",
+      "options": [
+        "It runs faster than regex matching on large diffs",
+        "It automatically rotates any credential it finds",
+        "It flags high-randomness strings that don't match any known credential format, such as an internal API key with no recognizable prefix",
+        "It only works on branches that have already been merged"
+      ],
+      "answer": 2,
+      "explain": "Regex matching needs a known format (AKIA..., ghp_..., xoxb-...). Entropy scoring flags strings that are statistically too random to be normal code, catching secrets with no known shape — at the cost of some false positives on things like base64 blobs."
+    },
+    {
+      "q": "Why is a local pre-commit hook for secrets scanning considered a courtesy rather than an enforced control?",
+      "options": [
+        "It only runs on Windows machines",
+        "Pre-commit hooks cannot detect entropy-based secrets, only regex matches",
+        "It is slower than scanning in CI and is therefore never used in practice",
+        "It depends on the developer having installed it locally, so it can be skipped, not run, or bypassed by a force-push"
+      ],
+      "answer": 3,
+      "explain": "A pre-commit hook only fires on a machine where `pre-commit install` was actually run. That's why the same scan needs to also run as a required CI check on pull requests — a gate the contributor can't opt out of."
+    },
+    {
+      "q": "Why is scanning a repository's full git history a separate step from scanning the current working tree?",
+      "options": [
+        "History scans are purely cosmetic and find nothing a working-tree scan wouldn't",
+        "Deleting a secret in a later commit does not remove it from earlier commits; the history still contains it unless specifically rewritten",
+        "Git automatically redacts secrets from history after 90 days",
+        "Working-tree scans always take longer than history scans"
+      ],
+      "answer": 1,
+      "explain": "`git log` preserves every prior commit. A secret deleted in a new commit is still sitting in the commit where it was added, which is why tools like `gitleaks detect --log-opts=\"--all\"` or trufflehog's git mode walk the entire commit history, not just the current files."
+    },
+    {
+      "q": "What does trufflehog's `--only-verified` flag add on top of its normal entropy and pattern detection?",
+      "options": [
+        "It attempts to authenticate a found credential against the real service it belongs to, confirming whether it's a live, usable secret",
+        "It restricts the scan to files smaller than 1 KB",
+        "It only scans commits made by verified GitHub accounts",
+        "It disables entropy scoring and relies on regex matches only"
+      ],
+      "answer": 0,
+      "explain": "`--only-verified` takes a candidate finding and tests it live against the API it appears to belong to (e.g. does this AWS key actually authenticate), separating confirmed-live secrets from dead strings left over from an already-rotated key."
+    },
+    {
+      "q": "After confirming a real credential was leaked in a pushed commit, what should happen first?",
+      "options": [
+        "Rewrite git history with git filter-repo or BFG to remove the secret, then notify the team",
+        "Rotate the credential at its source immediately, before rewriting any git history",
+        "Wait until the next scheduled security review to decide on a response",
+        "Delete the repository and start a new one from scratch"
+      ],
+      "answer": 1,
+      "explain": "Rotation at the source is the only step that stops the leaked secret from being usable, since copies may already exist in CI logs, forks, or other clones outside your control. Rewriting history afterward is cleanup, not containment, and doing it first creates a false sense that the problem is solved."
+    }
+  ]
+}

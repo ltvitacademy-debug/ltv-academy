@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 5",
+    "titlePlain": "Webhook-Driven Automation Between ",
+    "titleEmphasis": "Security Tools",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · Security Orchestration Across Tools"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "From polling to push",
+    "titlePlain": "The webhook ",
+    "titleEmphasis": "flow",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Tool fires event", "sub": "a finding or case change triggers an outbound POST" },
+      { "label": "Receiver verifies", "sub": "HMAC signature checked against the raw body" },
+      { "label": "Dedupe, then act", "sub": "event_id checked before any real processing runs" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A minimal Flask receiver",
+    "code": "@app.route(\"/webhooks/security-tool\", methods=[\"POST\"])\ndef receive_alert():\n    payload = request.get_json(silent=True)\n    if payload is None:\n        return jsonify({\"error\": \"invalid JSON\"}), 400\n\n    process_alert(payload)\n    return jsonify({\"status\": \"accepted\"}), 202",
+    "caption": "Respond fast with 202; push the real work into process_alert() so slow senders don't retry."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Signature check + idempotency",
+    "code": "expected = hmac.new(SECRET, raw_body, hashlib.sha256).hexdigest()\nif not hmac.compare_digest(expected, signature_header):\n    abort(401)\n\nif payload[\"event_id\"] in processed_events:\n    return  # already handled, do nothing\nprocessed_events.add(payload[\"event_id\"])",
+    "caption": "Verify against raw bytes with compare_digest(), then dedupe by event_id before acting."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Automating Ticket Creation ",
+    "titleEmphasis": "from an Alert",
+    "titleSuffix": "",
+    "subtitle": "Turning a verified webhook event into a real case in a ticketing system."
+  }
+]

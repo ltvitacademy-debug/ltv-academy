@@ -1,0 +1,60 @@
+{
+  "lesson": "container-insights-for-eks-workloads",
+  "questions": [
+    {
+      "q": "What is Container Insights, in concrete terms?",
+      "options": [
+        "A separate monitoring product that replaces CloudWatch for containerized workloads",
+        "A Kubernetes-only logging format that CloudWatch Logs requires before it will accept any data",
+        "A specific CloudWatch namespace populated by in-cluster agents, plus automatic dashboards that organize those metrics by cluster, node, pod, and service",
+        "A one-time snapshot report generated manually from the EKS console"
+      ],
+      "answer": 2,
+      "explain": "Container Insights is the ContainerInsights CloudWatch namespace, populated with metrics collected by agents deployed into the cluster, with dashboards that organize the same underlying CloudWatch metrics and alarms around the Kubernetes mental model."
+    },
+    {
+      "q": "Why is the CloudWatch agent deployed as a DaemonSet on EKS rather than as a single centralized deployment?",
+      "options": [
+        "A DaemonSet runs one agent pod on every node automatically, including new nodes added by autoscaling, so metrics collection happens locally on each node",
+        "DaemonSets are required by AWS for any pod that writes to a CloudWatch namespace, regardless of its purpose",
+        "A single centralized deployment would require a dedicated node and cannot run on EKS at all",
+        "DaemonSets are the only Kubernetes workload type that supports collecting CPU metrics"
+      ],
+      "answer": 0,
+      "explain": "A DaemonSet guarantees exactly one agent pod per node, which matters because node-level resource usage has to be observed locally on that node, and new nodes get an agent pod scheduled automatically with no manual step."
+    },
+    {
+      "q": "What does the pod-level metric `pod_memory_utilization_over_pod_limit` specifically show, and why is it useful?",
+      "options": [
+        "The total memory available across the entire EKS cluster, regardless of any individual pod",
+        "A pod's memory usage measured against its own configured memory limit — the leading indicator that explains an OOMKilled pod after the fact",
+        "The number of pods currently scheduled on a given node",
+        "The percentage of nodes in the cluster that have failed health checks"
+      ],
+      "answer": 1,
+      "explain": "This metric compares a pod's actual memory usage to its own limit, which is exactly the signal that climbs toward 100% right before Kubernetes OOMKills that pod — something a cluster-wide aggregate metric would never isolate."
+    },
+    {
+      "q": "Why does Fluent Bit run as a separate DaemonSet from the CloudWatch agent on EKS, instead of one agent handling both?",
+      "options": [
+        "Fluent Bit is only compatible with ECS and cannot run alongside the CloudWatch agent on the same node",
+        "The CloudWatch agent is deprecated and Fluent Bit is meant to fully replace it in every role",
+        "Running two DaemonSets is purely a historical accident with no functional reason behind it",
+        "Metrics and logs are two different kinds of telemetry collected through two different pipelines — the CloudWatch agent collects performance metrics, while Fluent Bit tails container stdout/stderr and ships it into CloudWatch Logs"
+      ],
+      "answer": 3,
+      "explain": "This mirrors the metrics/logs separation from Chapter 1 and Lesson 9, implemented concretely on EKS: the CloudWatch agent populates the ContainerInsights metrics namespace, while Fluent Bit ships raw container log output into CloudWatch Logs — two different pipelines for two different kinds of telemetry."
+    },
+    {
+      "q": "On a pod-level incident, what does pairing a Container Insights alarm with a Logs Insights query against that pod's application logs actually give you?",
+      "options": [
+        "Which specific pod is in trouble and when (from the metric/alarm), plus why — what the application was actually doing right before the spike (from the logs)",
+        "Nothing beyond what the Container Insights dashboard alone already shows",
+        "The exact dollar cost of the incident, pulled automatically from AWS Cost Explorer",
+        "A guarantee that the pod will not be OOMKilled again in the future"
+      ],
+      "answer": 0,
+      "explain": "The metric/alarm localizes which pod and when the problem started; a Logs Insights query scoped to that pod and time window surfaces the application's own behavior right before the spike — together they answer both where/when and why, the same pattern Chapter 1 established for metrics, logs, and traces generally."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cloud Operations, Observability, FinOps & Reliability · Chapter 6",
+    "titlePlain": "Storage Lifecycle Policies & ",
+    "titleEmphasis": "Orphaned Resources",
+    "titleSuffix": "",
+    "subtitle": "Lesson 24 · Cleaning Up the Spend Nobody Notices"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The quietest category of waste",
+    "titlePlain": "Nobody gets ",
+    "titleEmphasis": "paged",
+    "titleSuffix": " for a forgotten disk",
+    "steps": [
+      { "label": "Compute waste eventually gets noticed", "sub": "a cost report, a line item, a question" },
+      { "label": "Storage waste doesn't page anyone", "sub": "an unattached disk just keeps billing in silence" },
+      { "label": "This lesson: resources that may do nothing at all", "sub": "not active-but-oversized, just forgotten" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Azure Blob lifecycle rule",
+    "code": "{\n  \"rules\": [{\n    \"name\": \"move-and-expire-logs\",\n    \"type\": \"Lifecycle\",\n    \"definition\": {\n      \"filters\": { \"prefixMatch\": [\"logs/\"] },\n      \"actions\": { \"baseBlob\": {\n        \"tierToCool\":    { \"daysAfterModificationGreaterThan\": 30 },\n        \"tierToArchive\": { \"daysAfterModificationGreaterThan\": 90 },\n        \"delete\":        { \"daysAfterModificationGreaterThan\": 365 }\n      }}\n    }\n  }]\n}",
+    "caption": "S3 Lifecycle rules follow the same shape: hot, then IA, then Glacier, then expired."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Finding orphaned disks before touching anything",
+    "code": "# Azure CLI: managed disks with no attached VM\naz disk list --query \"[?diskState=='Unattached']\" -o table\n\n# AWS CLI: EBS volumes in 'available' (unattached) state\naws ec2 describe-volumes --filters Name=status,Values=available \\\n  --query \"Volumes[].{Id:VolumeId,Size:Size,Created:CreateTime}\"",
+    "caption": "Finding orphans is a query against the inventory, not a manual hunt."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Deleting is irreversible -- treat it that way",
+    "titlePlain": "Tag, wait, ",
+    "titleEmphasis": "then delete",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Confirm it's actually orphaned", "sub": "not mid-migration, not pending a planned reattachment" },
+      { "label": "Check retention and compliance requirements", "sub": "some snapshots exist to satisfy a policy, not by accident" },
+      { "label": "Tag, grace period, then delete", "sub": "7-30 days gives a forgotten dependency time to surface" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 6 complete",
+    "titlePlain": "Spend down, ",
+    "titleEmphasis": "reliability intact",
+    "titleSuffix": "",
+    "subtitle": "Next: Chapter 7 — Site Reliability Engineering Fundamentals."
+  }
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 1",
+    "titlePlain": "Parsing Logs and Security Data with ",
+    "titleEmphasis": "Python",
+    "titleSuffix": "",
+    "subtitle": "Lesson 2 · Python for Security Automation Fundamentals"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Syslog: still everywhere",
+    "code": "import re\n\nSYSLOG_RE = re.compile(\n    r\"<(?P<pri>\\d+)>(?P<timestamp>\\w{3}\\s+\\d{1,2}\\s\\d{2}:\\d{2}:\\d{2})\\s\"\n    r\"(?P<host>\\S+)\\s(?P<process>\\w+)(\\[(?P<pid>\\d+)\\])?:\\s(?P<message>.*)\"\n)\n\nline = \"<34>Oct 27 02:14:12 fw-edge-01 sshd[1234]: Failed password for root from 203.0.113.9 port 51823 ssh2\"\nevent = SYSLOG_RE.match(line).groupdict()\nprint(event[\"host\"], event[\"process\"], event[\"message\"])",
+    "caption": "Named groups turn a regex match into a dictionary you can hand downstream."
+  },
+  {
+    "type": "code",
+    "eyebrow": "JSON logs: the modern default",
+    "code": "import json\n\n# one JSON object per line -- the common EDR/cloud export shape\nwith open(\"edr_events.jsonl\") as f:\n    for line in f:\n        event = json.loads(line)\n        if event.get(\"severity\") == \"high\":\n            print(event[\"timestamp\"], event[\"process_name\"], event[\"sha256\"])",
+    "caption": "The real trap isn't syntax -- it's inconsistent field names across vendors."
+  },
+  {
+    "type": "code",
+    "eyebrow": "CSV exports: the quiet traps",
+    "code": "import csv\n\nwith open(\"ioc_feed.csv\", newline=\"\", encoding=\"utf-8\") as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        if row[\"type\"] == \"ipv4-addr\" and row[\"confidence\"] == \"high\":\n            print(row[\"indicator\"], row[\"first_seen\"])",
+    "caption": "newline=\"\", watch encoding (utf-8-sig), and every DictReader value is a string."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Before you correlate anything",
+    "titlePlain": "Normalize ",
+    "titleEmphasis": "timestamps",
+    "titleSuffix": " first",
+    "steps": [
+      { "label": "Convert every source to UTC datetime", "sub": "syslog, ISO 8601, and MM/DD/YYYY all differ" },
+      { "label": "Use timezone-aware datetime objects", "sub": "never compare naive and aware timestamps" },
+      { "label": "Normalize field names too", "sub": "severity, Severity, and properties.level must map to one schema" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 3",
+    "titlePlain": "STIX, TAXII, and Common Threat ",
+    "titleEmphasis": "Data Formats",
+    "titleSuffix": "",
+    "subtitle": "Modeling and sharing threat intelligence with real data standards."
+  }
+]

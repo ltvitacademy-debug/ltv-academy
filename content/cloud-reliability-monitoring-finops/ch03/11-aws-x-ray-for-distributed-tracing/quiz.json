@@ -1,0 +1,60 @@
+{
+  "lesson": "aws-x-ray-for-distributed-tracing",
+  "questions": [
+    {
+      "q": "What is the actual difference between an X-Ray segment and a subsegment?",
+      "options": [
+        "A subsegment covers multiple services while a segment covers only one function call",
+        "A segment is the record of one service's work on a request; a subsegment is a finer breakdown within it, such as one downstream call",
+        "They are identical in meaning — X-Ray uses the two terms interchangeably in its API",
+        "A segment only exists for Lambda functions, while a subsegment only exists for EC2-hosted services"
+      ],
+      "answer": 1,
+      "explain": "A segment records one service's overall work on a request (start/end time, metadata); a subsegment nests inside it to break that work down further, such as one call out to DynamoDB or a downstream service."
+    },
+    {
+      "q": "Why does the X-Ray SDK send completed segment data to the local X-Ray daemon over UDP instead of calling the X-Ray API directly from application code?",
+      "options": [
+        "UDP is required because the X-Ray API only accepts binary-encoded requests",
+        "The X-Ray daemon encrypts trace data before it can leave the account, which the SDK cannot do on its own",
+        "Application code is not permitted to make any outbound network calls under AWS IAM by default",
+        "It keeps the latency and batching work of actually reaching the X-Ray API off the request path that's being measured, instead of adding tracing overhead to the thing being traced"
+      ],
+      "answer": 3,
+      "explain": "The daemon runs as a separate background process (sidecar, DaemonSet, or built into the Lambda execution environment) that batches and forwards trace data, so instrumenting a request doesn't itself add API-call latency to that request."
+    },
+    {
+      "q": "How does X-Ray build a service map, and what is it useful for on a real incident?",
+      "options": [
+        "It's assembled automatically from segment data showing which services called which downstream services, and it's useful for quickly spotting which node in the chain is actually degraded",
+        "It must be hand-drawn by an engineer in the X-Ray console before any traces can be collected",
+        "It's a static architecture diagram uploaded once during initial X-Ray setup and never updated",
+        "It only shows AWS Lambda functions and omits any EC2, ECS, or container-based services entirely"
+      ],
+      "answer": 0,
+      "explain": "Because every segment records its own service and its downstream calls, X-Ray can build the topology graph automatically — and a node showing elevated errors or latency is often the fastest way to localize a problem before opening individual traces."
+    },
+    {
+      "q": "What does a sampling rule's `reservoir_size` actually guarantee?",
+      "options": [
+        "The maximum number of segments that can ever be stored for that service, after which tracing stops entirely",
+        "The number of days trace data for that service is retained before automatic deletion",
+        "A fixed number of traces per second that are always traced before the fixed_rate percentage sampling applies to anything beyond that",
+        "The number of subsegments allowed inside a single segment for that service"
+      ],
+      "answer": 2,
+      "explain": "The reservoir is a guaranteed baseline — e.g. 2 traces per second always traced — with the fixed_rate percentage only applying to request volume beyond that reserved amount, ensuring low-traffic or critical paths aren't sampled away to nothing."
+    },
+    {
+      "q": "Why would you set a near-zero sampling rate specifically on a health-check endpoint like /health?",
+      "options": [
+        "Health-check endpoints are automatically excluded by AWS and the sampling rule has no real effect",
+        "Health checks produce traces that tell you almost nothing interesting during an incident, so tracing nearly every one of them wastes storage and API calls on noise",
+        "X-Ray refuses to trace any endpoint that returns a 200 status code without an error",
+        "A near-zero rate on health checks is required before any other service's sampling rule can take effect"
+      ],
+      "answer": 1,
+      "explain": "Frequent, low-value health-check traffic generates a large volume of traces that tell you nothing useful on an incident, so a custom sampling rule with a very low fixed_rate (or zero reservoir) keeps that noise from crowding out traces you'd actually want to look at."
+    }
+  ]
+}

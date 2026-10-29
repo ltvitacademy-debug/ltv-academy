@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 4",
+    "titlePlain": "Automating IOC Lookups ",
+    "titleEmphasis": "Against a SIEM",
+    "titleSuffix": "",
+    "subtitle": "Lesson 2 · Threat Intelligence Automation"
+  },
+  {
+    "type": "code",
+    "eyebrow": "One query, not one per IOC",
+    "code": "def build_ip_lookup_kql(ips, lookback_days=7):\n    ip_list = \", \".join(f\"'{ip}'\" for ip in ips)\n    return f\"\"\"\n    let watch_ips = dynamic([{ip_list}]);\n    CommonSecurityLog\n    | where TimeGenerated > ago({lookback_days}d)\n    | where SourceIP in (watch_ips) or DestinationIP in (watch_ips)\n    \"\"\"",
+    "caption": "A dynamic([...]) array is KQL's parameterized IN clause — one round trip, every IOC checked."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Stay under the query-length ceiling",
+    "titlePlain": "Chunk, then ",
+    "titleEmphasis": "query",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "chunked(ips, 5000)", "sub": "split a large IOC list into safe-sized batches" },
+      { "label": "Run per batch", "sub": "same LogsQueryClient from Chapter 2" },
+      { "label": "Merge matches", "sub": "combine results across every batch" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Tag what actually matched",
+    "code": "matched = {r[\"SourceIP\"] for r in all_matches} | {r[\"DestinationIP\"] for r in all_matches}\n\nfor ioc in normalized_ips:\n    ioc.tags.append(\n        \"seen_in_environment\" if ioc.value in matched else \"not_observed\"\n    )",
+    "caption": "Feed presence and real-environment activity are two different signals — don't conflate them."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 3",
+    "titlePlain": "Scoring & Prioritizing ",
+    "titleEmphasis": "Threat Intel",
+    "titleSuffix": "",
+    "subtitle": "Turning confidence, relevance, and recency into one score so intel doesn't drown you in noise."
+  }
+]

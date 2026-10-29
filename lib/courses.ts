@@ -17,6 +17,8 @@ import { SECURITY_ENGINEERING_IDENTITY_MANAGEMENT_CHAPTERS } from "./security-en
 import { TERRAFORM_IAC_FOR_CLOUD_ARCHITECTS_CHAPTERS } from "./terraform-iac-for-cloud-architects-outline";
 import { AZURE_AWS_CLOUD_SECURITY_CHAPTERS } from "./azure-aws-cloud-security-outline";
 import { DOCKER_KUBERNETES_CONTAINER_PLATFORMS_CHAPTERS } from "./docker-kubernetes-container-platforms-outline";
+import { PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS } from "./python-security-automation-devsecops-outline";
+import { CLOUD_RELIABILITY_MONITORING_FINOPS_CHAPTERS } from "./cloud-reliability-monitoring-finops-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2474,7 +2476,8 @@ export const COURSES: CourseMeta[] = [
     slug: "python-security-automation-devsecops",
     title: "Python Security Automation, SOAR & DevSecOps",
     tagline: "Scripting real security automation, SOAR playbooks, and folding security practices into the DevOps pipeline.",
-    status: "coming-soon",
+    status: "available",
+    chapters: PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS,
   },
   {
     slug: "zero-trust-enterprise-security-capstone",
@@ -2568,7 +2571,8 @@ export const COURSES: CourseMeta[] = [
     slug: "cloud-reliability-monitoring-finops",
     title: "Cloud Operations, Observability, FinOps & Reliability",
     tagline: "Cloud operations, observability, cost management, and reliability engineering for production cloud environments.",
-    status: "coming-soon",
+    status: "available",
+    chapters: CLOUD_RELIABILITY_MONITORING_FINOPS_CHAPTERS,
   },
   {
     slug: "enterprise-cloud-architecture-capstone",

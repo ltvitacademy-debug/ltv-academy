@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cloud Operations, Observability, FinOps & Reliability · Chapter 6",
+    "titlePlain": "Right-Sizing Compute ",
+    "titleEmphasis": "Without Guessing",
+    "titleSuffix": "",
+    "subtitle": "Lesson 21 · Optimizing Cloud Spend Without Breaking Reliability"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why sizing drifts upward",
+    "titlePlain": "Nobody revisits a ",
+    "titleEmphasis": "safe round number",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Slow afternoon → SKU bump", "sub": "the incident passes, the bump never gets reverted" },
+      { "label": "Compute sizing only ever grows", "sub": "repeat across hundreds of VMs over years" },
+      { "label": "The fix: stop guessing entirely", "sub": "the metrics pipeline already has the real usage data" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Averages hide the shape of the load",
+    "code": "# a VM idle at 2% for 23 hours, pegged at 95% for 1 hour\n# daily batch job = averages out to ~12% CPU\n#\n# sizing off that 12% average would cause the batch job\n# to miss its window or fall over\n#\n# p50  = typical interval, context only\n# p95  = below this 95% of the time -- size against THIS\n# p99  = catches rare but severe spikes",
+    "caption": "p95 utilization, not the mean, is the standard right-sizing input."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pulling p95 CPU in Log Analytics",
+    "code": "Perf\n| where ObjectName == \"Processor\"\n      and CounterName == \"% Processor Time\"\n| where TimeGenerated > ago(28d)\n| summarize p50 = percentile(CounterValue, 50),\n            p95 = percentile(CounterValue, 95),\n            p99 = percentile(CounterValue, 99)\n          by Computer\n| order by p95 desc",
+    "caption": "28 days captures weekly batch cycles and month-end spikes, not just a quiet Tuesday."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Turning percentiles into a decision",
+    "titlePlain": "Three outcomes, ",
+    "titleEmphasis": "one cadence",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "p95 consistently under ~40%", "sub": "downsize one or two tiers, keep real headroom" },
+      { "label": "p95 consistently above ~75-80%", "sub": "undersized — a reliability problem before it's an incident" },
+      { "label": "Re-run the query monthly or quarterly", "sub": "a one-time cleanup decays right back to where it started" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 22",
+    "titlePlain": "Reserved Instances, Savings Plans, ",
+    "titleEmphasis": "and Spot",
+    "titleSuffix": "",
+    "subtitle": "The real tradeoffs once you know the actual sizes you need."
+  }
+]

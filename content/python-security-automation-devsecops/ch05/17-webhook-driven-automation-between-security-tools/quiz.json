@@ -1,0 +1,60 @@
+{
+  "lesson": "webhook-driven-automation-between-security-tools",
+  "questions": [
+    {
+      "q": "What is the main advantage of a webhook over polling a security tool's API on a timer?",
+      "options": [
+        "Webhooks never require any authentication at all",
+        "Webhooks eliminate the need for HTTPS",
+        "Webhooks let the tool push an event the moment it happens, instead of waiting for the next poll and burning API calls on 'nothing changed' checks",
+        "Webhooks are only usable for read-only data, never for triggering automation"
+      ],
+      "answer": 2,
+      "explain": "A webhook flips the model: the sending tool makes an outbound POST the instant something happens, cutting the detection-to-reaction delay and avoiding wasted polling calls."
+    },
+    {
+      "q": "Why does a webhook receiver typically return a quick 202 Accepted instead of doing all downstream work inside the request handler?",
+      "options": [
+        "Most webhook senders use a short timeout and will mark a slow response as failed and retry it, which can cause duplicate processing",
+        "202 responses are required by the HTTP specification for all POST requests",
+        "A 202 response skips signature verification",
+        "Flask cannot return any other status code from a POST route"
+      ],
+      "answer": 0,
+      "explain": "Senders commonly time out and retry slow endpoints, so receivers accept quickly and push the real work into a separate function or queue."
+    },
+    {
+      "q": "When verifying an inbound webhook's HMAC signature, what must the receiver compute the HMAC over?",
+      "options": [
+        "The re-serialized, parsed JSON object",
+        "Only the event_id field",
+        "The HTTP response the receiver is about to send back",
+        "The raw request body bytes exactly as received, before any JSON parsing"
+      ],
+      "answer": 3,
+      "explain": "Re-parsing and re-serializing JSON can reorder keys or change whitespace, which would make a signature computed over the raw bytes fail to match even for a legitimate request."
+    },
+    {
+      "q": "Why should signature comparison use hmac.compare_digest() instead of a plain == comparison?",
+      "options": [
+        "== is deprecated in Python 3 and no longer works on strings",
+        "compare_digest() runs in constant time, preventing an attacker from using response-timing differences to guess the signature byte by byte",
+        "compare_digest() automatically regenerates the shared secret",
+        "There is no real difference; either works identically for this purpose"
+      ],
+      "answer": 1,
+      "explain": "A plain string comparison can short-circuit at the first mismatched byte, leaking timing information; compare_digest() is designed to avoid that side channel."
+    },
+    {
+      "q": "Why is a Python set held in process memory an incomplete solution for tracking already-processed webhook event IDs in production?",
+      "options": [
+        "It resets on every process restart and doesn't share state across multiple running instances of the receiver, so duplicates can still slip through",
+        "Sets cannot store string values",
+        "Sets automatically expire all entries after exactly one second",
+        "Flask does not allow global variables inside a route handler"
+      ],
+      "answer": 0,
+      "explain": "An in-memory set only tracks state for one running process; a restart or running multiple receiver instances means duplicate events can be reprocessed. A database row or Redis key with a TTL is the production-grade version of the same idea."
+    }
+  ]
+}

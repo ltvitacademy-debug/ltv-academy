@@ -1,0 +1,60 @@
+{
+  "lesson": "a-python-script-that-correlates-findings-across-both-clouds",
+  "questions": [
+    {
+      "q": "Why does this lesson normalize Sentinel incidents and ASFF findings into a common record shape before correlating them?",
+      "options": [
+        "Because boto3 requires all data to be in dictionary form",
+        "Because the two sources have different nested schemas (relatedEntities vs. Resources[].Details), and correlation logic needs one consistent shape to compare against, regardless of source",
+        "Because Sentinel incidents cannot be stored in Python variables otherwise",
+        "Because normalization is required by the Microsoft Graph API's terms of service"
+      ],
+      "answer": 1,
+      "explain": "Sentinel and ASFF nest their data differently; normalizing both into the same flat shape (source, id, severity, ips, users) lets one correlation function work regardless of which cloud a record came from."
+    },
+    {
+      "q": "How does the correlate() function in this lesson determine that a Sentinel incident and a Security Hub finding are related?",
+      "options": [
+        "It calls a third-party threat-intelligence API to confirm the relationship",
+        "It checks whether their IDs are identical strings",
+        "It checks whether the set intersection of their IP addresses (s[\"ips\"] & a[\"ips\"]) is non-empty",
+        "It compares their severity labels for an exact match"
+      ],
+      "answer": 2,
+      "explain": "correlate() computes a set intersection of each pair's IP sets; a non-empty shared_ips result means the two items share at least one concrete IP address."
+    },
+    {
+      "q": "What does this lesson's correlation script deliberately NOT do, in keeping with the \"automate the pipeline, gate the action\" principle from Chapter 1?",
+      "options": [
+        "It does not run at all unless a human manually triggers every single comparison",
+        "It does not use boto3 or the Sentinel APIs covered earlier in the chapter",
+        "It does not include severity information in its output",
+        "It does not take any containment action (closing the incident, isolating a host, blocking an IP) -- it only produces a decision-ready report of correlated pairs"
+      ],
+      "answer": 3,
+      "explain": "The script stops at producing a list of correlated matches with both IDs, both severities, and the shared indicator -- leaving the decision about what the correlation means, and any resulting action, to a human analyst."
+    },
+    {
+      "q": "If you wanted to extend this lesson's correlation approach to match on shared usernames instead of IPs, what would you change?",
+      "options": [
+        "Intersect the \"users\" sets instead of (or in addition to) the \"ips\" sets -- the same set-intersection structure applies to any shared field",
+        "Nothing -- usernames are automatically correlated alongside IPs",
+        "You would need to rewrite correlate() using a completely different algorithm, such as machine learning",
+        "You would need to switch from Sentinel to a different SIEM entirely"
+      ],
+      "answer": 0,
+      "explain": "The lesson notes that extending correlation to usernames or resource IDs is the same pattern -- intersecting a different field's set -- without changing the overall structure of correlate()."
+    },
+    {
+      "q": "In normalize_asff_finding(), where does the function look to find a finding's associated IP addresses?",
+      "options": [
+        "In finding[\"Title\"], by parsing the text for IP-shaped substrings",
+        "In finding[\"Resources\"], drilling into each resource's Details.AwsEc2Instance.IpV4Addresses",
+        "It cannot find IP addresses from an ASFF finding at all",
+        "In a separate call to GuardDuty's list_findings()"
+      ],
+      "answer": 1,
+      "explain": "normalize_asff_finding() loops through finding[\"Resources\"] and collects IPv4 addresses nested under each resource's Details.AwsEc2Instance.IpV4Addresses field."
+    }
+  ]
+}

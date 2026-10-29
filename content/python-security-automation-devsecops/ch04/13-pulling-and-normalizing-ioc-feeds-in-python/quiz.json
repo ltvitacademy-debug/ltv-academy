@@ -1,0 +1,60 @@
+{
+  "lesson": "pulling-and-normalizing-ioc-feeds-in-python",
+  "questions": [
+    {
+      "q": "Why do STIX/TAXII, CSV, and JSON threat feeds each need their own normalization function in this lesson's approach?",
+      "options": [
+        "Because each feed format represents the same indicator in a different shape, and converting everything into one shared schema keeps downstream lookup/scoring/detection code from needing to understand every format",
+        "Because TAXII feeds cannot contain IP addresses, only file hashes",
+        "Because Python's requests library cannot parse JSON responses",
+        "Because STIX patterns are always written in valid Python syntax and can be eval()'d directly"
+      ],
+      "answer": 0,
+      "explain": "A normalization layer isolates each feed format's quirks in one function, so everything downstream only ever deals with one common NormalizedIOC shape."
+    },
+    {
+      "q": "In the TAXII pull example, what does `TAXIICollectionSource` combined with `source.query([Filter(\"type\", \"=\", \"indicator\")])` actually return?",
+      "options": [
+        "A raw CSV string that still needs to be parsed with csv.DictReader",
+        "A pandas DataFrame indexed by IOC value",
+        "A list of STIX Indicator objects, each with fields like .pattern, .confidence, and .valid_from",
+        "A single boolean indicating whether the feed is reachable"
+      ],
+      "answer": 2,
+      "explain": "Querying a TAXIICollectionSource for objects of type \"indicator\" returns STIX Indicator objects; the pattern string (e.g. ipv4-addr:value) still has to be parsed out to extract the actual observable."
+    },
+    {
+      "q": "What does `resp.raise_for_status()` protect against when pulling a CSV/JSON feed with requests?",
+      "options": [
+        "It prevents the script from exceeding Python's recursion limit",
+        "It automatically retries the request up to three times",
+        "It encrypts the HTTP request before sending it",
+        "It turns a failed HTTP response (like a 500 error page) into an exception instead of letting that error page get silently parsed as if it were real threat data"
+      ],
+      "answer": 3,
+      "explain": "Without raise_for_status(), a 4xx/5xx response's body (often an HTML error page) would flow straight into csv.DictReader or json parsing as if it were legitimate feed content."
+    },
+    {
+      "q": "In the dedupe() function shown in this lesson, what key is used to identify the \"same\" IOC across multiple feeds, and what happens when a duplicate is found?",
+      "options": [
+        "Keyed on source feed name alone; the first feed pulled always wins regardless of confidence",
+        "Keyed on (ioc_type, value.lower()); whichever copy has the higher confidence score is kept",
+        "Keyed on first_seen timestamp; the oldest record always wins",
+        "Keyed on a random UUID generated per pull, so no two IOCs are ever considered duplicates"
+      ],
+      "answer": 1,
+      "explain": "dedupe() keys on the (ioc_type, value) pair and keeps whichever copy has the higher confidence, so an IOC multiple feeds agree on survives with its strongest score."
+    },
+    {
+      "q": "Why does this lesson normalize feeds into a NormalizedIOC dataclass instead of just passing around each feed's raw dict/object?",
+      "options": [
+        "A dataclass is required for Python to make HTTP requests",
+        "Raw STIX objects cannot be stored in a Python list",
+        "Dataclasses automatically deduplicate IOCs without any extra code",
+        "A single shared type means every later step — SIEM lookups, scoring, writing back into detection rules — only has to know one schema instead of one per feed source"
+      ],
+      "answer": 3,
+      "explain": "The whole point of normalization is that everything downstream in the chapter only ever imports and works with NormalizedIOC, regardless of which feed format the data originally came from."
+    }
+  ]
+}

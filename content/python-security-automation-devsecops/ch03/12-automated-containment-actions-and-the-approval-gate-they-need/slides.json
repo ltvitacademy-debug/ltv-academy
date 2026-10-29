@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 3",
+    "titlePlain": "Automated Containment Actions, and the Approval Gate They ",
+    "titleEmphasis": "Need",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Building SOAR Playbooks"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two real containment actions",
+    "titlePlain": "Actions that change ",
+    "titleEmphasis": "state",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Disable a user account", "sub": "accountEnabled -> false via Microsoft Graph" },
+      { "label": "Isolate a device", "sub": "Defender for Endpoint cuts network access, keeps management" },
+      { "label": "Both are one API call away", "sub": "which is exactly why they're dangerous unattended" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Disabling an account, called from the playbook",
+    "code": "def disable_user_account(user_id, token):\n    resp = requests.patch(\n        f\"https://graph.microsoft.com/v1.0/users/{user_id}\",\n        headers={\"Authorization\": f\"Bearer {token}\"},\n        json={\"accountEnabled\": False},\n        timeout=10,\n    )\n    return resp.status_code  # 204 on success",
+    "caption": "One call, immediate effect -- the reason this step never runs unattended."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The approval gate in the Logic App",
+    "code": "Post_adaptive_card_and_wait_for_response\n  -> Teams card: \"Disable user {upn}? Approve / Reject\"\n\nCondition_-_Approved (If)\n  expression: response.value == \"approve\"\n  true branch:  Disable_user_account\n  false branch: comment \"Containment declined by {approver}\"",
+    "caption": "No path from incident creation to a disabled account skips this click."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Either way, it's logged",
+    "titlePlain": "The audit trail ",
+    "titleEmphasis": "matters",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Approved -> action executes", "sub": "and the incident comment records who approved it" },
+      { "label": "Rejected -> nothing executes", "sub": "but the decline, approver, and reason are still logged" },
+      { "label": "Run history keeps both", "sub": "a complete record of what happened and who decided" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 3 complete",
+    "titlePlain": "Enrich automatically, gate the ",
+    "titleEmphasis": "action",
+    "titleSuffix": "",
+    "subtitle": "Next: Chapter 4 -- Threat Intelligence Automation."
+  }
+]

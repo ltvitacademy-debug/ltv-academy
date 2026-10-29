@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 2",
+    "titlePlain": "Scripting Against Microsoft Sentinel with ",
+    "titleEmphasis": "Python",
+    "titleSuffix": "",
+    "subtitle": "Lesson 2 · Automating with Security APIs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Not one Sentinel API -- two",
+    "titlePlain": "Pick the surface for the ",
+    "titleEmphasis": "job",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Log Analytics data-query API", "sub": "runs KQL against raw tables like SecurityIncident" },
+      { "label": "Sentinel management REST API", "sub": "lists and updates incident objects directly" },
+      { "label": "Same credential, different scope", "sub": "one azure-identity object, two resource URIs" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Running real KQL from Python",
+    "code": "credential = ClientSecretCredential(\n    tenant_id=TENANT_ID, client_id=CLIENT_ID,\n    client_secret=CLIENT_SECRET,\n)\nlogs_client = LogsQueryClient(credential)\n\nkql = \"\"\"\nSecurityIncident\n| where TimeGenerated > ago(24h)\n| where Severity in (\"High\", \"Medium\")\n| project IncidentNumber, Title, Severity, Status\n\"\"\"\n\nresponse = logs_client.query_workspace(\n    workspace_id=WORKSPACE_ID, query=kql,\n    timespan=timedelta(hours=24),\n)",
+    "caption": "azure-monitor-query sends the same KQL you'd type into the Logs blade."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Closing an incident through the management plane",
+    "code": "token = credential.get_token(\n    \"https://management.azure.com/.default\"\n).token\nheaders = {\"Authorization\": f\"Bearer {token}\"}\n\nbody = {\n    \"properties\": {\n        \"status\": \"Closed\",\n        \"classification\": \"TruePositive\",\n    }\n}\n\nresp = requests.patch(incident_url, headers=headers, json=body)\nresp.raise_for_status()",
+    "caption": "Same app registration, token scoped to management.azure.com instead."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What the workspace role has to allow",
+    "titlePlain": "Reader for ",
+    "titleEmphasis": "queries",
+    "titleSuffix": ", Contributor for writes",
+    "steps": [
+      { "label": "Sentinel Reader", "sub": "enough to run KQL and list incidents" },
+      { "label": "Sentinel Contributor", "sub": "required to PATCH status, classification, or owner" },
+      { "label": "Least privilege first", "sub": "grant writes only to the service principal that needs them" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 3",
+    "titlePlain": "Scripting Against AWS Security Hub and ",
+    "titleEmphasis": "GuardDuty",
+    "titleSuffix": " with Python",
+    "subtitle": "The same pattern, applied to AWS's own finding formats."
+  }
+]

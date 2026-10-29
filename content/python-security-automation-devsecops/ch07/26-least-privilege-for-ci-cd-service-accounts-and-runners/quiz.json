@@ -1,0 +1,60 @@
+{
+  "lesson": "least-privilege-for-ci-cd-service-accounts-and-runners",
+  "questions": [
+    {
+      "q": "By default, how scoped is GitHub Actions' automatic GITHUB_TOKEN unless you explicitly declare a permissions block?",
+      "options": [
+        "It has no access at all until permissions are added",
+        "Broader than most jobs actually need — e.g. read/write across contents, issues, and pull requests",
+        "It is scoped automatically to exactly what each step in the job calls",
+        "It only ever has read-only access, regardless of configuration"
+      ],
+      "answer": 1,
+      "explain": "Left at its default, GITHUB_TOKEN typically grants broad read/write access across the repository. Declaring an explicit permissions block (e.g. contents: read) makes the platform deny everything not listed, instead of leaving default broad access in place."
+    },
+    {
+      "q": "What advantage does OIDC federation (exchanging a signed workflow identity token for a temporary cloud session) have over a long-lived static access key stored in a secrets manager?",
+      "options": [
+        "It removes the need for any IAM role or trust policy on the cloud provider side",
+        "It makes the pipeline run faster by skipping authentication entirely",
+        "It is only available for deployments to on-premises infrastructure",
+        "The resulting credential is short-lived and scoped to the specific workflow/repo that requested it, so a leaked log or token can't be replayed indefinitely from elsewhere"
+      ],
+      "answer": 3,
+      "explain": "A static key works from anywhere until someone rotates it. OIDC federation mints a short-lived session tied to an assertion like \"this exact workflow, on this repo, triggered by this event\" — the role's trust policy restricts who can even request it."
+    },
+    {
+      "q": "Why is it risky for a self-hosted CI/CD runner pool to execute workflows triggered by pull requests from public forks, if that same pool also holds production deploy credentials?",
+      "options": [
+        "Fork-triggered workflows cannot run any code at all, so there is no real risk",
+        "A malicious pull request can run arbitrary code on the runner, and that code inherits whatever secrets the runner's environment has access to, including production credentials",
+        "Public forks are blocked from triggering any CI workflow by default on every platform",
+        "Self-hosted runners automatically wipe all secrets between every job"
+      ],
+      "answer": 1,
+      "explain": "A PR from a fork can contain attacker-controlled code. If it executes on a runner pool that also has access to production deploy secrets, that attacker-controlled code can reach those secrets — which is why fork-triggered jobs and deploy jobs should run on separate, isolated runner pools."
+    },
+    {
+      "q": "What should a dedicated CI service account's cloud IAM role look like, according to the principle of least privilege?",
+      "options": [
+        "Scoped to exactly the specific resources that pipeline touches, such as one storage bucket or one namespace — not a broad built-in role like Contributor or Owner",
+        "Granted the Owner role so no permission errors ever block a build",
+        "Shared across every pipeline in the organization for simplicity",
+        "Left unscoped since CI credentials are rotated automatically regardless of role"
+      ],
+      "answer": 0,
+      "explain": "Attaching a broad role like Contributor or Owner because it's faster at setup time defeats least privilege. The service account's role should cover only the specific resources its pipeline actually needs to touch."
+    },
+    {
+      "q": "What GitHub setting helps prevent a first-time outside contributor's pull request from executing a workflow automatically on a shared runner pool?",
+      "options": [
+        "Setting permissions: write-all on every workflow",
+        "Disabling branch protection rules",
+        "Enabling \"Require approval for all outside collaborators\"",
+        "Removing the permissions block entirely from the workflow file"
+      ],
+      "answer": 2,
+      "explain": "That setting requires a maintainer to approve a workflow run triggered by a first-time or outside contributor's pull request before it executes, rather than letting fork-submitted code run against the runner automatically."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-building-an-end-to-end-detection-to-containment-script",
+  "questions": [
+    {
+      "q": "Why does the pipeline track a set of processed incident IDs in processed_findings.json?",
+      "options": [
+        "To avoid re-processing and re-containing the same incident every time the poll loop runs",
+        "Because Sentinel deletes incidents older than one poll interval",
+        "To satisfy a compliance requirement unrelated to the pipeline's logic",
+        "Because graph_client requires a local cache of every user in the tenant"
+      ],
+      "answer": 0,
+      "explain": "Without tracking which incidents have already been handled, a loop that re-queries a rolling time window would reprocess -- and potentially re-contain -- the same finding on every pass."
+    },
+    {
+      "q": "What does enrich_incident() do, and what does it deliberately NOT do?",
+      "options": [
+        "It revokes the user's session; it does not log the action",
+        "It pulls recent sign-ins and threat-intel hits for the flagged user; it never changes any account state",
+        "It disables the account and then checks whether that was the right call",
+        "It only formats a Slack message; it performs no API calls"
+      ],
+      "answer": 1,
+      "explain": "enrich_incident() is read-only lookup work -- sign-ins and IP reputation -- with no side effects on the user's account."
+    },
+    {
+      "q": "Why does propose_containment() return a plain dict instead of calling the Graph API directly?",
+      "options": [
+        "Dicts execute faster than API calls in Python",
+        "Because the Graph API does not accept Python dicts as input",
+        "Because Sentinel incidents cannot be serialized any other way",
+        "So the proposed action can be inspected, logged, posted for approval, or unit tested before anything real happens"
+      ],
+      "answer": 3,
+      "explain": "Building the action as inspectable data first is what makes it possible to gate, log, or test the decision before any account is actually touched."
+    },
+    {
+      "q": "In execute_containment(), what happens if dry_run=False is passed but approved_by is left as None?",
+      "options": [
+        "The function executes the action anyway, assuming default approval",
+        "The function silently defaults back to dry_run=True",
+        "The function raises a RuntimeError and refuses to run unattended",
+        "The function retries the API call three times before failing"
+      ],
+      "answer": 2,
+      "explain": "Turning off dry_run alone isn't enough -- execute_containment() still refuses to act without an explicit approved_by value, a second independent guardrail."
+    },
+    {
+      "q": "Why is dry_run=True chosen as the function's default value rather than an optional flag someone passes explicitly?",
+      "options": [
+        "Default values run faster in Python than required parameters",
+        "So a script invoked without thinking carefully about the flag logs its intended action instead of silently taking it",
+        "Because Graph API calls fail by default unless explicitly overridden",
+        "There is no real difference; it is a style preference only"
+      ],
+      "answer": 1,
+      "explain": "Making the safe behavior the default means a careless or rushed invocation fails safe into logging, not into an unreviewed real action."
+    }
+  ]
+}

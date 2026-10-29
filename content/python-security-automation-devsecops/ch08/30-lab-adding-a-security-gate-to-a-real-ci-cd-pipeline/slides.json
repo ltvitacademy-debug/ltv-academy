@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 8",
+    "titlePlain": "Adding a Security Gate to ",
+    "titleEmphasis": "a Real CI/CD Pipeline",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: An Automated Detection-to-Response Pipeline"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Scanning the pipeline's own code",
+    "code": "- name: Dependency scan (pip-audit)\n  run: pip-audit -r requirements.txt -f json -o pip-audit-report.json\n  continue-on-error: true\n\n- name: Static analysis (bandit)\n  run: bandit -r src/ -f json -o bandit-report.json\n  continue-on-error: true",
+    "caption": "continue-on-error lets each scan finish and produce a report before any gate is applied."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One gate script, one decision",
+    "code": "def count_blocking_findings(pip_audit_path, bandit_path):\n    blocking = 0\n    for dep in json.load(open(pip_audit_path))[\"dependencies\"]:\n        for vuln in dep.get(\"vulns\", []):\n            if vuln[\"severity\"].upper() in {\"CRITICAL\", \"HIGH\"}:\n                blocking += 1\n    for result in json.load(open(bandit_path))[\"results\"]:\n        if result[\"issue_severity\"] == \"HIGH\":\n            blocking += 1\n    return blocking",
+    "caption": "Both scanners' findings, one threshold, applied in exactly one place."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why Critical/High only",
+    "titlePlain": "A threshold ",
+    "titleEmphasis": "picked on purpose",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Block on Critical/High", "sub": "a known-bad dependency or a real hard-coded secret" },
+      { "label": "Report, don't block, below that", "sub": "visible in the PR, never silently ignored" },
+      { "label": "The payoff", "sub": "a gate developers trust instead of learning to click past" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wiring it into the workflow",
+    "code": "- name: Evaluate security gate\n  run: python scripts/security_gate.py \\\n       --pip-audit pip-audit-report.json \\\n       --bandit bandit-report.json\n\n- name: Upload scan reports\n  if: always()\n  uses: actions/upload-artifact@v4\n  with:\n    name: security-scan-reports\n    path: |\n      pip-audit-report.json\n      bandit-report.json",
+    "caption": "if: always() attaches the reports even when the gate step above fails and stops the job."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "When a Script ",
+    "titleEmphasis": "Skips the Gate",
+    "titleSuffix": "",
+    "subtitle": "A case study in what happens without a dry-run default and a scoped blast radius."
+  }
+]

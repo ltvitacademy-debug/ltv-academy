@@ -1,0 +1,60 @@
+{
+  "lesson": "automating-ioc-lookups-against-a-siem",
+  "questions": [
+    {
+      "q": "Why does this lesson build one KQL query with the whole IOC list templated into a `dynamic([...])` array, instead of looping one lookup per IOC?",
+      "options": [
+        "One round trip checked against every IOC at once scales far better than a few thousand separate API calls for a feed with a few thousand indicators",
+        "dynamic([...]) arrays can only hold a single value at a time",
+        "A watchlist must be queried before any KQL query can run",
+        "KQL does not support loops, so a loop in Python is the only option regardless of IOC count"
+      ],
+      "answer": 0,
+      "explain": "A let statement with a dynamic([...]) array is KQL's parameterized IN clause — one query covers the whole IOC list instead of one round trip per indicator."
+    },
+    {
+      "q": "Why does the lesson introduce a chunked() generator before building large KQL queries?",
+      "options": [
+        "To randomize the order of IOCs for security reasons",
+        "Because KQL queries have a practical length ceiling, and a dynamic([...]) array built from tens of thousands of IOCs can exceed it",
+        "Because the Sentinel API requires IOCs to be submitted in alphabetical order",
+        "Because Python dictionaries cannot hold more than 5000 keys"
+      ],
+      "answer": 1,
+      "explain": "Chunking splits a large IOC list into batches (e.g. 5000 at a time) so each generated query stays under KQL's length limit."
+    },
+    {
+      "q": "What does bulk_upsert_watchlist() do, and why does the lesson prefer bulk/batched calls over a tight loop of synchronous single-item PUT requests?",
+      "options": [
+        "It deletes the entire watchlist and rebuilds it from a CSV file, which is the only way Sentinel supports updates",
+        "It keeps a standing watchlist current so analytics rules can reference it; batching respects the API's throttling limits instead of hammering it with thousands of rapid-fire calls",
+        "It only works for domains, never for IP addresses or file hashes",
+        "It converts the watchlist into a STIX bundle for export to another SIEM"
+      ],
+      "answer": 1,
+      "explain": "The watchlist API accepts bulk create-or-update operations; batching calls (rather than one synchronous PUT per item in a tight loop) is the throttling-respectful approach a DevSecOps review would expect."
+    },
+    {
+      "q": "After running the KQL lookup, what does the \"seen_in_environment\" vs. \"not_observed\" tag actually represent?",
+      "options": [
+        "Whether the IOC's confidence score from the feed was above or below 50",
+        "Whether the IOC was pulled from a STIX/TAXII feed versus a CSV feed",
+        "Whether the IOC is an IP address versus a domain name",
+        "Whether the IOC actually matched real log data (SourceIP/DestinationIP) in CommonSecurityLog, as opposed to merely appearing on a threat feed with no corroborating activity"
+      ],
+      "answer": 3,
+      "explain": "The tag separates \"this IOC exists in a feed\" from \"this IOC actually touched our environment\" — a distinction Lesson 15's scoring pass relies on heavily."
+    },
+    {
+      "q": "Which client/library does this lesson reuse from the Chapter 2 Sentinel-scripting material to run the templated KQL query?",
+      "options": [
+        "The taxii2-client library used for pulling STIX/TAXII feeds",
+        "A raw socket connection to the Log Analytics workspace",
+        "LogsQueryClient from azure-monitor-query, authenticated with DefaultAzureCredential",
+        "The Microsoft Graph Security API client from Chapter 2's lesson on Graph fundamentals"
+      ],
+      "answer": 2,
+      "explain": "The same LogsQueryClient from azure-monitor-query, authenticated via DefaultAzureCredential, is reused here — now templated with an IOC list instead of a fixed query string."
+    }
+  ]
+}

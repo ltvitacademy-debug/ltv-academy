@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 2",
+    "titlePlain": "Microsoft Graph Security API ",
+    "titleEmphasis": "Fundamentals",
+    "titleSuffix": "",
+    "subtitle": "Lesson 1 · Automating with Security APIs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One schema, five Microsoft products",
+    "titlePlain": "The unified ",
+    "titleEmphasis": "resources",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "alerts_v2", "sub": "individual alerts, normalized across Defender + Sentinel" },
+      { "label": "incidents", "sub": "correlated alerts grouped into one case" },
+      { "label": "evidence[]", "sub": "device, user, IP, file, process artifacts per alert" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "App-only auth with MSAL",
+    "code": "import msal\n\nAUTHORITY = f\"https://login.microsoftonline.com/{TENANT_ID}\"\nSCOPE = [\"https://graph.microsoft.com/.default\"]\n\napp = msal.ConfidentialClientApplication(\n    CLIENT_ID, authority=AUTHORITY,\n    client_credential=CLIENT_SECRET,\n)\nresult = app.acquire_token_for_client(scopes=SCOPE)\naccess_token = result[\"access_token\"]",
+    "caption": "Client-credentials flow -- no signed-in user, just an app registration."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Filtering and paging through alerts",
+    "code": "headers = {\"Authorization\": f\"Bearer {access_token}\"}\nurl = (\n    \"https://graph.microsoft.com/v1.0/security/alerts_v2\"\n    \"?$filter=severity eq 'high' and status eq 'new'\"\n)\n\nalerts = []\nwhile url:\n    resp = requests.get(url, headers=headers, timeout=30)\n    resp.raise_for_status()\n    page = resp.json()\n    alerts.extend(page.get(\"value\", []))\n    url = page.get(\"@odata.nextLink\")",
+    "caption": "$filter narrows server-side; @odata.nextLink is None once you're done."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Reading what an alert actually observed",
+    "titlePlain": "Branch on ",
+    "titleEmphasis": "@odata.type",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Loop evidence[]", "sub": "every alert carries an array of observed artifacts" },
+      { "label": "Check @odata.type", "sub": "ipEvidence, userEvidence, deviceEvidence, fileEvidence" },
+      { "label": "Collect the field", "sub": "same pattern reused for cross-cloud correlation later" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 2",
+    "titlePlain": "Scripting Against Microsoft Sentinel with ",
+    "titleEmphasis": "Python",
+    "titleSuffix": "",
+    "subtitle": "KQL queries and the Sentinel incidents REST API."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "cloudwatch-alarms-and-composite-alarms-that-dont-flap",
+  "questions": [
+    {
+      "q": "An alarm is configured with evaluation periods of 3 and datapoints to alarm of 2. What does that actually mean?",
+      "options": [
+        "It fires only if at least 2 of the last 3 evaluation periods breached the threshold, tolerating one noisy period",
+        "It fires only after the metric has breached the threshold for 2 consecutive hours",
+        "It fires the instant any single data point ever breaches the threshold, regardless of the other two settings",
+        "It averages the last 3 periods into one value and never looks at individual periods again"
+      ],
+      "answer": 0,
+      "explain": "This is an M-of-N alarm: it looks back over N (3) evaluation periods and fires only if M (2) of them breached the threshold — a deliberate middle ground between over-reacting to one blip and missing a real trend."
+    },
+    {
+      "q": "With TreatMissingData left on its default setting, what happens if a per-instance metric stops reporting because the instance was terminated during a scale-in event?",
+      "options": [
+        "The alarm is automatically deleted along with the instance",
+        "CloudWatch automatically treats the gap as notBreaching and the alarm clears immediately",
+        "The metric is recreated from the last known Auto Scaling group average",
+        "The default 'missing' treatment can leave a stale ALARM state in place even though nothing is actually wrong, which is a classic false-page source"
+      ],
+      "answer": 3,
+      "explain": "The default missing treatment is easy to get wrong for a metric tied to an ephemeral resource; an alarm left on default during a scale-in can fire or stay in ALARM purely because the instance and its metric no longer exist."
+    },
+    {
+      "q": "Why does a single threshold alarm tend to flap on a metric like p99 latency that legitimately hovers near its threshold?",
+      "options": [
+        "CloudWatch alarms are hard-capped at firing once per hour, which causes a backlog of delayed notifications",
+        "Flapping only happens when the wrong AWS region is selected for the alarm",
+        "A metric bouncing just above and just below the threshold flips the alarm between OK and ALARM repeatedly, each transition potentially firing a notification",
+        "Composite alarms are required before any single-metric alarm is allowed to evaluate"
+      ],
+      "answer": 2,
+      "explain": "A borderline metric (e.g. bouncing between 480ms and 520ms against a 500ms threshold) causes repeated OK/ALARM transitions, and each transition can notify — turning a not-actually-broken metric into a frequently paging alarm."
+    },
+    {
+      "q": "What does a CloudWatch composite alarm actually monitor?",
+      "options": [
+        "A single metric evaluated with two different statistics at once",
+        "The states of other CloudWatch alarms, combined with an AlarmRule expression using AND, OR, and NOT",
+        "The AWS billing dashboard's current monthly spend",
+        "The health of the CloudWatch service itself, independent of any customer-defined alarm"
+      ],
+      "answer": 1,
+      "explain": "A composite alarm doesn't watch a metric directly — its AlarmRule expression combines the ALARM/OK states of other alarms, so it only enters ALARM when the logical condition over those underlying alarms is met."
+    },
+    {
+      "q": "Given the AlarmRule `ALARM(\"elevated-5xx-rate\") AND NOT ALARM(\"deployment-in-progress\")`, when does this composite alarm actually notify on-call?",
+      "options": [
+        "Whenever a deployment starts, regardless of the 5xx error rate",
+        "Only when the 5xx error rate is elevated AND no deployment is currently marked in progress, so a deploy's expected brief error blip doesn't page anyone",
+        "Every time the elevated-5xx-rate alarm changes state, even if a deployment is in progress",
+        "Never — NOT expressions inside an AlarmRule disable the composite alarm entirely"
+      ],
+      "answer": 1,
+      "explain": "The NOT ALARM(\"deployment-in-progress\") clause gates the real alert: elevated error rates during a known, flagged deployment window don't trigger the composite, but the same error rate outside a deployment window does."
+    }
+  ]
+}

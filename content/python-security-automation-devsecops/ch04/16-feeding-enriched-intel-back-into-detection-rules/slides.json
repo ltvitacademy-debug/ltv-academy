@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 4",
+    "titlePlain": "Feeding Enriched Intel Back ",
+    "titleEmphasis": "into Detection",
+    "titleSuffix": "",
+    "subtitle": "Lesson 4 · Closing the Threat Intel Loop"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The gate, restated as code",
+    "titlePlain": "Only ",
+    "titleEmphasis": "auto_promote",
+    "titleSuffix": " survives",
+    "steps": [
+      { "label": "promotable(iocs)", "sub": "filters for the auto_promote tag only" },
+      { "label": "push_to_detection_watchlist()", "sub": "bulk upsert, tagged with expires_at" },
+      { "label": "prune_expired()", "sub": "ages stale entries back out" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Pushing validated IOCs",
+    "code": "def push_to_detection_watchlist(iocs, watchlist_alias, token):\n    expires = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()\n    for ioc in promotable(iocs):\n        body = {\"properties\": {\"itemsKeyValue\": {\n            \"ioc_value\": ioc.value, \"confidence\": ioc.confidence,\n            \"expires_at\": expires,\n        }}}\n        bulk_upsert_item(watchlist_alias, ioc.value, body, token)",
+    "caption": "Only the promotable() subset is eligible, and every entry carries its own expiration."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The rule references the watchlist by name",
+    "code": "let promoted_iocs = (_GetWatchlist('detection-promoted-iocs')\n    | project ioc_value, confidence);\nCommonSecurityLog\n| where TimeGenerated > ago(1h)\n| join kind=inner promoted_iocs on $left.DestinationIP == $right.ioc_value",
+    "caption": "Updating the watchlist changes what fires — the analytics rule itself is never redeployed."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 4 complete",
+    "titlePlain": "Pull, score, promote, ",
+    "titleEmphasis": "prune",
+    "titleSuffix": "",
+    "subtitle": "The full threat intelligence pipeline, running as one scheduled job."
+  }
+]

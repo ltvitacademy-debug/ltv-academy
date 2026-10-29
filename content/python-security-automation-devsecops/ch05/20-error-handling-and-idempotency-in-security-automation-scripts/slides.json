@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 5",
+    "titlePlain": "Error Handling and Idempotency in Security ",
+    "titleEmphasis": "Automation Scripts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 20 · Security Orchestration Across Tools"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Treat failure as the normal case",
+    "titlePlain": "Classify, then ",
+    "titleEmphasis": "respond",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Sort the error", "sub": "transient (timeout, 503) vs. permanent (401, bad payload)" },
+      { "label": "Backoff if retryable", "sub": "exponential wait plus jitter, never an instant retry" },
+      { "label": "Reuse one idempotency key", "sub": "so a retried side effect never double-executes" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Retrying with exponential backoff",
+    "code": "def call_with_backoff(func, *args, max_attempts=5, **kwargs):\n    for attempt in range(1, max_attempts + 1):\n        try:\n            return func(*args, **kwargs)\n        except Exception as exc:\n            if not is_retryable(exc) or attempt == max_attempts:\n                raise\n            delay = min(2 ** attempt, 30) + random.uniform(0, 1)\n            time.sleep(delay)",
+    "caption": "Only retryable failures get backed off; a permanent error or the final attempt re-raises immediately."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One idempotency key per action",
+    "code": "key = idempotency_key or str(uuid.uuid4())  # generated ONCE, outside the loop\nresp = requests.post(\n    FIREWALL_URL, json={\"ip\": ip_address},\n    headers={\"Idempotency-Key\": key, \"Authorization\": AUTH},\n    timeout=10,\n)",
+    "caption": "The same key must be reused on every retry of this call, or it stops protecting against a duplicate block."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 5 complete",
+    "titlePlain": "Every tool-to-tool action, ",
+    "titleEmphasis": "safe to retry",
+    "titleSuffix": "",
+    "subtitle": "Webhooks, tickets, and ChatOps now share one defensive scripting pattern."
+  }
+]

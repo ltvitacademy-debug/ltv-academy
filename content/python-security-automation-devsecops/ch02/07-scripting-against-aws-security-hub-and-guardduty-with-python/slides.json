@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Python Security Automation, SOAR & DevSecOps · Chapter 2",
+    "titlePlain": "Scripting Against AWS Security Hub and ",
+    "titleEmphasis": "GuardDuty",
+    "titleSuffix": " with Python",
+    "subtitle": "Lesson 3 · Automating with Security APIs"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "AWS's own unified schema",
+    "titlePlain": "Every finding, one ",
+    "titleEmphasis": "backbone",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Severity.Label / .Normalized", "sub": "text label plus a 0-100 numeric score" },
+      { "label": "Resources[]", "sub": "Type, Id, and Region for each AWS resource involved" },
+      { "label": "Workflow.Status / RecordState", "sub": "triage state: NEW, NOTIFIED, RESOLVED, ACTIVE" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Security Hub: one call, paginated",
+    "code": "securityhub = boto3.client(\"securityhub\")\n\npaginator = securityhub.get_paginator(\"get_findings\")\nfindings = []\nfor page in paginator.paginate(\n    Filters={\n        \"SeverityLabel\": [\n            {\"Value\": \"HIGH\", \"Comparison\": \"EQUALS\"}\n        ],\n        \"RecordState\": [\n            {\"Value\": \"ACTIVE\", \"Comparison\": \"EQUALS\"}\n        ],\n    }\n):\n    findings.extend(page[\"Findings\"])",
+    "caption": "The paginator abstracts away each AWS API's own token shape."
+  },
+  {
+    "type": "code",
+    "eyebrow": "GuardDuty: list IDs, then fetch details",
+    "code": "guardduty = boto3.client(\"guardduty\")\ndetector_id = guardduty.list_detectors()[\"DetectorIds\"][0]\n\nfinding_ids = guardduty.list_findings(\n    DetectorId=detector_id,\n    FindingCriteria={\"Criterion\": {\"severity\": {\"Gte\": 7}}},\n)[\"FindingIds\"]\n\ndetails = guardduty.get_findings(\n    DetectorId=detector_id, FindingIds=finding_ids,\n)",
+    "caption": "list_findings returns IDs only; get_findings fetches full objects."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two different severity scales",
+    "titlePlain": "Don't compare ",
+    "titleEmphasis": "numbers",
+    "titleSuffix": " blind",
+    "steps": [
+      { "label": "ASFF Normalized: 0-100", "sub": "Security Hub's own aggregated severity score" },
+      { "label": "GuardDuty: 0.1-8.9", "sub": "a separate native scale, filtered via severity.Gte" },
+      { "label": "Normalize before you correlate", "sub": "map both onto one scale before comparing" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 4",
+    "titlePlain": "A Python Script That Correlates Findings Across ",
+    "titleEmphasis": "Both Clouds",
+    "titleSuffix": "",
+    "subtitle": "Normalizing Sentinel incidents and ASFF findings into one shape."
+  }
+]

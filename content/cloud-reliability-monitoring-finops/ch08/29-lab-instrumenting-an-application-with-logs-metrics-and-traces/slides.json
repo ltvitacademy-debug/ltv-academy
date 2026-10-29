@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cloud Operations, Observability & FinOps · Chapter 8",
+    "titlePlain": "Instrumenting an Application With Logs, Metrics, and ",
+    "titleEmphasis": "Traces",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: Operating a Production Cloud Environment"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · Structured JSON logging",
+    "code": "class JsonFormatter(logging.Formatter):\n    def format(self, record):\n        return json.dumps({\n            \"timestamp\": time.strftime(\n                \"%Y-%m-%dT%H:%M:%SZ\", time.gmtime(record.created)\n            ),\n            \"level\": record.levelname,\n            \"message\": record.getMessage(),\n            \"request_id\": getattr(record, \"request_id\", None),\n            \"order_id\": getattr(record, \"order_id\", None),\n        })",
+    "caption": "One request_id on every line is what makes a Log Analytics filter return one whole checkout."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 & 3 · A custom metric and a trace span",
+    "code": "checkout_duration = meter.create_histogram(\n    name=\"order_checkout_duration_seconds\"\n)\n\nwith tracer.start_as_current_span(\"charge_card\") as span:\n    span.set_attribute(\"order.id\", order.id)\n    response = payment_gateway.charge(order.total)\n    span.set_attribute(\"payment.status\", response.status)",
+    "caption": "The histogram measures checkout logic the platform can't see; the span isolates the riskiest call."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Step 4 · Wiring it into Azure Monitor",
+    "titlePlain": "One Call, ",
+    "titleEmphasis": "Three Signals",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. configure_azure_monitor()", "sub": "Called once at startup with the Application Insights connection string" },
+      { "label": "2. All exporters share one pipe", "sub": "Logs, the histogram, and every span flow through the same context" },
+      { "label": "3. No per-signal setup", "sub": "One connection string, not three separate exporter configurations" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Verifying it landed",
+    "code": "union AppTraces, AppMetrics, AppDependencies\n| where TimeGenerated > ago(15m)\n| where OperationId == \"7e3b2f9a1c4d\"\n| project TimeGenerated, ItemType, Name, Message\n| order by TimeGenerated asc",
+    "caption": "One OperationId pulls back the log, the metric, and the span for one real checkout, in order."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "A Cost Dashboard and a ",
+    "titleEmphasis": "Budget Alert",
+    "titleSuffix": "",
+    "subtitle": "Catching a spend problem as early as a reliability problem."
+  }
+]

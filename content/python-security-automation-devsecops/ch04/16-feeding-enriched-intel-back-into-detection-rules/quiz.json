@@ -1,0 +1,60 @@
+{
+  "lesson": "feeding-enriched-intel-back-into-detection-rules",
+  "questions": [
+    {
+      "q": "According to this lesson's validation gate, which IOCs from Lesson 15's scoring pass are eligible to reach a live detection rule or watchlist?",
+      "options": [
+        "Only IOCs tagged auto_promote — analyst_review and archive-tier IOCs stop before this point",
+        "Every IOC pulled from any feed, regardless of score",
+        "Only IOCs that came from a CSV feed, never from STIX/TAXII",
+        "Only IOCs with an even-numbered confidence score"
+      ],
+      "answer": 0,
+      "explain": "promotable() filters for the auto_promote tag specifically; everything scored lower (analyst_review, archive) is excluded from reaching production detection."
+    },
+    {
+      "q": "Why does the lesson write the auto_promote filter as its own named function, promotable(), instead of inlining the condition wherever it's needed?",
+      "options": [
+        "Named functions run faster than inline conditionals in Python",
+        "It allows the function to be converted automatically into a KQL query",
+        "It is required syntax for the Sentinel watchlist API",
+        "So the intent is obvious in a code review, making it much harder for someone to accidentally wire an unscored, raw feed pull straight into production later"
+      ],
+      "answer": 3,
+      "explain": "Making the gate its own named function keeps the validation logic visible and reviewable, rather than letting a shortcut quietly skip scoring in some other code path."
+    },
+    {
+      "q": "What is the purpose of the `expires_at` field written alongside each promoted IOC in push_to_detection_watchlist()?",
+      "options": [
+        "It sets how often the KQL analytics rule itself is allowed to run",
+        "It is a required field for authenticating to the Sentinel REST API",
+        "It records which Python developer pushed the IOC",
+        "It gives a pruning job a timestamp to check so stale IOCs can be removed later, preventing the watchlist from growing into an unmaintained graveyard of long-dead infrastructure"
+      ],
+      "answer": 3,
+      "explain": "Without an expiration path, a promoted-IOC watchlist only ever grows; expires_at is what prune_expired() uses to age entries back out automatically."
+    },
+    {
+      "q": "In the example analytics rule's KQL, what does referencing `_GetWatchlist('detection-promoted-iocs')` by name (rather than embedding a static IOC list in the query) actually buy you?",
+      "options": [
+        "It makes the query run entirely offline, with no connection to Log Analytics",
+        "The Python pipeline can update what the rule fires on just by updating the watchlist — the analytics rule itself never needs to be touched or redeployed to pick up newly promoted intel",
+        "It automatically encrypts the watchlist contents at rest",
+        "It removes the need for the dedupe step from Lesson 13"
+      ],
+      "answer": 1,
+      "explain": "Because the rule queries the watchlist by name, updating the watchlist through the pipeline is sufficient to change detection behavior — no rule edit or redeploy required."
+    },
+    {
+      "q": "In the end-to-end pipeline shown at the end of this lesson (pull → normalize → dedupe → tag → score → promote → prune), which lesson in this chapter introduced the dedupe step?",
+      "options": [
+        "Lesson 16 (this lesson)",
+        "Lesson 15, Scoring and Prioritizing Threat Intel",
+        "Lesson 13, Pulling and Normalizing IOC Feeds in Python",
+        "Lesson 14, Automating IOC Lookups Against a SIEM"
+      ],
+      "answer": 2,
+      "explain": "dedupe() was introduced in Lesson 13 alongside the normalize_*() functions, collapsing repeated IOCs across multiple feeds before any lookup, scoring, or promotion happens."
+    }
+  ]
+}

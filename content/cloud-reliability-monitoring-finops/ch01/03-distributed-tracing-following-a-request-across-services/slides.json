@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cloud Operations, Observability & FinOps · Chapter 1",
+    "titlePlain": "Distributed Tracing: Following a Request Across ",
+    "titleEmphasis": "Services",
+    "titleSuffix": "",
+    "subtitle": "Lesson 3 · Cloud Observability Fundamentals"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One request, one tree of spans",
+    "titlePlain": "How the tree actually gets ",
+    "titleEmphasis": "built",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Ingress -> checkout Service", "sub": "Gateway's span is the root" },
+      { "label": "checkout -> inventory Service", "sub": "A child span, created the moment the call starts" },
+      { "label": "inventory -> Postgres query", "sub": "A child of that span, closed when the query returns" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The mechanical problem",
+    "code": "traceparent: 00-7e3b2f9c1a4d8e22b6f1a0c9d8e7f6a5-00f067aa0ba902b7-01\n             |        trace id               |  parent span id  | flags\n\n# injected into the outgoing request header by the caller,\n# extracted by the receiver so its new span attaches\n# to the right trace instead of starting a new one",
+    "caption": "Drop this header anywhere and the trace silently splits in two."
+  },
+  {
+    "type": "code",
+    "eyebrow": "OpenTelemetry, in code",
+    "code": "with tracer.start_as_current_span(\"inventory.check_stock\") as span:\n    span.set_attribute(\"item.sku\", sku)\n    span.set_attribute(\"item.warehouse\", warehouse_id)\n    result = db.query(...)\n    span.set_attribute(\"db.rows_returned\", len(result))",
+    "caption": "Tracer creates it, Context carries it, Exporter ships it out when it closes."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "You don't keep every trace",
+    "titlePlain": "Sampling: a storage-vs-coverage ",
+    "titleEmphasis": "trade-off",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Always keep errors + slow outliers", "sub": "The traces most worth paying to store" },
+      { "label": "Keep a small random percentage otherwise", "sub": "Enough signal without recording every uneventful request" },
+      { "label": "Set the rate too low", "sub": "The one trace you needed for an obscure bug was never captured" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 4",
+    "titlePlain": "Signal Over ",
+    "titleEmphasis": "Noise",
+    "titleSuffix": "",
+    "subtitle": "Deciding what's actually worth instrumenting in the first place."
+  }
+]

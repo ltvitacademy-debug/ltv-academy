@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-adding-a-security-gate-to-a-real-ci-cd-pipeline",
+  "questions": [
+    {
+      "q": "Why does the pip-audit workflow step use continue-on-error: true?",
+      "options": [
+        "Because pip-audit cannot produce JSON output otherwise",
+        "Because GitHub Actions requires every step to continue regardless of outcome",
+        "To skip the dependency scan entirely on pull requests",
+        "So pip-audit's own exit code doesn't abort the job before the gate script can apply its own severity threshold"
+      ],
+      "answer": 3,
+      "explain": "pip-audit exits non-zero on any finding, including Low severity ones. continue-on-error lets the scan finish and produce a report so the gate script, not the scanner's raw exit code, makes the actual pass/fail call."
+    },
+    {
+      "q": "Why does security_gate.py read both the pip-audit and bandit JSON reports itself, instead of trusting each tool's own exit code?",
+      "options": [
+        "JSON parsing is required by GitHub Actions for all workflow steps",
+        "So one consistent severity threshold is applied in one place, instead of maintaining two different failure rules across two tools",
+        "Because bandit and pip-audit cannot both run in the same job",
+        "Because exit codes are not supported in Ubuntu runners"
+      ],
+      "answer": 1,
+      "explain": "Trusting each scanner's own exit code would mean two separate, possibly inconsistent thresholds. One gate script reading both reports makes a single deliberate decision."
+    },
+    {
+      "q": "Why does count_blocking_findings() only count Critical and High severity findings as build-blocking?",
+      "options": [
+        "Low and Medium findings are not real security issues",
+        "Because bandit cannot report severities below High",
+        "Failing the build on every Low/Medium finding trains developers to ignore the gate; blocking only on Critical/High keeps it meaningful",
+        "GitHub Actions does not support more than two severity levels"
+      ],
+      "answer": 2,
+      "explain": "The lesson explicitly ties this threshold to Chapter 6's lesson on gates that don't slow every build -- blocking on everything erodes trust in the gate within days."
+    },
+    {
+      "q": "Why does the artifact-upload step use if: always()?",
+      "options": [
+        "So the scan reports still get attached to the run even when the security-gate step above it fails and stops the job",
+        "Because GitHub Actions deletes all artifacts by default",
+        "To force the workflow to run on every branch, not just pull requests",
+        "Because bandit requires always() to produce output"
+      ],
+      "answer": 0,
+      "explain": "Without if: always(), a failed gate step would stop the job before the reports get uploaded, forcing a reviewer to re-run the scan locally just to see what failed."
+    },
+    {
+      "q": "What is the real proof, described in Step 6, that the security gate actually works?",
+      "options": [
+        "Confirming the workflow YAML has no syntax errors",
+        "Reading the gate script's source code carefully one time",
+        "Opening a PR with a known-vulnerable dependency pinned and watching the required check actually fail, then reverting and watching it pass again",
+        "Checking that bandit and pip-audit are both listed in requirements.txt"
+      ],
+      "answer": 2,
+      "explain": "A gate that has only ever been observed passing has never really been tested -- seeing it fail on a deliberately bad input, then pass again after the fix, is what verifies it."
+    }
+  ]
+}
