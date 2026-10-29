@@ -98,8 +98,8 @@ export const DOCKER_KUBERNETES_CONTAINER_PLATFORMS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(29, "lab-containerizing-and-deploying-a-multi-service-app", "Lab: Containerizing and Deploying a Multi-Service App", { contentDir: "ch08/29-lab-containerizing-and-deploying-a-multi-service-app", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-docker-kubernetes-container-platforms/lab-containerizing-and-deploying-a-multi-service-app.mp4", durationLabel: "2 min 15 s" }),
       L(30, "lab-adding-ingress-storage-and-a-helm-chart", "Lab: Adding Ingress, Storage, and a Helm Chart", { contentDir: "ch08/30-lab-adding-ingress-storage-and-a-helm-chart", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-docker-kubernetes-container-platforms/lab-adding-ingress-storage-and-a-helm-chart.mp4", durationLabel: "2 min 11 s" }),
-      L(31, "case-study-a-cluster-outage-caused-by-a-missing-resource-limit", "Case Study: A Cluster Outage Caused by a Missing Resource Limit", { contentDir: "ch08/31-case-study-a-cluster-outage-caused-by-a-missing-resource-limit" }),
-      L(32, "chapter-capstone-container-platforms-review", "Chapter Capstone: Container Platforms Review", { contentDir: "ch08/32-chapter-capstone-container-platforms-review" }),
+      L(31, "case-study-a-cluster-outage-caused-by-a-missing-resource-limit", "Case Study: A Cluster Outage Caused by a Missing Resource Limit", { contentDir: "ch08/31-case-study-a-cluster-outage-caused-by-a-missing-resource-limit", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-docker-kubernetes-container-platforms/case-study-a-cluster-outage-caused-by-a-missing-resource-limit.mp4", durationLabel: "2 min 17 s" }),
+      L(32, "chapter-capstone-container-platforms-review", "Chapter Capstone: Container Platforms Review", { contentDir: "ch08/32-chapter-capstone-container-platforms-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-docker-kubernetes-container-platforms/chapter-capstone-container-platforms-review.mp4", durationLabel: "2 min 20 s" }),
     ],
   },
 ];
