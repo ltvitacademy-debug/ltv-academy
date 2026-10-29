@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Terraform, Bicep & Infrastructure as Code · Chapter 7",
+    "titlePlain": "terraform plan in a ",
+    "titleEmphasis": "Pull Request",
+    "titleSuffix": "",
+    "subtitle": "Lesson 25 · Terraform in CI/CD"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Trigger on every PR",
+    "code": "on:\n  pull_request:\n\npermissions:\n  contents: read\n  pull-requests: write\n\njobs:\n  plan:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: hashicorp/setup-terraform@v3",
+    "caption": "pull-requests: write is required before the job can post a comment back."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Capture the plan, don't let it stop the job",
+    "code": "- name: Terraform Init\n  run: terraform init\n\n- name: Terraform Plan\n  id: plan\n  run: terraform plan -no-color\n  continue-on-error: true",
+    "caption": "id: plan lets a later step read this one's output; continue-on-error keeps a failed plan visible."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Post it back onto the PR",
+    "code": "- uses: actions/github-script@v7\n  env:\n    PLAN: \"${{ steps.plan.outputs.stdout }}\"\n  with:\n    script: |\n      github.rest.issues.createComment({\n        issue_number: context.issue.number,\n        owner: context.repo.owner,\n        repo: context.repo.repo,\n        body: `#### Terraform Plan\\n\\`\\`\\`\\n${process.env.PLAN}\\n\\`\\`\\``,\n      });",
+    "caption": "A pull request is a GitHub issue under the hood — the issues API posts the comment."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What this actually buys the team",
+    "titlePlain": "Review the ",
+    "titleEmphasis": "change",
+    "titleSuffix": ", not the guess",
+    "steps": [
+      { "label": "Reviewer sees the real plan", "sub": "exactly what will be created, changed, or destroyed" },
+      { "label": "No surprise applies", "sub": "the plan is visible before anyone approves the merge" },
+      { "label": "Same discipline as app code", "sub": "infrastructure changes get reviewed like any other PR" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 26",
+    "titlePlain": "Requiring Approval Before ",
+    "titleEmphasis": "terraform apply",
+    "titleSuffix": "",
+    "subtitle": "The plan runs automatically — apply shouldn't."
+  }
+]

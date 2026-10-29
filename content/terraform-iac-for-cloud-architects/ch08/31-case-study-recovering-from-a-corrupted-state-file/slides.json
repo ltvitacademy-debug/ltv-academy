@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Terraform, Bicep & Infrastructure as Code · Chapter 8",
+    "titlePlain": "Recovering From a Corrupted ",
+    "titleEmphasis": "State File",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Capstone: A Real Multi-Environment Terraform Project"
+  },
+  {
+    "type": "code",
+    "eyebrow": "What prod's config declares",
+    "code": "resource \"azurerm_network_security_group\" \"prod_web\" {\n  name                = \"nsg-cra-prod-web\"\n  location            = \"eastus2\"\n  resource_group_name = module.network.resource_group_name\n}\n\nresource \"azurerm_subnet_network_security_group_association\" \"prod_web\" {\n  subnet_id                 = module.network.subnet_ids[0]\n  network_security_group_id = azurerm_network_security_group.prod_web.id\n}",
+    "caption": "A teammate deletes nsg-cra-prod-web directly in the Azure Portal on a Friday afternoon."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Monday morning's error",
+    "code": "Error: updating Subnet \"snet-cra-prod-0\"\n(Virtual Network \"vnet-cra-prod\" /\n Resource Group \"rg-cra-prod-network\"):\n\nnetwork.SubnetsClient#CreateOrUpdate:\n... NetworkSecurityGroupNotFound:\nResource ... \"nsg-cra-prod-web\" ...\ncould not be found.",
+    "caption": "Thrown against the subnet association, not plainly against the missing NSG -- hence the confusion."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Recovery, in order",
+    "titlePlain": "Don't ",
+    "titleEmphasis": "Panic-Apply",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. terraform state pull", "sub": "Back up the current state before touching anything" },
+      { "label": "2. terraform state list", "sub": "See exactly what Terraform believes it manages" },
+      { "label": "3. Decide", "sub": "Stale entry with nothing replacing it, or already recreated by hand?" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two different fixes",
+    "code": "# Path A -- nothing replaced it\nterraform state rm azurerm_subnet_network_security_group_association.prod_web\nterraform state rm azurerm_network_security_group.prod_web\n\n# Path B -- someone recreated it by hand\nterraform import azurerm_network_security_group.prod_web \\\n  /subscriptions/<sub-id>/resourceGroups/rg-cra-prod-network/providers/Microsoft.Network/networkSecurityGroups/nsg-cra-prod-web",
+    "caption": "state rm edits only Terraform's bookkeeping; import adopts a real object instead of recreating it."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "The Chapter ",
+    "titleEmphasis": "Capstone",
+    "titleSuffix": "",
+    "subtitle": "Reviewing all seven chapters through the lens of this one project."
+  }
+]

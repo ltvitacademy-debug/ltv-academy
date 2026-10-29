@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Terraform, Bicep & Infrastructure as Code · Chapter 8",
+    "titlePlain": "Building a Reusable ",
+    "titleEmphasis": "Network Module",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: A Real Multi-Environment Terraform Project"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The module's variables",
+    "code": "variable \"environment\" {\n  type = string\n}\n\nvariable \"vnet_address_space\" {\n  type = list(string)\n}\n\nvariable \"subnet_count\" {\n  type = number\n}\n\nvariable \"subnet_newbits\" {\n  type    = number\n  default = 8\n}",
+    "caption": "Two real inputs size the network: an address space, and how many subnets to carve from it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Carving subnets automatically",
+    "code": "resource \"azurerm_subnet\" \"this\" {\n  count                = var.subnet_count\n  name                 = \"snet-cra-${var.environment}-${count.index}\"\n  resource_group_name  = azurerm_resource_group.network.name\n  virtual_network_name = azurerm_virtual_network.this.name\n  address_prefixes = [\n    cidrsubnet(var.vnet_address_space[0], var.subnet_newbits, count.index)\n  ]\n}",
+    "caption": "cidrsubnet() computes each subnet's CIDR from the parent block, newbits, and the subnet's index."
+  },
+  {
+    "type": "code",
+    "eyebrow": "What the module returns",
+    "code": "output \"vnet_id\" {\n  value = azurerm_virtual_network.this.id\n}\n\noutput \"subnet_ids\" {\n  value = azurerm_subnet.this[*].id\n}\n\noutput \"resource_group_name\" {\n  value = azurerm_resource_group.network.name\n}",
+    "caption": "subnet_ids uses the [*] splat operator, because count created a list of subnets, not one."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wiring it into a root config",
+    "code": "terraform {\n  backend \"azurerm\" {\n    resource_group_name  = \"rg-cra-tfstate\"\n    storage_account_name = \"stcratfstate\"\n    container_name       = \"tfstate\"\n    key                  = \"network/dev.tfstate\"\n  }\n}\n\nmodule \"network\" {\n  source             = \"../../modules/network\"\n  environment        = \"dev\"\n  vnet_address_space = [\"10.10.0.0/20\"]\n  subnet_count       = 2\n}",
+    "caption": "The backend block lives in the root config, never inside the module it calls."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Dev & Prod, ",
+    "titleEmphasis": "Same Module",
+    "titleSuffix": "",
+    "subtitle": "Deploying two differently sized environments from one module with .tfvars."
+  }
+]

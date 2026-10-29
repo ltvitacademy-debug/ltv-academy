@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Terraform, Bicep & Infrastructure as Code · Chapter 8",
+    "titlePlain": "Dev & Prod From the ",
+    "titleEmphasis": "Same Module",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: A Real Multi-Environment Terraform Project"
+  },
+  {
+    "type": "code",
+    "eyebrow": "One root config, two folders",
+    "code": "# envs/dev/main.tf\nbackend \"azurerm\" {\n  key = \"network/dev.tfstate\"\n}\n\n# envs/prod/main.tf (identical otherwise)\nbackend \"azurerm\" {\n  key = \"network/prod.tfstate\"\n}\n\nmodule \"network\" {\n  source             = \"../../modules/network\"\n  environment        = var.environment\n  vnet_address_space = var.vnet_address_space\n  subnet_count       = var.subnet_count\n}",
+    "caption": "The backend key is a literal string -- it can't reference a variable or function -- and it's the one line that differs."
+  },
+  {
+    "type": "code",
+    "eyebrow": ".tfvars supplies what differs",
+    "code": "# envs/dev/dev.tfvars\nenvironment        = \"dev\"\nvnet_address_space = [\"10.10.0.0/20\"]\nsubnet_count       = 2\n\n# envs/prod/prod.tfvars\nenvironment        = \"prod\"\nvnet_address_space = [\"10.20.0.0/16\"]\nsubnet_count       = 6",
+    "caption": "Same default subnet_newbits = 8 on a smaller vs. larger parent block yields small vs. large subnets automatically."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Running each environment",
+    "code": "cd envs/dev\nterraform init\nterraform plan  -var-file=\"dev.tfvars\"\nterraform apply -var-file=\"dev.tfvars\"\n\ncd ../prod\nterraform init\nterraform plan  -var-file=\"prod.tfvars\"\nterraform apply -var-file=\"prod.tfvars\"",
+    "caption": "Each init reads that folder's own backend -- dev and prod never read or write the same state file."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why not a workspace?",
+    "titlePlain": "A Real ",
+    "titleEmphasis": "Tradeoff",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Workspace", "sub": "One shared backend, same apply access for everyone, by default" },
+      { "label": "Directory-per-environment", "sub": "Separate backend key, separate state, separate CI permissions per folder" },
+      { "label": "Caldwell Ridge's call", "sub": "Prod needs an approval gate (Chapter 7) that dev doesn't" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "When State Goes ",
+    "titleEmphasis": "Wrong",
+    "titleSuffix": "",
+    "subtitle": "Recovering after a teammate deletes something by hand in the Azure Portal."
+  }
+]

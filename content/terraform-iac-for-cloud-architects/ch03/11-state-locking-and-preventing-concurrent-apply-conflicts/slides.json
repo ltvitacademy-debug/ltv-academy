@@ -1,0 +1,42 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Terraform, Bicep & Infrastructure as Code · Chapter 3",
+    "titlePlain": "State Locking and Preventing Concurrent ",
+    "titleEmphasis": "Apply Conflicts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 11 · State Management"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why a remote backend isn't enough alone",
+    "titlePlain": "Same state, ",
+    "titleEmphasis": "same moment",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "No coordination", "sub": "two applies at once can interleave writes and corrupt state" },
+      { "label": "azurerm: automatic", "sub": "native blob lease locking — nothing extra to configure" },
+      { "label": "s3: DynamoDB table", "sub": "dynamodb_table argument + a LockID hash key" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "s3 backend with locking",
+    "code": "terraform {\n  backend \"s3\" {\n    bucket         = \"acme-terraform-state\"\n    key            = \"app-prod/terraform.tfstate\"\n    region         = \"us-east-1\"\n    dynamodb_table = \"terraform-locks\"\n  }\n}\n\nresource \"aws_dynamodb_table\" \"terraform_locks\" {\n  name         = \"terraform-locks\"\n  billing_mode = \"PAY_PER_REQUEST\"\n  hash_key     = \"LockID\"\n\n  attribute {\n    name = \"LockID\"\n    type = \"S\"\n  }\n}",
+    "caption": "One primary key, LockID (String) — Terraform writes and deletes rows to claim and release the lock."
+  },
+  {
+    "type": "code",
+    "eyebrow": "When the lock is already held",
+    "code": "Error: Error acquiring the state lock\n\nLock Info:\n  ID:        5f8c1e2a-9b3d-4a7e-8c1f-2d6e0a44b912\n  Path:      app-prod/terraform.tfstate\n  Operation: OperationTypeApply\n  Who:       alice@acme-laptop\n  Created:   2026-10-20 14:32:07 UTC\n\nTerraform acquires a state lock to protect the state\nfrom being written by multiple users at the same time.",
+    "caption": "Who tells you exactly whose apply holds it — usually the right move is just to wait."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 12",
+    "titlePlain": "Importing Existing Infrastructure into ",
+    "titleEmphasis": "Terraform State",
+    "titleSuffix": "",
+    "subtitle": "Bringing resources someone else already created under management."
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "lesson": "credential-guard-and-lsa-protection",
+  "questions": [
+    {
+      "q": "What does Credential Guard actually do with NTLM hashes and Kerberos tickets?",
+      "options": [
+        "It encrypts them with a user-chosen password and stores them in the registry",
+        "It isolates them inside a separate, hypervisor-protected process (LSAIso.exe) using Virtualization-Based Security, outside normal lsass.exe memory",
+        "It deletes them immediately after each logon so nothing is ever cached",
+        "It moves them to a cloud service for safekeeping"
+      ],
+      "answer": 1,
+      "explain": "Credential Guard uses VBS to run an isolated LSAIso.exe process; the real secrets never live in lsass.exe's own memory space, so an attacker with kernel access can't simply read them out."
+    },
+    {
+      "q": "Which of these is a real hardware/configuration requirement for Credential Guard?",
+      "options": [
+        "A 64-bit CPU with virtualization extensions and SLAT, plus UEFI with Secure Boot enabled",
+        "No hardware requirements exist at all — it runs on any configuration",
+        "Windows 10/11 Home edition specifically",
+        "A 32-bit CPU with no virtualization support"
+      ],
+      "answer": 0,
+      "explain": "Credential Guard depends on VBS, which requires virtualization extensions, SLAT, and UEFI Secure Boot, and is only available on Enterprise/Education or Server editions."
+    },
+    {
+      "q": "What does LSA Protection (RunAsPPL) specifically change about lsass.exe?",
+      "options": [
+        "It runs lsass.exe as a Protected Process Light, so only signed, trusted code can load into its address space",
+        "It requires a TPM 2.0 chip to function at all",
+        "It disables lsass.exe entirely so no authentication can occur",
+        "It moves lsass.exe's memory into a separate hypervisor-protected container"
+      ],
+      "answer": 0,
+      "explain": "RunAsPPL hardens lsass.exe itself against code injection by making it a Protected Process Light — a different mechanism than Credential Guard's VBS isolation."
+    },
+    {
+      "q": "What does setting RunAsPPL to a value of 2 do, instead of 1?",
+      "options": [
+        "Permanently disables LSA Protection",
+        "Doubles the protection level with no logging",
+        "Has no effect — only 0 and 1 are valid values",
+        "Runs LSA Protection in audit mode, logging what would be blocked (Event IDs 3065/3066) without enforcing it yet"
+      ],
+      "answer": 3,
+      "explain": "A value of 2 is the audit-mode equivalent to Lesson 14's ASR audit rollout — it logs what would be blocked so incompatible drivers or plugins can be found before full enforcement."
+    },
+    {
+      "q": "In the lesson's example, why does a Mimikatz sekurlsa::logonpasswords attempt fail on a host with both Credential Guard and LSA Protection enabled?",
+      "options": [
+        "Credential Guard means there's nothing to dump since secrets never live in lsass.exe's memory, and LSA Protection blocks the module injection Mimikatz needs in the first place",
+        "Mimikatz is incompatible with all versions of Windows regardless of configuration",
+        "Both controls simply delete Mimikatz's executable file before it can run",
+        "Only one of the two controls actually does anything; the other has no real effect"
+      ],
+      "answer": 0,
+      "explain": "The two controls stop two different steps of the same attack technique: isolation removes what there is to steal, and process hardening blocks the injection needed to even attempt the theft."
+    }
+  ]
+}

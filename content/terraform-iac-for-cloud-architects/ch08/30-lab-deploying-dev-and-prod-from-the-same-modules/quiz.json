@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-deploying-dev-and-prod-from-the-same-modules",
+  "questions": [
+    {
+      "q": "What is the only line that differs between envs/dev/main.tf and envs/prod/main.tf in this lesson?",
+      "options": [
+        "The module source path, since each environment has its own module",
+        "The backend block's key value -- network/dev.tfstate versus network/prod.tfstate",
+        "The provider block, since dev and prod use different providers",
+        "There is no difference; both files are byte-for-byte identical including the key"
+      ],
+      "answer": 1,
+      "explain": "Each environment folder has its own literal backend key so dev and prod state files never collide -- that one line is the deliberate difference."
+    },
+    {
+      "q": "Why can't the backend key be set dynamically, such as with terraform.workspace or a variable?",
+      "options": [
+        "terraform.workspace only works inside module blocks, not backend blocks",
+        "Dynamic keys are allowed, but only for AWS S3 backends, not Azure Storage",
+        "Backend blocks don't support interpolation -- every value inside one must be a literal",
+        "Terraform doesn't allow backend blocks to specify a key at all"
+      ],
+      "answer": 2,
+      "explain": "Backend configuration is evaluated before variables or workspaces exist, so every value in a backend block must be a plain literal."
+    },
+    {
+      "q": "Why do dev's /20 and prod's /16 parent address spaces produce differently sized subnets even though subnet_newbits defaults to 8 in both?",
+      "options": [
+        "Azure automatically resizes subnets based on the environment name",
+        "subnet_newbits is actually ignored unless explicitly overridden",
+        "/16 and /20 blocks always produce identical subnet sizes regardless of newbits",
+        "Adding the same number of bits to a smaller prefix versus a larger prefix yields a smaller versus larger resulting subnet prefix (/28 vs. /24)"
+      ],
+      "answer": 3,
+      "explain": "cidrsubnet() math means the same newbits value lands on a different resulting prefix length depending on how big the parent block already is."
+    },
+    {
+      "q": "What does passing -var-file=\"prod.tfvars\" to terraform plan or apply do?",
+      "options": [
+        "Only works during terraform init, not plan or apply",
+        "Supplies variable values from that named .tfvars file instead of hardcoding them or prompting for them interactively",
+        "Switches Terraform to a different backend automatically",
+        "Deletes any existing state file before planning"
+      ],
+      "answer": 1,
+      "explain": "-var-file points Terraform at a file of variable values, which is exactly how the same root config produces a dev-sized or prod-sized network."
+    },
+    {
+      "q": "Why did Caldwell Ridge choose directory-per-environment state over Terraform workspaces for this project?",
+      "options": [
+        "To physically separate blast radius and access/approval requirements between dev and prod, which a shared workspace backend doesn't provide by default",
+        "Because the module itself technically cannot be called more than once per workspace",
+        "Because workspaces are deprecated and no longer supported in current Terraform versions",
+        "Because Terraform workspaces don't support the azurerm backend at all"
+      ],
+      "answer": 0,
+      "explain": "Lesson 18's tradeoff applies here directly: separate state files give prod its own backend key and its own CI approval gate, not just a shared one everyone can apply to."
+    }
+  ]
+}

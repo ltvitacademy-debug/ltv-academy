@@ -13,6 +13,8 @@ import { MICROSOFT_SENTINEL_DEFENDER_XDR_CHAPTERS } from "./microsoft-sentinel-d
 import { PYTHON_POWERSHELL_INFRASTRUCTURE_AUTOMATION_CHAPTERS } from "./python-powershell-infrastructure-automation-outline";
 import { INCIDENT_RESPONSE_SOC_CAPSTONE_CHAPTERS } from "./incident-response-soc-capstone-outline";
 import { CLOUD_INFRASTRUCTURE_DEPLOYMENT_CAPSTONE_CHAPTERS } from "./cloud-infrastructure-deployment-capstone-outline";
+import { SECURITY_ENGINEERING_IDENTITY_MANAGEMENT_CHAPTERS } from "./security-engineering-identity-management-outline";
+import { TERRAFORM_IAC_FOR_CLOUD_ARCHITECTS_CHAPTERS } from "./terraform-iac-for-cloud-architects-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2456,7 +2458,8 @@ export const COURSES: CourseMeta[] = [
     slug: "security-engineering-identity-management",
     title: "Security Engineering, IAM & System Hardening",
     tagline: "Identity and access management, authentication architecture, system hardening, and the engineering side of enterprise security.",
-    status: "coming-soon",
+    status: "available",
+    chapters: SECURITY_ENGINEERING_IDENTITY_MANAGEMENT_CHAPTERS,
   },
   {
     slug: "azure-aws-cloud-security",
@@ -2548,7 +2551,8 @@ export const COURSES: CourseMeta[] = [
     slug: "terraform-iac-for-cloud-architects",
     title: "Terraform, Bicep & Infrastructure as Code",
     tagline: "Provisioning and managing cloud infrastructure as code with Terraform and Bicep.",
-    status: "coming-soon",
+    status: "available",
+    chapters: TERRAFORM_IAC_FOR_CLOUD_ARCHITECTS_CHAPTERS,
   },
   {
     slug: "docker-kubernetes-container-platforms",

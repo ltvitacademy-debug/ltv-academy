@@ -1,0 +1,60 @@
+{
+  "lesson": "state-locking-and-preventing-concurrent-apply-conflicts",
+  "questions": [
+    {
+      "q": "Why isn't a remote backend by itself enough to prevent state corruption?",
+      "options": [
+        "It doesn't stop two people from running apply at nearly the same time and writing to state without coordination",
+        "Remote state can only be read, never written",
+        "Remote backends don't support the azurerm provider",
+        "It requires a VPN connection that most teams don't have"
+      ],
+      "answer": 0,
+      "explain": "A remote backend solves the shared-copy problem but says nothing about timing — locking is what adds coordination."
+    },
+    {
+      "q": "How does the azurerm backend provide state locking?",
+      "options": [
+        "By requiring manual approval from an Azure admin before every apply",
+        "By requiring a separate DynamoDB table, same as the s3 backend",
+        "Automatically, using Azure Blob Storage's native lease mechanism, with no extra configuration",
+        "It doesn't support locking at all"
+      ],
+      "answer": 2,
+      "explain": "The azurerm backend gets locking for free through blob leases — nothing extra needs to be set in the backend block."
+    },
+    {
+      "q": "What does the s3 backend need in order to support state locking?",
+      "options": [
+        "A dynamodb_table argument pointing at a DynamoDB table with a LockID primary key of type String",
+        "A second S3 bucket dedicated entirely to locks",
+        "An IAM role named exactly 'terraform-lock'",
+        "Nothing — s3 locks automatically like azurerm does"
+      ],
+      "answer": 0,
+      "explain": "S3 has no native lease mechanism, so the s3 backend coordinates locks through rows in a DynamoDB table keyed on LockID."
+    },
+    {
+      "q": "What does Terraform do if you run apply while another apply already holds the state lock?",
+      "options": [
+        "It refuses and prints an error identifying who holds the lock, what operation, and when it started",
+        "It proceeds anyway and merges both sets of changes",
+        "It deletes the existing lock and takes over immediately",
+        "It queues your apply silently and runs it automatically once the lock clears"
+      ],
+      "answer": 0,
+      "explain": "The lock error's Who and Created fields tell you exactly whose operation to wait on before retrying."
+    },
+    {
+      "q": "When is it actually safe to run terraform force-unlock on a held lock?",
+      "options": [
+        "Any time an apply is taking longer than expected",
+        "Only the original engineer who created the lock is ever allowed to unlock it",
+        "Immediately, since force-unlock is designed for routine use",
+        "Only after confirming the operation that holds it isn't actually still running, e.g. a crashed process left it stuck"
+      ],
+      "answer": 3,
+      "explain": "Forcing an unlock while a real apply is still in flight is exactly the concurrent-write corruption locking exists to prevent."
+    }
+  ]
+}
