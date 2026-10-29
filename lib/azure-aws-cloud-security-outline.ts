@@ -98,9 +98,9 @@ export const AZURE_AWS_CLOUD_SECURITY_CHAPTERS: ChapterMeta[] = [
     title: "Capstone: Securing a Multi-Cloud Environment",
     lessons: [
       L(29, "lab-hardening-identity-and-network-across-azure-and-aws", "Lab: Hardening Identity and Network Across Azure and AWS", { contentDir: "ch08/29-lab-hardening-identity-and-network-across-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-azure-aws-cloud-security/lab-hardening-identity-and-network-across-azure-and-aws.mp4", durationLabel: "2 min 42 s" }),
-      L(30, "lab-responding-to-a-simulated-cloud-credential-compromise", "Lab: Responding to a Simulated Cloud Credential Compromise", { contentDir: "ch08/30-lab-responding-to-a-simulated-cloud-credential-compromise" }),
-      L(31, "case-study-a-misconfigured-role-that-exposed-a-whole-subscription", "Case Study: A Misconfigured Role That Exposed a Whole Subscription", { contentDir: "ch08/31-case-study-a-misconfigured-role-that-exposed-a-whole-subscription" }),
-      L(32, "chapter-capstone-cloud-security-engineering-review", "Chapter Capstone: Cloud Security Engineering Review", { contentDir: "ch08/32-chapter-capstone-cloud-security-engineering-review" }),
+      L(30, "lab-responding-to-a-simulated-cloud-credential-compromise", "Lab: Responding to a Simulated Cloud Credential Compromise", { contentDir: "ch08/30-lab-responding-to-a-simulated-cloud-credential-compromise", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-azure-aws-cloud-security/lab-responding-to-a-simulated-cloud-credential-compromise.mp4", durationLabel: "2 min 22 s" }),
+      L(31, "case-study-a-misconfigured-role-that-exposed-a-whole-subscription", "Case Study: A Misconfigured Role That Exposed a Whole Subscription", { contentDir: "ch08/31-case-study-a-misconfigured-role-that-exposed-a-whole-subscription", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-azure-aws-cloud-security/case-study-a-misconfigured-role-that-exposed-a-whole-subscription.mp4", durationLabel: "2 min 24 s" }),
+      L(32, "chapter-capstone-cloud-security-engineering-review", "Chapter Capstone: Cloud Security Engineering Review", { contentDir: "ch08/32-chapter-capstone-cloud-security-engineering-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-azure-aws-cloud-security/chapter-capstone-cloud-security-engineering-review.mp4", durationLabel: "2 min 28 s" }),
     ],
   },
 ];
