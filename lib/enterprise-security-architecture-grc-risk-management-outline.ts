@@ -37,10 +37,10 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     n: 2,
     title: "Security Architecture Frameworks",
     lessons: [
-      L(5, "the-sabsa-framework-business-driven-security-architecture", "The SABSA Framework: Business-Driven Security Architecture", { contentDir: "ch02/05-the-sabsa-framework-business-driven-security-architecture" }),
-      L(6, "togaf-and-where-security-fits-into-enterprise-architecture", "TOGAF, and Where Security Fits into Enterprise Architecture", { contentDir: "ch02/06-togaf-and-where-security-fits-into-enterprise-architecture" }),
-      L(7, "the-zero-trust-maturity-model-as-an-architecture-input", "The Zero Trust Maturity Model as an Architecture Input", { contentDir: "ch02/07-the-zero-trust-maturity-model-as-an-architecture-input" }),
-      L(8, "choosing-and-adapting-a-framework-for-a-real-organization", "Choosing and Adapting a Framework for a Real Organization", { contentDir: "ch02/08-choosing-and-adapting-a-framework-for-a-real-organization" }),
+      L(5, "the-sabsa-framework-business-driven-security-architecture", "The SABSA Framework: Business-Driven Security Architecture", { contentDir: "ch02/05-the-sabsa-framework-business-driven-security-architecture", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/the-sabsa-framework-business-driven-security-architecture.mp4", durationLabel: "2 min 48 s" }),
+      L(6, "togaf-and-where-security-fits-into-enterprise-architecture", "TOGAF, and Where Security Fits into Enterprise Architecture", { contentDir: "ch02/06-togaf-and-where-security-fits-into-enterprise-architecture", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/togaf-and-where-security-fits-into-enterprise-architecture.mp4", durationLabel: "3 min 0 s" }),
+      L(7, "the-zero-trust-maturity-model-as-an-architecture-input", "The Zero Trust Maturity Model as an Architecture Input", { contentDir: "ch02/07-the-zero-trust-maturity-model-as-an-architecture-input", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/the-zero-trust-maturity-model-as-an-architecture-input.mp4", durationLabel: "2 min 38 s" }),
+      L(8, "choosing-and-adapting-a-framework-for-a-real-organization", "Choosing and Adapting a Framework for a Real Organization", { contentDir: "ch02/08-choosing-and-adapting-a-framework-for-a-real-organization", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/choosing-and-adapting-a-framework-for-a-real-organization.mp4", durationLabel: "2 min 59 s" }),
     ],
   },
   {

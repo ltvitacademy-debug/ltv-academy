@@ -59,17 +59,17 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
       L(13, "unifying-identity-across-on-prem-azure-and-aws", "Unifying Identity Across On-Prem, Azure, and AWS", { contentDir: "ch04/13-unifying-identity-across-on-prem-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/unifying-identity-across-on-prem-azure-and-aws.mp4", durationLabel: "2 min 28 s" }),
       L(14, "federation-patterns-for-a-true-multi-cloud-org", "Federation Patterns for a True Multi-Cloud Org", { contentDir: "ch04/14-federation-patterns-for-a-true-multi-cloud-org", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/federation-patterns-for-a-true-multi-cloud-org.mp4", durationLabel: "2 min 19 s" }),
       L(15, "a-single-conditional-access-policy-spanning-every-environment", "A Single Conditional Access Policy Spanning Every Environment", { contentDir: "ch04/15-a-single-conditional-access-policy-spanning-every-environment", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-single-conditional-access-policy-spanning-every-environment.mp4", durationLabel: "2 min 19 s" }),
-      L(16, "identity-as-the-glue-that-holds-a-hybrid-architecture-together", "Identity as the Glue That Holds a Hybrid Architecture Together", { contentDir: "ch04/16-identity-as-the-glue-that-holds-a-hybrid-architecture-together" }),
+      L(16, "identity-as-the-glue-that-holds-a-hybrid-architecture-together", "Identity as the Glue That Holds a Hybrid Architecture Together", { contentDir: "ch04/16-identity-as-the-glue-that-holds-a-hybrid-architecture-together", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/identity-as-the-glue-that-holds-a-hybrid-architecture-together.mp4", durationLabel: "2 min 26 s" }),
     ],
   },
   {
     n: 5,
     title: "Multi-Cloud Networking and Connectivity",
     lessons: [
-      L(17, "connecting-azure-and-aws-networks-directly", "Connecting Azure and AWS Networks Directly", { contentDir: "ch05/17-connecting-azure-and-aws-networks-directly" }),
-      L(18, "a-shared-dns-and-service-discovery-layer-across-clouds", "A Shared DNS and Service Discovery Layer Across Clouds", { contentDir: "ch05/18-a-shared-dns-and-service-discovery-layer-across-clouds" }),
-      L(19, "latency-and-egress-cost-realities-of-cross-cloud-traffic", "Latency and Egress Cost Realities of Cross-Cloud Traffic", { contentDir: "ch05/19-latency-and-egress-cost-realities-of-cross-cloud-traffic" }),
-      L(20, "designing-for-partial-failure-across-providers", "Designing for Partial Failure Across Providers", { contentDir: "ch05/20-designing-for-partial-failure-across-providers" }),
+      L(17, "connecting-azure-and-aws-networks-directly", "Connecting Azure and AWS Networks Directly", { contentDir: "ch05/17-connecting-azure-and-aws-networks-directly", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/connecting-azure-and-aws-networks-directly.mp4", durationLabel: "2 min 54 s" }),
+      L(18, "a-shared-dns-and-service-discovery-layer-across-clouds", "A Shared DNS and Service Discovery Layer Across Clouds", { contentDir: "ch05/18-a-shared-dns-and-service-discovery-layer-across-clouds", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-shared-dns-and-service-discovery-layer-across-clouds.mp4", durationLabel: "2 min 41 s" }),
+      L(19, "latency-and-egress-cost-realities-of-cross-cloud-traffic", "Latency and Egress Cost Realities of Cross-Cloud Traffic", { contentDir: "ch05/19-latency-and-egress-cost-realities-of-cross-cloud-traffic", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/latency-and-egress-cost-realities-of-cross-cloud-traffic.mp4", durationLabel: "2 min 45 s" }),
+      L(20, "designing-for-partial-failure-across-providers", "Designing for Partial Failure Across Providers", { contentDir: "ch05/20-designing-for-partial-failure-across-providers", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/designing-for-partial-failure-across-providers.mp4", durationLabel: "2 min 37 s" }),
     ],
   },
   {

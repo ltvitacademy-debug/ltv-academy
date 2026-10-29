@@ -48,17 +48,17 @@ export const AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS: ChapterMet
     lessons: [
       L(9, "what-data-poisoning-actually-targets", "What Data Poisoning Actually Targets", { contentDir: "ch03/09-what-data-poisoning-actually-targets", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/what-data-poisoning-actually-targets.mp4", durationLabel: "2 min 52 s" }),
       L(10, "supply-chain-risk-in-training-data-and-pretrained-models", "Supply Chain Risk in Training Data and Pretrained Models", { contentDir: "ch03/10-supply-chain-risk-in-training-data-and-pretrained-models", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/supply-chain-risk-in-training-data-and-pretrained-models.mp4", durationLabel: "2 min 58 s" }),
-      L(11, "backdoor-attacks-and-how-theyre-detected", "Backdoor Attacks, and How They're Detected", { contentDir: "ch03/11-backdoor-attacks-and-how-theyre-detected" }),
-      L(12, "data-provenance-and-validation-as-a-defense", "Data Provenance and Validation as a Defense", { contentDir: "ch03/12-data-provenance-and-validation-as-a-defense" }),
+      L(11, "backdoor-attacks-and-how-theyre-detected", "Backdoor Attacks, and How They're Detected", { contentDir: "ch03/11-backdoor-attacks-and-how-theyre-detected", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/backdoor-attacks-and-how-theyre-detected.mp4", durationLabel: "2 min 35 s" }),
+      L(12, "data-provenance-and-validation-as-a-defense", "Data Provenance and Validation as a Defense", { contentDir: "ch03/12-data-provenance-and-validation-as-a-defense", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/data-provenance-and-validation-as-a-defense.mp4", durationLabel: "2 min 53 s" }),
     ],
   },
   {
     n: 4,
     title: "Model Extraction and Inversion Attacks",
     lessons: [
-      L(13, "model-extraction-stealing-a-model-through-its-api", "Model Extraction: Stealing a Model Through Its API", { contentDir: "ch04/13-model-extraction-stealing-a-model-through-its-api" }),
-      L(14, "model-inversion-and-membership-inference-attacks", "Model Inversion and Membership Inference Attacks", { contentDir: "ch04/14-model-inversion-and-membership-inference-attacks" }),
-      L(15, "rate-limiting-and-query-monitoring-as-real-defenses", "Rate Limiting and Query Monitoring as Real Defenses", { contentDir: "ch04/15-rate-limiting-and-query-monitoring-as-real-defenses" }),
+      L(13, "model-extraction-stealing-a-model-through-its-api", "Model Extraction: Stealing a Model Through Its API", { contentDir: "ch04/13-model-extraction-stealing-a-model-through-its-api", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/model-extraction-stealing-a-model-through-its-api.mp4", durationLabel: "2 min 34 s" }),
+      L(14, "model-inversion-and-membership-inference-attacks", "Model Inversion and Membership Inference Attacks", { contentDir: "ch04/14-model-inversion-and-membership-inference-attacks", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/model-inversion-and-membership-inference-attacks.mp4", durationLabel: "2 min 28 s" }),
+      L(15, "rate-limiting-and-query-monitoring-as-real-defenses", "Rate Limiting and Query Monitoring as Real Defenses", { contentDir: "ch04/15-rate-limiting-and-query-monitoring-as-real-defenses", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/rate-limiting-and-query-monitoring-as-real-defenses.mp4", durationLabel: "2 min 17 s" }),
       L(16, "differential-privacy-concepts-for-protecting-training-data", "Differential Privacy Concepts for Protecting Training Data", { contentDir: "ch04/16-differential-privacy-concepts-for-protecting-training-data" }),
     ],
   },

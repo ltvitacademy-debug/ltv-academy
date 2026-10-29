@@ -47,17 +47,17 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
     title: "Distributed Training Infrastructure",
     lessons: [
       L(9, "why-training-a-large-model-needs-more-than-one-gpu", "Why Training a Large Model Needs More Than One GPU", { contentDir: "ch03/09-why-training-a-large-model-needs-more-than-one-gpu", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/why-training-a-large-model-needs-more-than-one-gpu.mp4", durationLabel: "2 min 25 s" }),
-      L(10, "data-parallelism-vs-model-parallelism-the-real-difference", "Data Parallelism vs. Model Parallelism: The Real Difference", { contentDir: "ch03/10-data-parallelism-vs-model-parallelism-the-real-difference" }),
-      L(11, "high-speed-interconnects-and-why-network-topology-matters", "High-Speed Interconnects, and Why Network Topology Matters", { contentDir: "ch03/11-high-speed-interconnects-and-why-network-topology-matters" }),
-      L(12, "checkpointing-and-fault-tolerance-for-long-training-runs", "Checkpointing and Fault Tolerance for Long Training Runs", { contentDir: "ch03/12-checkpointing-and-fault-tolerance-for-long-training-runs" }),
+      L(10, "data-parallelism-vs-model-parallelism-the-real-difference", "Data Parallelism vs. Model Parallelism: The Real Difference", { contentDir: "ch03/10-data-parallelism-vs-model-parallelism-the-real-difference", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/data-parallelism-vs-model-parallelism-the-real-difference.mp4", durationLabel: "2 min 36 s" }),
+      L(11, "high-speed-interconnects-and-why-network-topology-matters", "High-Speed Interconnects, and Why Network Topology Matters", { contentDir: "ch03/11-high-speed-interconnects-and-why-network-topology-matters", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/high-speed-interconnects-and-why-network-topology-matters.mp4", durationLabel: "2 min 56 s" }),
+      L(12, "checkpointing-and-fault-tolerance-for-long-training-runs", "Checkpointing and Fault Tolerance for Long Training Runs", { contentDir: "ch03/12-checkpointing-and-fault-tolerance-for-long-training-runs", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/checkpointing-and-fault-tolerance-for-long-training-runs.mp4", durationLabel: "2 min 27 s" }),
     ],
   },
   {
     n: 4,
     title: "Model Serving and Inference Infrastructure",
     lessons: [
-      L(13, "batch-inference-vs-real-time-inference-infrastructure", "Batch Inference vs. Real-Time Inference Infrastructure", { contentDir: "ch04/13-batch-inference-vs-real-time-inference-infrastructure" }),
-      L(14, "model-serving-frameworks-and-what-they-actually-solve", "Model Serving Frameworks and What They Actually Solve", { contentDir: "ch04/14-model-serving-frameworks-and-what-they-actually-solve" }),
+      L(13, "batch-inference-vs-real-time-inference-infrastructure", "Batch Inference vs. Real-Time Inference Infrastructure", { contentDir: "ch04/13-batch-inference-vs-real-time-inference-infrastructure", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/batch-inference-vs-real-time-inference-infrastructure.mp4", durationLabel: "2 min 32 s" }),
+      L(14, "model-serving-frameworks-and-what-they-actually-solve", "Model Serving Frameworks and What They Actually Solve", { contentDir: "ch04/14-model-serving-frameworks-and-what-they-actually-solve", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/model-serving-frameworks-and-what-they-actually-solve.mp4", durationLabel: "2 min 42 s" }),
       L(15, "autoscaling-inference-workloads-without-wasting-gpu-spend", "Autoscaling Inference Workloads Without Wasting GPU Spend", { contentDir: "ch04/15-autoscaling-inference-workloads-without-wasting-gpu-spend" }),
       L(16, "a-real-inference-architecture-on-kubernetes", "A Real Inference Architecture on Kubernetes", { contentDir: "ch04/16-a-real-inference-architecture-on-kubernetes" }),
     ],
