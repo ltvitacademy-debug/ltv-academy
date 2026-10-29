@@ -36,7 +36,7 @@ export const AI_SECURITY_ENGINEERING_ADVERSARIAL_AI_DEFENSE_CHAPTERS: ChapterMet
     n: 2,
     title: "Prompt Injection Attacks and Defenses",
     lessons: [
-      L(5, "direct-prompt-injection-how-it-actually-works", "Direct Prompt Injection: How It Actually Works", { contentDir: "ch02/05-direct-prompt-injection-how-it-actually-works" }),
+      L(5, "direct-prompt-injection-how-it-actually-works", "Direct Prompt Injection: How It Actually Works", { contentDir: "ch02/05-direct-prompt-injection-how-it-actually-works", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-security-engineering-adversarial-ai-defense/direct-prompt-injection-how-it-actually-works.mp4", durationLabel: "2 min 12 s" }),
       L(6, "indirect-prompt-injection-when-the-attack-hides-in-retrieved-content", "Indirect Prompt Injection: When the Attack Hides in Retrieved Content", { contentDir: "ch02/06-indirect-prompt-injection-when-the-attack-hides-in-retrieved-content" }),
       L(7, "defenses-input-sanitization-isnt-enough-on-its-own", "Defenses: Input Sanitization Isn't Enough on Its Own", { contentDir: "ch02/07-defenses-input-sanitization-isnt-enough-on-its-own" }),
       L(8, "privilege-separation-for-llm-agents", "Privilege Separation for LLM Agents", { contentDir: "ch02/08-privilege-separation-for-llm-agents" }),

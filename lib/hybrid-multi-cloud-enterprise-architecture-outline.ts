@@ -47,8 +47,8 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     title: "Workload Portability Across Clouds",
     lessons: [
       L(9, "kubernetes-as-the-real-portability-layer", "Kubernetes as the Real Portability Layer", { contentDir: "ch03/09-kubernetes-as-the-real-portability-layer", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/kubernetes-as-the-real-portability-layer.mp4", durationLabel: "3 min 2 s" }),
-      L(10, "abstracting-cloud-specific-services-behind-a-common-interface", "Abstracting Cloud-Specific Services Behind a Common Interface", { contentDir: "ch03/10-abstracting-cloud-specific-services-behind-a-common-interface" }),
-      L(11, "terraform-modules-that-target-more-than-one-cloud", "Terraform Modules That Target More Than One Cloud", { contentDir: "ch03/11-terraform-modules-that-target-more-than-one-cloud" }),
+      L(10, "abstracting-cloud-specific-services-behind-a-common-interface", "Abstracting Cloud-Specific Services Behind a Common Interface", { contentDir: "ch03/10-abstracting-cloud-specific-services-behind-a-common-interface", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/abstracting-cloud-specific-services-behind-a-common-interface.mp4", durationLabel: "2 min 45 s" }),
+      L(11, "terraform-modules-that-target-more-than-one-cloud", "Terraform Modules That Target More Than One Cloud", { contentDir: "ch03/11-terraform-modules-that-target-more-than-one-cloud", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/terraform-modules-that-target-more-than-one-cloud.mp4", durationLabel: "2 min 40 s" }),
       L(12, "what-genuinely-doesnt-port-and-when-to-stop-trying", "What Genuinely Doesn't Port, and When to Stop Trying", { contentDir: "ch03/12-what-genuinely-doesnt-port-and-when-to-stop-trying" }),
     ],
   },

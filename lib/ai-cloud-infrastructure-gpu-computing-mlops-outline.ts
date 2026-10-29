@@ -36,7 +36,7 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
     n: 2,
     title: "Provisioning GPU Infrastructure",
     lessons: [
-      L(5, "provisioning-gpu-vms-with-terraform-on-azure-and-aws", "Provisioning GPU VMs with Terraform on Azure and AWS", { contentDir: "ch02/05-provisioning-gpu-vms-with-terraform-on-azure-and-aws" }),
+      L(5, "provisioning-gpu-vms-with-terraform-on-azure-and-aws", "Provisioning GPU VMs with Terraform on Azure and AWS", { contentDir: "ch02/05-provisioning-gpu-vms-with-terraform-on-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/provisioning-gpu-vms-with-terraform-on-azure-and-aws.mp4", durationLabel: "2 min 44 s" }),
       L(6, "gpu-drivers-cuda-and-the-container-toolkit", "GPU Drivers, CUDA, and the Container Toolkit", { contentDir: "ch02/06-gpu-drivers-cuda-and-the-container-toolkit" }),
       L(7, "running-gpu-workloads-on-kubernetes", "Running GPU Workloads on Kubernetes", { contentDir: "ch02/07-running-gpu-workloads-on-kubernetes" }),
       L(8, "gpu-scheduling-and-sharing-a-single-gpu-across-workloads", "GPU Scheduling and Sharing a Single GPU Across Workloads", { contentDir: "ch02/08-gpu-scheduling-and-sharing-a-single-gpu-across-workloads" }),
