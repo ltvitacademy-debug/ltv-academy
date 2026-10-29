@@ -68,17 +68,17 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
     lessons: [
       L(17, "the-real-ml-lifecycle-data-train-evaluate-deploy-monitor", "The Real ML Lifecycle: Data, Train, Evaluate, Deploy, Monitor", { contentDir: "ch05/17-the-real-ml-lifecycle-data-train-evaluate-deploy-monitor", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/the-real-ml-lifecycle-data-train-evaluate-deploy-monitor.mp4", durationLabel: "2 min 38 s" }),
       L(18, "experiment-tracking-and-model-registries", "Experiment Tracking and Model Registries", { contentDir: "ch05/18-experiment-tracking-and-model-registries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/experiment-tracking-and-model-registries.mp4", durationLabel: "2 min 28 s" }),
-      L(19, "cicd-for-models-not-just-application-code", "CI/CD for Models, Not Just Application Code", { contentDir: "ch05/19-cicd-for-models-not-just-application-code" }),
-      L(20, "model-monitoring-and-detecting-drift-in-production", "Model Monitoring and Detecting Drift in Production", { contentDir: "ch05/20-model-monitoring-and-detecting-drift-in-production" }),
+      L(19, "cicd-for-models-not-just-application-code", "CI/CD for Models, Not Just Application Code", { contentDir: "ch05/19-cicd-for-models-not-just-application-code", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/cicd-for-models-not-just-application-code.mp4", durationLabel: "2 min 29 s" }),
+      L(20, "model-monitoring-and-detecting-drift-in-production", "Model Monitoring and Detecting Drift in Production", { contentDir: "ch05/20-model-monitoring-and-detecting-drift-in-production", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/model-monitoring-and-detecting-drift-in-production.mp4", durationLabel: "2 min 27 s" }),
     ],
   },
   {
     n: 6,
     title: "Cost Optimization for AI and GPU Workloads",
     lessons: [
-      L(21, "why-gpu-spend-runs-away-faster-than-any-other-cloud-cost", "Why GPU Spend Runs Away Faster Than Any Other Cloud Cost", { contentDir: "ch06/21-why-gpu-spend-runs-away-faster-than-any-other-cloud-cost" }),
-      L(22, "spot-gpus-and-the-real-interruption-tradeoffs-for-training", "Spot GPUs, and the Real Interruption Tradeoffs for Training", { contentDir: "ch06/22-spot-gpus-and-the-real-interruption-tradeoffs-for-training" }),
-      L(23, "right-sizing-gpu-instances-for-training-vs-inference", "Right-Sizing GPU Instances for Training vs. Inference", { contentDir: "ch06/23-right-sizing-gpu-instances-for-training-vs-inference" }),
+      L(21, "why-gpu-spend-runs-away-faster-than-any-other-cloud-cost", "Why GPU Spend Runs Away Faster Than Any Other Cloud Cost", { contentDir: "ch06/21-why-gpu-spend-runs-away-faster-than-any-other-cloud-cost", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/why-gpu-spend-runs-away-faster-than-any-other-cloud-cost.mp4", durationLabel: "2 min 31 s" }),
+      L(22, "spot-gpus-and-the-real-interruption-tradeoffs-for-training", "Spot GPUs, and the Real Interruption Tradeoffs for Training", { contentDir: "ch06/22-spot-gpus-and-the-real-interruption-tradeoffs-for-training", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/spot-gpus-and-the-real-interruption-tradeoffs-for-training.mp4", durationLabel: "2 min 27 s" }),
+      L(23, "right-sizing-gpu-instances-for-training-vs-inference", "Right-Sizing GPU Instances for Training vs. Inference", { contentDir: "ch06/23-right-sizing-gpu-instances-for-training-vs-inference", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/right-sizing-gpu-instances-for-training-vs-inference.mp4", durationLabel: "2 min 14 s" }),
       L(24, "a-real-finops-practice-for-ai-infrastructure", "A Real FinOps Practice for AI Infrastructure", { contentDir: "ch06/24-a-real-finops-practice-for-ai-infrastructure" }),
     ],
   },

@@ -79,17 +79,17 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
       L(21, "post-exploitation-goals-what-happens-after-you-get-a-foothold", "Post-Exploitation Goals: What Happens After You Get a Foothold", { contentDir: "ch06/21-post-exploitation-goals-what-happens-after-you-get-a-foothold", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/post-exploitation-goals-what-happens-after-you-get-a-foothold.mp4", durationLabel: "2 min 58 s" }),
       L(22, "windows-and-linux-privilege-escalation-techniques", "Windows and Linux Privilege Escalation Techniques", { contentDir: "ch06/22-windows-and-linux-privilege-escalation-techniques", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/windows-and-linux-privilege-escalation-techniques.mp4", durationLabel: "2 min 51 s" }),
       L(23, "lateral-movement-from-an-attackers-perspective", "Lateral Movement from an Attacker's Perspective", { contentDir: "ch06/23-lateral-movement-from-an-attackers-perspective", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/lateral-movement-from-an-attackers-perspective.mp4", durationLabel: "2 min 33 s" }),
-      L(24, "maintaining-access-and-cleaning-up-after-an-authorized-test", "Maintaining Access, and Cleaning Up After an Authorized Test", { contentDir: "ch06/24-maintaining-access-and-cleaning-up-after-an-authorized-test" }),
+      L(24, "maintaining-access-and-cleaning-up-after-an-authorized-test", "Maintaining Access, and Cleaning Up After an Authorized Test", { contentDir: "ch06/24-maintaining-access-and-cleaning-up-after-an-authorized-test", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/maintaining-access-and-cleaning-up-after-an-authorized-test.mp4", durationLabel: "2 min 17 s" }),
     ],
   },
   {
     n: 7,
     title: "Purple Team Operations",
     lessons: [
-      L(25, "red-team-vs-blue-team-vs-purple-team-what-actually-changes", "Red Team vs. Blue Team vs. Purple Team: What Actually Changes", { contentDir: "ch07/25-red-team-vs-blue-team-vs-purple-team-what-actually-changes" }),
-      L(26, "running-a-collaborative-purple-team-exercise", "Running a Collaborative Purple Team Exercise", { contentDir: "ch07/26-running-a-collaborative-purple-team-exercise" }),
-      L(27, "mapping-attacker-actions-to-mitre-attck-in-real-time", "Mapping Attacker Actions to MITRE ATT&CK in Real Time", { contentDir: "ch07/27-mapping-attacker-actions-to-mitre-attck-in-real-time" }),
-      L(28, "turning-a-purple-team-exercise-into-better-detections", "Turning a Purple Team Exercise into Better Detections", { contentDir: "ch07/28-turning-a-purple-team-exercise-into-better-detections" }),
+      L(25, "red-team-vs-blue-team-vs-purple-team-what-actually-changes", "Red Team vs. Blue Team vs. Purple Team: What Actually Changes", { contentDir: "ch07/25-red-team-vs-blue-team-vs-purple-team-what-actually-changes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/red-team-vs-blue-team-vs-purple-team-what-actually-changes.mp4", durationLabel: "2 min 38 s" }),
+      L(26, "running-a-collaborative-purple-team-exercise", "Running a Collaborative Purple Team Exercise", { contentDir: "ch07/26-running-a-collaborative-purple-team-exercise", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/running-a-collaborative-purple-team-exercise.mp4", durationLabel: "2 min 39 s" }),
+      L(27, "mapping-attacker-actions-to-mitre-attck-in-real-time", "Mapping Attacker Actions to MITRE ATT&CK in Real Time", { contentDir: "ch07/27-mapping-attacker-actions-to-mitre-attck-in-real-time", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/mapping-attacker-actions-to-mitre-attck-in-real-time.mp4", durationLabel: "2 min 38 s" }),
+      L(28, "turning-a-purple-team-exercise-into-better-detections", "Turning a Purple Team Exercise into Better Detections", { contentDir: "ch07/28-turning-a-purple-team-exercise-into-better-detections", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/turning-a-purple-team-exercise-into-better-detections.mp4", durationLabel: "2 min 38 s" }),
     ],
   },
   {

@@ -58,17 +58,17 @@ export const ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS: ChapterMeta[] =
     title: "Advanced Disaster Recovery Architecture",
     lessons: [
       L(13, "dr-architecture-patterns-revisited-at-enterprise-complexity", "DR Architecture Patterns Revisited at Enterprise Complexity", { contentDir: "ch04/13-dr-architecture-patterns-revisited-at-enterprise-complexity", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/dr-architecture-patterns-revisited-at-enterprise-complexity.mp4", durationLabel: "2 min 25 s" }),
-      L(14, "dependency-mapping-so-you-know-whats-actually-in-the-blast-radius", "Dependency Mapping So You Know What's Actually in the Blast Radius", { contentDir: "ch04/14-dependency-mapping-so-you-know-whats-actually-in-the-blast-radius" }),
-      L(15, "automating-failover-instead-of-relying-on-a-runbook-at-3am", "Automating Failover Instead of Relying on a Runbook at 3 A.M.", { contentDir: "ch04/15-automating-failover-instead-of-relying-on-a-runbook-at-3am" }),
-      L(16, "testing-dr-at-the-scale-of-a-real-production-environment", "Testing DR at the Scale of a Real Production Environment", { contentDir: "ch04/16-testing-dr-at-the-scale-of-a-real-production-environment" }),
+      L(14, "dependency-mapping-so-you-know-whats-actually-in-the-blast-radius", "Dependency Mapping So You Know What's Actually in the Blast Radius", { contentDir: "ch04/14-dependency-mapping-so-you-know-whats-actually-in-the-blast-radius", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/dependency-mapping-so-you-know-whats-actually-in-the-blast-radius.mp4", durationLabel: "2 min 26 s" }),
+      L(15, "automating-failover-instead-of-relying-on-a-runbook-at-3am", "Automating Failover Instead of Relying on a Runbook at 3 A.M.", { contentDir: "ch04/15-automating-failover-instead-of-relying-on-a-runbook-at-3am", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/automating-failover-instead-of-relying-on-a-runbook-at-3am.mp4", durationLabel: "2 min 20 s" }),
+      L(16, "testing-dr-at-the-scale-of-a-real-production-environment", "Testing DR at the Scale of a Real Production Environment", { contentDir: "ch04/16-testing-dr-at-the-scale-of-a-real-production-environment", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/testing-dr-at-the-scale-of-a-real-production-environment.mp4", durationLabel: "2 min 34 s" }),
     ],
   },
   {
     n: 5,
     title: "Capacity Planning and Performance Engineering",
     lessons: [
-      L(17, "forecasting-capacity-needs-from-real-growth-trends", "Forecasting Capacity Needs from Real Growth Trends", { contentDir: "ch05/17-forecasting-capacity-needs-from-real-growth-trends" }),
-      L(18, "load-testing-that-actually-predicts-production-behavior", "Load Testing That Actually Predicts Production Behavior", { contentDir: "ch05/18-load-testing-that-actually-predicts-production-behavior" }),
+      L(17, "forecasting-capacity-needs-from-real-growth-trends", "Forecasting Capacity Needs from Real Growth Trends", { contentDir: "ch05/17-forecasting-capacity-needs-from-real-growth-trends", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/forecasting-capacity-needs-from-real-growth-trends.mp4", durationLabel: "2 min 31 s" }),
+      L(18, "load-testing-that-actually-predicts-production-behavior", "Load Testing That Actually Predicts Production Behavior", { contentDir: "ch05/18-load-testing-that-actually-predicts-production-behavior", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/load-testing-that-actually-predicts-production-behavior.mp4", durationLabel: "2 min 42 s" }),
       L(19, "performance-engineering-as-a-discipline-not-an-afterthought", "Performance Engineering as a Discipline, Not an Afterthought", { contentDir: "ch05/19-performance-engineering-as-a-discipline-not-an-afterthought" }),
       L(20, "capacity-planning-for-a-traffic-spike-you-can-see-coming", "Capacity Planning for a Traffic Spike You Can See Coming", { contentDir: "ch05/20-capacity-planning-for-a-traffic-spike-you-can-see-coming" }),
     ],

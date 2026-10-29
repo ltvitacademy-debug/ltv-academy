@@ -86,17 +86,17 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     n: 7,
     title: "Multi-Cloud Cost and Governance",
     lessons: [
-      L(25, "a-unified-cost-view-across-azure-aws-and-on-prem", "A Unified Cost View Across Azure, AWS, and On-Prem", { contentDir: "ch07/25-a-unified-cost-view-across-azure-aws-and-on-prem" }),
-      L(26, "governance-policy-that-works-the-same-way-everywhere", "Governance Policy That Works the Same Way Everywhere", { contentDir: "ch07/26-governance-policy-that-works-the-same-way-everywhere" }),
-      L(27, "a-cloud-brokerage-layer-and-what-it-actually-adds", "A Cloud Brokerage Layer, and What It Actually Adds", { contentDir: "ch07/27-a-cloud-brokerage-layer-and-what-it-actually-adds" }),
-      L(28, "deciding-which-cloud-a-new-workload-should-land-on", "Deciding Which Cloud a New Workload Should Land On", { contentDir: "ch07/28-deciding-which-cloud-a-new-workload-should-land-on" }),
+      L(25, "a-unified-cost-view-across-azure-aws-and-on-prem", "A Unified Cost View Across Azure, AWS, and On-Prem", { contentDir: "ch07/25-a-unified-cost-view-across-azure-aws-and-on-prem", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-unified-cost-view-across-azure-aws-and-on-prem.mp4", durationLabel: "2 min 24 s" }),
+      L(26, "governance-policy-that-works-the-same-way-everywhere", "Governance Policy That Works the Same Way Everywhere", { contentDir: "ch07/26-governance-policy-that-works-the-same-way-everywhere", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/governance-policy-that-works-the-same-way-everywhere.mp4", durationLabel: "2 min 16 s" }),
+      L(27, "a-cloud-brokerage-layer-and-what-it-actually-adds", "A Cloud Brokerage Layer, and What It Actually Adds", { contentDir: "ch07/27-a-cloud-brokerage-layer-and-what-it-actually-adds", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-cloud-brokerage-layer-and-what-it-actually-adds.mp4", durationLabel: "2 min 11 s" }),
+      L(28, "deciding-which-cloud-a-new-workload-should-land-on", "Deciding Which Cloud a New Workload Should Land On", { contentDir: "ch07/28-deciding-which-cloud-a-new-workload-should-land-on", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/deciding-which-cloud-a-new-workload-should-land-on.mp4", durationLabel: "2 min 13 s" }),
     ],
   },
   {
     n: 8,
     title: "Capstone: Designing a Hybrid/Multi-Cloud Architecture",
     lessons: [
-      L(29, "lab-designing-a-hybrid-architecture-for-a-regulated-workload", "Lab: Designing a Hybrid Architecture for a Regulated Workload", { contentDir: "ch08/29-lab-designing-a-hybrid-architecture-for-a-regulated-workload" }),
+      L(29, "lab-designing-a-hybrid-architecture-for-a-regulated-workload", "Lab: Designing a Hybrid Architecture for a Regulated Workload", { contentDir: "ch08/29-lab-designing-a-hybrid-architecture-for-a-regulated-workload", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/lab-designing-a-hybrid-architecture-for-a-regulated-workload.mp4", durationLabel: "3 min 9 s" }),
       L(30, "lab-a-portable-workload-deployed-identically-to-two-clouds", "Lab: A Portable Workload Deployed Identically to Two Clouds", { contentDir: "ch08/30-lab-a-portable-workload-deployed-identically-to-two-clouds" }),
       L(31, "case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved", "Case Study: A Multi-Cloud Strategy That Cost More Than It Saved", { contentDir: "ch08/31-case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved" }),
       L(32, "chapter-capstone-hybrid-and-multi-cloud-architecture-review", "Chapter Capstone: Hybrid and Multi-Cloud Architecture Review", { contentDir: "ch08/32-chapter-capstone-hybrid-and-multi-cloud-architecture-review" }),
