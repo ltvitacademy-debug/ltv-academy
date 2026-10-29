@@ -1,0 +1,60 @@
+{
+  "lesson": "pod-security-standards-replacing-podsecuritypolicy",
+  "questions": [
+    {
+      "q": "What happened to PodSecurityPolicy (PSP) in Kubernetes, and why?",
+      "options": [
+        "It was renamed to NetworkPolicy and merged into the networking API group",
+        "It was deprecated in 1.21 and removed in 1.25 because its RBAC-based policy-to-Pod matching was confusing and error-prone",
+        "It is still the current, recommended mechanism and was never deprecated",
+        "It was replaced by requiring every cluster to install OPA Gatekeeper before any Pod could be scheduled"
+      ],
+      "answer": 1,
+      "explain": "PSP was deprecated in Kubernetes 1.21 and fully removed in 1.25. It worked, but policies were bound to Pods through RBAC in a way that was hard to reason about and easy to misconfigure."
+    },
+    {
+      "q": "Which of the three Pod Security Standards levels is correctly described?",
+      "options": [
+        "Baseline requires runAsNonRoot and a seccompProfile on every container",
+        "Privileged is the strictest level and blocks all host namespace access",
+        "Restricted is the strictest level and additionally requires runAsNonRoot, allowPrivilegeEscalation: false, and dropped capabilities",
+        "Restricted and Baseline enforce identical rules; only the name differs"
+      ],
+      "answer": 2,
+      "explain": "Restricted layers on top of Baseline: non-root execution, no privilege escalation, dropped Linux capabilities, and a seccomp profile. Privileged is actually the unrestricted level, and Baseline alone does not require runAsNonRoot."
+    },
+    {
+      "q": "How does Pod Security Admission (PSA) decide which Pod Security Standard to enforce for a given Pod?",
+      "options": [
+        "It reads pod-security.kubernetes.io/ labels set on that Pod's namespace",
+        "It scans the Pod's container image for a label embedded by the image's build process",
+        "It reads a cluster-wide ConfigMap named psp-replacement that lists every allowed Pod spec",
+        "Every Pod is evaluated against all three standards simultaneously with no way to choose one"
+      ],
+      "answer": 0,
+      "explain": "PSA is a built-in admission controller that reads enforce/audit/warn labels set on the namespace, each naming a standard (privileged, baseline, or restricted) to apply to Pods created in it."
+    },
+    {
+      "q": "What's the practical difference between setting a namespace's `pod-security.kubernetes.io/enforce` label versus its `warn` label?",
+      "options": [
+        "`enforce` only applies to Deployments, while `warn` only applies to bare Pods",
+        "They behave identically; `warn` is simply the deprecated name for `enforce`",
+        "`enforce` rejects a violating Pod outright, while `warn` lets it through but prints a client-side warning — useful for rolling out a stricter standard safely",
+        "`warn` deletes the violating Pod automatically after 30 seconds, while `enforce` only logs it"
+      ],
+      "answer": 2,
+      "explain": "enforce actually blocks creation of a non-compliant Pod. warn (and audit) let it through while surfacing the violation, which is how teams test a stricter standard before flipping enforce on for real."
+    },
+    {
+      "q": "According to the lesson, when does a cluster typically add a policy engine like OPA Gatekeeper or Kyverno on top of Pod Security Admission?",
+      "options": [
+        "Never — PSA and a policy engine are mutually exclusive and cannot run in the same cluster",
+        "Only when running on a cloud provider that doesn't support PSA natively",
+        "When rules need to be more specific than PSA's three fixed profiles, such as requiring images from one specific internal registry",
+        "Only to replace etcd encryption at rest"
+      ],
+      "answer": 2,
+      "explain": "PSA enforces exactly three fixed profiles with no concept of org-specific rules like approved registries or required labels. A policy engine plugs in as an admission webhook to add those custom constraints alongside PSA."
+    }
+  ]
+}

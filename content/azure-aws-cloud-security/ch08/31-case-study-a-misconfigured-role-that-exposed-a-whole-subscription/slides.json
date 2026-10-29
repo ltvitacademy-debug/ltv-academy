@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure & AWS Cloud Security Engineering · Chapter 8",
+    "titlePlain": "A Role That Exposed a Whole ",
+    "titleEmphasis": "Subscription",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Capstone: Securing a Multi-Cloud Environment (illustrative case study)"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The custom role, as written",
+    "code": "{\n  \"Name\": \"Meridian-CICD-Operator\",\n  \"Actions\": [\n    \"Microsoft.Web/sites/restart/action\",\n    \"Microsoft.Compute/virtualMachineScaleSets/*\",\n    \"Microsoft.Insights/diagnosticSettings/*\"\n  ],\n  \"AssignableScopes\": [\"/subscriptions/8f21-...-meridian-prod\"]\n}",
+    "caption": "Meant for one resource group's deployments -- but AssignableScopes lists the whole subscription."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two problems, compounding",
+    "titlePlain": "Scope vs. ",
+    "titleEmphasis": "Permissions",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Too-broad actions", "sub": "virtualMachineScaleSets/* reaches every scale set, not just restart/scale" },
+      { "label": "Too-broad scope", "sub": "Assigned subscription-wide, not at rg-meridian-prod-app" },
+      { "label": "Result", "sub": "CI/CD identity could reach data-platform resources it never used" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "How it surfaced",
+    "code": "Defender for Cloud recommendation:\n\"A service principal has write access to an\nunusually large number of resource groups.\"\n\n$ az role assignment list \\\n    --assignee <meridian-cicd-sp-object-id> --all\n\n-> one assignment, subscription scope, unrecognized custom role",
+    "caption": "Nobody found this in a planned review -- a routine posture recommendation led to it sideways."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix",
+    "code": "1. Re-scope the assignment to rg-meridian-prod-app\n2. Replace the wildcard with restart/action + scaleSets/write\n3. Prefer built-in roles: Virtual Machine Contributor\n   + Monitoring Reader, scoped to one resource group\n4. Add a standing review for any subscription-scope\n   custom role assignment",
+    "caption": "Fewer custom roles, correctly scoped, means fewer chances for this exact mistake to recur."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "The Whole Course, ",
+    "titleEmphasis": "Reviewed",
+    "titleSuffix": "",
+    "subtitle": "Tying all eight chapters of Azure & AWS Cloud Security Engineering together."
+  }
+]

@@ -1,0 +1,49 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 4",
+    "titlePlain": "DNS and ",
+    "titleEmphasis": "Service Discovery",
+    "titleSuffix": " Inside a Cluster",
+    "subtitle": "Lesson 15 · Kubernetes Networking"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Every Service's fully qualified name",
+    "titlePlain": "Four pieces, one ",
+    "titleEmphasis": "FQDN",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "payments-api", "sub": "the Service's metadata.name" },
+      { "label": "billing", "sub": "the namespace the Service lives in" },
+      { "label": "svc", "sub": "fixed segment — this is a Service record" },
+      { "label": "cluster.local", "sub": "the cluster's internal DNS domain" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "CoreDNS answers for every Service",
+    "code": "# kube-system runs CoreDNS, fronted by its own Service\nkubectl get pods -n kube-system -l k8s-app=kube-dns\nkubectl get svc -n kube-system kube-dns\n\n# resolving payments-api.billing.svc.cluster.local\n# returns the Service's stable ClusterIP",
+    "caption": "Create a Service and CoreDNS already knows how to answer for it — no manual zone file."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Short names depend on the search path",
+    "code": "# from a Pod IN the billing namespace, all three work:\npayments-api\npayments-api.billing\npayments-api.billing.svc.cluster.local\n\n# from a Pod in a DIFFERENT namespace (checkout), only this is safe:\npayments-api.billing.svc.cluster.local",
+    "caption": "Each Pod's search path tries its own namespace first — cross-namespace calls need the full name."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Debugging resolution from inside a Pod",
+    "code": "kubectl run dnsutils --image=registry.k8s.io/e2e-test-images/jessie-dnsutils:1.3 \\\n  --restart=Never -- sleep 3600\n\nkubectl exec -it dnsutils -- nslookup payments-api.billing.svc.cluster.local\nkubectl exec -it dnsutils -- cat /etc/resolv.conf",
+    "caption": "nslookup confirms the IP CoreDNS returns; resolv.conf shows the Pod's actual search path."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 16",
+    "titlePlain": "Network Policies: restricting ",
+    "titleEmphasis": "which Pods can talk",
+    "titleSuffix": "",
+    "subtitle": "Everything so far assumed any Pod could reach any Service — next lesson changes that."
+  }
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 8",
+    "titlePlain": "Containerizing a ",
+    "titleEmphasis": "Multi-Service App",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: Running a Real Application on Kubernetes"
+  },
+  {
+    "type": "code",
+    "eyebrow": "One Dockerfile, two images",
+    "code": "FROM node:20-slim AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY src ./src\n\nFROM gcr.io/distroless/nodejs20-debian12 AS runtime\nARG ENTRYPOINT_FILE\nWORKDIR /app\nCOPY --from=build /app /app\nUSER nonroot\nENTRYPOINT [\"node\"]\nCMD [\"/app/src/placeholder.js\"]",
+    "caption": "A build arg selects api.js or worker.js at build time -- one multi-stage Dockerfile, two images."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Building and tagging both",
+    "code": "docker build --build-arg ENTRYPOINT_FILE=src/api.js \\\n  -t registry.harrowcreek.dev/order-api:1.0.0 .\ndocker build --build-arg ENTRYPOINT_FILE=src/worker.js \\\n  -t registry.harrowcreek.dev/order-worker:1.0.0 .\n\ndocker push registry.harrowcreek.dev/order-api:1.0.0\ndocker push registry.harrowcreek.dev/order-worker:1.0.0",
+    "caption": "A real version tag, not latest -- the only way a rollback has something to roll back to."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two services, two shapes",
+    "titlePlain": "Deployment + ",
+    "titleEmphasis": "Service",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "order-api Deployment + Service", "sub": "3 replicas, port 8080, exposed via a ClusterIP Service" },
+      { "label": "order-worker Deployment only", "sub": "2 replicas, no ports, no Service -- it only drains a queue" },
+      { "label": "kubectl apply -f", "sub": "Both objects created from plain YAML, no Helm yet" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Verifying it actually works",
+    "code": "kubectl apply -f api-deployment.yaml\nkubectl apply -f worker-deployment.yaml\n\nkubectl get pods -l app=order-api\nkubectl get svc order-api\nkubectl get endpoints order-api",
+    "caption": "Running isn't enough -- READY 1/1 on every pod, and real endpoints behind the Service, is the proof."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Ingress, Storage, and ",
+    "titleEmphasis": "Helm",
+    "titleSuffix": "",
+    "subtitle": "Wrapping this same app in routing, a PVC, and a real chart."
+  }
+]

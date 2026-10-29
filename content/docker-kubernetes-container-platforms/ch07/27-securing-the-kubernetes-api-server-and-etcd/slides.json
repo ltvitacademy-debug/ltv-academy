@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 7",
+    "titlePlain": "Securing the Kubernetes API Server and ",
+    "titleEmphasis": "etcd",
+    "titleSuffix": "",
+    "subtitle": "Lesson 27 · Kubernetes Security & RBAC"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Every request, in order",
+    "titlePlain": "Authn, authz, then ",
+    "titleEmphasis": "admission",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Authentication", "sub": "client certs, bearer/ServiceAccount tokens, or OIDC — who are you?" },
+      { "label": "Authorization", "sub": "RBAC + the Node authorizer — --authorization-mode=Node,RBAC" },
+      { "label": "Admission control", "sub": "NodeRestriction, PodSecurity, ResourceQuota and others validate or mutate it" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real audit policy",
+    "code": "apiVersion: audit.k8s.io/v1\nkind: Policy\nrules:\n  - level: RequestResponse\n    resources:\n      - group: \"\"\n        resources: [\"secrets\"]\n  - level: Metadata\n    resources:\n      - group: \"\"\n        resources: [\"pods\"]\n  - level: None\n    users: [\"system:kube-proxy\"]",
+    "caption": "Wired in with --audit-policy-file and --audit-log-path on kube-apiserver."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Encrypting Secrets before etcd ever sees them",
+    "code": "apiVersion: apiserver.config.k8s.io/v1\nkind: EncryptionConfiguration\nresources:\n  - resources: [\"secrets\"]\n    providers:\n      - aescbc:\n          keys:\n            - name: key1\n              secret: <base64-encoded-32-byte-key>\n      - identity: {}",
+    "caption": "Without this, Secrets sit in etcd base64-encoded — not encrypted — readable by anyone with raw access."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A real etcd snapshot",
+    "code": "ETCDCTL_API=3 etcdctl snapshot save backup.db \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key",
+    "caption": "Restrict ports 2379/2380 to control-plane nodes only, and encrypt before you back up — an unencrypted snapshot is just as readable as the live store."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 28",
+    "titlePlain": "A Security Checklist for a Cluster Before It Goes to ",
+    "titleEmphasis": "Production",
+    "titleSuffix": "",
+    "subtitle": "RBAC, Pod Security Standards, and a hardened control plane — now the single list to verify before cutover."
+  }
+]

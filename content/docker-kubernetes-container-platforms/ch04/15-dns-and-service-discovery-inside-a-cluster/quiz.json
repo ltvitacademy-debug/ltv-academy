@@ -1,0 +1,60 @@
+{
+  "lesson": "dns-and-service-discovery-inside-a-cluster",
+  "questions": [
+    {
+      "q": "What problem does cluster DNS solve that a Service's stable virtual IP alone does not?",
+      "options": [
+        "A stable IP alone doesn't tell every other Pod what that IP actually is — DNS gives the Service a predictable name any Pod can resolve",
+        "Services don't actually have a ClusterIP without DNS enabled",
+        "DNS replaces the need for kube-proxy entirely",
+        "DNS is only needed for Services with type LoadBalancer"
+      ],
+      "answer": 0,
+      "explain": "A Service's virtual IP is stable, but something still has to communicate that IP to every Pod that needs it. CoreDNS gives each Service a predictable name, so Pods resolve a name to an IP instead of hard-coding it."
+    },
+    {
+      "q": "What is CoreDNS, as described in this lesson?",
+      "options": [
+        "A command-line tool for writing YAML Ingress rules",
+        "The in-cluster DNS server, typically run as a Deployment in kube-system, that answers name lookups for Services",
+        "A replacement for the Kubernetes API server",
+        "A field inside every Pod spec that disables networking"
+      ],
+      "answer": 1,
+      "explain": "CoreDNS runs in-cluster, usually in kube-system, fronted by its own Service (conventionally named kube-dns), and watches the API for Services and Endpoints to keep its DNS records current automatically."
+    },
+    {
+      "q": "In the fully qualified name payments-api.billing.svc.cluster.local, what does the \"svc\" segment indicate?",
+      "options": [
+        "The name of the container image being used",
+        "The version of the Kubernetes API in use",
+        "A fixed segment meaning this record refers to a Service",
+        "The name of the Ingress controller handling the request"
+      ],
+      "answer": 2,
+      "explain": "The FQDN is built as service.namespace.svc.cluster.local — \"svc\" is a fixed, literal segment marking the record as a Service, distinct from, say, a Pod record."
+    },
+    {
+      "q": "Why can a Pod in the billing namespace reach payments-api with no suffix, while a Pod in the checkout namespace cannot?",
+      "options": [
+        "Because checkout Pods have DNS disabled by default",
+        "Because payments-api only exists as a NodePort, not a ClusterIP",
+        "Because cross-namespace traffic is always blocked by a default NetworkPolicy",
+        "Because Kubernetes configures each Pod's DNS search path to include its own namespace first, so short names only resolve correctly from the same namespace"
+      ],
+      "answer": 3,
+      "explain": "Each Pod's resolv.conf search path starts with its own namespace, which is why a bare Service name resolves correctly only when the caller is in that same namespace — a cross-namespace caller needs at least service.namespace."
+    },
+    {
+      "q": "What does running kubectl exec -it dnsutils -- nslookup payments-api.billing.svc.cluster.local help you verify?",
+      "options": [
+        "Whether the Ingress controller is correctly installed",
+        "Whether CoreDNS can resolve that name and what IP it returns, which you can compare against the Service's real ClusterIP",
+        "Whether the node has enough CPU to schedule new Pods",
+        "Whether the Deployment's rolling update strategy is configured correctly"
+      ],
+      "answer": 1,
+      "explain": "nslookup from inside a debug Pod confirms whether CoreDNS answers for that name at all, and what IP comes back — checked against kubectl get svc to confirm it matches the real ClusterIP."
+    }
+  ]
+}

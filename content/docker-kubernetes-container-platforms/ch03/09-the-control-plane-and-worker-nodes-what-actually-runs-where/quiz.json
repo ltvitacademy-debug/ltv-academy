@@ -1,0 +1,60 @@
+{
+  "lesson": "the-control-plane-and-worker-nodes-what-actually-runs-where",
+  "questions": [
+    {
+      "q": "In a Kubernetes cluster, what is the fundamental split between a control plane node and a worker node?",
+      "options": [
+        "Control plane nodes run application containers while worker nodes only store configuration",
+        "There is no real difference — the terms are interchangeable names for the same role",
+        "Worker nodes decide cluster-wide policy, while control plane nodes only execute containers",
+        "Control plane nodes decide what should be running where; worker nodes actually run the application containers"
+      ],
+      "answer": 3,
+      "explain": "The control plane watches cluster state and makes scheduling/reconciliation decisions. Worker nodes run the containers those decisions describe, via the kubelet and a container runtime."
+    },
+    {
+      "q": "Which control plane component is the only one that talks directly to etcd?",
+      "options": [
+        "kube-apiserver",
+        "kube-scheduler",
+        "kubelet",
+        "kube-proxy"
+      ],
+      "answer": 0,
+      "explain": "kube-apiserver is the front door to the cluster. Every other component, including the scheduler and controller manager, reads and writes cluster state through the API server rather than touching etcd directly."
+    },
+    {
+      "q": "What does kube-scheduler actually do once it picks a node for an unscheduled Pod?",
+      "options": [
+        "It pulls the container image onto that node itself",
+        "It starts the container directly on the chosen node",
+        "It writes the chosen node's name back onto the Pod object via the API server, and takes no further action",
+        "It restarts kube-apiserver so the new assignment takes effect"
+      ],
+      "answer": 2,
+      "explain": "The scheduler only decides and records the decision (setting the Pod's nodeName via the API server). The kubelet on that node and the container runtime are what actually start the container."
+    },
+    {
+      "q": "Which worker-node component is responsible for watching the API server for Pods assigned to its own node and ensuring their containers are actually running?",
+      "options": [
+        "kube-controller-manager",
+        "kubelet",
+        "etcd",
+        "kube-scheduler"
+      ],
+      "answer": 1,
+      "explain": "kubelet is the per-node agent: it watches for Pods scheduled to its node, talks to the container runtime to start/stop containers accordingly, and reports node health back to the API server."
+    },
+    {
+      "q": "Why is losing etcd without a backup more severe than losing a single worker node?",
+      "options": [
+        "etcd holds the entire cluster's desired and observed state, so losing it loses the cluster's whole configuration, not just one node's workload",
+        "etcd is the only component that can restart a crashed container",
+        "etcd and a worker node store identical data, so losing either one is equally severe",
+        "Losing a worker node always takes down the API server as well"
+      ],
+      "answer": 0,
+      "explain": "etcd is the single source of truth for the cluster — every Deployment, Service, Secret, and node status. Losing it without a backup means losing that entire record, while losing one worker node only affects the pods that were running there."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "pods-replicasets-and-deployments-the-real-relationship",
+  "questions": [
+    {
+      "q": "Why is a Pod, not a single container, the smallest deployable unit in Kubernetes?",
+      "options": [
+        "A Pod can wrap one or more containers that are always scheduled together on the same node, sharing a network namespace",
+        "A Pod is just a renamed container image with no other purpose",
+        "A Pod is only used for multi-node applications, never for a single container",
+        "A Pod replaces the need for a container runtime entirely"
+      ],
+      "answer": 0,
+      "explain": "A Pod wraps one or more containers that get scheduled together onto the same node and share a network namespace (and optionally volumes), which is why Kubernetes schedules at the Pod level rather than the individual container level."
+    },
+    {
+      "q": "What does a ReplicaSet's reconciliation loop actually check?",
+      "options": [
+        "Whether the container image tag has changed since the last deploy",
+        "Whether the number of Pods matching its label selector equals the desired replica count",
+        "Whether etcd has enough disk space for new objects",
+        "Whether the Deployment above it has been updated recently"
+      ],
+      "answer": 1,
+      "explain": "A ReplicaSet only reconciles count: it compares how many Pods matching its selector currently exist against spec.replicas, creating or deleting whole Pods to close the gap. It never edits a running Pod's content."
+    },
+    {
+      "q": "If you edit the container image in a bare ReplicaSet's Pod template, what happens to its already-running Pods?",
+      "options": [
+        "They are automatically restarted one at a time with the new image",
+        "The ReplicaSet creates a brand-new set of Pods immediately and deletes the old ones",
+        "They keep running the old image indefinitely, since a ReplicaSet reconciles count, never content",
+        "Kubernetes refuses the edit until a Deployment is created first"
+      ],
+      "answer": 2,
+      "explain": "A ReplicaSet has no mechanism to update existing Pods' content — only a Deployment manages that kind of controlled change, by creating a new ReplicaSet with the updated template."
+    },
+    {
+      "q": "What does a Deployment do that a bare ReplicaSet cannot?",
+      "options": [
+        "Assign Pods to specific worker nodes directly, bypassing the scheduler",
+        "Create a new ReplicaSet per template change and gradually shift replicas from the old ReplicaSet to the new one, enabling rolling updates",
+        "Store the cluster's state in place of etcd",
+        "Allow Pods to run without any label selector at all"
+      ],
+      "answer": 1,
+      "explain": "A Deployment sits above the ReplicaSet layer specifically to manage change over time — it creates a new ReplicaSet whenever the Pod template changes and drives the rollout between old and new ReplicaSets."
+    },
+    {
+      "q": "In `kubectl get pods --show-labels` output showing a Pod named web-app-7d9f8c6b5d-x2k9p, what does the naming pattern reveal?",
+      "options": [
+        "The Pod was created directly by the Deployment with no ReplicaSet involved",
+        "The hash segment is a random Pod ID with no relation to any other object",
+        "The Pod name encodes which worker node it is scheduled on",
+        "The Pod was created by a ReplicaSet (named with the hash of its Pod template), which was itself created by a Deployment"
+      ],
+      "answer": 3,
+      "explain": "The Deployment creates a ReplicaSet named after a hash of its Pod template (e.g. web-app-7d9f8c6b5d), and that ReplicaSet creates Pods named <replicaset-name>-<random-suffix> — visible directly in kubectl describe pod's Controlled By field."
+    }
+  ]
+}

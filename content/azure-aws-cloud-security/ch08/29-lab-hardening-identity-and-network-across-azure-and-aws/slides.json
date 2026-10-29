@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Azure & AWS Cloud Security Engineering · Chapter 8",
+    "titlePlain": "Hardening Identity and ",
+    "titleEmphasis": "Network",
+    "titleSuffix": " Together",
+    "subtitle": "Lesson 29 · Capstone: Securing a Multi-Cloud Environment"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · Entra ID Conditional Access",
+    "code": "Policy: CA-Require-MFA-Compliant-Device-Admins\nUsers: Finance-Admins, Loan-Ops-Admins\nCloud apps: All cloud apps\nConditions: Exclude trusted locations (HQ, VPN)\nGrant: Require MFA + Require compliant device\nMode: Report-only -> review sign-ins -> On",
+    "caption": "Report-only first proves the policy doesn't block real admins before it ever enforces anything."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · NSG rewrite",
+    "code": "# Before -- nsg-meridian-app\nAny (0.0.0.0/0) -> Any, port 22/3389, Allow\n\n# After\n10.40.0.0/24 (bastion) -> port 22,  Allow\n10.40.0.0/24 (bastion) -> port 3389, Allow\nAny -> Any, Deny  (explicit catch-all)",
+    "caption": "The Any-to-Any rule is deleted outright, not narrowed in place -- that's what keeps it from drifting back open."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 3 · AWS IAM least privilege",
+    "code": "// Before -- meridian-cicd-deploy\n{ \"Action\": \"*\", \"Resource\": \"*\" }\n\n// After\n{\n  \"Action\": [\"ec2:DescribeInstances\", \"s3:PutObject\", ...],\n  \"Resource\": [\n    \"arn:aws:ec2:...:instance/*\",\n    \"arn:aws:s3:::meridian-deploy-artifacts/*\"\n  ]\n}",
+    "caption": "IAM Access Analyzer re-run confirms the wildcard finding on this role is gone after the rewrite."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Step 4 · Security Group + validation",
+    "titlePlain": "One Boundary, ",
+    "titleEmphasis": "Two Clouds",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "SG rewrite", "sub": "0.0.0.0/0:22 replaced with bastion/VPN CIDR only" },
+      { "label": "ALB-only inbound", "sub": "EC2 app port accepts traffic only from the ALB's security group" },
+      { "label": "Validate", "sub": "Conditional Access What If + IAM Access Analyzer re-scan" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "When a Credential Is ",
+    "titleEmphasis": "Already Gone",
+    "titleSuffix": "",
+    "subtitle": "Responding to a simulated service principal or IAM key compromise at Meridian Finworks."
+  }
+]

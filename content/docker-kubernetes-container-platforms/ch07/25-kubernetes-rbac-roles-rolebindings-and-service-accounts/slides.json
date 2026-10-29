@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 7",
+    "titlePlain": "Kubernetes RBAC: Roles, RoleBindings, and ",
+    "titleEmphasis": "Service Accounts",
+    "titleSuffix": "",
+    "subtitle": "Lesson 25 · Kubernetes Security & RBAC"
+  },
+  {
+    "type": "code",
+    "eyebrow": "A namespaced Role",
+    "code": "apiVersion: rbac.authorization.k8s.io/v1\nkind: Role\nmetadata:\n  namespace: payments\n  name: pod-reader\nrules:\n  - apiGroups: [\"\"]\n    resources: [\"pods\", \"pods/log\"]\n    verbs: [\"get\", \"list\", \"watch\"]",
+    "caption": "apiGroups + resources + verbs is the whole grammar of an RBAC rule."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Four objects, two jobs",
+    "titlePlain": "Rules, then ",
+    "titleEmphasis": "bindings",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Role / ClusterRole", "sub": "define WHAT is allowed — namespaced vs. cluster-scoped or reusable" },
+      { "label": "RoleBinding", "sub": "grants a Role, or a ClusterRole scoped down, inside one namespace" },
+      { "label": "ClusterRoleBinding", "sub": "grants a ClusterRole across the entire cluster — handle with care" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A dedicated ServiceAccount for a workload",
+    "code": "apiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: billing-reader\n  namespace: payments\n---\nkind: RoleBinding\napiVersion: rbac.authorization.k8s.io/v1\nmetadata:\n  name: read-pods\n  namespace: payments\nsubjects:\n  - kind: ServiceAccount\n    name: billing-reader\n    namespace: payments\nroleRef:\n  kind: Role\n  name: pod-reader\n  apiGroup: rbac.authorization.k8s.io",
+    "caption": "Give every workload its own identity instead of sharing the namespace's default ServiceAccount."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Checking before you find out the hard way",
+    "code": "kubectl auth can-i delete pods \\\n  --as=system:serviceaccount:payments:billing-reader -n payments\nno\n\nkubectl auth can-i --list \\\n  --as=system:serviceaccount:payments:billing-reader -n payments",
+    "caption": "kubectl auth can-i asks the real authorizer — no guessing about what a binding actually grants."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 26",
+    "titlePlain": "Pod Security Standards: Replacing ",
+    "titleEmphasis": "PodSecurityPolicy",
+    "titleSuffix": "",
+    "subtitle": "Who a Pod can call is only half of workload security — what it's allowed to do once it's running is the other half."
+  }
+]

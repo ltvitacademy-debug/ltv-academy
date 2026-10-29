@@ -15,6 +15,8 @@ import { INCIDENT_RESPONSE_SOC_CAPSTONE_CHAPTERS } from "./incident-response-soc
 import { CLOUD_INFRASTRUCTURE_DEPLOYMENT_CAPSTONE_CHAPTERS } from "./cloud-infrastructure-deployment-capstone-outline";
 import { SECURITY_ENGINEERING_IDENTITY_MANAGEMENT_CHAPTERS } from "./security-engineering-identity-management-outline";
 import { TERRAFORM_IAC_FOR_CLOUD_ARCHITECTS_CHAPTERS } from "./terraform-iac-for-cloud-architects-outline";
+import { AZURE_AWS_CLOUD_SECURITY_CHAPTERS } from "./azure-aws-cloud-security-outline";
+import { DOCKER_KUBERNETES_CONTAINER_PLATFORMS_CHAPTERS } from "./docker-kubernetes-container-platforms-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2465,7 +2467,8 @@ export const COURSES: CourseMeta[] = [
     slug: "azure-aws-cloud-security",
     title: "Azure & AWS Cloud Security Engineering",
     tagline: "Securing cloud infrastructure across both major providers — IAM, network security, and cloud-native controls.",
-    status: "coming-soon",
+    status: "available",
+    chapters: AZURE_AWS_CLOUD_SECURITY_CHAPTERS,
   },
   {
     slug: "python-security-automation-devsecops",
@@ -2558,7 +2561,8 @@ export const COURSES: CourseMeta[] = [
     slug: "docker-kubernetes-container-platforms",
     title: "Docker, Kubernetes & Container Platforms",
     tagline: "Containerizing applications with Docker and orchestrating them at scale with Kubernetes.",
-    status: "coming-soon",
+    status: "available",
+    chapters: DOCKER_KUBERNETES_CONTAINER_PLATFORMS_CHAPTERS,
   },
   {
     slug: "cloud-reliability-monitoring-finops",

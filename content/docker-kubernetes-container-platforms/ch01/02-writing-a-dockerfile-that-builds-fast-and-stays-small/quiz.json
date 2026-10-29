@@ -1,0 +1,60 @@
+{
+  "lesson": "writing-a-dockerfile-that-builds-fast-and-stays-small",
+  "questions": [
+    {
+      "q": "What does a `.dockerignore` file actually control?",
+      "options": [
+        "Which Dockerfile instructions are allowed to run on CI",
+        "The build context sent to the Docker daemon before any instruction runs, excluding paths like `.git` and `node_modules`",
+        "Which base images are permitted inside the organization's registry",
+        "The order that RUN instructions execute in"
+      ],
+      "answer": 1,
+      "explain": "Before any instruction runs, Docker packages the build directory into a build context and sends it to the daemon. .dockerignore trims that context, keeping stray files from bloating it or triggering accidental cache misses."
+    },
+    {
+      "q": "A Dockerfile runs `COPY . .` before `RUN npm ci --omit=dev`. What's the practical consequence?",
+      "options": [
+        "npm ci only reruns when package.json changes, which is the desired behavior",
+        "Dependencies install faster because the full source is already present",
+        "Every source code change invalidates the COPY layer, which invalidates npm ci right after it, forcing a full dependency reinstall on every build",
+        "Docker automatically reorders the instructions at build time to fix this"
+      ],
+      "answer": 2,
+      "explain": "Because COPY . . runs first and changes on every commit, its cache misses constantly — and since each layer builds on the one before it, that invalidates the npm ci layer right after it too, even though package.json itself didn't change."
+    },
+    {
+      "q": "Why does `RUN rm -rf /var/lib/apt/lists/*` in a separate, later RUN instruction fail to shrink the image, given an earlier RUN already ran `apt-get install`?",
+      "options": [
+        "rm -rf doesn't work inside Docker containers by default",
+        "The install layer was already committed with those files in it; a later layer's deletion only adds a whiteout marker, it doesn't remove the earlier layer's bytes",
+        "apt-get install always fails silently inside Docker builds",
+        "Docker merges all RUN instructions into a single layer automatically, so order doesn't matter"
+      ],
+      "answer": 1,
+      "explain": "Each RUN is its own layer. Once the install layer is committed, its bytes are fixed — a later RUN's delete only hides the files via a whiteout marker, exactly like the delete behavior covered in Lesson 1. Cleanup has to happen inside the same RUN as the install to actually keep the bytes out of the image."
+    },
+    {
+      "q": "What is the main practical difference between `node:20`, `node:20-slim`, and `node:20-alpine` as base images?",
+      "options": [
+        "They're identical images with different names; the tag is purely cosmetic",
+        "They run different versions of Node.js entirely",
+        "Only `node:20-alpine` can be pinned to a specific patch version",
+        "They trade off image size and completeness: full Debian userland with build tools, a trimmed Debian, or a minimal musl-based Alpine Linux base"
+      ],
+      "answer": 3,
+      "explain": "All three ship the same Node major version but differ in the underlying OS layer — full Debian, slimmed Debian, or Alpine with musl instead of glibc — which affects image size and occasionally native-module compatibility."
+    },
+    {
+      "q": "Why pin a base image to `node:20.17.0-slim` instead of using the unqualified `node:latest`?",
+      "options": [
+        "Pinning to a specific version makes a rebuild months later reproduce the same base layer, instead of whatever `latest` happens to point to by then",
+        "`node:latest` is not a valid tag and will fail to pull",
+        "Pinned tags build faster than unpinned ones because of a special Docker fast path",
+        "Version pins are only relevant for production registries, never for local development"
+      ],
+      "answer": 0,
+      "explain": "Tags like latest or an unqualified major version (node:20) can point to a different underlying image over time. Pinning a specific version keeps builds reproducible, and a scanning tool can then tell you deliberately when it's time to move the pin forward."
+    }
+  ]
+}

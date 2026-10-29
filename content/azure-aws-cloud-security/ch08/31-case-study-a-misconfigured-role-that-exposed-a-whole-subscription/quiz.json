@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-a-misconfigured-role-that-exposed-a-whole-subscription",
+  "questions": [
+    {
+      "q": "What was the Meridian-CICD-Operator role actually meant to be scoped to, versus where it was assigned?",
+      "options": [
+        "Meant for the whole subscription, but assigned only to a single VM",
+        "Meant for rg-meridian-shared-net, but never actually assigned anywhere",
+        "Meant for a different Azure tenant entirely",
+        "Meant for rg-meridian-prod-app only, but assigned at the whole subscription scope"
+      ],
+      "answer": 3,
+      "explain": "The role was intended for routine deployment operations in one resource group, but the assignment itself was made at the subscription level under deadline pressure."
+    },
+    {
+      "q": "Why did Microsoft.Compute/virtualMachineScaleSets/* make the role more dangerous than intended?",
+      "options": [
+        "It granted every action on every VM scale set under that provider, not just restart-and-scale, reaching scale sets outside the deployment pipeline's actual job",
+        "It only applied to storage accounts, not compute resources",
+        "Wildcard actions are automatically rejected by Azure RBAC and have no effect",
+        "It granted access to AWS resources through a cross-cloud trust relationship"
+      ],
+      "answer": 0,
+      "explain": "A resource-provider wildcard grants every action under that provider, which is far broader than the restart and scale actions the pipeline actually needed."
+    },
+    {
+      "q": "How did this misconfiguration actually get discovered?",
+      "options": [
+        "Through a scheduled, formal access review that specifically checked custom role assignments",
+        "The CI/CD service principal's credentials were compromised, which revealed the over-broad access",
+        "A Defender for Cloud identity-and-access posture recommendation flagged unusually broad service principal access, which a security engineer then traced with az role assignment list",
+        "Meridian's finance team noticed an unexpected billing increase"
+      ],
+      "answer": 2,
+      "explain": "It surfaced sideways, through a routine Defender for Cloud posture recommendation, not through a dedicated audit or an actual incident."
+    },
+    {
+      "q": "Why does the case study call this misconfiguration dangerous even though the service principal never actually used most of what it could reach?",
+      "options": [
+        "Because unused permissions are automatically revoked by Azure after 90 days regardless of configuration",
+        "Because the blast radius of a future credential compromise was set by this assignment long before any incident occurred -- a compromise would have reached the whole subscription, not just one resource group",
+        "Because Defender for Cloud charges extra for unused role assignments",
+        "Because unused permissions always trigger an automatic security incident"
+      ],
+      "answer": 1,
+      "explain": "The real risk wasn't current misuse -- it was that a future compromise of this identity would inherit subscription-wide reach instead of being contained to one resource group."
+    },
+    {
+      "q": "What was the preferred long-term fix over continuing to hand-patch the custom role?",
+      "options": [
+        "Deleting the CI/CD service principal entirely and running deployments manually",
+        "Re-scoping the assignment to the subscription's root management group instead of a resource group",
+        "Combining Azure's built-in Virtual Machine Contributor and Monitoring Reader roles, scoped to the one resource group, instead of maintaining a custom role at all",
+        "Granting the role Owner permissions to simplify future troubleshooting"
+      ],
+      "answer": 2,
+      "explain": "Built-in roles, correctly scoped, covered the same operational need without a custom role definition to maintain -- removing the exact category of mistake that caused this incident."
+    }
+  ]
+}

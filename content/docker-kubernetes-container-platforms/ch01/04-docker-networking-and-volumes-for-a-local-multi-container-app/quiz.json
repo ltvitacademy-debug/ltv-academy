@@ -1,0 +1,60 @@
+{
+  "lesson": "docker-networking-and-volumes-for-a-local-multi-container-app",
+  "questions": [
+    {
+      "q": "Two containers are both started with no `--network` flag, landing on Docker's default bridge network. What can't they do?",
+      "options": [
+        "Resolve each other by container name — they can only reach each other by IP address, which can change on restart",
+        "Communicate with each other at all, under any circumstances",
+        "Accept any incoming connections from outside the host",
+        "Run more than one container per network simultaneously"
+      ],
+      "answer": 0,
+      "explain": "The default bridge network doesn't run embedded DNS for container names. Containers on it can reach each other by IP, but that IP isn't guaranteed stable across restarts, and there's no name-to-IP resolution without a user-defined network."
+    },
+    {
+      "q": "After `docker network create app-net`, two containers are started with `--network app-net --name db` and `--network app-net --name api`. What does this buy the `api` container?",
+      "options": [
+        "Automatic encryption of all traffic between the two containers",
+        "The ability to resolve the hostname `db` to that container's current internal IP automatically, via Docker's embedded DNS for user-defined networks",
+        "A guarantee that `db` finishes starting before `api` does",
+        "Shared filesystem access between the two containers' writable layers"
+      ],
+      "answer": 1,
+      "explain": "A user-defined bridge network runs an embedded DNS server, so containers can resolve each other by their --name value directly — that's what lets a DATABASE_URL reference the hostname db instead of a hardcoded IP."
+    },
+    {
+      "q": "What happens to a named volume like `pgdata` when the container using it is removed with `docker rm`?",
+      "options": [
+        "It is converted into a bind mount automatically",
+        "It is automatically deleted along with the container, by default",
+        "Nothing — it persists until explicitly removed with `docker volume rm pgdata`, independent of any container's lifecycle",
+        "It is backed up to the host's default Docker directory and then deleted"
+      ],
+      "answer": 2,
+      "explain": "A named volume is managed by Docker independently of any one container. Removing the container only removes its writable layer; the volume survives until you deliberately run docker volume rm."
+    },
+    {
+      "q": "A developer wants a running container to immediately reflect live edits made to source code on the host, without rebuilding the image. Which mechanism fits, and why?",
+      "options": [
+        "A named volume, because Docker volumes always sync automatically with a host IDE",
+        "Neither — source code changes always require an image rebuild",
+        "A bind mount, because it maps a specific host path directly into the container, making the host filesystem the live source of truth",
+        "The default bridge network, because it allows direct filesystem sharing between host and container"
+      ],
+      "answer": 2,
+      "explain": "A bind mount maps a host path straight into the container, so edits made on the host are visible inside the container immediately — exactly the local-development use case, as opposed to a named volume, which is storage Docker manages on the container's behalf."
+    },
+    {
+      "q": "In a `docker-compose.yml` file, what does `depends_on: [db]` on the `api` service actually guarantee?",
+      "options": [
+        "That db has fully started and is ready to accept connections before api starts",
+        "That db and api will share the same named volume automatically",
+        "Nothing — depends_on is ignored unless a healthcheck is also defined",
+        "Only the start order: api's container starts after db's container starts, with no guarantee db is ready to accept connections yet"
+      ],
+      "answer": 3,
+      "explain": "depends_on controls start order only. A database container can report as started while its process is still initializing, so an application still needs its own connection-retry logic rather than assuming readiness from depends_on alone."
+    }
+  ]
+}

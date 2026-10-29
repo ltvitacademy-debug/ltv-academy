@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 8",
+    "titlePlain": "Ingress, Storage, and a ",
+    "titleEmphasis": "Helm Chart",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: Running a Real Application on Kubernetes"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Routing traffic in",
+    "code": "apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: order-api\nspec:\n  ingressClassName: nginx\n  rules:\n    - host: orders.harrowcreek.dev\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: order-api\n                port: { number: 80 }",
+    "caption": "The Ingress routes to the Service built in Lesson 29 -- it doesn't replace it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Storage that survives a restart",
+    "code": "apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: order-worker-data\nspec:\n  accessModes: [\"ReadWriteOnce\"]\n  storageClassName: standard-rwo\n  resources:\n    requests:\n      storage: 5Gi",
+    "caption": "storageClassName triggers dynamic provisioning -- nobody pre-creates the PersistentVolume by hand."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One chart, one values file",
+    "code": "# templates/api-deployment.yaml (excerpt)\nspec:\n  replicas: {{ .Values.api.replicaCount }}\n  containers:\n    - image: \"{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}\"\n\n# values.yaml\napi:\n  replicaCount: 3\n  image: { repository: registry.harrowcreek.dev/order-api, tag: \"1.0.0\" }\nworker:\n  replicaCount: 2\n  storage: { size: 5Gi }",
+    "caption": "helm create order-app, then every object's hard-coded values move into one values.yaml."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Same chart, two releases",
+    "titlePlain": "Install, Then ",
+    "titleEmphasis": "Resize",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "helm install order-app ./order-app", "sub": "Full production-sized release from the chart's defaults" },
+      { "label": "--set api.replicaCount=1 --set worker.replicaCount=1", "sub": "Overrides for a smaller staging release" },
+      { "label": "--values values-staging.yaml", "sub": "The per-environment pattern from Chapter 6, applied to this app" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "When a Missing ",
+    "titleEmphasis": "Limit",
+    "titleSuffix": " Takes Down a Cluster",
+    "subtitle": "A case study in what happens without resource requests and limits."
+  }
+]

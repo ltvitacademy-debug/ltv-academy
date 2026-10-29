@@ -1,0 +1,60 @@
+{
+  "lesson": "choosing-a-base-image-distro-slim-or-distroless",
+  "questions": [
+    {
+      "q": "What does a Dockerfile's FROM line actually determine, beyond which Linux is used?",
+      "options": [
+        "Only the kernel version the host machine will run",
+        "The complete set of packages, libraries, and binaries present in the final image, which directly shapes its attack surface",
+        "Nothing by itself — all packages come from the final RUN apt install line",
+        "The CPU architecture only, with no effect on installed packages"
+      ],
+      "answer": 1,
+      "explain": "FROM sets the starting package set for the whole image; every package it brings in is attack surface, whether your app uses it or not."
+    },
+    {
+      "q": "What is the key practical difference between a '-slim' image like python:3.12-slim and a full distro image like python:3.12?",
+      "options": [
+        "Slim images use a completely different CPU architecture",
+        "Slim images cannot run any Python code at all",
+        "Slim images still have apt and a shell, but drop documentation, extra CLI tools, and build toolchains that the full image includes",
+        "Slim and full images have identical package counts; only the compression differs"
+      ],
+      "answer": 2,
+      "explain": "Slim variants are still Debian-based with apt and a shell, but trim docs, common utilities, and compilers/headers, reducing size and scanned packages versus the full image."
+    },
+    {
+      "q": "What makes a distroless image like gcr.io/distroless/static-debian12 different from a slim image?",
+      "options": [
+        "It has no shell and no package manager at all, removing an entire category of post-exploitation tooling",
+        "It is actually larger than the equivalent full distro image",
+        "It includes a full desktop environment for debugging",
+        "It is only available for Windows containers"
+      ],
+      "answer": 0,
+      "explain": "Distroless images ship no /bin/sh and no package manager — only a runtime (or nothing, for 'static') plus whatever you explicitly copy in, so exec-based post-exploitation has no shell to use."
+    },
+    {
+      "q": "Why is Alpine's small size a different kind of trade-off than distroless's attack-surface reduction?",
+      "options": [
+        "Alpine images cannot be pulled from Docker Hub",
+        "Alpine still includes a shell and apk; its size comes from musl libc and busybox, not from removing a shell entirely",
+        "Alpine and distroless are two names for the exact same image family",
+        "Alpine images are always larger than python:3.12-slim"
+      ],
+      "answer": 1,
+      "explain": "Alpine is small because of musl/busybox, but it keeps a shell and package manager, which distroless deliberately removes — different goals even though both end up smaller than a full distro."
+    },
+    {
+      "q": "In a multi-stage Dockerfile that builds with golang:1.22 and ships gcr.io/distroless/static-debian12, what ends up in the final image?",
+      "options": [
+        "The full Go toolchain, so the binary can be recompiled inside the running container",
+        "Both the golang:1.22 build stage and the distroless stage, merged into one layer",
+        "A shell is added automatically so the final image can still be debugged with docker exec",
+        "Only the compiled binary copied via COPY --from=build; the build stage and its compiler never ship"
+      ],
+      "answer": 3,
+      "explain": "Only artifacts explicitly copied with COPY --from=build survive into the final stage; the build stage's toolchain, including the Go compiler, is discarded."
+    }
+  ]
+}

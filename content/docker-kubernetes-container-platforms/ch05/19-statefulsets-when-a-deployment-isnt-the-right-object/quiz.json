@@ -1,0 +1,60 @@
+{
+  "lesson": "statefulsets-when-a-deployment-isnt-the-right-object",
+  "questions": [
+    {
+      "q": "Why are a Deployment's Pods described as deliberately interchangeable?",
+      "options": [
+        "Because Deployments do not support rolling updates",
+        "They get randomly generated name suffixes with no guaranteed identity, and any replica can be removed when scaling down",
+        "Because every Pod in a Deployment must run on the same node",
+        "Because Deployments cannot use PersistentVolumeClaims at all"
+      ],
+      "answer": 1,
+      "explain": "Deployment Pods have no stable identity — names are randomly suffixed, and scaling down can remove any replica, which is fine for stateless workloads but wrong for a clustered database where each replica plays a distinct role."
+    },
+    {
+      "q": "What two guarantees does a StatefulSet provide that a Deployment does not?",
+      "options": [
+        "Automatic horizontal autoscaling and automatic image updates",
+        "Stable, predictable Pod names/network identity, and a dedicated PersistentVolumeClaim per replica",
+        "Built-in database replication logic and automatic backups",
+        "Guaranteed placement on a specific node and GPU scheduling"
+      ],
+      "answer": 1,
+      "explain": "A StatefulSet gives Pods stable names like postgres-0, postgres-1 that persist across restarts, plus a PVC created per-replica from volumeClaimTemplates — both of which a Deployment's interchangeable Pods lack."
+    },
+    {
+      "q": "What does `volumeClaimTemplates` actually do in a StatefulSet spec?",
+      "options": [
+        "It deletes all PVCs automatically when the StatefulSet is deleted",
+        "It creates one shared PVC that every replica Pod mounts simultaneously",
+        "It defines a Secret used to authenticate to the storage backend",
+        "It stamps out one separate PVC per replica, named by convention like pgdata-postgres-0, pgdata-postgres-1"
+      ],
+      "answer": 3,
+      "explain": "volumeClaimTemplates generates a dedicated PVC per replica instead of sharing one — this is what solves the ReadWriteOnce multi-replica mounting problem from the PV/PVC lesson."
+    },
+    {
+      "q": "The Pod `postgres-1` is deleted (e.g. due to a node failure) and recreated by the StatefulSet. What happens to its storage?",
+      "options": [
+        "The new postgres-1 Pod binds back to the same pgdata-postgres-1 PVC and the same underlying data",
+        "A brand-new empty PVC is created for the new postgres-1 Pod",
+        "The new postgres-1 Pod binds to whichever PVC happens to be unbound at the time",
+        "All PVCs in the StatefulSet are reshuffled across the remaining replicas"
+      ],
+      "answer": 0,
+      "explain": "Each replica's PVC is tied to its stable name. The new postgres-1 Pod reattaches to pgdata-postgres-1 and its existing data, which a Deployment's interchangeable Pods could never guarantee."
+    },
+    {
+      "q": "Why must a StatefulSet's `serviceName` point at a headless Service (`clusterIP: None`)?",
+      "options": [
+        "Headless Services are required for any StorageClass to work",
+        "A headless Service is the only type that supports ReadWriteOnce volumes",
+        "It gives each Pod its own resolvable DNS name instead of load-balancing traffic across all replicas, which matters when clients need to reach a specific replica",
+        "It disables ordered startup so all replicas can start simultaneously"
+      ],
+      "answer": 2,
+      "explain": "A headless Service skips load-balancing and instead lets DNS resolve each Pod individually, e.g. postgres-0.postgres.default.svc.cluster.local — essential when a client needs to target a specific replica, such as the primary for writes."
+    }
+  ]
+}

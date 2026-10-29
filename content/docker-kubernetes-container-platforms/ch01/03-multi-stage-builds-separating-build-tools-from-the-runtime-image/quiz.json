@@ -1,0 +1,60 @@
+{
+  "lesson": "multi-stage-builds-separating-build-tools-from-the-runtime-image",
+  "questions": [
+    {
+      "q": "What's the main problem with compiling a Go binary using a single-stage Dockerfile based on `golang:1.23`?",
+      "options": [
+        "The final shipped image includes the entire Go toolchain and build environment underneath the binary, even though none of it is needed at runtime",
+        "golang:1.23 cannot run a compiled binary, only interpret Go source directly",
+        "Single-stage builds are not supported by current versions of Docker",
+        "go build cannot be run inside any Dockerfile, regardless of stages"
+      ],
+      "answer": 0,
+      "explain": "Nothing in a single-stage build removes the base image's layers, so the full compiler, standard library source, and build caches all ship inside the final image alongside the actual binary."
+    },
+    {
+      "q": "In `FROM golang:1.23 AS build`, what does `AS build` do?",
+      "options": [
+        "It tells Docker to delete this stage automatically once the Dockerfile finishes building",
+        "It names this stage `build` so a later stage can reference it, e.g. with `COPY --from=build`",
+        "It forces this stage to run after every other stage in the file",
+        "It marks this stage as the one that will be tagged by `docker build -t`"
+      ],
+      "answer": 1,
+      "explain": "AS <name> is just a label on a stage. It lets a later COPY --from=<name> instruction reach back into that stage's filesystem; it has no effect on execution order or which stage gets tagged."
+    },
+    {
+      "q": "In a multi-stage Dockerfile, what determines what `docker build -t myapp .` actually tags as the final image?",
+      "options": [
+        "The stage containing the most RUN instructions",
+        "Whichever stage is named `build`, regardless of position",
+        "The final `FROM` instruction in the file, unless `--target` points at an earlier stage instead",
+        "All stages are merged together into one final image automatically"
+      ],
+      "answer": 2,
+      "explain": "docker build runs every stage, but the final FROM in the file is what gets tagged by default. --target lets you build and tag an earlier stage instead, which is useful for inspecting an intermediate build stage directly."
+    },
+    {
+      "q": "In the multi-stage Node.js example, why does the `runtime` stage run its own `npm ci --omit=dev` instead of copying `node_modules` forward from the `build` stage?",
+      "options": [
+        "npm ci cannot run more than once across the lifetime of a Dockerfile",
+        "Copying node_modules between stages is required by npm and cannot be skipped",
+        "COPY --from cannot copy directories, only single files",
+        "Resolving its own production-only dependency tree avoids mixing dev and production installs between stages, a common source of subtly broken runtime images"
+      ],
+      "answer": 3,
+      "explain": "The build stage needs devDependencies (bundlers, compilers) to produce dist/. The runtime stage only needs production dependencies, so it resolves its own clean install rather than inheriting a mixed dependency tree from build."
+    },
+    {
+      "q": "What does switching the final stage's base image to a `distroless` image buy you, once the application's build artifact no longer depends on the build stage's base image?",
+      "options": [
+        "Faster `docker build` times across every stage in the Dockerfile",
+        "Automatic multi-architecture support with no other configuration",
+        "A smaller attack surface: no shell and no package manager for an attacker with code execution inside the container to use",
+        "Guaranteed compatibility with every native Node or Go module without exception"
+      ],
+      "answer": 2,
+      "explain": "Once build and runtime environments are decoupled, the runtime base can be chosen purely for running the artifact safely and minimally — distroless images strip out the shell and package manager that would otherwise give an attacker more to work with."
+    }
+  ]
+}

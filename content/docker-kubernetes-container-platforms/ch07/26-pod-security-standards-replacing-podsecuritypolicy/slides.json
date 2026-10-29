@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 7",
+    "titlePlain": "Pod Security Standards: Replacing ",
+    "titleEmphasis": "PodSecurityPolicy",
+    "titleSuffix": "",
+    "subtitle": "Lesson 26 · Kubernetes Security & RBAC"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three fixed profiles",
+    "titlePlain": "Privileged, Baseline, ",
+    "titleEmphasis": "Restricted",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Privileged", "sub": "fully unrestricted — reserved for system/infra workloads" },
+      { "label": "Baseline", "sub": "blocks privileged containers, host namespaces, dangerous hostPath mounts" },
+      { "label": "Restricted", "sub": "+ non-root, no privilege escalation, dropped capabilities, seccomp" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Enforcing a standard on a namespace",
+    "code": "apiVersion: v1\nkind: Namespace\nmetadata:\n  name: payments\n  labels:\n    pod-security.kubernetes.io/enforce: restricted\n    pod-security.kubernetes.io/enforce-version: latest\n    pod-security.kubernetes.io/audit: restricted\n    pod-security.kubernetes.io/warn: restricted",
+    "caption": "Pod Security Admission reads these labels — no extra component to install, on by default since 1.25."
+  },
+  {
+    "type": "code",
+    "eyebrow": "A Pod that actually passes Restricted",
+    "code": "spec:\n  securityContext:\n    runAsNonRoot: true\n    runAsUser: 10001\n    seccompProfile:\n      type: RuntimeDefault\n  containers:\n    - name: app\n      image: billing-api:2.3\n      securityContext:\n        allowPrivilegeEscalation: false\n        readOnlyRootFilesystem: true\n        capabilities:\n          drop: [\"ALL\"]",
+    "caption": "The label only enforces it — the securityContext is what actually satisfies the standard."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Rolling out restricted without breaking anything",
+    "titlePlain": "Warn, then audit, then ",
+    "titleEmphasis": "enforce",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "warn + audit first", "sub": "see what would fail without blocking a single Pod" },
+      { "label": "fix flagged workloads", "sub": "add the securityContext fields each violation calls out" },
+      { "label": "flip enforce", "sub": "once the audit log is clean, make restricted actually binding" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 27",
+    "titlePlain": "Securing the Kubernetes API Server and ",
+    "titleEmphasis": "etcd",
+    "titleSuffix": "",
+    "subtitle": "RBAC and Pod Security protect what's inside the cluster — this is about protecting the control plane itself."
+  }
+]

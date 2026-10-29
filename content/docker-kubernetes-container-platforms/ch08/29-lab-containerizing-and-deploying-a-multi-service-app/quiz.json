@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-containerizing-and-deploying-a-multi-service-app",
+  "questions": [
+    {
+      "q": "Why does one Dockerfile in this lab produce two different images instead of needing two Dockerfiles?",
+      "options": [
+        "A build arg (ENTRYPOINT_FILE) selects which file the final CMD runs, so the same build/runtime stages produce either image",
+        "Docker automatically detects how many services exist in src/",
+        "Kubernetes merges the two images back into one at deploy time",
+        "It doesn't -- a separate Dockerfile is required for each service"
+      ],
+      "answer": 0,
+      "explain": "Passing --build-arg ENTRYPOINT_FILE at build time is what lets the same multi-stage Dockerfile produce the api image or the worker image."
+    },
+    {
+      "q": "Why are the images tagged 1.0.0 instead of latest?",
+      "options": [
+        "latest is required for Kubernetes to pull the image at all",
+        "1.0.0 makes the image build faster",
+        "If every push overwrites the same tag, there is no previous version left to roll back to -- a real version tag preserves that history",
+        "Tags have no effect on anything in this lab"
+      ],
+      "answer": 2,
+      "explain": "Chapter 2 already covered this: latest being overwritten on every push is exactly why it makes rollback meaningless."
+    },
+    {
+      "q": "Why doesn't the order-worker Deployment get its own Service?",
+      "options": [
+        "Services are only allowed on Deployments with more than 2 replicas",
+        "Nothing in the cluster calls the worker over the network -- it only pulls from a queue, so a Service would be an unused object",
+        "Worker Deployments are never allowed to have Services in Kubernetes",
+        "A Service was created but deliberately left out of the YAML shown"
+      ],
+      "answer": 1,
+      "explain": "Not every Deployment needs a Service; the worker only consumes from a queue and is never addressed directly, so it has none."
+    },
+    {
+      "q": "What does the runtime stage of the Dockerfile base itself on, and why?",
+      "options": [
+        "ubuntu:latest, for maximum compatibility",
+        "The same node:20-slim image used in the build stage, for consistency",
+        "A distroless Node.js image, running as the non-root user, so the shipped image has no shell or package manager",
+        "alpine, because it is required for all Node.js apps"
+      ],
+      "answer": 2,
+      "explain": "The runtime stage copies only the built /app directory into a distroless base and drops to USER nonroot, per the Chapter 2 base-image lesson."
+    },
+    {
+      "q": "Besides checking for errors, what is the real way to verify the api Deployment and Service are actually working?",
+      "options": [
+        "Only checking that kubectl apply returned without an error message",
+        "Confirming every pod shows Running with READY 1/1, and that kubectl get endpoints order-api lists an endpoint for each pod",
+        "Restarting the cluster and seeing if it still boots",
+        "Checking the Dockerfile for typos one more time"
+      ],
+      "answer": 1,
+      "explain": "Pods actually Running and Ready, plus the Service having real endpoints, is the real confirmation -- a clean apply alone doesn't prove anything is serving traffic."
+    }
+  ]
+}

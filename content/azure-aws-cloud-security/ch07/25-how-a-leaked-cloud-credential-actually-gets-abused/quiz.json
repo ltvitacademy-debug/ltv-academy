@@ -1,0 +1,60 @@
+{
+  "lesson": "how-a-leaked-cloud-credential-actually-gets-abused",
+  "questions": [
+    {
+      "q": "According to well-documented real-world patterns, which of these is the MOST common way an AWS access key actually ends up leaked?",
+      "options": [
+        "A zero-day exploit against the AWS control plane itself",
+        "It is committed to a public GitHub repository and picked up by automated secret-scanning tools within minutes",
+        "AWS support staff accidentally email it to the wrong customer",
+        "It is brute-forced directly against the AWS API"
+      ],
+      "answer": 1,
+      "explain": "Secrets committed to public repos are routinely found by automated scanners (the same category as TruffleHog/GitGuardian) almost immediately after the push — this is one of the most common real leak paths, not a sophisticated exploit."
+    },
+    {
+      "q": "What is the significance of IMDSv2's session-token requirement on EC2?",
+      "options": [
+        "It closes the SSRF-to-credential-theft path that let an attacker read an instance's role credentials via IMDSv1",
+        "It encrypts all S3 bucket contents automatically",
+        "It replaces IAM roles entirely with a new permission model",
+        "It is only relevant to Azure, not AWS"
+      ],
+      "answer": 0,
+      "explain": "IMDSv1 allowed a server-side request forgery vulnerability to reach the instance metadata endpoint and pull temporary credentials with no extra step; IMDSv2 requires a session token first, closing that path."
+    },
+    {
+      "q": "Why do attackers typically run read-only calls like `aws sts get-caller-identity` and `iam list-attached-user-policies` as their FIRST move after obtaining a leaked key?",
+      "options": [
+        "These calls are required by AWS before any other API call will succeed",
+        "To immediately trigger GuardDuty so they know what's being monitored",
+        "To enumerate what the credential can actually do, quietly, before attempting anything that could fail or get noticed",
+        "Because AWS requires a 24-hour waiting period before destructive calls are allowed"
+      ],
+      "answer": 2,
+      "explain": "Enumeration calls are read-only and look like normal automation, letting an attacker map out what a stolen credential can access before risking a louder action."
+    },
+    {
+      "q": "In the enumerate → escalate → persist → act sequence, what is the main purpose of the persistence step?",
+      "options": [
+        "To make the attack more visible so the victim notices faster",
+        "To automatically delete CloudTrail logs",
+        "To restore the account to its original state before leaving",
+        "To create an independent credential (a second access key, a new IAM user, a new app registration secret) so the attacker keeps access even if the originally leaked credential is rotated"
+      ],
+      "answer": 3,
+      "explain": "Persistence is about survivability: by creating a second, independent credential before doing anything damaging, the attacker ensures that rotating the original leaked key doesn't end their access."
+    },
+    {
+      "q": "Why is it a mistake for a defender to rely only on detecting the final 'actual abuse' stage (e.g. a cost spike from cryptomining)?",
+      "options": [
+        "Because by that stage the attacker has typically already enumerated the environment and established independent persistence, so simply rotating the original key does not remove their access",
+        "Because cost spikes are always false positives",
+        "Because AWS does not generate billing alerts",
+        "Because cryptomining never actually costs the victim money"
+      ],
+      "answer": 0,
+      "explain": "Catching only the final, damaging stage means missing the enumeration and persistence steps that already happened — at that point, just rotating the leaked credential leaves any independently created backdoor credential untouched."
+    }
+  ]
+}

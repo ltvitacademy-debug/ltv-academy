@@ -1,0 +1,60 @@
+{
+  "lesson": "a-security-checklist-for-a-cluster-before-it-goes-to-production",
+  "questions": [
+    {
+      "q": "Why does the lesson insist on checking RBAC, Pod Security Standards, and control-plane hardening together instead of treating a pass on any single lesson's topic as sufficient?",
+      "options": [
+        "Because a gap in any one layer can undermine the others — airtight RBAC doesn't help if a Pod can still run as root and escalate from inside the cluster",
+        "Because kubectl requires all three to be checked in a single command",
+        "Because Kubernetes refuses to schedule any Pod until all three are verified",
+        "Because only one of the three actually affects production clusters; the others only matter in development"
+      ],
+      "answer": 0,
+      "explain": "These layers compound: strong RBAC doesn't prevent an unrestricted Pod from escalating internally, and a hardened API server doesn't help if cluster-admin is bound somewhere nobody remembers. A real review checks all of them together."
+    },
+    {
+      "q": "What does Kubernetes do by default regarding Pod-to-Pod network traffic if no NetworkPolicy exists in a namespace?",
+      "options": [
+        "It blocks all traffic until an explicit allow policy is created",
+        "It allows all Pod-to-Pod traffic — a default-deny policy has to be created explicitly before any access can be restricted",
+        "It allows traffic only between Pods in the same Deployment",
+        "It requires a Service object to exist before any traffic is permitted at all"
+      ],
+      "answer": 1,
+      "explain": "Kubernetes allows all Pod-to-Pod traffic by default. A baseline deny-all ingress NetworkPolicy has to be created deliberately, with explicit allows layered on top for what actually needs to communicate."
+    },
+    {
+      "q": "Why does the checklist recommend running `kubectl get secrets --all-namespaces -o json | kubectl replace -f -` after enabling an EncryptionConfiguration?",
+      "options": [
+        "It deletes all Secrets so they can be recreated with new, randomly generated values",
+        "It is required before kubectl will allow any ServiceAccount to mount a Secret",
+        "Newly enabled encryption only applies going forward; existing Secrets need to be re-written once so they're actually re-saved through the new encryption provider",
+        "It rotates the TLS certificates used by the API server"
+      ],
+      "answer": 2,
+      "explain": "Enabling EncryptionConfiguration encrypts resources written from that point on. Secrets already in etcd stay in their old (unencrypted) form until they're explicitly re-written, which this replace command forces."
+    },
+    {
+      "q": "What is kube-bench, and what does it check?",
+      "options": [
+        "A load-testing tool that benchmarks how many Pods a cluster can schedule per second",
+        "An open-source tool from Aqua Security that checks a cluster's control-plane and node configuration against the CIS Kubernetes Benchmark",
+        "A built-in Kubernetes admission controller that blocks non-compliant Pods automatically",
+        "A replacement for kubectl auth can-i that checks RBAC bindings only"
+      ],
+      "answer": 1,
+      "explain": "kube-bench is an open-source tool, not a built-in Kubernetes feature, that audits control-plane and node configuration (file permissions, kube-apiserver flags, kubelet settings, and more) against the published CIS Kubernetes Benchmark."
+    },
+    {
+      "q": "Why does the checklist suggest actually running `kubectl auth can-i --list --as=<identity>` against the least-trusted identity in the cluster before go-live, rather than only reviewing Role and RoleBinding YAML?",
+      "options": [
+        "YAML review is sufficient on its own and the command adds no new information",
+        "The command only works on ClusterRoles, so it checks a different thing than reviewing YAML",
+        "The command deletes any permissions the identity should not have, automatically fixing the binding",
+        "Reading rule definitions in YAML can miss how bindings actually combine; querying the real authorizer directly shows what that identity can truly do, surfacing surprises before production does"
+      ],
+      "answer": 3,
+      "explain": "Static review of Role/RoleBinding YAML can miss how multiple bindings combine for one identity. Asking the API server's own authorizer directly, as that identity, shows the real effective permissions — catching surprises before an incident does."
+    }
+  ]
+}

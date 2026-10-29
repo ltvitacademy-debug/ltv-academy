@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 1",
+    "titlePlain": "Writing a Dockerfile That Builds Fast and Stays ",
+    "titleEmphasis": "Small",
+    "titleSuffix": "",
+    "subtitle": "Lesson 2 · Docker for Platform Engineers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Trim the build context first",
+    "code": ".dockerignore\n---------------\n.git\nnode_modules\nnpm-debug.log\nDockerfile\n.dockerignore\ndist\n*.md",
+    "caption": "Everything not excluded gets sent to the daemon before a single instruction runs."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Order by change frequency",
+    "titlePlain": "Least to ",
+    "titleEmphasis": "most",
+    "titleSuffix": " frequently changing",
+    "steps": [
+      { "label": "Base image", "sub": "FROM node:20.17.0-slim — changes almost never" },
+      { "label": "Dependency manifest", "sub": "COPY package.json + RUN npm ci — changes occasionally" },
+      { "label": "Application source", "sub": "COPY . . — changes on every commit" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Why order fixes the cache",
+    "code": "# Slow: COPY . . before install invalidates npm ci every time\nFROM node:20-slim\nWORKDIR /app\nCOPY . .\nRUN npm ci --omit=dev\n\n# Fast: install layer stays cached across source changes\nFROM node:20.17.0-slim\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci --omit=dev\nCOPY . .",
+    "caption": "A cache miss on any instruction invalidates every layer after it."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Clean up inside the same layer",
+    "code": "# Wrong: cleanup in a later RUN can't remove an earlier layer's bytes\nRUN apt-get update && apt-get install -y curl\nRUN rm -rf /var/lib/apt/lists/*\n\n# Right: install and cleanup commit as one layer\nRUN apt-get update \\\n    && apt-get install -y --no-install-recommends curl \\\n    && rm -rf /var/lib/apt/lists/*",
+    "caption": "Chaining with && keeps the apt cache out of the committed layer entirely."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 3",
+    "titlePlain": "Multi-Stage Builds: Separating Build Tools from the ",
+    "titleEmphasis": "Runtime Image",
+    "titleSuffix": "",
+    "subtitle": "Keep the compiler out of what actually ships to production."
+  }
+]

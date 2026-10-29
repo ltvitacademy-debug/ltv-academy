@@ -1,0 +1,60 @@
+{
+  "lesson": "persistentvolumes-and-persistentvolumeclaims-in-plain-terms",
+  "questions": [
+    {
+      "q": "What happens to a Pod's local container filesystem when the Pod is deleted and rescheduled?",
+      "options": [
+        "It is automatically copied to the new Pod by the kubelet",
+        "It moves with the Pod to whichever node it is rescheduled on",
+        "Kubernetes pauses the writable layer until the new Pod starts, then resumes it",
+        "It is gone; the new Pod starts from the image with a brand-new, empty writable layer"
+      ],
+      "answer": 3,
+      "explain": "A Pod's own filesystem is disposable by design — rescheduling starts a fresh container from the image with a new, empty writable layer, which is why anything needing durable data needs a PersistentVolume instead."
+    },
+    {
+      "q": "What is a PersistentVolume (PV)?",
+      "options": [
+        "A cluster-scoped object representing a real piece of provisioned storage, created independently of any one workload",
+        "A field inside a Pod spec that marks a container as stateful",
+        "A namespaced request for a given amount of storage",
+        "A Helm chart value that sets the disk size for a Deployment"
+      ],
+      "answer": 0,
+      "explain": "A PV represents an actual piece of storage such as an Azure Disk or AWS EBS volume. It exists independently of any namespace or Pod, unlike a PVC."
+    },
+    {
+      "q": "In a Pod's `volumes` block, what does a Pod actually reference to use persistent storage?",
+      "options": [
+        "The diskURI of the underlying cloud disk directly",
+        "The PersistentVolumeClaim's name, not the PersistentVolume directly",
+        "The StorageClass name only, with no claim involved",
+        "The node name where the disk is physically attached"
+      ],
+      "answer": 1,
+      "explain": "A Pod mounts a volume by referencing a persistentVolumeClaim's claimName. The indirection through a PVC is what lets the same Pod manifest run against different backing storage in different clusters."
+    },
+    {
+      "q": "A PVC requesting 10Gi stays stuck in `Pending` and never binds. Based on this lesson, what is the most likely cause?",
+      "options": [
+        "PVCs can never bind to PVs created manually, only to dynamically provisioned ones",
+        "The Pod using the PVC has not been created yet",
+        "No existing PV satisfies the request — wrong size, incompatible accessModes, or no StorageClass available to provision one automatically",
+        "The cluster administrator must manually type \"bind\" for every claim"
+      ],
+      "answer": 2,
+      "explain": "A claim stuck Pending almost always means the control plane found no matching PV to bind to, whether because of a size/accessMode mismatch or because no default StorageClass exists to dynamically provision one."
+    },
+    {
+      "q": "Why would a PVC requesting `ReadWriteMany` fail to bind against a PV backed by an Azure Disk?",
+      "options": [
+        "Azure Disk is block storage attached to a single VM and only supports ReadWriteOnce, not concurrent multi-node read-write access",
+        "ReadWriteMany is not a valid accessMode value in Kubernetes",
+        "Azure Disk volumes can only be used by Pods running as root",
+        "ReadWriteMany requires the PVC and PV to be in the same namespace, which Azure Disk does not support"
+      ],
+      "answer": 0,
+      "explain": "accessModes describe mount concurrency, not permissions. Block storage like Azure Disk or AWS EBS only supports ReadWriteOnce; ReadWriteMany needs storage built for concurrent multi-node writers, such as Azure Files or NFS."
+    }
+  ]
+}

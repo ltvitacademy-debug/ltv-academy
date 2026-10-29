@@ -1,0 +1,60 @@
+{
+  "lesson": "securing-the-kubernetes-api-server-and-etcd",
+  "questions": [
+    {
+      "q": "In what order does a request to the Kubernetes API server pass through authentication, authorization, and admission control?",
+      "options": [
+        "Admission control first, then authorization, then authentication",
+        "Authentication, then authorization, then admission control",
+        "Authorization and authentication happen simultaneously, followed by admission control",
+        "Admission control replaces authentication entirely in current Kubernetes versions"
+      ],
+      "answer": 1,
+      "explain": "The API server checks who the request is from first (authentication), then whether that identity may perform the action (authorization, via RBAC and the Node authorizer), and finally runs it through the admission controller chain."
+    },
+    {
+      "q": "Why does the standard `--authorization-mode=Node,RBAC` flag list `Node` before `RBAC`?",
+      "options": [
+        "The order has no effect on behavior; it's purely cosmetic",
+        "RBAC must always run first or kubelets cannot authenticate at all",
+        "Authorizers are checked in sequence and the first explicit allow wins, and Node specifically limits what a kubelet can access before general RBAC rules are consulted",
+        "Node is deprecated and only kept for backward compatibility"
+      ],
+      "answer": 2,
+      "explain": "Authorizers run in the listed order; Node restricts a kubelet to objects related to its own node, and that check matters before the broader RBAC rules are evaluated."
+    },
+    {
+      "q": "What does the NodeRestriction admission controller specifically prevent?",
+      "options": [
+        "A Pod from being scheduled onto more than one node at a time",
+        "A compromised kubelet's own credentials from modifying other nodes' objects or relabeling itself into a more privileged pool",
+        "A Deployment from being scaled beyond its configured replica count",
+        "A namespace from being deleted while Pods are still running in it"
+      ],
+      "answer": 1,
+      "explain": "NodeRestriction limits what a kubelet's credentials can modify, so a compromised node can't escalate by relabeling itself or editing objects belonging to other nodes."
+    },
+    {
+      "q": "In a Kubernetes audit policy, what is the practical difference between the `Metadata` level and the `RequestResponse` level?",
+      "options": [
+        "Metadata only applies to Secrets, while RequestResponse applies to every resource type",
+        "RequestResponse disables logging entirely, while Metadata is the most verbose option",
+        "They are functionally identical; the names are interchangeable aliases",
+        "Metadata logs who/what/when with no body, while RequestResponse logs the full request and response bodies, which is expensive and can include sensitive payloads like Secrets"
+      ],
+      "answer": 3,
+      "explain": "Audit levels range from None (no logging) through Metadata (basic who/what/when) up to RequestResponse (full bodies) — the most detailed but also the most expensive and most likely to capture sensitive data."
+    },
+    {
+      "q": "Why is storing Secrets in etcd with no EncryptionConfiguration in place a real risk, even though the API server enforces RBAC?",
+      "options": [
+        "RBAC rules are ignored entirely once a Secret is written to etcd",
+        "etcd automatically emails Secret contents to cluster administrators by default",
+        "Secrets are base64-encoded in etcd by default, not encrypted — base64 is reversible encoding, not a cipher, so anyone with raw access to the etcd data or a snapshot can read every Secret in plain text",
+        "etcd refuses to store Secrets at all unless encryption at rest is configured first"
+      ],
+      "answer": 2,
+      "explain": "Base64 is an encoding, not encryption — it's trivially reversible. Without an EncryptionConfiguration resource encrypting Secrets before they're written, anyone with direct access to etcd's data directory or a backup snapshot can read every Secret in the cluster."
+    }
+  ]
+}

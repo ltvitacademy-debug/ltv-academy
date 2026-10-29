@@ -1,0 +1,60 @@
+{
+  "lesson": "a-rolling-update-and-a-rollback-with-kubectl",
+  "questions": [
+    {
+      "q": "What does `kubectl set image deployment/web-app web-app=...:1.4.3` actually trigger?",
+      "options": [
+        "It deletes the Deployment and requires `kubectl apply` to recreate it from scratch",
+        "It edits every running Pod's container in place without creating any new objects",
+        "The Deployment controller creates a new ReplicaSet with the updated Pod template and begins shifting replicas to it",
+        "It only updates the image tag shown in `kubectl describe`, with no effect on running Pods"
+      ],
+      "answer": 2,
+      "explain": "Updating a Deployment's image is exactly the mechanism from Lesson 10: the Deployment creates a brand-new ReplicaSet reflecting the new template and gradually shifts replicas from the old ReplicaSet to the new one."
+    },
+    {
+      "q": "In a rolling update strategy with `maxUnavailable: 0` and `maxSurge: 1` on a Deployment with `replicas: 3`, what does `maxUnavailable: 0` guarantee?",
+      "options": [
+        "The rollout can never drop below 3 available Pods — a new Pod must be ready before an old one is removed",
+        "The Deployment is temporarily allowed to run with zero healthy Pods during the swap",
+        "No more than 1 Pod total can exist until the rollout finishes",
+        "Pods from the old ReplicaSet are deleted before any new Pod is created"
+      ],
+      "answer": 0,
+      "explain": "maxUnavailable: 0 means capacity can never dip below the target replica count during the rollout; a new Pod must come up fully before an old one is removed. maxSurge: 1 is what permits briefly going one Pod above target to make that possible."
+    },
+    {
+      "q": "Why can `kubectl rollout status` be used as a health gate inside a CI/CD pipeline step?",
+      "options": [
+        "It only prints log lines and never affects the pipeline's exit code",
+        "It blocks until the rollout finishes or fails, returning a non-zero exit code if new Pods never become ready, instead of hanging silently",
+        "It automatically rolls back any failed deployment on its own",
+        "It is the only command that can trigger a rolling update at all"
+      ],
+      "answer": 1,
+      "explain": "kubectl rollout status blocks and reports success or failure explicitly, which is exactly the signal a pipeline step needs to decide whether a deploy succeeded."
+    },
+    {
+      "q": "What mechanism makes a Deployment rollback possible at all, without re-applying an old manifest file?",
+      "options": [
+        "Kubernetes keeps scaled-down previous ReplicaSets around as revision history, and rollback scales a prior one back up while scaling the current one down",
+        "etcd stores a separate full backup of every Deployment automatically every hour",
+        "kubectl caches every previous manifest locally and resubmits it on undo",
+        "Rollback is only possible if `--record` was passed on the original apply command"
+      ],
+      "answer": 0,
+      "explain": "Kubernetes doesn't delete old ReplicaSets on update — it scales them to zero and retains them as revisions. kubectl rollout undo reverses the exact same mechanism a forward rollout uses, just scaling the old ReplicaSet back up."
+    },
+    {
+      "q": "What does `kubectl rollout undo deployment/web-app --to-revision=1` do differently from a plain `kubectl rollout undo deployment/web-app`?",
+      "options": [
+        "It performs an instant, non-gradual switch instead of a rolling update",
+        "It deletes all revision history after rolling back",
+        "It requires the Deployment to be scaled to zero first",
+        "It reverts to a specific named revision rather than just the immediately prior one"
+      ],
+      "answer": 3,
+      "explain": "Plain rollout undo reverts to the immediately prior revision. Adding --to-revision lets you target any specific retained revision from kubectl rollout history instead."
+    }
+  ]
+}

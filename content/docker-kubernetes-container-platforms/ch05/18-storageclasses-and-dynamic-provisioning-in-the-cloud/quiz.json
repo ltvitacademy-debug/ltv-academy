@@ -1,0 +1,60 @@
+{
+  "lesson": "storageclasses-and-dynamic-provisioning-in-the-cloud",
+  "questions": [
+    {
+      "q": "What problem does dynamic provisioning solve compared to manually creating a PersistentVolume for every claim?",
+      "options": [
+        "It avoids a human having to pre-create a real cloud disk through the Azure or AWS console before every PVC can bind",
+        "It removes the need for accessModes on a PVC entirely",
+        "It lets a PVC bind to a Pod directly without a PersistentVolume ever existing",
+        "It eliminates the need for a cluster to have any storage provisioner installed"
+      ],
+      "answer": 0,
+      "explain": "Manually creating a PV for every claim doesn't scale once many applications need their own storage. Dynamic provisioning lets a provisioner create the disk automatically, triggered by the PVC itself."
+    },
+    {
+      "q": "What does a StorageClass actually represent?",
+      "options": [
+        "A piece of already-provisioned storage, the same as a PersistentVolume",
+        "A template naming a provisioner plugin and its parameters, used to create a disk on demand",
+        "A per-namespace quota limiting total PVC storage requests",
+        "A field inside a Pod spec that enables persistent storage"
+      ],
+      "answer": 1,
+      "explain": "A StorageClass isn't storage itself — it's a recipe: it names which provisioner (CSI driver) to call and what parameters to pass it when a new disk needs to be created."
+    },
+    {
+      "q": "In a StorageClass for AKS with `provisioner: disk.csi.azure.com`, what does that provisioner actually do when a matching PVC is created?",
+      "options": [
+        "It formats the node's local disk and mounts it to the Pod",
+        "It is a CSI driver that calls the Azure API to create a real managed disk matching the StorageClass's parameters",
+        "It only validates YAML syntax and performs no real cloud action",
+        "It copies an existing Azure Disk's contents into a new PersistentVolume"
+      ],
+      "answer": 1,
+      "explain": "disk.csi.azure.com is AKS's CSI driver for Azure Disk. When a PVC names a StorageClass using that provisioner, it actually calls the Azure API to create a managed disk and a matching PersistentVolume."
+    },
+    {
+      "q": "What does `volumeBindingMode: WaitForFirstConsumer` change about when a disk gets created?",
+      "options": [
+        "It prevents the disk from ever being deleted, regardless of reclaimPolicy",
+        "It creates the disk immediately when the StorageClass itself is created, before any PVC exists",
+        "It delays disk creation until a Pod using the claim is actually scheduled, so the disk lands in the right availability zone",
+        "It forces every PVC using that class to request exactly the same size"
+      ],
+      "answer": 2,
+      "explain": "WaitForFirstConsumer delays provisioning until a Pod needing the volume is scheduled, so the disk is created in the same zone as that node instead of being provisioned somewhere unreachable."
+    },
+    {
+      "q": "A PVC's manifest never sets `storageClassName`. Based on this lesson, what actually happens?",
+      "options": [
+        "The PVC fails validation and is rejected by the API server",
+        "The PVC is permanently stuck Pending until a storageClassName is added",
+        "It is treated as requesting zero storage classes and never gets a disk",
+        "Kubernetes uses whichever StorageClass is marked as the cluster's default, if one exists"
+      ],
+      "answer": 3,
+      "explain": "If storageClassName is omitted, Kubernetes falls back to the StorageClass carrying the is-default-class annotation — which is why kubectl get storageclass is worth checking before assuming what kind of disk a PVC will get."
+    }
+  ]
+}

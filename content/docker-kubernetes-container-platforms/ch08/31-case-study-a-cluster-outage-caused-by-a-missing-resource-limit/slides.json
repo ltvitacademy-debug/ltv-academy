@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 8",
+    "titlePlain": "A Cluster Outage From a Missing ",
+    "titleEmphasis": "Resource Limit",
+    "titleSuffix": "",
+    "subtitle": "Lesson 31 · Capstone: Running a Real Application on Kubernetes (illustrative scenario)"
+  },
+  {
+    "type": "code",
+    "eyebrow": "What actually shipped",
+    "code": "# reporting-cronjob.yaml -- the version that shipped\ncontainers:\n  - name: report\n    image: registry.harrowcreek.dev/nightly-report:1.0.0\n    # no resources block at all",
+    "caption": "Copied from an older manifest and trimmed down -- nobody noticed the resources block never made it in."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The aftermath, read with kubectl",
+    "code": "kubectl get pods -o wide\n\nNAME                    STATUS       NODE\norder-worker-7f8d9c7b6   OOMKilled    node-3\nnightly-report-28891234  Error        node-3\norder-api-5c9b8f7d4       Evicted      node-3",
+    "caption": "Two correctly-configured pods failed on the same node as the one pod with no memory ceiling."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Two different mechanisms",
+    "titlePlain": "OOMKilled vs. ",
+    "titleEmphasis": "Evicted",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "OOMKilled", "sub": "The kernel's OOMKiller kills a specific process once memory truly runs out" },
+      { "label": "Evicted", "sub": "The kubelet proactively removes a pod to relieve node-wide pressure, earlier" },
+      { "label": "Neither pod did anything wrong", "sub": "Both were healthy, correctly-configured, and caught in a neighbor's blast radius" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The fix, at two levels",
+    "code": "# per-container fix\nresources:\n  requests: { cpu: \"100m\", memory: \"128Mi\" }\n  limits:   { cpu: \"500m\", memory: \"512Mi\" }\n\n# namespace-wide fix: LimitRange\nspec:\n  limits:\n    - type: Container\n      default: { cpu: \"500m\", memory: \"512Mi\" }\n      defaultRequest: { cpu: \"100m\", memory: \"128Mi\" }",
+    "caption": "A LimitRange gives the next forgotten resources block a safe default automatically, on admission."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 32",
+    "titlePlain": "The Chapter ",
+    "titleEmphasis": "Capstone",
+    "titleSuffix": "",
+    "subtitle": "Reviewing all eight chapters through the lens of this one incident and this one app."
+  }
+]

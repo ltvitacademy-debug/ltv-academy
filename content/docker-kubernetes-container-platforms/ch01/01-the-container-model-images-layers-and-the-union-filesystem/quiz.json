@@ -1,0 +1,60 @@
+{
+  "lesson": "the-container-model-images-layers-and-the-union-filesystem",
+  "questions": [
+    {
+      "q": "When `docker pull nginx:1.27` downloads several separately-hashed chunks instead of one file, what are those chunks?",
+      "options": [
+        "Compressed copies of the final merged filesystem, split only to speed up parallel download",
+        "Layers — immutable, content-addressed filesystem diffs, each one a tarball of changes relative to the layer beneath it",
+        "Encrypted shards that Docker reassembles only after verifying a license signature",
+        "Per-architecture builds of the same image, one of which is discarded after pull"
+      ],
+      "answer": 1,
+      "explain": "Each pulled chunk is a layer: a SHA-256 content-addressed tarball of filesystem changes. Identical layers across different images are only stored once, which is why shared base layers show as already-present."
+    },
+    {
+      "q": "In `docker history` output, why do rows for instructions like `CMD`, `ENV`, and `EXPOSE` show `0B`?",
+      "options": [
+        "Those instructions failed to execute during the build",
+        "Docker always hides the true size of metadata-only layers for security reasons",
+        "Those instructions only change image metadata, not the filesystem, so no filesystem layer is created at all",
+        "Those instructions are removed automatically once the final image is tagged"
+      ],
+      "answer": 2,
+      "explain": "CMD, ENV, and EXPOSE don't touch the filesystem — they just add config to the image, so there's no filesystem diff to store as a layer."
+    },
+    {
+      "q": "On a modern Linux Docker host, what does the overlay2 storage driver actually do?",
+      "options": [
+        "It uses the kernel's overlayfs to stack read-only image layers and present one merged filesystem view at runtime",
+        "It compresses every container's writable layer before writing it to disk",
+        "It replicates the image's layers across every node in a cluster automatically",
+        "It converts each layer into a single SQLite database for faster lookups"
+      ],
+      "answer": 0,
+      "explain": "overlay2 is Docker's storage driver; it mounts each image layer read-only and merges the stack into one view using the Linux kernel's overlayfs, with LowerDir holding the read-only layers and UpperDir holding the writable one."
+    },
+    {
+      "q": "A container deletes a file that exists in one of its image's lower, read-only layers. What actually happens on disk?",
+      "options": [
+        "The file is permanently removed from the lower layer immediately",
+        "Nothing — overlay2 silently ignores delete operations on files from read-only layers",
+        "The entire lower layer is rebuilt without that file and re-hashed",
+        "A whiteout marker is written into the writable layer, hiding the file from the merged view; the original bytes remain untouched in the lower layer"
+      ],
+      "answer": 3,
+      "explain": "overlay2 can't modify a read-only layer, so a delete is recorded as a whiteout marker in the writable layer. The file's bytes are still sitting in the lower layer — which is also why deleting a file in a later Dockerfile instruction doesn't shrink the final image."
+    },
+    {
+      "q": "Ten running containers are all started from the same `nginx:1.27` image. What do they share, and what is unique to each one?",
+      "options": [
+        "They share nothing; Docker copies the full image into a private directory per container",
+        "They share the read-only image layers on disk; each container has its own thin writable layer for runtime changes",
+        "They share one single writable layer that all ten containers write into simultaneously",
+        "They share the writable layer only; the read-only image layers are duplicated per container for isolation"
+      ],
+      "answer": 1,
+      "explain": "All containers from the same image share the identical read-only layers via overlay2's LowerDir. Only the thin writable layer — UpperDir — is unique per container, which is why `docker rm` only ever deletes that one layer."
+    }
+  ]
+}

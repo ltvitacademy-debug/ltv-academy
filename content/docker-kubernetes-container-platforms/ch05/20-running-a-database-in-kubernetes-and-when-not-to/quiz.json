@@ -1,0 +1,60 @@
+{
+  "lesson": "running-a-database-in-kubernetes-and-when-not-to",
+  "questions": [
+    {
+      "q": "A VolumeSnapshot captures a point-in-time copy of a PVC's underlying disk. Why isn't that the same thing as a restorable database backup?",
+      "options": [
+        "VolumeSnapshots only work with NFS storage, never with Azure Disk or EBS",
+        "A disk-level snapshot says nothing about whether the database's internal state was consistent at that instant, such as a transaction mid-write or an unflushed WAL",
+        "VolumeSnapshots cannot be created unless the StatefulSet is deleted first",
+        "A VolumeSnapshot is actually larger than the original disk and cannot be restored"
+      ],
+      "answer": 1,
+      "explain": "A disk snapshot captures whatever was physically on disk, with no guarantee of application-level consistency. A restorable backup usually still requires the database engine's own backup tooling, like pg_dump or pg_basebackup."
+    },
+    {
+      "q": "Which of the following is something a managed database service like Azure Database for PostgreSQL or Amazon RDS handles that a plain StatefulSet does not do automatically?",
+      "options": [
+        "Assigning each replica a stable Pod name",
+        "Creating a PersistentVolumeClaim per replica",
+        "Failover orchestration — promoting a healthy replica to primary and repointing connections when the primary fails",
+        "Binding a PVC to a matching PersistentVolume"
+      ],
+      "answer": 2,
+      "explain": "A StatefulSet's ordered Pod management restarts a failed Pod with the same identity, but it was never designed to detect a corrupted primary and promote a replica — that failover orchestration is a managed service's job."
+    },
+    {
+      "q": "According to this lesson, what does a StatefulSet actually guarantee for a database workload?",
+      "options": [
+        "Automated, tested backups stored outside the cluster",
+        "Stable Pod identity and reattachment to the same persistent storage — nothing about backup testing, patch cadence, or failover logic",
+        "Point-in-time restore to any moment within a retention window",
+        "Automatic promotion of a replica if the primary's data becomes corrupted"
+      ],
+      "answer": 1,
+      "explain": "A StatefulSet solves identity and storage reattachment. Backup testing, patching, and failover orchestration all have to be built and operated separately by whoever runs the cluster."
+    },
+    {
+      "q": "Which of these is given as a legitimate reason a team might still choose to run a database inside Kubernetes rather than use a managed service?",
+      "options": [
+        "Kubernetes StatefulSets automatically test their own backups, so no extra operational work is needed",
+        "VolumeSnapshots are equivalent to application-consistent backups, removing the main objection to self-hosting",
+        "A managed equivalent doesn't exist for the specific engine or version needed, or a complex system is run via an operator that automates day-2 operations",
+        "Running a database in Kubernetes always has lower operational burden than a managed service"
+      ],
+      "answer": 2,
+      "explain": "The lesson names real reasons: no managed equivalent for the specific engine/version, tight colocation needs, or using an operator that automates day-2 operations like backup and failover for complex systems."
+    },
+    {
+      "q": "The lesson's decision framework asks 'who tests the restore, and how often?' and 'what happens if the node is lost entirely?' What is the point of asking these before choosing Kubernetes over a managed database?",
+      "options": [
+        "They are rhetorical questions with no bearing on the actual decision",
+        "If backups aren't tested and durability relies only on persistentVolumeReclaimPolicy: Retain, that's a signal to use a managed service for anything the business depends on",
+        "They determine which StorageClass provisioner to use, nothing more",
+        "They only matter for stateless Deployments, not stateful workloads"
+      ],
+      "answer": 1,
+      "explain": "If nobody tests restores and durability depends on nothing more than a reclaim policy, that's a strong signal the operational maturity isn't there yet — a managed service is the safer choice for business-critical data."
+    }
+  ]
+}

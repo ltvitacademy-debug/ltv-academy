@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 2",
+    "titlePlain": "Running as a Non-Root User, and Other ",
+    "titleEmphasis": "Hardening Basics",
+    "titleSuffix": "",
+    "subtitle": "Lesson 3 · Production-Grade Container Images"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Least privilege, inside the container too",
+    "titlePlain": "Root by default is a ",
+    "titleEmphasis": "convenience",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "No USER line = UID 0", "sub": "root, unless the Dockerfile says otherwise" },
+      { "label": "Namespaces aren't a hypervisor", "sub": "a container-escape bug is worse if root was already running" },
+      { "label": "Create a dedicated user", "sub": "grant it only the directories it actually needs" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Dropping to an unprivileged user",
+    "code": "FROM python:3.12-slim\nRUN groupadd -r app && useradd -r -g app -d /app -s /sbin/nologin app\nWORKDIR /app\nCOPY --chown=app:app . .\nRUN pip install --no-cache-dir -r requirements.txt\nUSER app\nCMD [\"python\", \"main.py\"]",
+    "caption": "USER switches every following instruction, including CMD, to run unprivileged."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Mapping it onto Kubernetes",
+    "code": "securityContext:\n  runAsNonRoot: true\n  runAsUser: 10001\n  allowPrivilegeEscalation: false\n  readOnlyRootFilesystem: true\n  capabilities:\n    drop: [\"ALL\"]",
+    "caption": "runAsNonRoot makes the kubelet refuse to start the pod if the image would run as root."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Beyond USER",
+    "titlePlain": "Narrowing what's left to ",
+    "titleEmphasis": "exploit",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "--read-only --tmpfs /tmp", "sub": "root filesystem unwritable except explicit scratch space" },
+      { "label": "--cap-drop=ALL --cap-add=NET_BIND_SERVICE", "sub": "re-add only the one capability actually needed" },
+      { "label": "--security-opt=no-new-privileges", "sub": "blocks setuid-based privilege escalation at runtime" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 4",
+    "titlePlain": "Tagging, Versioning, and Pushing to a ",
+    "titleEmphasis": "Registry",
+    "titleSuffix": "",
+    "subtitle": "Giving every image a real, traceable version."
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 2",
+    "titlePlain": "Choosing a Base Image: Distro, Slim, or ",
+    "titleEmphasis": "Distroless",
+    "titleSuffix": "",
+    "subtitle": "Lesson 1 · Production-Grade Container Images"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three tiers, one decision",
+    "titlePlain": "Every FROM line is an ",
+    "titleEmphasis": "attack-surface choice",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Full distro (ubuntu, debian)", "sub": "shell + apt + hundreds of libraries you may never use" },
+      { "label": "Slim (python:3.12-slim)", "sub": "still a shell, docs/build tools trimmed" },
+      { "label": "Distroless (gcr.io/distroless)", "sub": "no shell, no package manager — just the runtime" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "No shell, no package manager",
+    "code": "FROM gcr.io/distroless/static-debian12\nCOPY --from=build /app/server /server\nENTRYPOINT [\"/server\"]\n\n# docker exec -it <container> /bin/sh\n# -> fails: there is no /bin/sh in this image",
+    "caption": "If there's no shell, a whole category of post-exploitation tooling has nothing to run."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Multi-stage: build fat, ship thin",
+    "code": "FROM golang:1.22 AS build\nWORKDIR /src\nCOPY . .\nRUN CGO_ENABLED=0 go build -o server ./cmd/server\n\nFROM gcr.io/distroless/static-debian12\nCOPY --from=build /src/server /server\nENTRYPOINT [\"/server\"]",
+    "caption": "Only the compiled binary survives into the final image — the compiler never ships."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Deciding which tier to ship",
+    "titlePlain": "Default to the smallest base that ",
+    "titleEmphasis": "still works",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Need a shell to debug directly?", "sub": "slim or Alpine, not distroless" },
+      { "label": "Shipping a compiled or static binary?", "sub": "distroless is almost always the right call" },
+      { "label": "Debugging distroless in prod?", "sub": "kubectl debug with an ephemeral container, not docker exec" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 2",
+    "titlePlain": "Scanning Images for ",
+    "titleEmphasis": "Vulnerabilities",
+    "titleSuffix": "",
+    "subtitle": "Catching known CVEs before an image ever ships."
+  }
+]

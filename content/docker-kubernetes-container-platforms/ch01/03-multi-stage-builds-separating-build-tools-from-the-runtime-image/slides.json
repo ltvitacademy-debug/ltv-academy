@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 1",
+    "titlePlain": "Multi-Stage Builds: Separating Build Tools from the ",
+    "titleEmphasis": "Runtime Image",
+    "titleSuffix": "",
+    "subtitle": "Lesson 3 · Docker for Platform Engineers"
+  },
+  {
+    "type": "code",
+    "eyebrow": "The single-stage problem",
+    "code": "# Ships the entire Go toolchain in the final image\nFROM golang:1.23\nWORKDIR /app\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN go build -o server .\nCMD [\"./server\"]",
+    "caption": "A 10MB binary, wrapped in a build environment it will never call again."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Two FROM instructions, one Dockerfile",
+    "code": "# Stage 1: build, using the full toolchain\nFROM golang:1.23 AS build\nWORKDIR /app\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 go build -o server .\n\n# Stage 2: runtime, starting completely fresh\nFROM gcr.io/distroless/static-debian12\nCOPY --from=build /app/server /server\nENTRYPOINT [\"/server\"]",
+    "caption": "COPY --from=build pulls out one file; everything else from that stage never ships."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Not just for compiled languages",
+    "titlePlain": "Build stage, then ",
+    "titleEmphasis": "runtime",
+    "titleSuffix": " stage",
+    "steps": [
+      { "label": "build stage", "sub": "npm ci (full) + npm run build — produces dist/" },
+      { "label": "runtime stage", "sub": "npm ci --omit=dev — its own clean, production-only install" },
+      { "label": "COPY --from=build", "sub": "carries forward only the dist/ folder" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Targeting a stage directly",
+    "code": "docker build --target build -t myapp:debug-build-stage .\n\n# default build (no --target) tags the LAST stage in the file\ndocker build -t myapp .",
+    "caption": "Useful for inspecting an intermediate stage without shipping it."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 4",
+    "titlePlain": "Docker Networking and Volumes for a Local Multi-Container ",
+    "titleEmphasis": "App",
+    "titleSuffix": "",
+    "subtitle": "Connecting containers together and keeping data when they restart."
+  }
+]

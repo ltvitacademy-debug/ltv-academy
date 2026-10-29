@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Docker, Kubernetes & Container Platforms · Chapter 5",
+    "titlePlain": "StatefulSets: When a Deployment ",
+    "titleEmphasis": "Isn't Right",
+    "titleSuffix": "",
+    "subtitle": "Lesson 19 · Kubernetes Storage & Stateful Workloads"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What a Deployment deliberately gives up",
+    "titlePlain": "Interchangeable, by ",
+    "titleEmphasis": "design",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Random Pod name suffixes", "sub": "no stable identity across restarts" },
+      { "label": "No \"the third one\"", "sub": "scaling down can remove any replica" },
+      { "label": "Fine for stateless apps", "sub": "wrong for a clustered database with distinct replica roles" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "A StatefulSet with per-replica storage",
+    "code": "apiVersion: apps/v1\nkind: StatefulSet\nmetadata:\n  name: postgres\nspec:\n  serviceName: postgres\n  replicas: 3\n  selector:\n    matchLabels:\n      app: postgres\n  template: { ... }\n  volumeClaimTemplates:\n    - metadata:\n        name: pgdata\n      spec:\n        accessModes: [\"ReadWriteOnce\"]\n        storageClassName: managed-premium-retain\n        resources:\n          requests:\n            storage: 20Gi",
+    "caption": "volumeClaimTemplates stamps out one PVC per replica, not one shared volume."
+  },
+  {
+    "type": "code",
+    "eyebrow": "One PVC per Pod, by name",
+    "code": "kubectl get pvc\n# pgdata-postgres-0   Bound   20Gi\n# pgdata-postgres-1   Bound   20Gi\n# pgdata-postgres-2   Bound   20Gi\n\n# delete + recreate postgres-1 ->\n# rebinds to pgdata-postgres-1, same data",
+    "caption": "postgres-1 never touches postgres-0's disk — identity and storage stay paired."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Ordered by default",
+    "titlePlain": "Start, scale, update — ",
+    "titleEmphasis": "in order",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "postgres-0 Running+Ready first", "sub": "then postgres-1, then postgres-2" },
+      { "label": "Scale down in reverse", "sub": "highest-numbered replica removed first" },
+      { "label": "serviceName must be headless", "sub": "clusterIP: None gives each Pod its own DNS name" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 20",
+    "titlePlain": "Running a Database in Kubernetes, ",
+    "titleEmphasis": "and When Not To",
+    "titleSuffix": "",
+    "subtitle": "The real operational tradeoffs against a managed database service."
+  }
+]

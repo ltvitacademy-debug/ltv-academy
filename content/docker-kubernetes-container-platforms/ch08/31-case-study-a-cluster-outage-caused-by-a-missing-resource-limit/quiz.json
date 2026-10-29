@@ -1,0 +1,60 @@
+{
+  "lesson": "case-study-a-cluster-outage-caused-by-a-missing-resource-limit",
+  "questions": [
+    {
+      "q": "Why could the nightly-report CronJob's container allocate memory without any ceiling?",
+      "options": [
+        "It had no resources.limits block at all, so nothing inside Kubernetes told the kernel to stop its memory growth earlier",
+        "CronJobs are exempt from resource limits by design",
+        "Its memory limit was accidentally set far too high, not missing",
+        "Only CPU limits matter for memory-related incidents like this one"
+      ],
+      "answer": 0,
+      "explain": "With no memory limit set, the container has no ceiling and keeps allocating as long as the node has free memory."
+    },
+    {
+      "q": "What is the real difference between order-worker showing OOMKilled and order-api showing Evicted in this incident?",
+      "options": [
+        "There is no real difference -- both terms describe the exact same mechanism",
+        "Evicted only happens to Deployments, OOMKilled only happens to CronJobs",
+        "OOMKilled means the pod's own manifest was misconfigured; Evicted means the node ran out of disk space",
+        "OOMKilled is the kernel's OOMKiller killing a specific process; Evicted is the kubelet proactively removing a pod to relieve node-wide memory pressure before the kernel intervenes"
+      ],
+      "answer": 3,
+      "explain": "They are two different mechanisms responding to the same underlying memory pressure: one kernel-level, one kubelet-level."
+    },
+    {
+      "q": "Why did order-worker and order-api fail even though their own manifests had correct resource settings?",
+      "options": [
+        "They were sharing a node with the unlimited report container, and a neighbor's uncapped memory use can destabilize every pod on that node, not just itself",
+        "Their own resources.limits values were actually too low, which was the real cause",
+        "They had been scheduled on a node with no memory at all",
+        "Kubernetes periodically kills random healthy pods regardless of resource settings"
+      ],
+      "answer": 0,
+      "explain": "A pod's own correct configuration doesn't protect it from a neighbor on the same node with no memory ceiling at all."
+    },
+    {
+      "q": "What does setting requests (not just limits) actually influence?",
+      "options": [
+        "Requests have no real effect and exist only for documentation purposes",
+        "Requests only affect billing, not scheduling or behavior",
+        "What the scheduler uses to decide which node has room for a pod -- a pod with no requests can be packed too tightly for its real usage",
+        "Requests set a hard ceiling identical to limits"
+      ],
+      "answer": 2,
+      "explain": "The scheduler places pods based on requests; a pod with none can be placed as if it needs almost nothing, regardless of real usage."
+    },
+    {
+      "q": "What does a namespace-level LimitRange fix that correcting the one CronJob manifest alone doesn't?",
+      "options": [
+        "It automatically rewrites every existing Deployment's YAML files in the repository",
+        "It prevents any future engineer's container that omits a resources block from running completely unbounded, by supplying default requests/limits automatically on admission",
+        "It removes the need for resources blocks in any manifest ever again",
+        "It only applies retroactively to pods that already failed"
+      ],
+      "answer": 1,
+      "explain": "A LimitRange supplies safe default requests/limits to any container that doesn't declare its own, catching the next engineer's mistake automatically."
+    }
+  ]
+}

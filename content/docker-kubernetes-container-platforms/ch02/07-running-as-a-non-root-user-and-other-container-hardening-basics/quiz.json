@@ -1,0 +1,60 @@
+{
+  "lesson": "running-as-a-non-root-user-and-other-container-hardening-basics",
+  "questions": [
+    {
+      "q": "What UID does a container process run as if the Dockerfile never specifies a USER?",
+      "options": [
+        "A randomly generated unprivileged UID chosen by the Docker daemon",
+        "The same UID as the user who ran docker build",
+        "Root (UID 0)",
+        "Containers cannot start at all without an explicit USER line"
+      ],
+      "answer": 2,
+      "explain": "Without a USER instruction, the containerized process defaults to running as root (UID 0), which is convenient in development but unnecessary privilege in production."
+    },
+    {
+      "q": "In `RUN groupadd -r app && useradd -r -g app -d /app -s /sbin/nologin app` followed later by `USER app`, what does the USER line change?",
+      "options": [
+        "It switches the process UID for every subsequent instruction, including the final CMD/ENTRYPOINT, so the application runs unprivileged",
+        "It only affects the docker build process, not the running container",
+        "It deletes the root user from the image entirely",
+        "It has no effect unless paired with --read-only"
+      ],
+      "answer": 0,
+      "explain": "USER switches which UID every following instruction, and critically the final CMD/ENTRYPOINT, executes as — this is the line that actually drops the running app to unprivileged."
+    },
+    {
+      "q": "What does mounting a container with --read-only --tmpfs /tmp accomplish?",
+      "options": [
+        "It prevents the container from starting unless it is run as root",
+        "It makes the root filesystem unwritable except for an explicit in-memory scratch mount, blocking an attacker from modifying application files or persisting changes",
+        "It disables networking for the container",
+        "It automatically drops all Linux capabilities as a side effect"
+      ],
+      "answer": 1,
+      "explain": "--read-only locks the root filesystem against writes; --tmpfs /tmp supplies a small writable in-memory scratch space for the few things that genuinely need to write somewhere."
+    },
+    {
+      "q": "What does `--cap-drop=ALL --cap-add=NET_BIND_SERVICE` do that simply not running as root does not?",
+      "options": [
+        "It grants the container full root capabilities regardless of the USER instruction",
+        "It is purely cosmetic and has no runtime effect",
+        "It automatically scans the image for CVEs before granting capabilities",
+        "It narrows the process down to one specific Linux capability instead of the full bundle root implies, so even a compromised process has almost nothing extra it's allowed to do"
+      ],
+      "answer": 3,
+      "explain": "Root bundles many discrete capabilities together; dropping all of them and re-adding only what's needed (like binding a privileged port) narrows what a compromised process can actually do."
+    },
+    {
+      "q": "What does `runAsNonRoot: true` in a Kubernetes Pod's securityContext actually do?",
+      "options": [
+        "It silently switches the container to run as root if the image would otherwise fail",
+        "It makes the kubelet refuse to start the pod at all if the image would run as root, turning a Dockerfile mistake into a deployment-time failure",
+        "It automatically rewrites the Dockerfile to add a USER instruction",
+        "It only applies a warning label in the Kubernetes dashboard with no enforcement"
+      ],
+      "answer": 1,
+      "explain": "runAsNonRoot: true is enforced at pod startup — if the image's effective user would be root, the kubelet refuses to run it, catching the problem before it reaches production."
+    }
+  ]
+}

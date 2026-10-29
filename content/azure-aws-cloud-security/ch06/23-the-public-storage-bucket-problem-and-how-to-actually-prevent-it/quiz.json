@@ -1,0 +1,60 @@
+{
+  "lesson": "the-public-storage-bucket-problem-and-how-to-actually-prevent-it",
+  "questions": [
+    {
+      "q": "In most real-world exposed-storage-bucket incidents, what actually failed?",
+      "options": [
+        "A customer-side access setting (ACL, bucket policy, or container access level) made the bucket publicly reachable",
+        "The cloud provider's underlying infrastructure was breached directly",
+        "The encryption algorithm used on the data was broken",
+        "The provider's network backbone was compromised"
+      ],
+      "answer": 0,
+      "explain": "In case after case, the provider's infrastructure was never breached — a customer-side setting (a legacy ACL granting access to AllUsers, or a bucket/container set to public and never reverted) made the data reachable by anyone."
+    },
+    {
+      "q": "What does enabling S3 Block Public Access at the account level actually do?",
+      "options": [
+        "It encrypts every object in every bucket in the account automatically",
+        "It overrides any ACL or bucket policy that would otherwise grant public access, across every current and future bucket in the account",
+        "It only affects buckets created after the setting is turned on, not existing ones",
+        "It deletes any object that currently has public read permissions"
+      ],
+      "answer": 1,
+      "explain": "Block Public Access at the account level is deliberately blunt: it overrides ACLs and bucket policies that would grant public access, applying to every bucket in the account including future ones — which is why it's the highest-leverage control against this class of incident."
+    },
+    {
+      "q": "On Azure Storage, which container public access level is the most dangerous, and why?",
+      "options": [
+        "Private, because it silently allows anonymous reads despite its name",
+        "Blob, because it allows anonymous write access to the container",
+        "Container, because it allows anonymous read of blob data AND container/blob listing, letting anyone enumerate everything inside",
+        "There is no meaningful difference between the access levels"
+      ],
+      "answer": 2,
+      "explain": "The Container access level allows anonymous read of blob data plus listing of the container and blob names, letting anyone enumerate the full contents — more exposure than Blob, which only allows anonymous read of blob data itself."
+    },
+    {
+      "q": "If an Azure storage account has \"Allow Blob public access\" set to Disabled, what happens if someone sets an individual container's public access level to \"Container\"?",
+      "options": [
+        "The container becomes publicly readable immediately, overriding the account-level setting",
+        "Azure automatically re-enables the account-level setting to match the container",
+        "The storage account is automatically deleted for the policy violation",
+        "The container-level setting has no effect, because the account-level setting blocks public access for every container regardless of its own setting"
+      ],
+      "answer": 3,
+      "explain": "The account-level \"Allow Blob public access\" setting governs whether any container-level public setting can take effect at all. With it disabled, a container's own public access level setting is effectively inert."
+    },
+    {
+      "q": "Why doesn't encrypting a storage object protect against a public-ACL style exposure?",
+      "options": [
+        "Encryption always prevents this; the two problems are actually the same issue",
+        "Encryption at rest protects data if it's exfiltrated through a channel other than the normal read path, but a public ACL grants access through the normal read path itself, which decrypts the object for any authorized reader — including the public",
+        "Encryption only applies to data in transit, never to data at rest",
+        "Public ACLs bypass the storage service entirely, so encryption settings never apply to them"
+      ],
+      "answer": 1,
+      "explain": "A public ACL or public access setting authorizes normal reads from anyone — the storage service serves the (decrypted, from the reader's perspective) object through its standard read path. Encryption at rest doesn't block that; it protects against channels that bypass normal authorized access."
+    }
+  ]
+}
