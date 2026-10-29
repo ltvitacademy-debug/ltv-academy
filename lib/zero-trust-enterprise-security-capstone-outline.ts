@@ -87,7 +87,7 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 7,
     title: "Building a Zero Trust Roadmap",
     lessons: [
-      L(25, "sequencing-a-multi-year-zero-trust-rollout", "Sequencing a Multi-Year Zero Trust Rollout", { contentDir: "ch07/25-sequencing-a-multi-year-zero-trust-rollout" }),
+      L(25, "sequencing-a-multi-year-zero-trust-rollout", "Sequencing a Multi-Year Zero Trust Rollout", { contentDir: "ch07/25-sequencing-a-multi-year-zero-trust-rollout", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/sequencing-a-multi-year-zero-trust-rollout.mp4", durationLabel: "2 min 26 s" }),
       L(26, "what-to-fix-first-when-you-cant-fix-everything-at-once", "What to Fix First When You Can't Fix Everything at Once", { contentDir: "ch07/26-what-to-fix-first-when-you-cant-fix-everything-at-once", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/what-to-fix-first-when-you-cant-fix-everything-at-once.mp4", durationLabel: "2 min 22 s" }),
       L(27, "getting-budget-and-buy-in-for-a-zero-trust-program", "Getting Budget and Buy-In for a Zero Trust Program", { contentDir: "ch07/27-getting-budget-and-buy-in-for-a-zero-trust-program", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/getting-budget-and-buy-in-for-a-zero-trust-program.mp4", durationLabel: "2 min 18 s" }),
       L(28, "avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", "Avoiding \"Zero Trust Theater\": Implementation That Doesn't Change Outcomes", { contentDir: "ch07/28-avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes.mp4", durationLabel: "2 min 17 s" }),
@@ -97,7 +97,7 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     n: 8,
     title: "Capstone: Designing and Defending an Enterprise Zero Trust Architecture",
     lessons: [
-      L(29, "lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise", "Lab: Designing a Zero Trust Architecture for a Hybrid Enterprise", { contentDir: "ch08/29-lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise" }),
+      L(29, "lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise", "Lab: Designing a Zero Trust Architecture for a Hybrid Enterprise", { contentDir: "ch08/29-lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/lab-designing-a-zero-trust-architecture-for-a-hybrid-enterprise.mp4", durationLabel: "3 min 3 s" }),
       L(30, "lab-building-the-maturity-scorecard-and-rollout-roadmap", "Lab: Building the Maturity Scorecard and Rollout Roadmap", { contentDir: "ch08/30-lab-building-the-maturity-scorecard-and-rollout-roadmap" }),
       L(31, "case-study-a-zero-trust-rollout-that-looked-complete-on-paper", "Case Study: A Zero Trust Rollout That Looked Complete on Paper", { contentDir: "ch08/31-case-study-a-zero-trust-rollout-that-looked-complete-on-paper" }),
       L(32, "chapter-capstone-advanced-specialization-review-and-whats-next", "Chapter Capstone: Advanced Specialization Review and What's Next", { contentDir: "ch08/32-chapter-capstone-advanced-specialization-review-and-whats-next" }),

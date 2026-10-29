@@ -36,7 +36,7 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     n: 2,
     title: "Multi-Cloud Strategy",
     lessons: [
-      L(5, "why-companies-actually-go-multi-cloud-and-why-some-shouldnt", "Why Companies Actually Go Multi-Cloud, and Why Some Shouldn't", { contentDir: "ch02/05-why-companies-actually-go-multi-cloud-and-why-some-shouldnt" }),
+      L(5, "why-companies-actually-go-multi-cloud-and-why-some-shouldnt", "Why Companies Actually Go Multi-Cloud, and Why Some Shouldn't", { contentDir: "ch02/05-why-companies-actually-go-multi-cloud-and-why-some-shouldnt", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/why-companies-actually-go-multi-cloud-and-why-some-shouldnt.mp4", durationLabel: "2 min 41 s" }),
       L(6, "best-of-breed-vs-redundancy-driven-multi-cloud", "Best-of-Breed vs. Redundancy-Driven Multi-Cloud", { contentDir: "ch02/06-best-of-breed-vs-redundancy-driven-multi-cloud" }),
       L(7, "the-real-cost-of-multi-cloud-complexity", "The Real Cost of Multi-Cloud Complexity", { contentDir: "ch02/07-the-real-cost-of-multi-cloud-complexity" }),
       L(8, "avoiding-vendor-lock-in-without-over-engineering-for-it", "Avoiding Vendor Lock-In Without Over-Engineering for It", { contentDir: "ch02/08-avoiding-vendor-lock-in-without-over-engineering-for-it" }),

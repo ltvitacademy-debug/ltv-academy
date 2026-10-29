@@ -36,8 +36,8 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
     n: 2,
     title: "Reconnaissance and OSINT",
     lessons: [
-      L(5, "passive-reconnaissance-what-you-can-learn-without-touching-the-target", "Passive Reconnaissance: What You Can Learn Without Touching the Target", { contentDir: "ch02/05-passive-reconnaissance-what-you-can-learn-without-touching-the-target" }),
-      L(6, "osint-techniques-for-a-real-engagement", "OSINT Techniques for a Real Engagement", { contentDir: "ch02/06-osint-techniques-for-a-real-engagement" }),
+      L(5, "passive-reconnaissance-what-you-can-learn-without-touching-the-target", "Passive Reconnaissance: What You Can Learn Without Touching the Target", { contentDir: "ch02/05-passive-reconnaissance-what-you-can-learn-without-touching-the-target", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/passive-reconnaissance-what-you-can-learn-without-touching-the-target.mp4", durationLabel: "2 min 48 s" }),
+      L(6, "osint-techniques-for-a-real-engagement", "OSINT Techniques for a Real Engagement", { contentDir: "ch02/06-osint-techniques-for-a-real-engagement", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/osint-techniques-for-a-real-engagement.mp4", durationLabel: "2 min 35 s" }),
       L(7, "active-reconnaissance-and-where-passive-recon-stops-being-enough", "Active Reconnaissance, and Where Passive Recon Stops Being Enough", { contentDir: "ch02/07-active-reconnaissance-and-where-passive-recon-stops-being-enough" }),
       L(8, "turning-recon-into-an-attack-surface-map", "Turning Recon into an Attack Surface Map", { contentDir: "ch02/08-turning-recon-into-an-attack-surface-map" }),
     ],
@@ -99,7 +99,4 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
       L(29, "lab-a-full-recon-to-exploitation-engagement", "Lab: A Full Recon-to-Exploitation Engagement", { contentDir: "ch08/29-lab-a-full-recon-to-exploitation-engagement" }),
       L(30, "lab-writing-a-professional-penetration-test-report", "Lab: Writing a Professional Penetration Test Report", { contentDir: "ch08/30-lab-writing-a-professional-penetration-test-report" }),
       L(31, "case-study-a-finding-the-client-didnt-want-to-hear", "Case Study: A Finding the Client Didn't Want to Hear", { contentDir: "ch08/31-case-study-a-finding-the-client-didnt-want-to-hear" }),
-      L(32, "chapter-capstone-ethical-hacking-and-purple-team-review", "Chapter Capstone: Ethical Hacking and Purple Team Review", { contentDir: "ch08/32-chapter-capstone-ethical-hacking-and-purple-team-review" }),
-    ],
-  },
-];
+      L(32, "chapter-capstone-ethical-hacking-and-purple-t
