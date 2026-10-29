@@ -97,9 +97,9 @@ export const ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS: ChapterMeta[] =
     title: "Capstone: Building an Internal Developer Platform",
     lessons: [
       L(29, "lab-building-a-golden-path-template-and-service-catalog-entry", "Lab: Building a Golden Path Template and Service Catalog Entry", { contentDir: "ch08/29-lab-building-a-golden-path-template-and-service-catalog-entry", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/lab-building-a-golden-path-template-and-service-catalog-entry.mp4", durationLabel: "2 min 41 s" }),
-      L(30, "lab-wiring-gitops-driven-progressive-delivery-for-a-real-app", "Lab: Wiring GitOps-Driven Progressive Delivery for a Real App", { contentDir: "ch08/30-lab-wiring-gitops-driven-progressive-delivery-for-a-real-app" }),
-      L(31, "case-study-a-platform-nobody-adopted", "Case Study: A Platform Nobody Adopted", { contentDir: "ch08/31-case-study-a-platform-nobody-adopted" }),
-      L(32, "chapter-capstone-platform-engineering-and-gitops-review", "Chapter Capstone: Platform Engineering and GitOps Review", { contentDir: "ch08/32-chapter-capstone-platform-engineering-and-gitops-review" }),
+      L(30, "lab-wiring-gitops-driven-progressive-delivery-for-a-real-app", "Lab: Wiring GitOps-Driven Progressive Delivery for a Real App", { contentDir: "ch08/30-lab-wiring-gitops-driven-progressive-delivery-for-a-real-app", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/lab-wiring-gitops-driven-progressive-delivery-for-a-real-app.mp4", durationLabel: "2 min 29 s" }),
+      L(31, "case-study-a-platform-nobody-adopted", "Case Study: A Platform Nobody Adopted", { contentDir: "ch08/31-case-study-a-platform-nobody-adopted", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/case-study-a-platform-nobody-adopted.mp4", durationLabel: "2 min 22 s" }),
+      L(32, "chapter-capstone-platform-engineering-and-gitops-review", "Chapter Capstone: Platform Engineering and GitOps Review", { contentDir: "ch08/32-chapter-capstone-platform-engineering-and-gitops-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/chapter-capstone-platform-engineering-and-gitops-review.mp4", durationLabel: "3 min 8 s" }),
     ],
   },
 ];
