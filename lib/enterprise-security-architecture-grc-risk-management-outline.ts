@@ -27,8 +27,8 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     n: 1,
     title: "Enterprise Security Architecture Principles",
     lessons: [
-      L(1, "what-a-security-architect-actually-does-that-an-engineer-doesnt", "What a Security Architect Actually Does That an Engineer Doesn't", { contentDir: "ch01/01-what-a-security-architect-actually-does-that-an-engineer-doesnt" }),
-      L(2, "security-architecture-as-a-set-of-tradeoffs-not-a-checklist", "Security Architecture as a Set of Tradeoffs, Not a Checklist", { contentDir: "ch01/02-security-architecture-as-a-set-of-tradeoffs-not-a-checklist" }),
+      L(1, "what-a-security-architect-actually-does-that-an-engineer-doesnt", "What a Security Architect Actually Does That an Engineer Doesn't", { contentDir: "ch01/01-what-a-security-architect-actually-does-that-an-engineer-doesnt", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/what-a-security-architect-actually-does-that-an-engineer-doesnt.mp4", durationLabel: "2 min 37 s" }),
+      L(2, "security-architecture-as-a-set-of-tradeoffs-not-a-checklist", "Security Architecture as a Set of Tradeoffs, Not a Checklist", { contentDir: "ch01/02-security-architecture-as-a-set-of-tradeoffs-not-a-checklist", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/security-architecture-as-a-set-of-tradeoffs-not-a-checklist.mp4", durationLabel: "2 min 39 s" }),
       L(3, "defense-in-depth-at-enterprise-scale-revisited", "Defense in Depth at Enterprise Scale, Revisited", { contentDir: "ch01/03-defense-in-depth-at-enterprise-scale-revisited" }),
       L(4, "aligning-security-architecture-with-business-strategy", "Aligning Security Architecture with Business Strategy", { contentDir: "ch01/04-aligning-security-architecture-with-business-strategy" }),
     ],

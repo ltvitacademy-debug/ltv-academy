@@ -27,8 +27,8 @@ export const ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS: ChapterMeta[] =
     n: 1,
     title: "SRE Principles at Enterprise Scale",
     lessons: [
-      L(1, "what-changes-about-sre-once-youre-running-hundreds-of-services", "What Changes About SRE Once You're Running Hundreds of Services", { contentDir: "ch01/01-what-changes-about-sre-once-youre-running-hundreds-of-services" }),
-      L(2, "error-budgets-as-an-organizational-decision-making-tool", "Error Budgets as an Organizational Decision-Making Tool", { contentDir: "ch01/02-error-budgets-as-an-organizational-decision-making-tool" }),
+      L(1, "what-changes-about-sre-once-youre-running-hundreds-of-services", "What Changes About SRE Once You're Running Hundreds of Services", { contentDir: "ch01/01-what-changes-about-sre-once-youre-running-hundreds-of-services", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/what-changes-about-sre-once-youre-running-hundreds-of-services.mp4", durationLabel: "3 min 4 s" }),
+      L(2, "error-budgets-as-an-organizational-decision-making-tool", "Error Budgets as an Organizational Decision-Making Tool", { contentDir: "ch01/02-error-budgets-as-an-organizational-decision-making-tool", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/error-budgets-as-an-organizational-decision-making-tool.mp4", durationLabel: "2 min 56 s" }),
       L(3, "toil-and-why-reducing-it-is-an-engineering-priority-not-a-nice-to-have", "Toil, and Why Reducing It Is an Engineering Priority, Not a Nice-to-Have", { contentDir: "ch01/03-toil-and-why-reducing-it-is-an-engineering-priority-not-a-nice-to-have" }),
       L(4, "the-real-relationship-between-sre-and-platform-engineering", "The Real Relationship Between SRE and Platform Engineering", { contentDir: "ch01/04-the-real-relationship-between-sre-and-platform-engineering" }),
     ],

@@ -49,14 +49,14 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
       L(9, "kubernetes-as-the-real-portability-layer", "Kubernetes as the Real Portability Layer", { contentDir: "ch03/09-kubernetes-as-the-real-portability-layer", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/kubernetes-as-the-real-portability-layer.mp4", durationLabel: "3 min 2 s" }),
       L(10, "abstracting-cloud-specific-services-behind-a-common-interface", "Abstracting Cloud-Specific Services Behind a Common Interface", { contentDir: "ch03/10-abstracting-cloud-specific-services-behind-a-common-interface", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/abstracting-cloud-specific-services-behind-a-common-interface.mp4", durationLabel: "2 min 45 s" }),
       L(11, "terraform-modules-that-target-more-than-one-cloud", "Terraform Modules That Target More Than One Cloud", { contentDir: "ch03/11-terraform-modules-that-target-more-than-one-cloud", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/terraform-modules-that-target-more-than-one-cloud.mp4", durationLabel: "2 min 40 s" }),
-      L(12, "what-genuinely-doesnt-port-and-when-to-stop-trying", "What Genuinely Doesn't Port, and When to Stop Trying", { contentDir: "ch03/12-what-genuinely-doesnt-port-and-when-to-stop-trying" }),
+      L(12, "what-genuinely-doesnt-port-and-when-to-stop-trying", "What Genuinely Doesn't Port, and When to Stop Trying", { contentDir: "ch03/12-what-genuinely-doesnt-port-and-when-to-stop-trying", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/what-genuinely-doesnt-port-and-when-to-stop-trying.mp4", durationLabel: "2 min 57 s" }),
     ],
   },
   {
     n: 4,
     title: "Hybrid Identity at Enterprise Scale",
     lessons: [
-      L(13, "unifying-identity-across-on-prem-azure-and-aws", "Unifying Identity Across On-Prem, Azure, and AWS", { contentDir: "ch04/13-unifying-identity-across-on-prem-azure-and-aws" }),
+      L(13, "unifying-identity-across-on-prem-azure-and-aws", "Unifying Identity Across On-Prem, Azure, and AWS", { contentDir: "ch04/13-unifying-identity-across-on-prem-azure-and-aws", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/unifying-identity-across-on-prem-azure-and-aws.mp4", durationLabel: "2 min 28 s" }),
       L(14, "federation-patterns-for-a-true-multi-cloud-org", "Federation Patterns for a True Multi-Cloud Org", { contentDir: "ch04/14-federation-patterns-for-a-true-multi-cloud-org" }),
       L(15, "a-single-conditional-access-policy-spanning-every-environment", "A Single Conditional Access Policy Spanning Every Environment", { contentDir: "ch04/15-a-single-conditional-access-policy-spanning-every-environment" }),
       L(16, "identity-as-the-glue-that-holds-a-hybrid-architecture-together", "Identity as the Glue That Holds a Hybrid Architecture Together", { contentDir: "ch04/16-identity-as-the-glue-that-holds-a-hybrid-architecture-together" }),

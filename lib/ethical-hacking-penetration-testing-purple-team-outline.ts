@@ -49,14 +49,14 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
       L(9, "network-scanning-fundamentals-with-nmap", "Network Scanning Fundamentals with Nmap", { contentDir: "ch03/09-network-scanning-fundamentals-with-nmap", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/network-scanning-fundamentals-with-nmap.mp4", durationLabel: "3 min 0 s" }),
       L(10, "service-and-version-enumeration-beyond-just-open-ports", "Service and Version Enumeration Beyond Just Open Ports", { contentDir: "ch03/10-service-and-version-enumeration-beyond-just-open-ports", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/service-and-version-enumeration-beyond-just-open-ports.mp4", durationLabel: "2 min 42 s" }),
       L(11, "vulnerability-scanning-and-why-a-scanner-isnt-a-pentest", "Vulnerability Scanning, and Why a Scanner Isn't a Pentest", { contentDir: "ch03/11-vulnerability-scanning-and-why-a-scanner-isnt-a-pentest", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/vulnerability-scanning-and-why-a-scanner-isnt-a-pentest.mp4", durationLabel: "2 min 33 s" }),
-      L(12, "prioritizing-findings-before-you-ever-attempt-exploitation", "Prioritizing Findings Before You Ever Attempt Exploitation", { contentDir: "ch03/12-prioritizing-findings-before-you-ever-attempt-exploitation" }),
+      L(12, "prioritizing-findings-before-you-ever-attempt-exploitation", "Prioritizing Findings Before You Ever Attempt Exploitation", { contentDir: "ch03/12-prioritizing-findings-before-you-ever-attempt-exploitation", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/prioritizing-findings-before-you-ever-attempt-exploitation.mp4", durationLabel: "2 min 40 s" }),
     ],
   },
   {
     n: 4,
     title: "Exploitation Fundamentals",
     lessons: [
-      L(13, "how-a-real-exploit-actually-works-at-a-conceptual-level", "How a Real Exploit Actually Works, at a Conceptual Level", { contentDir: "ch04/13-how-a-real-exploit-actually-works-at-a-conceptual-level" }),
+      L(13, "how-a-real-exploit-actually-works-at-a-conceptual-level", "How a Real Exploit Actually Works, at a Conceptual Level", { contentDir: "ch04/13-how-a-real-exploit-actually-works-at-a-conceptual-level", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/how-a-real-exploit-actually-works-at-a-conceptual-level.mp4", durationLabel: "3 min 2 s" }),
       L(14, "using-a-known-exploit-safely-and-responsibly-in-a-test-environment", "Using a Known Exploit Safely and Responsibly in a Test Environment", { contentDir: "ch04/14-using-a-known-exploit-safely-and-responsibly-in-a-test-environment" }),
       L(15, "metasploit-framework-fundamentals", "Metasploit Framework Fundamentals", { contentDir: "ch04/15-metasploit-framework-fundamentals" }),
       L(16, "when-not-to-exploit-risk-decisions-during-a-live-engagement", "When Not to Exploit: Risk Decisions During a Live Engagement", { contentDir: "ch04/16-when-not-to-exploit-risk-decisions-during-a-live-engagement" }),
