@@ -97,9 +97,9 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     title: "Capstone: Designing a Hybrid/Multi-Cloud Architecture",
     lessons: [
       L(29, "lab-designing-a-hybrid-architecture-for-a-regulated-workload", "Lab: Designing a Hybrid Architecture for a Regulated Workload", { contentDir: "ch08/29-lab-designing-a-hybrid-architecture-for-a-regulated-workload", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/lab-designing-a-hybrid-architecture-for-a-regulated-workload.mp4", durationLabel: "3 min 9 s" }),
-      L(30, "lab-a-portable-workload-deployed-identically-to-two-clouds", "Lab: A Portable Workload Deployed Identically to Two Clouds", { contentDir: "ch08/30-lab-a-portable-workload-deployed-identically-to-two-clouds" }),
-      L(31, "case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved", "Case Study: A Multi-Cloud Strategy That Cost More Than It Saved", { contentDir: "ch08/31-case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved" }),
-      L(32, "chapter-capstone-hybrid-and-multi-cloud-architecture-review", "Chapter Capstone: Hybrid and Multi-Cloud Architecture Review", { contentDir: "ch08/32-chapter-capstone-hybrid-and-multi-cloud-architecture-review" }),
+      L(30, "lab-a-portable-workload-deployed-identically-to-two-clouds", "Lab: A Portable Workload Deployed Identically to Two Clouds", { contentDir: "ch08/30-lab-a-portable-workload-deployed-identically-to-two-clouds", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/lab-a-portable-workload-deployed-identically-to-two-clouds.mp4", durationLabel: "2 min 41 s" }),
+      L(31, "case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved", "Case Study: A Multi-Cloud Strategy That Cost More Than It Saved", { contentDir: "ch08/31-case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/case-study-a-multi-cloud-strategy-that-cost-more-than-it-saved.mp4", durationLabel: "2 min 48 s" }),
+      L(32, "chapter-capstone-hybrid-and-multi-cloud-architecture-review", "Chapter Capstone: Hybrid and Multi-Cloud Architecture Review", { contentDir: "ch08/32-chapter-capstone-hybrid-and-multi-cloud-architecture-review", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/chapter-capstone-hybrid-and-multi-cloud-architecture-review.mp4", durationLabel: "2 min 57 s" }),
     ],
   },
 ];
