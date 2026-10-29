@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Enterprise Cloud Architecture & Advanced Capstone · Chapter 3",
+    "titlePlain": "Hub-and-Spoke vs. Transit Gateway ",
+    "titleEmphasis": "Topologies Compared",
+    "titleSuffix": "",
+    "subtitle": "Lesson 9 · Network Architecture at Enterprise Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why a full mesh fails",
+    "titlePlain": "From N² mesh to a ",
+    "titleEmphasis": "single hub",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Full mesh: every network peers with every other", "sub": "connection count grows roughly as N² — unmanageable past a handful of teams" },
+      { "label": "Hub-and-spoke: spokes only connect to the hub", "sub": "connection count drops to roughly N, with one policy enforcement point" },
+      { "label": "VNet/VPC peering is non-transitive on both clouds", "sub": "a spoke peered to the hub cannot auto-reach another spoke through it" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Azure: UDRs force traffic through the hub",
+    "code": "az network route-table create \\\n  --resource-group hub-rg \\\n  --name spoke-to-hub-routes\n\naz network route-table route create \\\n  --resource-group hub-rg \\\n  --route-table-name spoke-to-hub-routes \\\n  --name default-to-firewall \\\n  --address-prefix 0.0.0.0/0 \\\n  --next-hop-type VirtualAppliance \\\n  --next-hop-ip-address 10.0.0.4",
+    "caption": "A UDR overriding 0.0.0.0/0 is what turns non-transitive peering into centralized egress."
+  },
+  {
+    "type": "code",
+    "eyebrow": "AWS: Transit Gateway as a managed router",
+    "code": "aws ec2 create-transit-gateway \\\n  --description \"enterprise-hub-tgw\"\n\naws ec2 create-transit-gateway-vpc-attachment \\\n  --transit-gateway-id tgw-0123456789abcdef0 \\\n  --vpc-id vpc-0a1b2c3d4e5f67890 \\\n  --subnet-ids subnet-0f1e2d3c4b5a69870",
+    "caption": "Transit Gateway handles transitive routing natively through route table associations on each attachment."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Choosing between them",
+    "titlePlain": "Same intent, different ",
+    "titleEmphasis": "mechanism",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Azure: architect enforces it with UDRs on every spoke", "sub": "scales to Virtual WAN once hand-wiring UDRs gets unwieldy" },
+      { "label": "AWS: TGW route table associations enforce it natively", "sub": "an inspection VPC attachment can see every other attachment's traffic" },
+      { "label": "Both: one connection point, one policy, linear not quadratic", "sub": "the architectural intent is identical even though the mechanics differ" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 10",
+    "titlePlain": "Hybrid Connectivity: ExpressRoute, ",
+    "titleEmphasis": "Direct Connect, and VPN",
+    "titleSuffix": "",
+    "subtitle": "Dedicated circuits versus site-to-site VPN, and when each is the right call."
+  }
+]

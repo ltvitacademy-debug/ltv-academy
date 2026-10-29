@@ -1,0 +1,60 @@
+{
+  "lesson": "hub-and-spoke-vs-transit-gateway-topologies-compared",
+  "questions": [
+    {
+      "q": "Why does a fully-meshed network, where every team's VNet or VPC peers directly with every other one, stop working at enterprise scale?",
+      "options": [
+        "Peering connections automatically expire after 90 days on both Azure and AWS",
+        "Full mesh requires a dedicated ExpressRoute circuit for every pair of networks",
+        "The connection count grows roughly as N² against the number of networks, making review and firewall policy unmanageable",
+        "Azure and AWS both cap total VNets/VPCs per subscription or account at 10"
+      ],
+      "answer": 2,
+      "explain": "A full mesh's connection count grows quadratically with the number of networks — tolerable at 5 teams, unmanageable at 50 — which is exactly the problem hub-and-spoke is designed to solve."
+    },
+    {
+      "q": "What is the one fact about Azure VNet peering that makes the hub-and-spoke pattern work?",
+      "options": [
+        "VNet peering is explicitly non-transitive — a spoke peered to the hub cannot automatically reach another spoke through it",
+        "VNet peering automatically routes all spoke-to-spoke traffic through Azure Firewall with no configuration needed",
+        "VNet peering only works within a single resource group",
+        "VNet peering requires both VNets to share the exact same address space"
+      ],
+      "answer": 0,
+      "explain": "VNet peering's non-transitivity means a spoke peered to the hub cannot reach another peered spoke automatically — that forces the hub to be the only path, which an architect then controls with UDRs."
+    },
+    {
+      "q": "On Azure, what mechanism actually forces a spoke's outbound traffic through the hub's firewall instead of straight to the internet?",
+      "options": [
+        "A Network Security Group attached to the hub VNet only",
+        "A user-defined route (UDR) on the spoke subnet setting the 0.0.0.0/0 route's next hop to the hub's firewall/NVA",
+        "Azure Virtual WAN, which is required before any peering can be created",
+        "A DNS CNAME record pointing the spoke's traffic at the hub"
+      ],
+      "answer": 1,
+      "explain": "A UDR on the spoke subnet overriding the default route (0.0.0.0/0) to point at the hub firewall or NVA's IP is what turns non-transitive peering into enforced centralized egress."
+    },
+    {
+      "q": "How does AWS Transit Gateway differ from the classic Azure hub-and-spoke pattern built on VNet peering and UDRs?",
+      "options": [
+        "Transit Gateway cannot connect to a VPN or Direct Connect link, only VPCs",
+        "Transit Gateway is a managed, natively transitive router that VPCs attach to, using route table associations instead of manually maintained UDRs per spoke",
+        "Transit Gateway requires every attached VPC to use identical CIDR ranges",
+        "Transit Gateway only supports a single VPC attachment per AWS account"
+      ],
+      "answer": 1,
+      "explain": "Transit Gateway handles transitive routing natively through route table associations on attachments, rather than requiring an architect to hand-wire UDRs on every spoke the way classic Azure hub-and-spoke does."
+    },
+    {
+      "q": "When does Azure Virtual WAN typically become the better choice over a hand-built hub VNet with manual UDRs?",
+      "options": [
+        "Virtual WAN is never recommended and Microsoft advises against using it in production",
+        "Virtual WAN is only usable with a single spoke, so it never applies to multi-team designs",
+        "Virtual WAN should be used in place of Azure Firewall entirely and removes the need for any firewall",
+        "Once the number of spokes or regions makes manually keeping UDRs consistent across every spoke too error-prone to maintain by hand"
+      ],
+      "answer": 3,
+      "explain": "Virtual WAN is Microsoft's managed hub, the closer Azure analog to Transit Gateway, and becomes the better option once hand-maintaining UDRs across many spokes/regions stops being manageable."
+    }
+  ]
+}

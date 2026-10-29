@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Enterprise Cloud Architecture & Advanced Capstone · Chapter 8",
+    "titlePlain": "Designing a Landing Zone for a ",
+    "titleEmphasis": "Multi-Team Org",
+    "titleSuffix": "",
+    "subtitle": "Lesson 29 · Capstone: Designing and Defending an Enterprise Cloud Architecture"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Harlow Creek Logistics",
+    "titlePlain": "Subscriptions by ",
+    "titleEmphasis": "Blast Radius",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "3 product teams + 1 platform team", "sub": "Dispatch, Fleet Analytics, Customer Portal, plus shared Platform" },
+      { "label": "8 subscriptions, not 4", "sub": "One prod + one non-prod per team, plus connectivity/identity/management" },
+      { "label": "Management groups mirror it", "sub": "mg-landing-zones holds every team; mg-sandbox holds none of it" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The hub, allocated",
+    "code": "Hub VNet: 10.0.0.0/22  (East US 2, sub-connectivity)\n|- AzureFirewallSubnet     10.0.0.0/26\n|- GatewaySubnet           10.0.0.64/27\n`- snet-shared-services    10.0.1.0/24\n\nSpokes (peered to hub, never to each other):\ndispatch-prod            10.10.0.0/20\nfleetanalytics-prod       10.20.0.0/20\ncustomerportal-prod       10.30.0.0/20",
+    "caption": "Shared services live once in the hub; every spoke peers to it, never to another spoke."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Forcing egress through the firewall",
+    "code": "# Route table attached to every spoke subnet\nRoute: 0.0.0.0/0 -> next hop: Azure Firewall private IP (10.0.0.4)\n\n# Without this UDR, a spoke VM reaches the internet\n# directly -- bypassing the firewall entirely.",
+    "caption": "A UDR is what actually makes the hub a chokepoint, not just a diagram."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Guardrails as policy, not a wiki page",
+    "code": "{\n  \"policies\": [\n    { \"name\": \"deny-public-ip-on-nic\", \"applies_to\": \"mg-landing-zones\" },\n    { \"name\": \"require-tags-costcenter-env-owner\", \"applies_to\": \"mg-landing-zones\" },\n    { \"name\": \"allowed-locations-eastus2-centralus\", \"applies_to\": \"mg-hcl\" },\n    { \"name\": \"require-nsg-on-every-subnet\", \"applies_to\": \"mg-landing-zones\" }\n  ]\n}",
+    "caption": "allowed-locations is assigned one level higher, so it binds Platform's own subscriptions too."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 30",
+    "titlePlain": "Writing the ",
+    "titleEmphasis": "ADRs and DR Plan",
+    "titleSuffix": "",
+    "subtitle": "Documenting this design's decisions and setting real RTO/RPO targets."
+  }
+]

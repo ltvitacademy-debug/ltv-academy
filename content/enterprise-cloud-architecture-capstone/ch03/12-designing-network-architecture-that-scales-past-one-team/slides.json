@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Enterprise Cloud Architecture & Advanced Capstone · Chapter 3",
+    "titlePlain": "Designing Network Architecture That ",
+    "titleEmphasis": "Scales Past One Team",
+    "titleSuffix": "",
+    "subtitle": "Lesson 12 · Network Architecture at Enterprise Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "It worked for three teams",
+    "titlePlain": "What actually breaks at ",
+    "titleEmphasis": "thirty",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "3 teams peering directly: 9 connections, easy to review", "sub": "a reasonable design for the team count at the time" },
+      { "label": "30 teams, same approach: ~435 potential connections", "sub": "overlapping IP ranges, no single place to answer \"can team 14 reach team 22?\"" },
+      { "label": "Nothing was wrong at the time — nothing forced a revisit", "sub": "the design had no built-in answer for what happens as N grows" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Principle one: a central address plan",
+    "code": "# reserved supernet: 10.0.0.0/8\n# hub:          10.0.0.0/16\n# spoke pool:   10.1.0.0/16 - 10.255.0.0/16, /20 per spoke\n#   spoke-finance:    10.1.0.0/20\n#   spoke-platform:   10.2.0.0/20\n#   spoke-analytics:  10.3.0.0/20",
+    "caption": "Allocate CIDR before provisioning a spoke, not after — overlap is the most common cause of a redesign."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Principle two: a standardized spoke template",
+    "code": "module \"spoke\" {\n  source       = \"git::https://devops/terraform-modules//spoke-network\"\n  spoke_name   = \"analytics\"\n  cidr_block   = \"10.3.0.0/20\"\n  hub_vnet_id  = module.hub.vnet_id\n  dns_zone_id  = module.hub.private_dns_zone_id\n}",
+    "caption": "Every spoke gets the same CIDR source, hub connectivity, routing, and DNS link — no reinventing it per team."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Principles three and four",
+    "titlePlain": "Segmentation and a clear ",
+    "titleEmphasis": "ownership line",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Deny spoke-to-spoke by default", "sub": "adding spoke 31 never requires re-auditing spokes 1 through 30" },
+      { "label": "Central team owns the hub, DNS, IP plan, spoke template", "sub": "the things that create risk if every team owns its own version" },
+      { "label": "Each team owns what's inside its own spoke", "sub": "central review for everything inside a spoke makes the platform team a bottleneck" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Chapter 3 complete · Up next · Chapter 4",
+    "titlePlain": "Resilience and ",
+    "titleEmphasis": "Disaster Recovery",
+    "titleSuffix": "",
+    "subtitle": "Availability zones, RTO/RPO, and multi-region patterns for the architecture this chapter just built."
+  }
+]

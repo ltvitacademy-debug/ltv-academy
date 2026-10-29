@@ -19,6 +19,8 @@ import { AZURE_AWS_CLOUD_SECURITY_CHAPTERS } from "./azure-aws-cloud-security-ou
 import { DOCKER_KUBERNETES_CONTAINER_PLATFORMS_CHAPTERS } from "./docker-kubernetes-container-platforms-outline";
 import { PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS } from "./python-security-automation-devsecops-outline";
 import { CLOUD_RELIABILITY_MONITORING_FINOPS_CHAPTERS } from "./cloud-reliability-monitoring-finops-outline";
+import { ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS } from "./zero-trust-enterprise-security-capstone-outline";
+import { ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS } from "./enterprise-cloud-architecture-capstone-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2483,7 +2485,8 @@ export const COURSES: CourseMeta[] = [
     slug: "zero-trust-enterprise-security-capstone",
     title: "Zero Trust Implementation & Security Engineering Capstone",
     tagline: "Implementing a zero-trust security architecture and a capstone project at enterprise scale.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS,
   },
   {
     slug: "digital-forensics-malware-analysis",
@@ -2578,7 +2581,8 @@ export const COURSES: CourseMeta[] = [
     slug: "enterprise-cloud-architecture-capstone",
     title: "Enterprise Cloud Architecture & Advanced Capstone",
     tagline: "Designing enterprise-scale cloud architecture and a capstone project at the Cloud Architect level.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS,
   },
   {
     slug: "advanced-platform-engineering-gitops-cicd",
