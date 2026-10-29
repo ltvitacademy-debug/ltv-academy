@@ -76,10 +76,10 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
     n: 6,
     title: "Data Architecture Across Hybrid and Multi-Cloud",
     lessons: [
-      L(21, "where-data-gravity-actually-decides-your-architecture", "Where Data Gravity Actually Decides Your Architecture", { contentDir: "ch06/21-where-data-gravity-actually-decides-your-architecture" }),
-      L(22, "replicating-data-across-clouds-without-breaking-consistency", "Replicating Data Across Clouds Without Breaking Consistency", { contentDir: "ch06/22-replicating-data-across-clouds-without-breaking-consistency" }),
-      L(23, "data-residency-and-sovereignty-requirements-in-practice", "Data Residency and Sovereignty Requirements in Practice", { contentDir: "ch06/23-data-residency-and-sovereignty-requirements-in-practice" }),
-      L(24, "a-single-data-platform-serving-multiple-clouds", "A Single Data Platform Serving Multiple Clouds", { contentDir: "ch06/24-a-single-data-platform-serving-multiple-clouds" }),
+      L(21, "where-data-gravity-actually-decides-your-architecture", "Where Data Gravity Actually Decides Your Architecture", { contentDir: "ch06/21-where-data-gravity-actually-decides-your-architecture", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/where-data-gravity-actually-decides-your-architecture.mp4", durationLabel: "2 min 45 s" }),
+      L(22, "replicating-data-across-clouds-without-breaking-consistency", "Replicating Data Across Clouds Without Breaking Consistency", { contentDir: "ch06/22-replicating-data-across-clouds-without-breaking-consistency", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/replicating-data-across-clouds-without-breaking-consistency.mp4", durationLabel: "3 min 7 s" }),
+      L(23, "data-residency-and-sovereignty-requirements-in-practice", "Data Residency and Sovereignty Requirements in Practice", { contentDir: "ch06/23-data-residency-and-sovereignty-requirements-in-practice", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/data-residency-and-sovereignty-requirements-in-practice.mp4", durationLabel: "2 min 48 s" }),
+      L(24, "a-single-data-platform-serving-multiple-clouds", "A Single Data Platform Serving Multiple Clouds", { contentDir: "ch06/24-a-single-data-platform-serving-multiple-clouds", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/a-single-data-platform-serving-multiple-clouds.mp4", durationLabel: "2 min 49 s" }),
     ],
   },
   {

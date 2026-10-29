@@ -58,16 +58,16 @@ export const AI_CLOUD_INFRASTRUCTURE_GPU_COMPUTING_MLOPS_CHAPTERS: ChapterMeta[]
     lessons: [
       L(13, "batch-inference-vs-real-time-inference-infrastructure", "Batch Inference vs. Real-Time Inference Infrastructure", { contentDir: "ch04/13-batch-inference-vs-real-time-inference-infrastructure", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/batch-inference-vs-real-time-inference-infrastructure.mp4", durationLabel: "2 min 32 s" }),
       L(14, "model-serving-frameworks-and-what-they-actually-solve", "Model Serving Frameworks and What They Actually Solve", { contentDir: "ch04/14-model-serving-frameworks-and-what-they-actually-solve", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/model-serving-frameworks-and-what-they-actually-solve.mp4", durationLabel: "2 min 42 s" }),
-      L(15, "autoscaling-inference-workloads-without-wasting-gpu-spend", "Autoscaling Inference Workloads Without Wasting GPU Spend", { contentDir: "ch04/15-autoscaling-inference-workloads-without-wasting-gpu-spend" }),
-      L(16, "a-real-inference-architecture-on-kubernetes", "A Real Inference Architecture on Kubernetes", { contentDir: "ch04/16-a-real-inference-architecture-on-kubernetes" }),
+      L(15, "autoscaling-inference-workloads-without-wasting-gpu-spend", "Autoscaling Inference Workloads Without Wasting GPU Spend", { contentDir: "ch04/15-autoscaling-inference-workloads-without-wasting-gpu-spend", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/autoscaling-inference-workloads-without-wasting-gpu-spend.mp4", durationLabel: "2 min 29 s" }),
+      L(16, "a-real-inference-architecture-on-kubernetes", "A Real Inference Architecture on Kubernetes", { contentDir: "ch04/16-a-real-inference-architecture-on-kubernetes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/a-real-inference-architecture-on-kubernetes.mp4", durationLabel: "2 min 40 s" }),
     ],
   },
   {
     n: 5,
     title: "MLOps Pipelines for Model Lifecycle Management",
     lessons: [
-      L(17, "the-real-ml-lifecycle-data-train-evaluate-deploy-monitor", "The Real ML Lifecycle: Data, Train, Evaluate, Deploy, Monitor", { contentDir: "ch05/17-the-real-ml-lifecycle-data-train-evaluate-deploy-monitor" }),
-      L(18, "experiment-tracking-and-model-registries", "Experiment Tracking and Model Registries", { contentDir: "ch05/18-experiment-tracking-and-model-registries" }),
+      L(17, "the-real-ml-lifecycle-data-train-evaluate-deploy-monitor", "The Real ML Lifecycle: Data, Train, Evaluate, Deploy, Monitor", { contentDir: "ch05/17-the-real-ml-lifecycle-data-train-evaluate-deploy-monitor", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/the-real-ml-lifecycle-data-train-evaluate-deploy-monitor.mp4", durationLabel: "2 min 38 s" }),
+      L(18, "experiment-tracking-and-model-registries", "Experiment Tracking and Model Registries", { contentDir: "ch05/18-experiment-tracking-and-model-registries", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ai-cloud-infrastructure-gpu-computing-mlops/experiment-tracking-and-model-registries.mp4", durationLabel: "2 min 28 s" }),
       L(19, "cicd-for-models-not-just-application-code", "CI/CD for Models, Not Just Application Code", { contentDir: "ch05/19-cicd-for-models-not-just-application-code" }),
       L(20, "model-monitoring-and-detecting-drift-in-production", "Model Monitoring and Detecting Drift in Production", { contentDir: "ch05/20-model-monitoring-and-detecting-drift-in-production" }),
     ],

@@ -48,16 +48,16 @@ export const ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS: ChapterMeta[] =
     title: "Chaos Engineering and Resilience Testing",
     lessons: [
       L(9, "what-chaos-engineering-actually-tests-for", "What Chaos Engineering Actually Tests For", { contentDir: "ch03/09-what-chaos-engineering-actually-tests-for", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/what-chaos-engineering-actually-tests-for.mp4", durationLabel: "2 min 25 s" }),
-      L(10, "running-a-real-chaos-experiment-safely", "Running a Real Chaos Experiment Safely", { contentDir: "ch03/10-running-a-real-chaos-experiment-safely" }),
-      L(11, "game-days-rehearsing-a-disaster-before-it-happens", "Game Days: Rehearsing a Disaster Before It Happens", { contentDir: "ch03/11-game-days-rehearsing-a-disaster-before-it-happens" }),
-      L(12, "turning-chaos-findings-into-real-architecture-changes", "Turning Chaos Findings into Real Architecture Changes", { contentDir: "ch03/12-turning-chaos-findings-into-real-architecture-changes" }),
+      L(10, "running-a-real-chaos-experiment-safely", "Running a Real Chaos Experiment Safely", { contentDir: "ch03/10-running-a-real-chaos-experiment-safely", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/running-a-real-chaos-experiment-safely.mp4", durationLabel: "2 min 15 s" }),
+      L(11, "game-days-rehearsing-a-disaster-before-it-happens", "Game Days: Rehearsing a Disaster Before It Happens", { contentDir: "ch03/11-game-days-rehearsing-a-disaster-before-it-happens", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/game-days-rehearsing-a-disaster-before-it-happens.mp4", durationLabel: "2 min 19 s" }),
+      L(12, "turning-chaos-findings-into-real-architecture-changes", "Turning Chaos Findings into Real Architecture Changes", { contentDir: "ch03/12-turning-chaos-findings-into-real-architecture-changes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/turning-chaos-findings-into-real-architecture-changes.mp4", durationLabel: "2 min 26 s" }),
     ],
   },
   {
     n: 4,
     title: "Advanced Disaster Recovery Architecture",
     lessons: [
-      L(13, "dr-architecture-patterns-revisited-at-enterprise-complexity", "DR Architecture Patterns Revisited at Enterprise Complexity", { contentDir: "ch04/13-dr-architecture-patterns-revisited-at-enterprise-complexity" }),
+      L(13, "dr-architecture-patterns-revisited-at-enterprise-complexity", "DR Architecture Patterns Revisited at Enterprise Complexity", { contentDir: "ch04/13-dr-architecture-patterns-revisited-at-enterprise-complexity", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/dr-architecture-patterns-revisited-at-enterprise-complexity.mp4", durationLabel: "2 min 25 s" }),
       L(14, "dependency-mapping-so-you-know-whats-actually-in-the-blast-radius", "Dependency Mapping So You Know What's Actually in the Blast Radius", { contentDir: "ch04/14-dependency-mapping-so-you-know-whats-actually-in-the-blast-radius" }),
       L(15, "automating-failover-instead-of-relying-on-a-runbook-at-3am", "Automating Failover Instead of Relying on a Runbook at 3 A.M.", { contentDir: "ch04/15-automating-failover-instead-of-relying-on-a-runbook-at-3am" }),
       L(16, "testing-dr-at-the-scale-of-a-real-production-environment", "Testing DR at the Scale of a Real Production Environment", { contentDir: "ch04/16-testing-dr-at-the-scale-of-a-real-production-environment" }),

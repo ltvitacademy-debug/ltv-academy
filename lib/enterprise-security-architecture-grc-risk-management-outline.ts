@@ -47,10 +47,10 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     n: 3,
     title: "Risk Management Fundamentals",
     lessons: [
-      L(9, "the-real-risk-equation-likelihood-impact-and-what-they-miss", "The Real Risk Equation: Likelihood, Impact, and What They Miss", { contentDir: "ch03/09-the-real-risk-equation-likelihood-impact-and-what-they-miss" }),
-      L(10, "qualitative-vs-quantitative-risk-assessment", "Qualitative vs. Quantitative Risk Assessment", { contentDir: "ch03/10-qualitative-vs-quantitative-risk-assessment" }),
-      L(11, "fair-factor-analysis-of-information-risk-in-practice", "FAIR (Factor Analysis of Information Risk) in Practice", { contentDir: "ch03/11-fair-factor-analysis-of-information-risk-in-practice" }),
-      L(12, "risk-registers-and-treatment-accept-mitigate-transfer-avoid", "Risk Registers and Treatment: Accept, Mitigate, Transfer, Avoid", { contentDir: "ch03/12-risk-registers-and-treatment-accept-mitigate-transfer-avoid" }),
+      L(9, "the-real-risk-equation-likelihood-impact-and-what-they-miss", "The Real Risk Equation: Likelihood, Impact, and What They Miss", { contentDir: "ch03/09-the-real-risk-equation-likelihood-impact-and-what-they-miss", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/the-real-risk-equation-likelihood-impact-and-what-they-miss.mp4", durationLabel: "2 min 40 s" }),
+      L(10, "qualitative-vs-quantitative-risk-assessment", "Qualitative vs. Quantitative Risk Assessment", { contentDir: "ch03/10-qualitative-vs-quantitative-risk-assessment", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/qualitative-vs-quantitative-risk-assessment.mp4", durationLabel: "2 min 19 s" }),
+      L(11, "fair-factor-analysis-of-information-risk-in-practice", "FAIR (Factor Analysis of Information Risk) in Practice", { contentDir: "ch03/11-fair-factor-analysis-of-information-risk-in-practice", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/fair-factor-analysis-of-information-risk-in-practice.mp4", durationLabel: "2 min 28 s" }),
+      L(12, "risk-registers-and-treatment-accept-mitigate-transfer-avoid", "Risk Registers and Treatment: Accept, Mitigate, Transfer, Avoid", { contentDir: "ch03/12-risk-registers-and-treatment-accept-mitigate-transfer-avoid", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/risk-registers-and-treatment-accept-mitigate-transfer-avoid.mp4", durationLabel: "2 min 28 s" }),
     ],
   },
   {
