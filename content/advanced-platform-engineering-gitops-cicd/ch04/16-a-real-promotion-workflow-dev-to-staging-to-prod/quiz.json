@@ -1,0 +1,60 @@
+{
+  "lesson": "a-real-promotion-workflow-dev-to-staging-to-prod",
+  "questions": [
+    {
+      "q": "What does \"promote the artifact, not rebuild it\" mean in a GitOps promotion workflow?",
+      "options": [
+        "The exact same built container image moves unchanged through dev, staging, and prod; only the Git config pointing to its tag changes",
+        "Every environment should build its own image from source using the same Dockerfile",
+        "Only the staging environment is allowed to run automated tests",
+        "The artifact should be deleted from the registry after each environment uses it"
+      ],
+      "answer": 0,
+      "explain": "The same immutable image (identified by tag or digest) is promoted unchanged between environments; rebuilding per environment risks staging and prod silently being different bytes despite looking identical in Git."
+    },
+    {
+      "q": "What specifically can go wrong if staging and prod each rebuild the application from source instead of promoting the same tag?",
+      "options": [
+        "Nothing — rebuilding is always equivalent to promoting the same artifact",
+        "ArgoCD and Flux cannot reconcile rebuilt images at all",
+        "A different cached layer, a dependency resolving to a newer patch version, or a build flag left on can make 'it worked in staging' meaningless, since the two builds aren't the same bytes",
+        "The Kustomize overlay directories are deleted automatically"
+      ],
+      "answer": 2,
+      "explain": "Rebuilding per environment reopens the exact class of bug GitOps is meant to close: subtle build differences (cached layers, dependency versions, flags) mean staging's validation no longer proves anything about what prod will actually run."
+    },
+    {
+      "q": "In the promotion workflow described, what does a promotion PR from dev to staging actually change?",
+      "options": [
+        "It rewrites the application's source code to match staging's requirements",
+        "It deletes the dev overlay once staging is created",
+        "It copies the same image tag from the dev overlay into the staging overlay, ideally as a near one-line diff",
+        "It creates a brand-new container image tagged specifically for staging"
+      ],
+      "answer": 2,
+      "explain": "The promotion PR's diff should show the identical tag moving from dev's overlay into staging's overlay — copied, not re-tagged or rebuilt — which is what keeps the artifact itself unchanged across environments."
+    },
+    {
+      "q": "After ArgoCD or Flux reconciles a promotion to prod, what should you actually check to confirm the rollout succeeded?",
+      "options": [
+        "Only that Sync status shows Synced",
+        "Health status, since Sync status only confirms the manifests were applied, not that the workload is actually running well",
+        "The number of commits in the Git repository",
+        "Whether the staging overlay still contains the old tag"
+      ],
+      "answer": 1,
+      "explain": "Sync status only means the live state matches Git; Health status is what tells you whether the newly promoted workload is actually functioning, which is the real signal for rollout success."
+    },
+    {
+      "q": "What does rolling back a bad promotion actually involve under this GitOps workflow?",
+      "options": [
+        "Manually running kubectl rollout undo against the production cluster",
+        "Rebuilding the previous version's image from source and re-pushing it",
+        "Deleting the entire config repo and starting over",
+        "Reverting the promotion PR's Git commit, which lets ArgoCD or Flux reconcile the cluster back to the previous known-good tag automatically"
+      ],
+      "answer": 3,
+      "explain": "Because the promotion was a Git commit changing one tag value, undoing it is a git revert on that commit — ArgoCD/Flux then reconciles the cluster back to the prior state with no manual cluster commands and no guessing which version ran before."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "structuring-a-gitops-repo-for-multiple-environments",
+  "questions": [
+    {
+      "q": "In a Kustomize directory-per-environment layout, what does `base/` contain?",
+      "options": [
+        "The environment-agnostic manifests that every overlay builds on top of",
+        "Only the production-specific replica count and image tag",
+        "A full copy of every environment's manifests",
+        "The ArgoCD Application CRDs for all environments"
+      ],
+      "answer": 0,
+      "explain": "base/ holds the manifests common to every environment; each overlay (dev, staging, prod) references the base and patches only what differs for that environment."
+    },
+    {
+      "q": "What is the main visibility advantage of directory-per-environment (Kustomize overlays) over branch-per-environment?",
+      "options": [
+        "It requires no Git repository at all",
+        "You can diff two folders side by side in one git diff to see exactly what differs between environments",
+        "It eliminates the need for an image tag anywhere in the repo",
+        "It automatically grants different access control per environment with no extra configuration"
+      ],
+      "answer": 1,
+      "explain": "With directories in one repo, comparing environments is a single git diff between two folders. With branch-per-environment, the same comparison means diffing two branches, which is less visible at a glance."
+    },
+    {
+      "q": "What is a specific real cost of branch-per-environment (dev/staging/main) promotion?",
+      "options": [
+        "It is incompatible with ArgoCD and Flux entirely",
+        "It cannot express different replica counts per environment",
+        "Merge conflicts can appear exactly during promotion, and a hotfix applied directly to main can drift ahead of staging unnoticed",
+        "It requires deleting the dev branch after every deploy"
+      ],
+      "answer": 2,
+      "explain": "Because each environment is a separate branch, promoting means merging one branch forward into the next, which can produce conflicts, and a direct hotfix to main can leave staging silently behind."
+    },
+    {
+      "q": "In the app-repo vs. config-repo pattern, what does the application source repo's CI do?",
+      "options": [
+        "It edits live cluster resources directly via kubectl",
+        "It pushes a new image tag into the separate config repo rather than touching cluster manifests directly",
+        "It deletes the config repo once staging passes",
+        "It runs ArgoCD and Flux itself as part of the build"
+      ],
+      "answer": 1,
+      "explain": "In this pattern, the app repo's CI builds and tags an image, then updates the config repo (which ArgoCD/Flux actually watch) with the new tag — it never applies manifests to the cluster directly."
+    },
+    {
+      "q": "What do most production ArgoCD/Flux setups land on, according to this lesson?",
+      "options": [
+        "A single branch shared by every environment with no overlays at all",
+        "One manually maintained manifest file per environment with no base",
+        "Directories with Kustomize overlays in one config repo, often paired with a separate app-source repo for the build step",
+        "A full separate Kubernetes cluster repo forked for every single pull request"
+      ],
+      "answer": 2,
+      "explain": "Most shops combine Pattern 1's single-diff visibility (directories + Kustomize overlays in a config repo) with a separate app-source repo, keeping 'build the image' and 'deploy the image' as distinct concerns."
+    }
+  ]
+}

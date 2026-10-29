@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Platform Engineering, GitOps & CI/CD · Chapter 5",
+    "titlePlain": "Progressive Delivery with Automated ",
+    "titleEmphasis": "Rollback",
+    "titleSuffix": " on a Bad Signal",
+    "subtitle": "Lesson 19 · Advanced CI/CD Pipeline Design"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "The gap in a plain canary",
+    "titlePlain": "A pause isn't a ",
+    "titleEmphasis": "decision",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Fixed-timer pause", "sub": "Lesson 18's canary waits, but nothing checks real metrics" },
+      { "label": "Human watching a dashboard", "sub": "doesn't scale past a handful of deployments a day" },
+      { "label": "Progressive delivery", "sub": "wires the advance/abort decision into real metric queries" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "AnalysisTemplate: a real Prometheus query",
+    "code": "apiVersion: argoproj.io/v1alpha1\nkind: AnalysisTemplate\nmetadata:\n  name: error-rate-check\nspec:\n  metrics:\n    - name: error-rate\n      interval: 1m\n      successCondition: result[0] <= 0.01\n      failureLimit: 2\n      provider:\n        prometheus:\n          address: http://prometheus.monitoring:9090\n          query: |\n            sum(rate(http_requests_total{job=\"checkout\",status=~\"5..\"}[5m]))\n            /\n            sum(rate(http_requests_total{job=\"checkout\"}[5m]))",
+    "caption": "Same PromQL from the observability course — now driving a deployment decision, not just a panel."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Wired into the canary steps",
+    "code": "strategy:\n  canary:\n    steps:\n      - setWeight: 10\n      - analysis:\n          templates:\n            - templateName: error-rate-check\n      - setWeight: 50\n      - analysis:\n          templates:\n            - templateName: error-rate-check\n      - setWeight: 100",
+    "caption": "A breach aborts the rollout and shifts traffic back to stable — no human paged first."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What counts as a bad signal",
+    "titlePlain": "Thresholds that are ",
+    "titleEmphasis": "neither",
+    "titleSuffix": " too strict nor too loose",
+    "steps": [
+      { "label": "Error rate", "sub": "the most common signal — ratio of 5xx to total requests" },
+      { "label": "p95 / p99 latency", "sub": "correct but noticeably slower is still a regression" },
+      { "label": "failureLimit", "sub": "requires consecutive failures, so one blip doesn't trigger a rollback" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 20",
+    "titlePlain": "Feature Flags: Decoupling Deploy from ",
+    "titleEmphasis": "Release",
+    "titleSuffix": "",
+    "subtitle": "What progressive delivery still can't catch, and why that's a separate decision."
+  }
+]

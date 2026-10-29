@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Platform Engineering, GitOps & CI/CD · Chapter 8",
+    "titlePlain": "GitOps-Driven ",
+    "titleEmphasis": "Progressive Delivery",
+    "titleSuffix": "",
+    "subtitle": "Lesson 30 · Capstone: Building an Internal Developer Platform"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Deployment becomes Rollout",
+    "code": "apiVersion: argoproj.io/v1alpha1\nkind: Rollout\nmetadata:\n  name: order-notifications\nspec:\n  strategy:\n    canary:\n      steps:\n        - setWeight: 10\n        - pause: { duration: 5m }\n        - setWeight: 25\n        - pause: { duration: 5m }\n        - setWeight: 50\n        - pause: { duration: 5m }\n        - setWeight: 100",
+    "caption": "Traffic shifts in four scheduled steps, with a pause before each next move."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The automated go/no-go signal",
+    "code": "apiVersion: argoproj.io/v1alpha1\nkind: AnalysisTemplate\nmetadata:\n  name: error-rate-check\nspec:\n  metrics:\n    - name: error-rate\n      successCondition: result[0] < 0.01\n      failureLimit: 2\n      provider:\n        prometheus:\n          query: |\n            sum(rate(http_requests_total{status=~\"5..\"}[2m]))\n            / sum(rate(http_requests_total[2m]))",
+    "caption": "A pause alone only waits -- this is what actually decides go or no-go."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Still GitOps, start to finish",
+    "titlePlain": "Commit, Sync, ",
+    "titleEmphasis": "Watch",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "1. git commit + push", "sub": "Promote v1.3.0 by changing the image tag in the overlay" },
+      { "label": "2. ArgoCD syncs", "sub": "The Rollout is just more YAML in the same overlay Chapter 4 wired up" },
+      { "label": "3. AnalysisRun watches", "sub": "error-rate-check runs automatically at each pause" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "An automated rollback, in the logs",
+    "code": "AnalysisRuns:\n  ✖ error-rate-check   Failed (2/2 consecutive failures)\nStatus:  Degraded\nMessage: RolloutAborted: analysis run failed,\n         canary scaled to 0\n\n# Application in ArgoCD: OutOfSync\n# -- visible in Git, no kubectl rollback needed",
+    "caption": "Argo Rollouts aborts on its own -- no incident call needed to stop the bad release."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 31",
+    "titlePlain": "A Platform ",
+    "titleEmphasis": "Nobody Adopted",
+    "titleSuffix": "",
+    "subtitle": "A case study in why technical excellence alone doesn't earn adoption."
+  }
+]

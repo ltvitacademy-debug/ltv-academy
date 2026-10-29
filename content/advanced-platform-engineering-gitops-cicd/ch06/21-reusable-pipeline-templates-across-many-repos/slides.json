@@ -1,0 +1,48 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Platform Engineering, GitOps & CI/CD · Chapter 6",
+    "titlePlain": "Reusable Pipeline Templates Across ",
+    "titleEmphasis": "Many Repos",
+    "titleSuffix": "",
+    "subtitle": "Lesson 21 · Pipeline-as-Code at Scale"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "What copy-paste pipelines cost you",
+    "titlePlain": "300 repos, ",
+    "titleEmphasis": "300 drifting copies",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "One good pipeline, copied everywhere", "sub": "checkout, install, test, scan, build, deploy — pasted into every new repo" },
+      { "label": "Each copy drifts independently", "sub": "one team adds caching, another skips the scan step and never restores it" },
+      { "label": "A fix means editing hundreds of files", "sub": "nobody can say with confidence what pipeline behavior actually runs where" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "GitHub Actions: the reusable workflow",
+    "code": "# pipeline-templates repo: .github/workflows/build-test-scan.yml\nname: Reusable Build, Test & Scan\n\non:\n  workflow_call:\n    inputs:\n      node-version:\n        required: false\n        type: string\n        default: \"20\"\n    secrets:\n      NPM_TOKEN:\n        required: true\n\njobs:\n  build-test-scan:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: ${{ inputs.node-version }}\n      - run: npm ci\n      - run: npm test\n      - name: Required security scan\n        run: npm audit --audit-level=high",
+    "caption": "on: workflow_call turns a normal workflow into one many repos can call."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Calling it from a consumer repo",
+    "code": "# consuming repo: .github/workflows/ci.yml\nname: CI\non: [push]\n\njobs:\n  run-shared-pipeline:\n    uses: my-org/pipeline-templates/.github/workflows/build-test-scan.yml@v1\n    with:\n      node-version: \"20\"\n    secrets:\n      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}",
+    "caption": "@v1, not @main — the consumer is pinned to a tagged release, not a moving target."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Azure DevOps: templates and extends",
+    "code": "resources:\n  repositories:\n    - repository: templates\n      type: git\n      name: PlatformEngineering/pipeline-templates\n      ref: refs/tags/v1\n\nextends:\n  template: templates/build-test-scan.yml@templates\n  parameters:\n    nodeVersion: \"20.x\"",
+    "caption": "extends means the consumer can't quietly skip the steps the template defines."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 22",
+    "titlePlain": "Shared pipeline libraries, versioned ",
+    "titleEmphasis": "safely",
+    "titleSuffix": "",
+    "subtitle": "Treating the template repo itself like a real software dependency."
+  }
+]

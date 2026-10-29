@@ -21,6 +21,8 @@ import { PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS } from "./python-security
 import { CLOUD_RELIABILITY_MONITORING_FINOPS_CHAPTERS } from "./cloud-reliability-monitoring-finops-outline";
 import { ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS } from "./zero-trust-enterprise-security-capstone-outline";
 import { ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS } from "./enterprise-cloud-architecture-capstone-outline";
+import { DIGITAL_FORENSICS_MALWARE_ANALYSIS_CHAPTERS } from "./digital-forensics-malware-analysis-outline";
+import { ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS } from "./advanced-platform-engineering-gitops-cicd-outline";
 import { TRACKS } from "./copy";
 import { POWERBI_CHAPTERS, type ChapterMeta, type LessonMeta } from "./powerbi-outline";
 import { PYTHON_CHAPTERS } from "./python-outline";
@@ -2492,7 +2494,8 @@ export const COURSES: CourseMeta[] = [
     slug: "digital-forensics-malware-analysis",
     title: "Digital Forensics & Malware Analysis",
     tagline: "Expert specialization: disk, memory, and network forensics, plus static and dynamic malware analysis.",
-    status: "coming-soon",
+    status: "available",
+    chapters: DIGITAL_FORENSICS_MALWARE_ANALYSIS_CHAPTERS,
   },
   {
     slug: "ethical-hacking-penetration-testing-purple-team",
@@ -2588,7 +2591,8 @@ export const COURSES: CourseMeta[] = [
     slug: "advanced-platform-engineering-gitops-cicd",
     title: "Advanced Platform Engineering, GitOps & CI/CD",
     tagline: "Expert specialization: internal developer platforms, GitOps workflows, and advanced CI/CD pipeline engineering.",
-    status: "coming-soon",
+    status: "available",
+    chapters: ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS,
   },
   {
     slug: "hybrid-multi-cloud-enterprise-architecture",

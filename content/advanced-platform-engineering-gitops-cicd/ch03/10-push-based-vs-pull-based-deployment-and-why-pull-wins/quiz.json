@@ -1,0 +1,60 @@
+{
+  "lesson": "push-based-vs-pull-based-deployment-and-why-pull-wins",
+  "questions": [
+    {
+      "q": "In a push-based deployment model, what does the CI pipeline typically need in order to deploy to a production cluster?",
+      "options": [
+        "Nothing beyond write access to the Git repository",
+        "Credentials with enough privilege to authenticate directly to the cluster and apply manifests, such as a fetched kubeconfig",
+        "A read-only webhook subscription to the cluster's event stream",
+        "Access to the cluster's etcd backup snapshots only"
+      ],
+      "answer": 1,
+      "explain": "Push-based pipelines run commands like `az aks get-credentials` followed by `kubectl apply`, which means the CI system must hold credentials privileged enough to modify the live cluster directly."
+    },
+    {
+      "q": "Why is holding privileged cluster credentials inside a CI system considered a security liability?",
+      "options": [
+        "Because CI systems cannot technically store secrets at all",
+        "Because Kubernetes rejects any deployment that originates from outside the cluster network",
+        "Because kubeconfig files expire after exactly five minutes in every cloud provider",
+        "Because a compromise of the CI system (a leaked secret, a poisoned dependency, a malicious PR) can expose or abuse those same privileged credentials, widening the blast radius"
+      ],
+      "answer": 3,
+      "explain": "The CI system becomes a high-value target precisely because it has standing, often broadly-scoped, access to production; any compromise of it can be leveraged against the cluster it's authorized to deploy to."
+    },
+    {
+      "q": "What does a pull-based GitOps agent, such as Argo CD or Flux, actually do differently from a push-based pipeline?",
+      "options": [
+        "It still pushes changes from an external pipeline, just using a different credential format",
+        "It eliminates the cluster entirely and deploys directly to a CDN",
+        "It runs inside the cluster, watches Git using read-only credentials, and applies changes using its own in-cluster RBAC permissions",
+        "It requires the cluster's API server to accept more inbound connections than a push-based setup would"
+      ],
+      "answer": 2,
+      "explain": "A pull-based agent runs in-cluster, authenticates outbound to Git with read-only credentials, and applies changes with permissions scoped by Kubernetes RBAC it already holds — no external system needs a privileged cluster credential."
+    },
+    {
+      "q": "What does the OpenGitOps \"Pulled Automatically\" principle state?",
+      "options": [
+        "Software agents automatically pull the desired state declarations from the source, rather than an external system pushing them in",
+        "All container images must be pulled from a single approved private registry",
+        "Developers must manually pull the latest manifests before every deployment",
+        "CI pipelines must poll the cluster's API server every five seconds"
+      ],
+      "answer": 0,
+      "explain": "The Pulled Automatically principle specifically assigns the responsibility of fetching and applying desired state to software agents, not to external CI/CD pipelines pushing changes in."
+    },
+    {
+      "q": "In the pull model described in this lesson, what kind of credential does the GitOps agent use to reach Git, and what does it use to apply changes to the cluster?",
+      "options": [
+        "A cluster-admin kubeconfig to reach Git, and a GitHub personal access token to apply changes",
+        "A read-only deploy key or scoped token to reach Git, and its own in-cluster RBAC permissions to apply changes",
+        "No credentials of any kind are needed in the pull model",
+        "A shared root password used for both Git and the cluster API server"
+      ],
+      "answer": 1,
+      "explain": "The agent authenticates outbound to Git with read-only credentials and applies manifests using permissions scoped through Kubernetes Roles and RoleBindings it already holds in-cluster — never a privileged external credential."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lesson": "gitops-vs-plain-cicd-what-actually-changes",
+  "questions": [
+    {
+      "q": "In a GitOps pipeline, what is the CI pipeline's actual last action before a change reaches production, after build/test/push-image?",
+      "options": [
+        "Running kubectl apply directly against the production cluster",
+        "Committing a manifest change (such as a bumped image tag) to the Git repo and opening a pull request",
+        "Deleting the previous production deployment",
+        "SSHing into a cluster node to restart the kubelet"
+      ],
+      "answer": 1,
+      "explain": "In GitOps, CI's final act is to touch Git, not the cluster — it updates the manifest (e.g. the image tag) and opens a PR; an in-cluster agent is what performs the actual deployment from there."
+    },
+    {
+      "q": "According to the stage-by-stage comparison in this lesson, what detects configuration drift in a plain CI/CD pipeline that just runs kubectl apply?",
+      "options": [
+        "Nothing does — it's invisible until someone happens to notice unexpected cluster behavior",
+        "The CI pipeline automatically re-applies manifests every hour",
+        "Kubernetes itself rejects any manual kubectl command outright",
+        "A built-in kubectl flag that blocks out-of-band changes"
+      ],
+      "answer": 0,
+      "explain": "Plain CI/CD has no continuous reconciliation loop watching for drift; a manual change can sit unnoticed until it causes a visible problem, unlike GitOps's continuous reconciliation."
+    },
+    {
+      "q": "How does environment promotion (staging to production) typically work in a GitOps model, versus a plain CI/CD pipeline?",
+      "options": [
+        "GitOps promotion requires rebuilding the container image from scratch for each environment",
+        "Both models promote identically, by re-running the same pipeline against a different kubectl context",
+        "Plain CI/CD promotion is always a pull request; GitOps promotion is always a pipeline parameter",
+        "GitOps promotion is a Git operation — a pull request that copies a change from the staging overlay into the production overlay — rather than re-running a pipeline against a different target"
+      ],
+      "answer": 3,
+      "explain": "In GitOps, promotion means opening a PR that merges a change already proven in the staging overlay into the production overlay, giving reviewers a literal diff of what's about to run in production."
+    },
+    {
+      "q": "Why does this lesson say that a team which keeps YAML in Git but still lets CI run kubectl apply directly against the cluster has NOT adopted GitOps?",
+      "options": [
+        "Because YAML manifests are not a valid way to describe Kubernetes resources",
+        "Because that team has kept the push model and just moved the files into a repo, without satisfying the Pulled Automatically or Continuously Reconciled principles",
+        "Because Git cannot store files larger than 100 KB",
+        "Because kubectl apply is incompatible with any version of Kubernetes released after 1.20"
+      ],
+      "answer": 1,
+      "explain": "Storing manifests in Git only satisfies the Declarative and Versioned and Immutable principles; without a pull-based in-cluster agent and continuous reconciliation, the pipeline is still push-based CI/CD with its YAML relocated, not GitOps."
+    },
+    {
+      "q": "In the GitOps model described in this lesson, how does rollback typically work compared to plain CI/CD?",
+      "options": [
+        "GitOps rollback requires manually guessing at the cluster's prior kubectl state, same as plain CI/CD",
+        "Rollback is identical in both models and requires rebuilding from source control history",
+        "GitOps rollback is a git revert, which the in-cluster agent then automatically re-applies; plain CI/CD rollback means re-running a previous pipeline execution or guessing at prior kubectl state",
+        "Rollback is not possible in either model once a deployment has shipped"
+      ],
+      "answer": 2,
+      "explain": "A git revert creates a new commit undoing a bad change, and the GitOps agent's reconciliation loop automatically re-applies that reverted state — a much more reliable path than re-running an old pipeline execution."
+    }
+  ]
+}

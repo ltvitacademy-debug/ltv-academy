@@ -1,0 +1,60 @@
+{
+  "lesson": "lab-wiring-gitops-driven-progressive-delivery-for-a-real-app",
+  "questions": [
+    {
+      "q": "What Kubernetes kind does Argo Rollouts use in place of a standard Deployment to enable native canary traffic shifting?",
+      "options": [
+        "StatefulSet",
+        "Rollout",
+        "Job",
+        "HorizontalPodAutoscaler"
+      ],
+      "answer": 1,
+      "explain": "A Rollout keeps the same container spec as a Deployment but adds a strategy block -- setWeight and pause steps -- that a plain Deployment doesn't understand."
+    },
+    {
+      "q": "In the AnalysisTemplate, what does successCondition: result[0] < 0.01 actually gate?",
+      "options": [
+        "Whether the container image was built successfully",
+        "Whether the catalog entry resolves correctly",
+        "Whether the canary's error rate stays under 1%, as measured by the Prometheus query",
+        "Whether the GitOps repo has any uncommitted changes"
+      ],
+      "answer": 2,
+      "explain": "The query divides 5xx request rate by total request rate for the canary revision; the rollout step only proceeds if that ratio stays under 1%."
+    },
+    {
+      "q": "Why does the rollout set analysis.startingStep: 2 instead of running the analysis from the very first step?",
+      "options": [
+        "So the analysis only starts once traffic first reaches real users at a later step, not during the very first weight that's still settling",
+        "Because AnalysisTemplates are not allowed to run during step 1 by Argo Rollouts' design",
+        "To save on Prometheus query costs regardless of correctness",
+        "Because step 1 always fails the error-rate check by default"
+      ],
+      "answer": 0,
+      "explain": "startingStep: 2 means every pause from that point on is backed by a real automated check, rather than running analysis during the earliest, still-settling traffic shift."
+    },
+    {
+      "q": "When the canary's error rate crosses the failureLimit threshold, what happens without any human running a command?",
+      "options": [
+        "Nothing happens until someone manually reviews the dashboard",
+        "The entire Application is deleted from ArgoCD",
+        "ArgoCD automatically reverts the Git commit that introduced the change",
+        "Argo Rollouts aborts the rollout on its own, scales the canary to zero, and returns all traffic to the stable revision"
+      ],
+      "answer": 3,
+      "explain": "Automated rollback means Argo Rollouts itself aborts the canary and restores traffic to the stable revision -- no manual kubectl rollback or incident call required."
+    },
+    {
+      "q": "After an automated rollback, why does the Application in ArgoCD still show the commit that introduced the bad release as OutOfSync, rather than disappearing without a trace?",
+      "options": [
+        "Because this setup is still GitOps end to end -- the failure and the rollback state are both visible through the same Git and ArgoCD reconciliation Chapter 4 already established",
+        "Because ArgoCD automatically deletes the Application on any failure",
+        "Because OutOfSync always means the cluster has no record of the deployment",
+        "Because Argo Rollouts bypasses ArgoCD entirely during a rollback"
+      ],
+      "answer": 0,
+      "explain": "The Rollout and AnalysisTemplate are just more YAML in the overlay ArgoCD syncs, so the whole canary and its rollback stay visible through ordinary GitOps reconciliation rather than vanishing."
+    }
+  ]
+}

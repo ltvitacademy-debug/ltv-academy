@@ -1,0 +1,43 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Advanced Platform Engineering, GitOps & CI/CD · Chapter 5",
+    "titlePlain": "Multi-Stage Pipelines: Build, Test, Scan, ",
+    "titleEmphasis": "Deploy",
+    "titleSuffix": "",
+    "subtitle": "Lesson 17 · Advanced CI/CD Pipeline Design"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Four gates, in order",
+    "titlePlain": "Each stage is a ",
+    "titleEmphasis": "reason to stop",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Build", "sub": "compile/package and produce a versioned, deployable artifact" },
+      { "label": "Test", "sub": "unit tests first, then integration tests against real dependencies" },
+      { "label": "Scan", "sub": "SAST, SCA, secrets detection, and IaC scanning — any one can block" },
+      { "label": "Deploy", "sub": "update the GitOps repo; ArgoCD/Flux reconciles the cluster" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "Scan stage pulls in the DevSecOps chapter",
+    "code": "scan:\n  needs: test\n  steps:\n    - name: SAST\n      run: semgrep ci\n    - name: SCA / dependency scan\n      run: trivy fs --severity CRITICAL,HIGH .\n    - name: Secrets detection\n      run: gitleaks detect --source .\n    - name: IaC scan\n      run: checkov -d infra/",
+    "caption": "Severity decides whether the pipeline blocks — not which tool found the problem."
+  },
+  {
+    "type": "code",
+    "eyebrow": "The gate chain, made concrete",
+    "code": "jobs:\n  build:\n    runs-on: ubuntu-latest\n  test:\n    needs: build\n  scan:\n    needs: test\n  deploy:\n    needs: scan\n    steps:\n      - run: yq -i '.image.tag = \"${{ github.sha }}\"' gitops-repo/app/values.yaml\n      - run: git -C gitops-repo commit -am \"deploy@${{ github.sha }}\" && git -C gitops-repo push",
+    "caption": "`needs:` is a hard dependency — deploy cannot start until scan reports success."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 18",
+    "titlePlain": "Canary and ",
+    "titleEmphasis": "Blue-Green",
+    "titleSuffix": " Deployments",
+    "subtitle": "Once deploy updates the GitOps repo, how the new version actually reaches traffic."
+  }
+]

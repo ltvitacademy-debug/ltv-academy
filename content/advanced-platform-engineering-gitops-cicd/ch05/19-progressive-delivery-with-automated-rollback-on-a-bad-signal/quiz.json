@@ -1,0 +1,60 @@
+{
+  "lesson": "progressive-delivery-with-automated-rollback-on-a-bad-signal",
+  "questions": [
+    {
+      "q": "What gap does progressive delivery close, compared to the plain canary rollout from the previous lesson?",
+      "options": [
+        "A plain canary paused at each step, but nothing automatically decided whether it was actually safe to advance based on real metrics",
+        "A plain canary cannot route any percentage of traffic to a new version at all",
+        "A plain canary always deploys to 100% of traffic immediately, with no steps",
+        "A plain canary requires manually editing the Kubernetes Service on every single deployment"
+      ],
+      "answer": 0,
+      "explain": "The previous lesson's canary steps paused at each weight, but that pause was just a fixed timer — nothing checked real metrics to decide whether to advance or abort, which is exactly what progressive delivery adds."
+    },
+    {
+      "q": "What does an Argo Rollouts `AnalysisTemplate` actually do?",
+      "options": [
+        "It replaces the need for a Prometheus server entirely",
+        "It defines a metric query and a pass/fail threshold, run automatically at each canary step to decide whether to advance or abort",
+        "It only runs once, after the rollout has already reached 100%",
+        "It is a static YAML lint check that runs before the build stage"
+      ],
+      "answer": 1,
+      "explain": "AnalysisTemplate defines a query (commonly against Prometheus) and a successCondition threshold, evaluated automatically at each canary step the Rollout references it from."
+    },
+    {
+      "q": "In the error-rate AnalysisTemplate example, what does `successCondition: result[0] <= 0.01` mean?",
+      "options": [
+        "The rollout waits 0.01 seconds between each check",
+        "The analysis fails unless exactly 1% of pods are canary pods",
+        "The analysis passes as long as the measured error rate (the query's result) stays at or below 1%",
+        "0.01 is the number of replicas required before analysis can run"
+      ],
+      "answer": 2,
+      "explain": "The PromQL query computes the ratio of 5xx responses to total requests; successCondition says that ratio has to stay at or below 0.01 (1%) for the check to pass."
+    },
+    {
+      "q": "What happens, according to this lesson, when the error-rate analysis breaches its threshold during a canary step?",
+      "options": [
+        "Nothing — AnalysisTemplate only logs a warning and lets the rollout continue regardless",
+        "Argo Rollouts pages a human and waits indefinitely for manual approval before doing anything",
+        "The rollout immediately jumps to 100% weight to finish faster",
+        "Argo Rollouts aborts the rollout and shifts traffic back to the previous stable version automatically, without a human deciding first"
+      ],
+      "answer": 3,
+      "explain": "That automatic abort-and-shift-back, with no human in the loop, is the entire point of wiring analysis into the rollout — catching a bad signal in minutes instead of waiting for someone to notice a dashboard."
+    },
+    {
+      "q": "Besides error rate, what other kind of signal does this lesson say a realistic progressive-delivery setup commonly watches?",
+      "options": [
+        "The total number of lines of code changed in the pull request",
+        "The number of GitHub stars on the repository",
+        "The color scheme of the internal admin dashboard",
+        "p95 or p99 latency, since a new version that's technically correct but noticeably slower is still a regression worth catching"
+      ],
+      "answer": 3,
+      "explain": "Latency regressions can slip through an error-rate-only check — a version that returns correct responses but much more slowly is still a real problem, which is why latency percentiles are a common second signal."
+    }
+  ]
+}
