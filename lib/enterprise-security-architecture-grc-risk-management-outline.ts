@@ -89,7 +89,7 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     lessons: [
       L(25, "metrics-that-mean-something-to-a-board-not-just-engineers", "Metrics That Mean Something to a Board, Not Just Engineers", { contentDir: "ch07/25-metrics-that-mean-something-to-a-board-not-just-engineers", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/metrics-that-mean-something-to-a-board-not-just-engineers.mp4", durationLabel: "2 min 36 s" }),
       L(26, "translating-technical-risk-into-business-risk-language", "Translating Technical Risk into Business Risk Language", { contentDir: "ch07/26-translating-technical-risk-into-business-risk-language", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/translating-technical-risk-into-business-risk-language.mp4", durationLabel: "2 min 32 s" }),
-      L(27, "building-a-real-board-level-security-report", "Building a Real Board-Level Security Report", { contentDir: "ch07/27-building-a-real-board-level-security-report" }),
+      L(27, "building-a-real-board-level-security-report", "Building a Real Board-Level Security Report", { contentDir: "ch07/27-building-a-real-board-level-security-report", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/building-a-real-board-level-security-report.mp4", durationLabel: "2 min 21 s" }),
       L(28, "when-and-how-to-report-a-significant-security-incident-upward", "When and How to Report a Significant Security Incident Upward", { contentDir: "ch07/28-when-and-how-to-report-a-significant-security-incident-upward" }),
     ],
   },
