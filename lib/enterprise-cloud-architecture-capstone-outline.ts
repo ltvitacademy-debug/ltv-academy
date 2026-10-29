@@ -89,7 +89,7 @@ export const ENTERPRISE_CLOUD_ARCHITECTURE_CAPSTONE_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(25, "structuring-an-architecture-review-presentation", "Structuring an Architecture Review Presentation", { contentDir: "ch07/25-structuring-an-architecture-review-presentation", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/structuring-an-architecture-review-presentation.mp4", durationLabel: "2 min 40 s" }),
       L(26, "anticipating-the-questions-a-review-board-will-ask", "Anticipating the Questions a Review Board Will Ask", { contentDir: "ch07/26-anticipating-the-questions-a-review-board-will-ask", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/anticipating-the-questions-a-review-board-will-ask.mp4", durationLabel: "2 min 18 s" }),
-      L(27, "defending-a-tradeoff-you-made-on-purpose", "Defending a Tradeoff You Made on Purpose", { contentDir: "ch07/27-defending-a-tradeoff-you-made-on-purpose" }),
+      L(27, "defending-a-tradeoff-you-made-on-purpose", "Defending a Tradeoff You Made on Purpose", { contentDir: "ch07/27-defending-a-tradeoff-you-made-on-purpose", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-cloud-architecture-capstone/defending-a-tradeoff-you-made-on-purpose.mp4", durationLabel: "2 min 28 s" }),
       L(28, "what-changes-after-the-review-revising-a-design-under-feedback", "What Changes After the Review: Revising a Design Under Feedback", { contentDir: "ch07/28-what-changes-after-the-review-revising-a-design-under-feedback" }),
     ],
   },

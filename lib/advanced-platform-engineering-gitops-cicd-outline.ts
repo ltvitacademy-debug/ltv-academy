@@ -78,7 +78,7 @@ export const ADVANCED_PLATFORM_ENGINEERING_GITOPS_CICD_CHAPTERS: ChapterMeta[] =
     lessons: [
       L(21, "reusable-pipeline-templates-across-many-repos", "Reusable Pipeline Templates Across Many Repos", { contentDir: "ch06/21-reusable-pipeline-templates-across-many-repos", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/reusable-pipeline-templates-across-many-repos.mp4", durationLabel: "2 min 44 s" }),
       L(22, "shared-pipeline-libraries-and-versioning-them-safely", "Shared Pipeline Libraries, and Versioning Them Safely", { contentDir: "ch06/22-shared-pipeline-libraries-and-versioning-them-safely", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/shared-pipeline-libraries-and-versioning-them-safely.mp4", durationLabel: "2 min 38 s" }),
-      L(23, "enforcing-standards-without-blocking-every-team-on-every-change", "Enforcing Standards Without Blocking Every Team on Every Change", { contentDir: "ch06/23-enforcing-standards-without-blocking-every-team-on-every-change" }),
+      L(23, "enforcing-standards-without-blocking-every-team-on-every-change", "Enforcing Standards Without Blocking Every Team on Every Change", { contentDir: "ch06/23-enforcing-standards-without-blocking-every-team-on-every-change", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-platform-engineering-gitops-cicd/enforcing-standards-without-blocking-every-team-on-every-change.mp4", durationLabel: "2 min 31 s" }),
       L(24, "rolling-out-a-pipeline-change-to-hundreds-of-repos", "Rolling Out a Pipeline Change to Hundreds of Repos", { contentDir: "ch06/24-rolling-out-a-pipeline-change-to-hundreds-of-repos" }),
     ],
   },

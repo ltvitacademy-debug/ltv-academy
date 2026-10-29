@@ -29,7 +29,7 @@ export const HYBRID_MULTI_CLOUD_ENTERPRISE_ARCHITECTURE_CHAPTERS: ChapterMeta[] 
       L(1, "why-enterprises-end-up-hybrid-not-by-accident", "Why Enterprises End Up Hybrid, Not by Accident", { contentDir: "ch01/01-why-enterprises-end-up-hybrid-not-by-accident", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/why-enterprises-end-up-hybrid-not-by-accident.mp4", durationLabel: "2 min 54 s" }),
       L(2, "on-prem-to-cloud-extension-patterns", "On-Prem-to-Cloud Extension Patterns", { contentDir: "ch01/02-on-prem-to-cloud-extension-patterns", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/on-prem-to-cloud-extension-patterns.mp4", durationLabel: "2 min 50 s" }),
       L(3, "azure-arc-and-aws-outposts-real-hybrid-control-planes", "Azure Arc and AWS Outposts: Real Hybrid Control Planes", { contentDir: "ch01/03-azure-arc-and-aws-outposts-real-hybrid-control-planes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/azure-arc-and-aws-outposts-real-hybrid-control-planes.mp4", durationLabel: "3 min 8 s" }),
-      L(4, "deciding-what-stays-on-prem-and-what-moves", "Deciding What Stays On-Prem and What Moves", { contentDir: "ch01/04-deciding-what-stays-on-prem-and-what-moves" }),
+      L(4, "deciding-what-stays-on-prem-and-what-moves", "Deciding What Stays On-Prem and What Moves", { contentDir: "ch01/04-deciding-what-stays-on-prem-and-what-moves", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-hybrid-multi-cloud-enterprise-architecture/deciding-what-stays-on-prem-and-what-moves.mp4", durationLabel: "2 min 59 s" }),
     ],
   },
   {

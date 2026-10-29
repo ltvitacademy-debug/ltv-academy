@@ -99,7 +99,7 @@ export const PYTHON_SECURITY_AUTOMATION_DEVSECOPS_CHAPTERS: ChapterMeta[] = [
     lessons: [
       L(29, "lab-building-an-end-to-end-detection-to-containment-script", "Lab: Building an End-to-End Detection-to-Containment Script", { contentDir: "ch08/29-lab-building-an-end-to-end-detection-to-containment-script", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/lab-building-an-end-to-end-detection-to-containment-script.mp4", durationLabel: "2 min 23 s" }),
       L(30, "lab-adding-a-security-gate-to-a-real-ci-cd-pipeline", "Lab: Adding a Security Gate to a Real CI/CD Pipeline", { contentDir: "ch08/30-lab-adding-a-security-gate-to-a-real-ci-cd-pipeline", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/lab-adding-a-security-gate-to-a-real-ci-cd-pipeline.mp4", durationLabel: "2 min 11 s" }),
-      L(31, "case-study-an-automation-script-that-made-an-incident-worse", "Case Study: An Automation Script That Made an Incident Worse", { contentDir: "ch08/31-case-study-an-automation-script-that-made-an-incident-worse" }),
+      L(31, "case-study-an-automation-script-that-made-an-incident-worse", "Case Study: An Automation Script That Made an Incident Worse", { contentDir: "ch08/31-case-study-an-automation-script-that-made-an-incident-worse", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-python-security-automation-devsecops/case-study-an-automation-script-that-made-an-incident-worse.mp4", durationLabel: "2 min 19 s" }),
       L(32, "chapter-capstone-security-automation-and-devsecops-review", "Chapter Capstone: Security Automation and DevSecOps Review", { contentDir: "ch08/32-chapter-capstone-security-automation-and-devsecops-review" }),
     ],
   },

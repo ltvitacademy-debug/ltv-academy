@@ -90,7 +90,7 @@ export const ZERO_TRUST_ENTERPRISE_SECURITY_CAPSTONE_CHAPTERS: ChapterMeta[] = [
       L(25, "sequencing-a-multi-year-zero-trust-rollout", "Sequencing a Multi-Year Zero Trust Rollout", { contentDir: "ch07/25-sequencing-a-multi-year-zero-trust-rollout" }),
       L(26, "what-to-fix-first-when-you-cant-fix-everything-at-once", "What to Fix First When You Can't Fix Everything at Once", { contentDir: "ch07/26-what-to-fix-first-when-you-cant-fix-everything-at-once", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/what-to-fix-first-when-you-cant-fix-everything-at-once.mp4", durationLabel: "2 min 22 s" }),
       L(27, "getting-budget-and-buy-in-for-a-zero-trust-program", "Getting Budget and Buy-In for a Zero Trust Program", { contentDir: "ch07/27-getting-budget-and-buy-in-for-a-zero-trust-program", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/getting-budget-and-buy-in-for-a-zero-trust-program.mp4", durationLabel: "2 min 18 s" }),
-      L(28, "avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", "Avoiding \"Zero Trust Theater\": Implementation That Doesn't Change Outcomes", { contentDir: "ch07/28-avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes" }),
+      L(28, "avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", "Avoiding \"Zero Trust Theater\": Implementation That Doesn't Change Outcomes", { contentDir: "ch07/28-avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-zero-trust-enterprise-security-capstone/avoiding-zero-trust-theater-implementation-that-doesnt-change-outcomes.mp4", durationLabel: "2 min 17 s" }),
     ],
   },
   {
