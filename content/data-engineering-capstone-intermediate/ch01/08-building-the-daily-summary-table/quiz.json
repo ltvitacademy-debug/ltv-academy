@@ -4,20 +4,20 @@
     {
       "q": "Did the aggregation logic inside gold.daily_sales_summary need to change because of the Silver-layer redesign?",
       "options": [
-        "No — it still just groups silver.sales_clean by store_id and sale_date and aggregates, exactly as before",
+        "Yes — it now needs to group by transaction_id instead of store_id and sale_date",
         "Yes — it now needs its own MERGE INTO statement",
-        "Yes — it now needs to read directly from bronze.sales_raw instead of Silver",
-        "Yes — it now needs to group by transaction_id instead of store_id and sale_date"
+        "No — it still just groups silver.sales_clean by store_id and sale_date and aggregates, exactly as before",
+        "Yes — it now needs to read directly from bronze.sales_raw instead of Silver"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "The aggregation logic is unchanged: group by store_id and sale_date, sum total_amount, count transaction_id. Only what feeds Silver changed, not how Gold reads it."
     },
     {
       "q": "What does gold.daily_sales_summary's aggregation sum and count, respectively?",
       "options": [
         "Sums total_amount into total_sales; counts transaction_id into total_transactions",
-        "Sums quantity into total_sales; counts category into total_transactions",
         "Sums transaction_id into total_sales; counts store_id into total_transactions",
+        "Sums quantity into total_sales; counts category into total_transactions",
         "Counts total_amount into total_sales; sums transaction_id into total_transactions"
       ],
       "answer": 0,
@@ -26,34 +26,34 @@
     {
       "q": "Why didn't the Bronze-to-Silver redesign require any changes to gold.daily_sales_summary?",
       "options": [
-        "Because this Gold table only depends on Silver's current contents, not on the process that produced those contents — the medallion pattern decouples the two",
         "Because gold.daily_sales_summary doesn't actually read from silver.sales_clean",
         "Because the redesign only affected gold.category_breakdown, not silver.sales_clean",
-        "Because Delta Lake tables cannot have their upstream maintenance strategy changed"
+        "Because Delta Lake tables cannot have their upstream maintenance strategy changed",
+        "Because this Gold table only depends on Silver's current contents, not on the process that produced those contents — the medallion pattern decouples the two"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Each layer in the medallion pattern depends on the contents of the layer below it, not on how that layer is maintained — that decoupling is why Gold needed no changes."
     },
     {
       "q": "According to this lesson, are gold.daily_sales_summary's totals now more or less trustworthy than before the redesign?",
       "options": [
-        "More trustworthy — because Silver itself is now more trustworthy, correctly handling late-arriving data instead of relying on luck",
+        "It's impossible to tell without re-running the Beginner project's pipeline",
         "Less trustworthy — the incremental MERGE introduces more risk of error",
         "Exactly the same, because nothing about Silver's correctness changed",
-        "It's impossible to tell without re-running the Beginner project's pipeline"
+        "More trustworthy — because Silver itself is now more trustworthy, correctly handling late-arriving data instead of relying on luck"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Because Silver now correctly attributes late-arriving sales to their real sale_date via the transaction_id-keyed MERGE, Gold's totals built on top of it are more reliable than before."
     },
     {
       "q": "What is the core engineering principle this lesson lands on?",
       "options": [
-        "Gold logic is decoupled from how Silver got populated, as long as Silver's end state is correct",
         "Every Gold table must be rebuilt with MERGE INTO whenever Silver changes",
         "Bronze, Silver, and Gold must always use identical write modes",
+        "Gold logic is decoupled from how Silver got populated, as long as Silver's end state is correct",
         "A table's aggregation logic should be rewritten every time its source table's row count changes"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "This is the chapter's central takeaway: well-layered design lets you change how a layer is maintained without rippling changes into layers built on top of it, as long as that layer's final contents are correct."
     }
   ]

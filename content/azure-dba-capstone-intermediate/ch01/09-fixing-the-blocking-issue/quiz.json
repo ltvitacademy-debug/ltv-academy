@@ -4,56 +4,56 @@
     {
       "q": "Why isn't KILLing the blocking session a real fix?",
       "options": [
+        "It only works on dbo.Invoices, not dbo.Appointments",
         "It would recur every morning and could leave appointment data in an inconsistent, partially-applied state",
-        "KILL is not a valid T-SQL command in Azure SQL Database",
         "It fixes the problem permanently with no downsides",
-        "It only works on dbo.Invoices, not dbo.Appointments"
+        "KILL is not a valid T-SQL command in Azure SQL Database"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Killing the session is a workaround for the symptom, not the cause, and risks leaving data in a bad state mid-transaction."
     },
     {
       "q": "What is the actual root cause Lesson 8 found?",
       "options": [
-        "The transaction stays open across a slow, unrelated step (sending confirmation messages) that doesn't need database locks",
         "The UPDATE statement itself is missing an index",
-        "dbo.Appointments has no primary key",
-        "The scheduling application never opens a transaction at all"
+        "The transaction stays open across a slow, unrelated step (sending confirmation messages) that doesn't need database locks",
+        "The scheduling application never opens a transaction at all",
+        "dbo.Appointments has no primary key"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "The transaction remains open while an external, slow messaging step runs, holding locks far longer than the actual data change needs."
     },
     {
       "q": "What is the real fix?",
       "options": [
-        "Commit the UPDATE immediately, then send messages after the commit, outside any open transaction",
+        "Increase the transaction isolation level to SERIALIZABLE",
         "Add more CPU cores to the Azure SQL Database",
         "Change the UPDATE to a DELETE followed by an INSERT",
-        "Increase the transaction isolation level to SERIALIZABLE"
+        "Commit the UPDATE immediately, then send messages after the commit, outside any open transaction"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Committing right after the data change releases locks immediately; sending messages afterward never holds a database transaction open."
     },
     {
       "q": "How do you confirm the fix actually worked?",
       "options": [
-        "Re-run the blocking-chain query from Lesson 8 and confirm no sustained blocking remains",
         "Ask the scheduling staff if they feel like it's faster",
-        "Check that the CREATE INDEX statement from Lesson 7 succeeded",
-        "Confirm the batch job's execution plan shows an Index Seek"
+        "Confirm the batch job's execution plan shows an Index Seek",
+        "Re-run the blocking-chain query from Lesson 8 and confirm no sustained blocking remains",
+        "Check that the CREATE INDEX statement from Lesson 7 succeeded"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Re-testing with the same sys.dm_exec_requests query shows blocking is gone or reduced to brief, self-resolving waits."
     },
     {
       "q": "Why does this specific fix generalize beyond this one scenario?",
       "options": [
-        "A slow, non-database step ending up inside a transaction boundary out of convenience is one of the most common real causes of blocking",
         "It only applies to healthcare scheduling systems specifically",
+        "A slow, non-database step ending up inside a transaction boundary out of convenience is one of the most common real causes of blocking",
         "It requires Azure SQL Database's Elastic Jobs feature to work",
         "It is unique to this one stored procedure and doesn't apply elsewhere"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Moving slow, unrelated operations (file I/O, API calls, messaging) outside the transaction boundary is a widely applicable fix for blocking."
     }
   ]

@@ -5,9 +5,9 @@
       "q": "What problem does length-prefix framing solve?",
       "options": [
         "It lets the receiver know exactly how many bytes make up each application message, compensating for TCP's lack of preserved message boundaries",
-        "It makes TCP connections faster by skipping the handshake",
+        "It allows a single socket to connect to multiple servers at once",
         "It encrypts the data being sent",
-        "It allows a single socket to connect to multiple servers at once"
+        "It makes TCP connections faster by skipping the handshake"
       ],
       "answer": 0,
       "explain": "Since TCP is a byte stream with no message boundaries, framing (prefixing each message with its length) is how the application layer reconstructs where one message ends and the next begins."
@@ -16,9 +16,9 @@
       "q": "Why does `recv_exact()` need to loop, rather than trusting a single `recv()` call to return the full requested length?",
       "options": [
         "A single recv() call can return fewer bytes than requested even when more data is still coming, so looping until the full length has arrived is required for correctness",
-        "recv() always returns the exact number of bytes requested in a single call",
         "Looping is only needed when using UDP, never TCP",
-        "recv_exact() loops purely for performance reasons, not correctness"
+        "recv_exact() loops purely for performance reasons, not correctness",
+        "recv() always returns the exact number of bytes requested in a single call"
       ],
       "answer": 0,
       "explain": "TCP recv() can return partial data for many reasons (network timing, buffer sizes); looping until the requested length is fully received is what makes recv_exact() actually reliable."
@@ -26,23 +26,23 @@
     {
       "q": "What does Nagle's algorithm do by default, and why do low-latency trading systems disable it with TCP_NODELAY?",
       "options": [
-        "Nagle's algorithm briefly delays small sends to coalesce them into larger packets, which helps throughput but adds latency that's unacceptable for time-sensitive order/market-data traffic",
-        "Nagle's algorithm encrypts outgoing packets, which trading systems disable for performance",
+        "TCP_NODELAY makes TCP behave like UDP, dropping reliability guarantees",
         "Nagle's algorithm has no measurable effect on timing, so disabling it is purely a style choice",
-        "TCP_NODELAY makes TCP behave like UDP, dropping reliability guarantees"
+        "Nagle's algorithm briefly delays small sends to coalesce them into larger packets, which helps throughput but adds latency that's unacceptable for time-sensitive order/market-data traffic",
+        "Nagle's algorithm encrypts outgoing packets, which trading systems disable for performance"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Nagle's algorithm trades latency for throughput efficiency by default -- a reasonable choice for bulk transfers, but actively harmful for latency-sensitive order flow, which is why TCP_NODELAY is set to opt out."
     },
     {
       "q": "What does a partial `send()` return value (less than the requested length) actually mean?",
       "options": [
-        "Backpressure -- the kernel's send buffer only accepted some of the data, often because the receiver or network isn't draining data as fast as it's being produced",
-        "The connection has been permanently closed",
+        "send() always returns the full requested length; a partial return indicates a bug in the OS",
         "The data was definitely corrupted during transmission",
-        "send() always returns the full requested length; a partial return indicates a bug in the OS"
+        "Backpressure -- the kernel's send buffer only accepted some of the data, often because the receiver or network isn't draining data as fast as it's being produced",
+        "The connection has been permanently closed"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "A partial send() is the transport signaling backpressure -- the sender needs to retry with the remaining bytes, exactly like send_exact() does in a loop."
     },
     {
@@ -50,8 +50,8 @@
       "options": [
         "Bytes the kernel didn't accept are silently dropped, truncating the message and corrupting any framing scheme layered on top",
         "The OS automatically retries the send in the background with no consequence",
-        "Nothing -- send() always transmits all requested bytes regardless of the return value",
-        "The connection is immediately and visibly terminated with an error"
+        "The connection is immediately and visibly terminated with an error",
+        "Nothing -- send() always transmits all requested bytes regardless of the return value"
       ],
       "answer": 0,
       "explain": "An unchecked partial send() silently drops the untransmitted bytes, producing a truncated message that then breaks the receiver's framing logic in a way that doesn't fail loudly."

@@ -5,9 +5,9 @@
       "q": "In the lab's three-unit pipeline split (normalize / submit_and_wait / aggregate), which unit(s) can be unit-tested with hardcoded inputs and zero QPU cost?",
       "options": [
         "normalize and aggregate, since both are pure functions with no network dependency",
-        "Only submit_and_wait, since it's the most important function",
+        "Only normalize; aggregate always requires live measurement counts",
         "None of them; all three require a real circuit execution to test",
-        "Only normalize; aggregate always requires live measurement counts"
+        "Only submit_and_wait, since it's the most important function"
       ],
       "answer": 0,
       "explain": "normalize and aggregate are pure functions -- no I/O, no network call -- so they can be tested instantly with hardcoded inputs. Only submit_and_wait touches the network/QPU and needs an integration test."
@@ -17,8 +17,8 @@
       "options": [
         "[0.5, 0.5, 0.5, 0.5], because the norm is sqrt(4x4)=4 and each entry 2/4=0.5, with squared entries summing to 1.0",
         "[2, 2, 2, 2], unchanged, because normalization doesn't affect equal-valued vectors",
-        "[1, 1, 1, 1], because normalization always produces all-ones vectors",
-        "[0.25, 0.25, 0.25, 0.25], because each entry is divided by 8"
+        "[0.25, 0.25, 0.25, 0.25], because each entry is divided by 8",
+        "[1, 1, 1, 1], because normalization always produces all-ones vectors"
       ],
       "answer": 0,
       "explain": "Sum of squares = 4x(2^2) = 16, norm = sqrt(16) = 4, so each entry becomes 2/4 = 0.5. The resulting vector's squared entries sum to 4x(0.5^2) = 1.0, confirming correct normalization."
@@ -26,34 +26,34 @@
     {
       "q": "The lab's sign-convention test feeds aggregate() the synthetic counts {\"0\": 1000, \"1\": 0}. What must the correct output be, and what does this test catch?",
       "options": [
-        "Exactly +1.0; it catches a sign-convention bug that would flip this to -1.0 or some other wrong value, without needing ambiguous real-world data",
-        "Exactly 0.5, since half the possible outcomes are being counted",
+        "There is no correct expected value for this synthetic input",
         "Exactly -1.0, since |0> always maps to a negative eigenvalue",
-        "There is no correct expected value for this synthetic input"
+        "Exactly 0.5, since half the possible outcomes are being counted",
+        "Exactly +1.0; it catches a sign-convention bug that would flip this to -1.0 or some other wrong value, without needing ambiguous real-world data"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "With every one of 1,000 shots measuring |0>, the correct expectation value under the standard convention (|0>->+1) is exactly +1.0. A sign-flip bug would produce -1.0 instead, which this known-answer test catches immediately."
     },
     {
       "q": "Why does the lesson argue that testing pre/post-processing against synthetic, known-answer inputs matters MORE in hybrid quantum pipelines than in typical classical pipelines?",
       "options": [
-        "A sign-flip or normalization bug produces a plausible-looking but incorrect number with no crash, and real quantum problems often have no independent ground truth to sanity-check against",
         "Quantum pipelines never produce plausible-looking wrong answers, so bugs are always obvious",
+        "A sign-flip or normalization bug produces a plausible-looking but incorrect number with no crash, and real quantum problems often have no independent ground truth to sanity-check against",
         "Classical pipelines don't need any testing at all, unlike quantum ones",
         "Synthetic test data is only useful for quantum pipelines, never for classical ones"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Unlike typical classical bugs that often produce obviously-wrong output, a sign-flip or bad normalization in a hybrid pipeline yields a plausible number -- and because real quantum results often have no independent ground truth, known-answer synthetic tests are the only reliable way to catch these bugs."
     },
     {
       "q": "Why is splitting a pipeline into normalize / submit_and_wait / aggregate preferable to one long run_pipeline(raw_data) function, according to the lab?",
       "options": [
-        "It isolates the only network-dependent step, letting the pure pre/post-processing logic be tested independently and cheaply instead of requiring a real circuit run to exercise any part of the logic",
         "It makes the code run faster on the QPU itself",
         "It eliminates the need for any unit testing at all",
+        "It isolates the only network-dependent step, letting the pure pre/post-processing logic be tested independently and cheaply instead of requiring a real circuit run to exercise any part of the logic",
         "It is required by every quantum cloud provider's SDK"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "A single monolithic function forces every test to also exercise the network/QPU call. Splitting the pipeline isolates that one dependency so the pure classical logic around it can be tested fast and cheaply, independent of hardware availability or cost."
     }
   ]

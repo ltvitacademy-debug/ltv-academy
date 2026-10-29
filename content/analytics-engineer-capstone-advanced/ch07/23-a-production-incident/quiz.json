@@ -5,55 +5,55 @@
       "q": "What mistake does the broken pull request's customers.sql introduce?",
       "options": [
         "A syntax error that prevents the model from compiling at all",
-        "A join fanout — joining orders directly to payments on order_id without aggregating payments first",
+        "A typo in the customer_id column name",
         "A missing source() declaration",
-        "A typo in the customer_id column name"
+        "A join fanout — joining orders directly to payments on order_id without aggregating payments first"
       ],
-      "answer": 1,
+      "answer": 3,
       "explain": "The broken version joins payments directly instead of routing through the already-aggregated int_orders__payment_summary, producing a fanout."
     },
     {
       "q": "Why does a join fanout produce a plausible-looking wrong number instead of an obvious error?",
       "options": [
-        "Because dbt automatically rounds all aggregated values",
-        "Because an order with multiple payment rows produces multiple joined rows, inflating counts and sums without throwing any error — the query runs successfully, just over duplicated rows",
         "Because Snowflake silently ignores all JOIN clauses",
-        "Because customer_id becomes NULL for every row"
+        "Because customer_id becomes NULL for every row",
+        "Because dbt automatically rounds all aggregated values",
+        "Because an order with multiple payment rows produces multiple joined rows, inflating counts and sums without throwing any error — the query runs successfully, just over duplicated rows"
       ],
-      "answer": 1,
+      "answer": 3,
       "explain": "The SQL is syntactically valid and executes without error — the row duplication just silently inflates the aggregated totals."
     },
     {
       "q": "Which existing test actually catches this specific incident in CI?",
       "options": [
-        "non_negative on orders.amount",
         "unique on customers.customer_id, since the fanout produces more than one row per customer",
-        "not_null on order_date",
-        "payment_method_is_valid"
+        "non_negative on orders.amount",
+        "payment_method_is_valid",
+        "not_null on order_date"
       ],
-      "answer": 1,
+      "answer": 0,
       "explain": "A customer with a multi-payment order now has duplicate rows in customers, which is exactly what the unique test on customer_id is designed to catch."
     },
     {
       "q": "What does the CI log actually show when this test fails?",
       "options": [
         "A generic \"build failed\" message with no further detail",
+        "A message saying Power BI could not connect to Snowflake",
         "The specific test name (unique_customers_customer_id) and the real count of rows that violated it, e.g. \"Got 14 results, configured to fail if != 0\"",
-        "Only a warning, since unique tests never block a build",
-        "A message saying Power BI could not connect to Snowflake"
+        "Only a warning, since unique tests never block a build"
       ],
-      "answer": 1,
+      "answer": 2,
       "explain": "dbt's test failure output names the specific test and the real violating row count — not a vague failure."
     },
     {
       "q": "What happens to this pull request as a direct result of Lesson 21's required status check?",
       "options": [
-        "It merges automatically after a short delay",
         "Its Merge button stays disabled, so the broken model never reaches main, PROD, or Power BI",
-        "GitHub automatically reverts the commit without notifying anyone",
-        "The incident only becomes visible after the change is already live in Power BI"
+        "The incident only becomes visible after the change is already live in Power BI",
+        "It merges automatically after a short delay",
+        "GitHub automatically reverts the commit without notifying anyone"
       ],
-      "answer": 1,
+      "answer": 0,
       "explain": "The required status check blocks the merge through GitHub's own UI — the whole point of Chapter 6's work, now proven against a real mistake."
     }
   ]

@@ -4,53 +4,53 @@
     {
       "q": "In the Part 1 resource script, what does this check actually accomplish?\n\nvar veh = new GlideRecord('x_acme_fleet_vehicle');\nif (!veh.get(vehicleId)) {\n    response.setStatus(404);\n    response.setBody({ error: 'No vehicle found with sys_id ' + vehicleId });\n    return;\n}",
       "options": [
+        "It deletes the vehicle record if found",
         "It looks up the vehicle by sys_id, and if none is found, responds with a 404 status and an error body instead of continuing",
         "It always returns a 404, regardless of whether the vehicle exists",
-        "It deletes the vehicle record if found",
         "It queries the checkout table instead of the vehicle table"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "veh.get(vehicleId) returns false when no record matches that sys_id, so the script explicitly answers 404 and stops before trying to read fields off a record that doesn't exist."
     },
     {
       "q": "Why does the resource script use orderByDesc('sys_created_on') and setLimit(1) on the checkout query?",
       "options": [
-        "To fetch only the single most recent checkout record for that vehicle",
         "To delete all older checkout records for that vehicle",
-        "To guarantee the query returns zero results",
-        "To sort vehicles alphabetically by make and model"
+        "To sort vehicles alphabetically by make and model",
+        "To fetch only the single most recent checkout record for that vehicle",
+        "To guarantee the query returns zero results"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Ordering descending by creation date and limiting to one row gets just the latest checkout record tied to that vehicle, which is what the status endpoint should report."
     },
     {
       "q": "What does the Business Rule in Part 2 actually do when a checkout's status changes to Returned?",
       "options": [
-        "It calls gs.eventQueue('vehicle.returned', current, ...) to announce the event, without updating the vehicle record itself",
         "It directly sets the vehicle's status to available in the same script",
+        "It calls the Scripted REST API defined in Part 1",
         "It deletes the checkout record",
-        "It calls the Scripted REST API defined in Part 1"
+        "It calls gs.eventQueue('vehicle.returned', current, ...) to announce the event, without updating the vehicle record itself"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "The Business Rule only raises the vehicle.returned event with gs.eventQueue() — it deliberately does not touch the vehicle record itself, leaving that to the Script Action."
     },
     {
       "q": "Inside the Script Action, where do the vehicle's sys_id and the returning user's sys_id come from?\n\nvar vehicleId = event.parm1;\nvar returnedByUserId = event.parm2;",
       "options": [
-        "They're the extra parameters the Business Rule passed into gs.eventQueue(), read here as event.parm1 and event.parm2",
+        "They come from querying every record in the x_acme_fleet_vehicle table",
         "They're hardcoded constants in the Script Action",
         "They're read from request.pathParams, the same as the REST resource",
-        "They come from querying every record in the x_acme_fleet_vehicle table"
+        "They're the extra parameters the Business Rule passed into gs.eventQueue(), read here as event.parm1 and event.parm2"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "gs.eventQueue('vehicle.returned', current, current.vehicle.toString(), gs.getUserID()) passed those two string values, available in the listener as event.parm1 and event.parm2."
     },
     {
       "q": "What would it cost the team if the Business Rule updated the vehicle record directly instead of raising an event for a Script Action to handle?",
       "options": [
         "Adding a second reaction to the same return (an email alert, an external sync) would require editing the Business Rule's own code instead of adding an independent listener",
-        "Nothing — a Business Rule and a Script Action always produce identical coupling",
         "The REST resource in Part 1 would stop working entirely",
+        "Nothing — a Business Rule and a Script Action always produce identical coupling",
         "GlideRecord updates would no longer be possible from a Business Rule"
       ],
       "answer": 0,

@@ -5,9 +5,9 @@
       "q": "What three real fixes does the northfield-orders-etl PySpark script apply to the raw order data?",
       "options": [
         "Converts order_date to a real date type, normalizes region casing, and computes an order_total column",
+        "Converts the data to JSON format",
         "Deletes all rows with missing values and stops there",
-        "Renames every column to generic names like col1, col2",
-        "Converts the data to JSON format"
+        "Renames every column to generic names like col1, col2"
       ],
       "answer": 0,
       "explain": "The job types order_date, normalizes/trims region, adds a computed order_total, and dedupes by order_id."
@@ -15,45 +15,45 @@
     {
       "q": "Where does northfield-orders-etl write its output, and in what format?",
       "options": [
-        "s3://northfield-curated-zone/orders/, as partitioned Parquet with Snappy compression",
-        "Directly into a Redshift table, no S3 output",
+        "s3://northfield-curated-zone/orders/, as uncompressed CSV",
         "Back into northfield-raw-zone, overwriting the source CSVs",
-        "s3://northfield-curated-zone/orders/, as uncompressed CSV"
+        "Directly into a Redshift table, no S3 output",
+        "s3://northfield-curated-zone/orders/, as partitioned Parquet with Snappy compression"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "The job writes partitioned Parquet (Snappy-compressed) into the curated zone bucket, partitioned by the same dt key as the raw zone."
     },
     {
       "q": "What would happen to northfield-orders-etl's runtime and cost if job bookmarks were disabled, once the raw zone has a year of daily partitions?",
       "options": [
-        "Every run would reprocess the entire raw zone history instead of just the new day's partition, inflating runtime and DPU cost",
         "Nothing would change — bookmarks have no effect on runtime",
         "The job would fail to start without bookmarks",
-        "It would process data faster without bookmarks"
+        "It would process data faster without bookmarks",
+        "Every run would reprocess the entire raw zone history instead of just the new day's partition, inflating runtime and DPU cost"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Job bookmarks track already-processed data so incremental runs only touch new partitions; without them, every run reprocesses everything."
     },
     {
       "q": "Why does the curated output get partitioned by dt, the same key as the raw zone?",
       "options": [
-        "So Athena and Redshift Spectrum can prune partitions on the curated side too, not just the raw side",
         "Because Parquet files cannot be written without partitioning",
+        "To make the file names easier to read",
         "It's required by the Glue Data Catalog for all tables",
-        "To make the file names easier to read"
+        "So Athena and Redshift Spectrum can prune partitions on the curated side too, not just the raw side"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Matching the partition key end-to-end lets query engines skip irrelevant partitions on both the raw and curated data."
     },
     {
       "q": "Why is Parquet preferred over the raw zone's CSV for the curated output?",
       "options": [
+        "Parquet files can't be partitioned, which simplifies the pipeline",
         "It's a compressed, columnar format, so queries reading only a few columns don't have to scan whole rows",
-        "CSV cannot be read by Athena at all",
         "Parquet is required for any S3 bucket used by Redshift",
-        "Parquet files can't be partitioned, which simplifies the pipeline"
+        "CSV cannot be read by Athena at all"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Parquet's columnar, compressed layout is cheaper to query and store than row-based CSV — exactly why the ETL job converts to it."
     }
   ]

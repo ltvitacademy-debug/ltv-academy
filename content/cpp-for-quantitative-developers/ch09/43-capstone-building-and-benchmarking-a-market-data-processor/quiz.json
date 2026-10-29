@@ -4,45 +4,45 @@
     {
       "q": "Why does the TickWire struct use `#pragma pack(push, 1)`?",
       "options": [
-        "It disables compiler-inserted padding between fields, so the struct's byte layout exactly matches what both sender and receiver agree the wire format is",
-        "It makes the struct allocate faster on the heap",
+        "It is required for every C++ struct regardless of networking use",
         "It converts the struct's fields from integers to floating point automatically",
-        "It is required for every C++ struct regardless of networking use"
+        "It disables compiler-inserted padding between fields, so the struct's byte layout exactly matches what both sender and receiver agree the wire format is",
+        "It makes the struct allocate faster on the heap"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "A wire format needs an exact, predictable byte layout -- #pragma pack(push, 1) removes the compiler's normal padding so sizeof(TickWire) matches the sum of its fields precisely."
     },
     {
       "q": "Why does decode_tick() use the pool allocator and placement new instead of a plain `new Tick(...)` call?",
       "options": [
-        "It avoids general-purpose heap allocation on every single incoming tick, which is exactly the unpredictable per-call cost Lesson 41 identified as a tail-latency risk",
         "Placement new is required by the C++ standard for all struct types",
+        "It avoids general-purpose heap allocation on every single incoming tick, which is exactly the unpredictable per-call cost Lesson 41 identified as a tail-latency risk",
         "The pool allocator makes the Tick object immutable",
         "Plain new is not capable of constructing structs with more than 4 fields"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Pool allocation plus placement new is exactly Lesson 41's pattern applied here -- it removes per-tick heap allocation variance from the hot path, which matters because this loop runs on every single incoming message."
     },
     {
       "q": "Why does the receive loop call `release_tick()`'s explicit destructor instead of just letting the Tick object go out of scope normally?",
       "options": [
-        "Placement new's matching cleanup is never automatic -- the destructor must be called explicitly before the slot can be safely returned to the pool's free list",
-        "Tick objects in a pool never need their destructors called",
+        "release_tick() is purely cosmetic and has no functional purpose",
         "Destructors are only needed for objects allocated with plain new",
-        "release_tick() is purely cosmetic and has no functional purpose"
+        "Placement new's matching cleanup is never automatic -- the destructor must be called explicitly before the slot can be safely returned to the pool's free list",
+        "Tick objects in a pool never need their destructors called"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Because the object was constructed with placement new rather than ordinary new, there is no automatic matching delete to call its destructor -- that responsibility falls to release_tick() before the slot is reused."
     },
     {
       "q": "Why would using plain `new Tick(...)` instead of the pool allocator still 'work' in a quick functional test but show up as a real problem in sustained-load p99.9 latency?",
       "options": [
-        "A quick functional test rarely triggers the general-purpose allocator's occasional slower-path behavior, but under sustained high-frequency allocation that variance becomes a recurring, measurable tail -- exactly what p99.9 is designed to expose",
         "Plain new always crashes immediately, so this scenario could never pass any functional test",
         "p99.9 and functional correctness measure the exact same thing",
-        "The pool allocator and plain new produce identical performance characteristics in all cases"
+        "The pool allocator and plain new produce identical performance characteristics in all cases",
+        "A quick functional test rarely triggers the general-purpose allocator's occasional slower-path behavior, but under sustained high-frequency allocation that variance becomes a recurring, measurable tail -- exactly what p99.9 is designed to expose"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "A small functional test rarely hits enough allocations to surface the general-purpose allocator's unpredictable tail cost; under sustained load, that cost becomes a real, recurring pattern -- which is precisely the kind of thing a mean latency number would hide but p99.9 would reveal."
     },
     {
@@ -50,8 +50,8 @@
       "options": [
         "A pool allocator without measurement would be fast but unverified; measurement without a pool allocator would only faithfully report how slow unmanaged allocation actually is -- the combination is what makes the system both fast and verifiably so",
         "Pool allocators and latency measurement are mutually exclusive techniques that cannot be used together",
-        "Only one of the two techniques is ever necessary in a real trading system",
-        "Latency measurement automatically fixes any allocator performance problems it finds"
+        "Latency measurement automatically fixes any allocator performance problems it finds",
+        "Only one of the two techniques is ever necessary in a real trading system"
       ],
       "answer": 0,
       "explain": "The two disciplines solve different problems -- one makes the hot path fast, the other proves it is fast (and would catch it if it weren't) -- which is why the lesson treats using both together as the actual point of the exercise."

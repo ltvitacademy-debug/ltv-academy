@@ -4,32 +4,32 @@
     {
       "q": "In the new design, how does Bronze ingestion decide which source files to read?",
       "options": [
-        "It reads the watermark in meta.last_ingested_date and only reads files newer than it",
-        "It reads every source file that has ever existed, every single run",
         "It randomly samples a subset of source files each night",
-        "It reads files in alphabetical order until it hits a time limit"
+        "It reads every source file that has ever existed, every single run",
+        "It reads files in alphabetical order until it hits a time limit",
+        "It reads the watermark in meta.last_ingested_date and only reads files newer than it"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "The watermark table records the latest date already ingested, so each run only reads source files or partitions dated after it."
     },
     {
       "q": "What replaces \"rebuild the whole table\" for silver.sales_clean in the new design?",
       "options": [
-        "A MERGE INTO that inserts new rows and updates matching rows, keyed on transaction_id",
+        "A full table scan with no key, matching on every column at once",
         "Dropping and recreating the table from scratch every run, same as before",
-        "Deleting all existing rows and only keeping the newest day",
-        "A full table scan with no key, matching on every column at once"
+        "A MERGE INTO that inserts new rows and updates matching rows, keyed on transaction_id",
+        "Deleting all existing rows and only keeping the newest day"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "MERGE INTO matches incoming Bronze rows against silver.sales_clean on transaction_id, the table's true unique key, inserting new rows and updating existing ones."
     },
     {
       "q": "Why does Gold change the least of the three layers in this redesign?",
       "options": [
         "Because it still just aggregates from Silver, and Silver is now small and current, not full history",
-        "Because Gold tables are never rebuilt in any pipeline design",
         "Because the Regional Manager asked for no changes to Gold at all",
-        "Because Delta Lake doesn't allow MERGE INTO on Gold tables"
+        "Because Delta Lake doesn't allow MERGE INTO on Gold tables",
+        "Because Gold tables are never rebuilt in any pipeline design"
       ],
       "answer": 0,
       "explain": "Gold keeps aggregating from Silver the same way it always did; what changed is that Silver itself is now a small, current slice instead of the whole history, so Gold's cost per run stays low without Gold itself needing new incremental logic."
@@ -37,12 +37,12 @@
     {
       "q": "What is a watermark, in the plain-English definition this lesson gives?",
       "options": [
-        "A saved checkpoint value marking what's already been processed, so the next run knows what's new",
-        "A digital signature embedded in each source file to prevent tampering",
         "A visual overlay added to Power BI reports for branding purposes",
+        "A digital signature embedded in each source file to prevent tampering",
+        "A saved checkpoint value marking what's already been processed, so the next run knows what's new",
         "The maximum file size Bronze is allowed to ingest in one run"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "The lesson defines a watermark as a saved checkpoint — here, a date — marking everything already processed, so the next run can tell what's new."
     },
     {
@@ -50,8 +50,8 @@
       "options": [
         "MERGE INTO silver.sales_clean on transaction_id, using only the newly-ingested rows",
         "Advance the watermark before anything else happens",
-        "Rebuild gold.daily_sales_summary directly from the raw source files",
-        "Delete the watermark table and start over"
+        "Delete the watermark table and start over",
+        "Rebuild gold.daily_sales_summary directly from the raw source files"
       ],
       "answer": 0,
       "explain": "The plan reads: ingest new Bronze rows, then MERGE INTO Silver using just those rows, then rebuild both Gold tables, then advance the watermark last."

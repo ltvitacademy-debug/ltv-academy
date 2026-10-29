@@ -4,56 +4,56 @@
     {
       "q": "A vault's deposit function calculates share price using `curvePool.balances(0)` and `curvePool.balances(1)` directly, inside the same transaction a user deposits in. An attacker takes a large flash loan, trades heavily against that Curve pool, deposits into the vault, trades back, withdraws, and repays the loan — all in one transaction. What is the root cause?",
       "options": [
-        "The vault priced its shares from a spot source (the pool's live reserves) that the attacker could move within a single transaction",
         "The vault's withdraw function sent ETH before updating the user's balance",
-        "The attacker found and used the contract owner's private key",
-        "The vault's Solidity compiler version was out of date"
+        "The vault priced its shares from a spot source (the pool's live reserves) that the attacker could move within a single transaction",
+        "The vault's Solidity compiler version was out of date",
+        "The attacker found and used the contract owner's private key"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "This is a price-manipulation attack, not reentrancy or a stolen key. The vault trusted a price that a flash-loan-funded trade could distort for the length of one transaction, and priced a real deposit using that distorted number."
     },
     {
       "q": "Why does a flash loan make this kind of attack practical for someone with little starting capital?",
       "options": [
-        "It lets the attacker borrow a large sum with no collateral, as long as it's repaid within the same transaction",
-        "It permanently lowers gas fees for the attacker's account",
         "It grants the attacker admin rights on the target protocol",
-        "It disables the target contract's require statements"
+        "It disables the target contract's require statements",
+        "It lets the attacker borrow a large sum with no collateral, as long as it's repaid within the same transaction",
+        "It permanently lowers gas fees for the attacker's account"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "A flash loan removes capital as a constraint: the whole loan reverts if it isn't repaid by the end of the transaction, so a protocol with a flash-loan-friendly source will lend millions to anyone for the length of one transaction, for a small fee."
     },
     {
       "q": "What made the Harvest Finance exploit specifically profitable, step by step?",
       "options": [
-        "The attacker deposited into the vault while the pool price was skewed in their favor, then withdrew after trading the pool back toward normal, redeeming more value than they'd put in",
         "The attacker directly called a hidden admin withdrawal function",
         "The attacker exploited an integer overflow in the vault's balance variable",
+        "The attacker deposited into the vault while the pool price was skewed in their favor, then withdrew after trading the pool back toward normal, redeeming more value than they'd put in",
         "The attacker bribed Harvest's validators to approve a fraudulent transaction"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "The vault calculated share price from the pool's current, distorted exchange rate at each step — buying shares cheap during the skew, then redeeming them after the price reverted, pocketing the difference."
     },
     {
       "q": "Which fix addresses this class of vulnerability without just patching the one incident?",
       "options": [
-        "Pricing the asset from a time-weighted average (TWAP) or an independent oracle like Chainlink, instead of a pool's live spot reserves",
-        "Adding a reentrancy guard modifier to the deposit function",
         "Increasing the Solidity compiler's optimization level",
-        "Requiring a larger minimum deposit amount"
+        "Requiring a larger minimum deposit amount",
+        "Pricing the asset from a time-weighted average (TWAP) or an independent oracle like Chainlink, instead of a pool's live spot reserves",
+        "Adding a reentrancy guard modifier to the deposit function"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "A TWAP requires sustained manipulation across many blocks to move meaningfully, which a single flash-loaned transaction can't buy. A reentrancy guard addresses a completely different bug class and wouldn't have stopped this attack at all."
     },
     {
       "q": "In the Foundry invariant example from this lesson — `invariant_VaultCannotBeDrainedAboveItsRealHoldings` — what property is actually being checked, and why is that a stronger defense than a test for the exact Harvest attack shape?",
       "options": [
+        "That the contract's bytecode size stays under the 24KB deployment limit",
         "That the vault's total promised share value never exceeds the real assets it holds, regardless of which specific sequence of trades a fuzzer finds to try to break that",
         "That the vault's gas cost stays under a fixed limit for every function call",
-        "That every deposit event is followed by exactly one withdrawal event",
-        "That the contract's bytecode size stays under the 24KB deployment limit"
+        "That every deposit event is followed by exactly one withdrawal event"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "An invariant checks a property that should always hold no matter the path taken to get there — here, that the vault can never redeem more value than it actually holds — so it catches novel manipulation sequences a fuzzer discovers, not just the one historical attack a specific negative test was written to replay."
     }
   ]

@@ -4,36 +4,36 @@
     {
       "q": "Why does this script cause an infinite loop?",
       "options": [
+        "The rule is missing a return statement",
         "Calling current.update() inside an update-triggered rule re-triggers the same rule again, with no condition stopping it",
         "gs.nowDateTime() is not a valid function in Business Rules",
-        "work_notes cannot be set from within a Business Rule",
-        "The rule is missing a return statement"
+        "work_notes cannot be set from within a Business Rule"
       ],
-      "answer": 0,
+      "answer": 1,
       "code": "(function executeRule(current, previous) {\n    current.work_notes = 'Rule ran at ' + gs.nowDateTime();\n    current.update();\n})(current, previous);",
       "explain": "Each call to current.update() is itself an update, which re-triggers this same update rule, which calls current.update() again, and so on until the recursion limit kills the transaction."
     },
     {
       "q": "What's wrong with this Business Rule if it's meant to run only on insert, but is configured to also fire on update and delete?",
       "options": [
-        "It overwrites opened_at on every update too, since there's no current.operation() guard",
         "It will throw a syntax error when the rule is saved",
         "opened_at cannot be set using gs.nowDateTime()",
-        "Nothing is wrong — it behaves identically regardless of operation"
+        "Nothing is wrong — it behaves identically regardless of operation",
+        "It overwrites opened_at on every update too, since there's no current.operation() guard"
       ],
-      "answer": 0,
+      "answer": 3,
       "code": "(function executeRule(current, previous) {\n    current.opened_at = gs.nowDateTime();\n})(current, previous);",
       "explain": "Without checking current.operation() == 'insert', this logic meant for brand-new records also runs on every subsequent update, repeatedly overwriting opened_at."
     },
     {
       "q": "Why is this an inefficient use of the After timing?",
       "options": [
-        "It modifies the current record and calls current.update(), forcing a wasteful second database write that a Before rule would avoid",
         "After rules cannot read the current.priority field",
-        "current.update() is not a valid method in any Business Rule",
-        "The rule would fail to save due to a syntax error"
+        "It modifies the current record and calls current.update(), forcing a wasteful second database write that a Before rule would avoid",
+        "The rule would fail to save due to a syntax error",
+        "current.update() is not a valid method in any Business Rule"
       ],
-      "answer": 0,
+      "answer": 1,
       "code": "(function executeRule(current, previous) {\n    current.urgency = (current.priority == 1) ? 1 : current.urgency;\n    current.update();\n})(current, previous);",
       "explain": "Since this only modifies the same record being saved, it belongs in a Before rule, where the change is folded into the one write automatically — no second current.update() call needed."
     },
@@ -41,9 +41,9 @@
       "q": "What happens when a Business Rule has no Filter Conditions scoping when it should run?",
       "options": [
         "It executes on every insert, update, or delete on that table, even changes unrelated to the fields it actually cares about",
+        "Filter Conditions have no effect on execution — they're purely cosmetic",
         "The rule becomes inactive automatically",
-        "It only runs once, the first time it's activated",
-        "Filter Conditions have no effect on execution — they're purely cosmetic"
+        "It only runs once, the first time it's activated"
       ],
       "answer": 0,
       "explain": "Without Filter Conditions, the rule's internal if-logic still runs on every matching database operation, wasting server resources checking changes it doesn't actually care about."
@@ -51,12 +51,12 @@
     {
       "q": "Why is overly broad logic on a base table's Business Rule a real risk?",
       "options": [
-        "A rule on task reaches every extending table, so table-specific logic without proper scoping can silently break Problem or Change Request too",
         "Base-table rules never actually execute due to a platform limitation",
-        "It only risks affecting the Incident table and nothing else",
-        "Business Rules cannot legally be created on base tables like task"
+        "Business Rules cannot legally be created on base tables like task",
+        "A rule on task reaches every extending table, so table-specific logic without proper scoping can silently break Problem or Change Request too",
+        "It only risks affecting the Incident table and nothing else"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Table inheritance means a rule on task fires for Incident, Problem, and Change Request alike — logic meant for only one of them needs explicit scoping or a sys_class_name guard."
     }
   ]

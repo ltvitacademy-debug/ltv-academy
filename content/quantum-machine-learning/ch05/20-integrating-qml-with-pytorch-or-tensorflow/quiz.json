@@ -4,32 +4,32 @@
     {
       "q": "What does PennyLane's qml.qnn.TorchLayer do?",
       "options": [
-        "Wraps a QNode so it behaves like a standard torch.nn.Module layer, accepting and returning tensors and participating fully in PyTorch's autograd system",
-        "Converts a PyTorch model entirely into a quantum circuit with no classical layers remaining",
+        "Replaces PennyLane's parameter-shift rule with classical backpropagation through the physical circuit",
         "Only works for TensorFlow, despite its name",
-        "Replaces PennyLane's parameter-shift rule with classical backpropagation through the physical circuit"
+        "Wraps a QNode so it behaves like a standard torch.nn.Module layer, accepting and returning tensors and participating fully in PyTorch's autograd system",
+        "Converts a PyTorch model entirely into a quantum circuit with no classical layers remaining"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "TorchLayer makes a QNode behave exactly like any other PyTorch layer -- accepting tensor inputs, returning tensor outputs, and correctly computing gradients when .backward() is called, using parameter-shift under the hood."
     },
     {
       "q": "In the concrete hybrid architecture described (classical layer -> quantum layer -> classical layer), what role does the quantum layer typically play?",
       "options": [
-        "A small quantum 'core' sandwiched between classical pre- and post-processing layers, not an all-quantum model end to end",
-        "It replaces every classical layer entirely, with no classical computation anywhere in the model",
         "It only runs during inference, never during training",
+        "It replaces every classical layer entirely, with no classical computation anywhere in the model",
+        "A small quantum 'core' sandwiched between classical pre- and post-processing layers, not an all-quantum model end to end",
         "It computes the final output directly with no further classical processing"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "The realistic shape of most hybrid QML models is a small quantum core between classical dimensionality-reduction and classical post-processing layers, trained end-to-end with ordinary backprop outside the quantum layer and parameter-shift inside it."
     },
     {
       "q": "How does TorchLayer make the quantum layer's gradient available to PyTorch's autograd system during the backward pass?",
       "options": [
         "It internally runs PennyLane's parameter-shift gradient computation and returns that result to autograd as if it had come from ordinary backpropagation -- autograd doesn't need to know the underlying method differed",
-        "It requires the user to manually compute and inject the gradient at every training step",
+        "It converts the quantum circuit into a lookup table computed once before training begins",
         "It disables autograd entirely for any model containing a quantum layer",
-        "It converts the quantum circuit into a lookup table computed once before training begins"
+        "It requires the user to manually compute and inject the gradient at every training step"
       ],
       "answer": 0,
       "explain": "TorchLayer handles the parameter-shift computation internally and hands the result back to autograd in the expected format, which is exactly what makes dropping a QNode into a PyTorch model work seamlessly without hand-written hybrid-loop code."
@@ -37,21 +37,21 @@
     {
       "q": "Which of these is listed as a real practical integration gotcha when combining PennyLane circuits with PyTorch models?",
       "options": [
-        "Data type mismatches (e.g., PennyLane expecting float64 vs. PyTorch's default float32), and quantum devices not natively vectorizing over a batch dimension the way GPU operations do",
+        "TorchLayer only works with exactly one qubit, never more",
         "PennyLane circuits can never be combined with any classical layer under any circumstances",
-        "PyTorch does not support any form of automatic differentiation",
-        "TorchLayer only works with exactly one qubit, never more"
+        "Data type mismatches (e.g., PennyLane expecting float64 vs. PyTorch's default float32), and quantum devices not natively vectorizing over a batch dimension the way GPU operations do",
+        "PyTorch does not support any form of automatic differentiation"
       ],
-      "answer": 0,
+      "answer": 2,
       "explain": "Dtype mismatches throw type errors, and unsupported devices can silently fall back to looping over batch samples one at a time (correct but slow) -- both genuine, documented gotchas when integrating PennyLane circuits into PyTorch models."
     },
     {
       "q": "What would break, practically, if PennyLane instead required manually intercepting the backward pass every time a quantum layer was used in a PyTorch model?",
       "options": [
         "Every hybrid model would require hand-written gradient-plumbing code instead of being able to drop a QNode into a model like any other layer -- exactly the manual work TorchLayer's autograd integration eliminates",
-        "Nothing would change; manual interception would be exactly as convenient as automatic integration",
         "The parameter-shift rule itself would no longer be mathematically valid",
-        "PyTorch models would become unable to use any classical layers at all"
+        "PyTorch models would become unable to use any classical layers at all",
+        "Nothing would change; manual interception would be exactly as convenient as automatic integration"
       ],
       "answer": 0,
       "explain": "The whole practical value of TorchLayer's autograd integration is removing the need to hand-write the hybrid loop from Lesson 19 every time -- manual backward-pass interception would reintroduce exactly that burden for every hybrid model built."

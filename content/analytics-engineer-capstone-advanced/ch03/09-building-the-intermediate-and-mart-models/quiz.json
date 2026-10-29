@@ -4,21 +4,21 @@
     {
       "q": "What is an intermediate model's job, as distinct from a staging model or a mart?",
       "options": [
-        "It's the model Power BI connects to directly",
         "Reusable aggregation or logic sitting between staging and marts, not meant to be queried directly by a BI tool",
+        "A model that only exists inside the CI runner",
         "A 1:1 rename-only model on top of exactly one raw source",
-        "A model that only exists inside the CI runner"
+        "It's the model Power BI connects to directly"
       ],
-      "answer": 1,
+      "answer": 0,
       "explain": "int_orders__payment_summary sits between staging and the marts, aggregating payments per order for reuse by more than one downstream model."
     },
     {
       "q": "Why does customers.sql build on ref('orders') instead of referencing stg_jaffle_shop__orders and the payment summary directly?",
       "options": [
-        "ref() cannot reference staging models at all",
+        "Because stg_jaffle_shop__orders does not exist yet at that point",
         "orders.sql already resolved the payment aggregation once, so customers.sql reuses that work instead of redoing it — a mart referencing another mart",
         "It's required syntax dbt enforces for every mart",
-        "Because stg_jaffle_shop__orders does not exist yet at that point"
+        "ref() cannot reference staging models at all"
       ],
       "answer": 1,
       "explain": "Mart-on-mart ref() avoids duplicating logic that orders.sql already computed, keeping lifetime_value consistent with the orders mart's own amount."
@@ -26,32 +26,32 @@
     {
       "q": "Why are customers and orders specifically the two models that get connected to Power BI in Chapter 7, rather than the staging models?",
       "options": [
-        "Staging models cannot be built into the PROD schema",
         "They are the finished, business-facing marts — the layer everything below exists to make correct, not to be queried directly by a business tool",
+        "Staging models cannot be built into the PROD schema",
         "Power BI technically cannot connect to any model with fewer than two joins",
         "Marts are the only models dbt allows to have more than one column"
       ],
-      "answer": 1,
+      "answer": 0,
       "explain": "Marts are explicitly the business-facing layer; staging and intermediate models exist to make the marts correct, not for direct BI consumption."
     },
     {
       "q": "In int_orders__payment_summary.sql, what does the GROUP BY 1 produce?",
       "options": [
-        "One row per payment_id",
         "One row per order_id, with total_amount_paid and payment_count aggregated across all of that order's payments",
-        "One row for the entire table with a single grand total",
-        "One row per customer_id"
+        "One row per payment_id",
+        "One row per customer_id",
+        "One row for the entire table with a single grand total"
       ],
-      "answer": 1,
+      "answer": 0,
       "explain": "The model groups by order_id, summing amount and counting payment_id per order — a reusable per-order payment aggregation."
     },
     {
       "q": "Why does customers.sql use a LEFT JOIN (not an inner join) between customers and customer_orders?",
       "options": [
-        "LEFT JOIN runs faster in Snowflake regardless of data shape",
+        "Because customer_orders always has more rows than customers",
         "So a customer with zero orders still appears in the mart, with number_of_orders and lifetime_value coalesced to 0 instead of the row disappearing entirely",
-        "INNER JOIN is not valid dbt syntax",
-        "Because customer_orders always has more rows than customers"
+        "LEFT JOIN runs faster in Snowflake regardless of data shape",
+        "INNER JOIN is not valid dbt syntax"
       ],
       "answer": 1,
       "explain": "A LEFT JOIN combined with coalesce(...,0) ensures every customer shows up in the mart, even one who has never placed an order."

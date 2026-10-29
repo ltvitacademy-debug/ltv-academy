@@ -4,21 +4,21 @@
     {
       "q": "What does SHOW TASKS reveal in this chapter's scenario?",
       "options": [
-        "A second, almost-identically-named Task, finance_refund_task_v2, still running alongside the original",
         "That no Tasks exist in the schema at all",
-        "That the Stream itself has been deleted",
-        "That ticket_facts_sync_task is duplicated, not finance_refund_task"
+        "A second, almost-identically-named Task, finance_refund_task_v2, still running alongside the original",
+        "That ticket_facts_sync_task is duplicated, not finance_refund_task",
+        "That the Stream itself has been deleted"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "SHOW TASKS lists every existing Task — revealing the leftover finance_refund_task_v2 that was never suspended after an earlier change."
     },
     {
       "q": "What does TASK_HISTORY confirm about the two Finance Tasks?",
       "options": [
         "Both show SUCCEEDED runs on the same schedule, with start times close enough to have genuinely overlapped",
-        "Only one of the two Tasks ever actually ran",
         "finance_refund_task_v2 always fails with an error",
-        "The two Tasks ran on completely different schedules, a week apart"
+        "The two Tasks ran on completely different schedules, a week apart",
+        "Only one of the two Tasks ever actually ran"
       ],
       "answer": 0,
       "explain": "TASK_HISTORY shows both Tasks succeeding on overlapping schedules, confirming the hypothesis from SHOW TASKS."
@@ -26,32 +26,32 @@
     {
       "q": "Mechanically, why did two overlapping Task runs produce duplicate refund_events rows?",
       "options": [
-        "A Stream's unconsumed rows stay visible to any transaction reading it until a commit happens, so both Tasks' MERGEs saw the same rows and both satisfied WHEN NOT MATCHED",
         "Snowflake Streams automatically duplicate every row by default",
         "The refund_amount column was defined with the wrong data type",
-        "finance_refund_task_v2 was reading from a different, corrupted Stream"
+        "finance_refund_task_v2 was reading from a different, corrupted Stream",
+        "A Stream's unconsumed rows stay visible to any transaction reading it until a commit happens, so both Tasks' MERGEs saw the same rows and both satisfied WHEN NOT MATCHED"
       ],
-      "answer": 0,
+      "answer": 3,
       "explain": "Until a committing DML statement advances the offset, the Stream's data remains visible to other transactions — including a second, overlapping Task's MERGE."
     },
     {
       "q": "Why did Support's numbers stay correct while Finance's didn't, given both Tasks read the same Stream?",
       "options": [
-        "ticket_facts_sync_task was never duplicated, so it never hit the overlapping-execution problem that the duplicated finance_refund_task did",
         "Support's view doesn't actually read from the same Stream at all",
+        "ticket_facts_sync_task was never duplicated, so it never hit the overlapping-execution problem that the duplicated finance_refund_task did",
         "Support's numbers were also wrong, but nobody noticed",
         "ticket_facts_sync_task runs on a completely different Stream"
       ],
-      "answer": 0,
+      "answer": 1,
       "explain": "Only one instance of ticket_facts_sync_task exists, so there was no second consumer to create overlapping, duplicate-prone execution."
     },
     {
       "q": "Why does this lesson call the bug an \"operational leftover\" rather than a formula mistake?",
       "options": [
         "finance_refund_task_v2's own MERGE logic is correctly written in isolation — the problem is that two copies of the same consumer existed and ran against one Stream at once",
-        "Because the MERGE statement contains an actual SQL syntax error",
         "Because refund_amount was never cast to the correct type",
-        "Because the Stream itself was created with the wrong ON TABLE clause"
+        "Because the Stream itself was created with the wrong ON TABLE clause",
+        "Because the MERGE statement contains an actual SQL syntax error"
       ],
       "answer": 0,
       "explain": "Reviewing the MERGE statement's own logic would never reveal this bug — it's a leftover duplicate object, not a flaw in anyone's SQL."
