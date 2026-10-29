@@ -69,16 +69,16 @@ export const ADVANCED_SRE_DISASTER_RECOVERY_RESILIENCE_CHAPTERS: ChapterMeta[] =
     lessons: [
       L(17, "forecasting-capacity-needs-from-real-growth-trends", "Forecasting Capacity Needs from Real Growth Trends", { contentDir: "ch05/17-forecasting-capacity-needs-from-real-growth-trends", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/forecasting-capacity-needs-from-real-growth-trends.mp4", durationLabel: "2 min 31 s" }),
       L(18, "load-testing-that-actually-predicts-production-behavior", "Load Testing That Actually Predicts Production Behavior", { contentDir: "ch05/18-load-testing-that-actually-predicts-production-behavior", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/load-testing-that-actually-predicts-production-behavior.mp4", durationLabel: "2 min 42 s" }),
-      L(19, "performance-engineering-as-a-discipline-not-an-afterthought", "Performance Engineering as a Discipline, Not an Afterthought", { contentDir: "ch05/19-performance-engineering-as-a-discipline-not-an-afterthought" }),
-      L(20, "capacity-planning-for-a-traffic-spike-you-can-see-coming", "Capacity Planning for a Traffic Spike You Can See Coming", { contentDir: "ch05/20-capacity-planning-for-a-traffic-spike-you-can-see-coming" }),
+      L(19, "performance-engineering-as-a-discipline-not-an-afterthought", "Performance Engineering as a Discipline, Not an Afterthought", { contentDir: "ch05/19-performance-engineering-as-a-discipline-not-an-afterthought", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/performance-engineering-as-a-discipline-not-an-afterthought.mp4", durationLabel: "2 min 7 s" }),
+      L(20, "capacity-planning-for-a-traffic-spike-you-can-see-coming", "Capacity Planning for a Traffic Spike You Can See Coming", { contentDir: "ch05/20-capacity-planning-for-a-traffic-spike-you-can-see-coming", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/capacity-planning-for-a-traffic-spike-you-can-see-coming.mp4", durationLabel: "2 min 42 s" }),
     ],
   },
   {
     n: 6,
     title: "On-Call and Operational Excellence",
     lessons: [
-      L(21, "designing-an-on-call-rotation-that-doesnt-burn-people-out", "Designing an On-Call Rotation That Doesn't Burn People Out", { contentDir: "ch06/21-designing-an-on-call-rotation-that-doesnt-burn-people-out" }),
-      L(22, "runbooks-that-actually-get-used-at-3am", "Runbooks That Actually Get Used at 3 A.M.", { contentDir: "ch06/22-runbooks-that-actually-get-used-at-3am" }),
+      L(21, "designing-an-on-call-rotation-that-doesnt-burn-people-out", "Designing an On-Call Rotation That Doesn't Burn People Out", { contentDir: "ch06/21-designing-an-on-call-rotation-that-doesnt-burn-people-out", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/designing-an-on-call-rotation-that-doesnt-burn-people-out.mp4", durationLabel: "2 min 22 s" }),
+      L(22, "runbooks-that-actually-get-used-at-3am", "Runbooks That Actually Get Used at 3 A.M.", { contentDir: "ch06/22-runbooks-that-actually-get-used-at-3am", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-advanced-sre-disaster-recovery-resilience/runbooks-that-actually-get-used-at-3am.mp4", durationLabel: "2 min 32 s" }),
       L(23, "operational-readiness-reviews-before-a-service-goes-to-production", "Operational Readiness Reviews Before a Service Goes to Production", { contentDir: "ch06/23-operational-readiness-reviews-before-a-service-goes-to-production" }),
       L(24, "measuring-operational-excellence-beyond-uptime", "Measuring Operational Excellence Beyond Uptime", { contentDir: "ch06/24-measuring-operational-excellence-beyond-uptime" }),
     ],

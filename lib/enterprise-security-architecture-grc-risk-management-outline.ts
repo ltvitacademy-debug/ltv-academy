@@ -69,15 +69,15 @@ export const ENTERPRISE_SECURITY_ARCHITECTURE_GRC_RISK_MANAGEMENT_CHAPTERS: Chap
     lessons: [
       L(17, "soc-2-and-what-an-auditor-actually-tests", "SOC 2, and What an Auditor Actually Tests", { contentDir: "ch05/17-soc-2-and-what-an-auditor-actually-tests", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/soc-2-and-what-an-auditor-actually-tests.mp4", durationLabel: "2 min 30 s" }),
       L(18, "iso-27001-the-isms-and-the-statement-of-applicability", "ISO 27001: The ISMS and the Statement of Applicability", { contentDir: "ch05/18-iso-27001-the-isms-and-the-statement-of-applicability", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/iso-27001-the-isms-and-the-statement-of-applicability.mp4", durationLabel: "2 min 58 s" }),
-      L(19, "pci-dss-and-hipaa-when-industry-specific-regulation-applies", "PCI DSS and HIPAA: When Industry-Specific Regulation Applies", { contentDir: "ch05/19-pci-dss-and-hipaa-when-industry-specific-regulation-applies" }),
-      L(20, "mapping-one-control-to-multiple-frameworks", "Mapping One Control to Multiple Frameworks", { contentDir: "ch05/20-mapping-one-control-to-multiple-frameworks" }),
+      L(19, "pci-dss-and-hipaa-when-industry-specific-regulation-applies", "PCI DSS and HIPAA: When Industry-Specific Regulation Applies", { contentDir: "ch05/19-pci-dss-and-hipaa-when-industry-specific-regulation-applies", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/pci-dss-and-hipaa-when-industry-specific-regulation-applies.mp4", durationLabel: "2 min 40 s" }),
+      L(20, "mapping-one-control-to-multiple-frameworks", "Mapping One Control to Multiple Frameworks", { contentDir: "ch05/20-mapping-one-control-to-multiple-frameworks", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/mapping-one-control-to-multiple-frameworks.mp4", durationLabel: "2 min 36 s" }),
     ],
   },
   {
     n: 6,
     title: "Third-Party and Vendor Risk Management",
     lessons: [
-      L(21, "why-your-vendors-risk-is-your-risk", "Why Your Vendor's Risk Is Your Risk", { contentDir: "ch06/21-why-your-vendors-risk-is-your-risk" }),
+      L(21, "why-your-vendors-risk-is-your-risk", "Why Your Vendor's Risk Is Your Risk", { contentDir: "ch06/21-why-your-vendors-risk-is-your-risk", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-enterprise-security-architecture-grc-risk-management/why-your-vendors-risk-is-your-risk.mp4", durationLabel: "2 min 49 s" }),
       L(22, "vendor-security-assessments-and-questionnaires-that-work", "Vendor Security Assessments and Questionnaires That Work", { contentDir: "ch06/22-vendor-security-assessments-and-questionnaires-that-work" }),
       L(23, "contractual-security-requirements-and-right-to-audit-clauses", "Contractual Security Requirements and Right-to-Audit Clauses", { contentDir: "ch06/23-contractual-security-requirements-and-right-to-audit-clauses" }),
       L(24, "ongoing-vendor-monitoring-not-just-a-one-time-review", "Ongoing Vendor Monitoring, Not Just a One-Time Review", { contentDir: "ch06/24-ongoing-vendor-monitoring-not-just-a-one-time-review" }),

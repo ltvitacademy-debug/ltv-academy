@@ -96,9 +96,9 @@ export const ETHICAL_HACKING_PENETRATION_TESTING_PURPLE_TEAM_CHAPTERS: ChapterMe
     n: 8,
     title: "Capstone: A Full Penetration Test Engagement",
     lessons: [
-      L(29, "lab-a-full-recon-to-exploitation-engagement", "Lab: A Full Recon-to-Exploitation Engagement", { contentDir: "ch08/29-lab-a-full-recon-to-exploitation-engagement" }),
-      L(30, "lab-writing-a-professional-penetration-test-report", "Lab: Writing a Professional Penetration Test Report", { contentDir: "ch08/30-lab-writing-a-professional-penetration-test-report" }),
-      L(31, "case-study-a-finding-the-client-didnt-want-to-hear", "Case Study: A Finding the Client Didn't Want to Hear", { contentDir: "ch08/31-case-study-a-finding-the-client-didnt-want-to-hear" }),
+      L(29, "lab-a-full-recon-to-exploitation-engagement", "Lab: A Full Recon-to-Exploitation Engagement", { contentDir: "ch08/29-lab-a-full-recon-to-exploitation-engagement", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/lab-a-full-recon-to-exploitation-engagement.mp4", durationLabel: "2 min 20 s" }),
+      L(30, "lab-writing-a-professional-penetration-test-report", "Lab: Writing a Professional Penetration Test Report", { contentDir: "ch08/30-lab-writing-a-professional-penetration-test-report", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/lab-writing-a-professional-penetration-test-report.mp4", durationLabel: "2 min 10 s" }),
+      L(31, "case-study-a-finding-the-client-didnt-want-to-hear", "Case Study: A Finding the Client Didn't Want to Hear", { contentDir: "ch08/31-case-study-a-finding-the-client-didnt-want-to-hear", videoUrl: "https://ltvacademyvideos.b-cdn.net/ltv-ethical-hacking-penetration-testing-purple-team/case-study-a-finding-the-client-didnt-want-to-hear.mp4", durationLabel: "2 min 29 s" }),
       L(32, "chapter-capstone-ethical-hacking-and-purple-team-review", "Chapter Capstone: Ethical Hacking and Purple Team Review", { contentDir: "ch08/32-chapter-capstone-ethical-hacking-and-purple-team-review" }),
     ],
   },
