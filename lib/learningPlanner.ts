@@ -134,6 +134,20 @@ const PATH_CONFIG: Record<string, { courseOrder: string[]; excludedCourses: Plan
     ],
     excludedCourses: [],
   },
+  "cybersecurity-analyst-security-engineer": {
+    courseOrder: [
+      "how-it-teams-work",
+      "it-networking-cybersecurity-fundamentals",
+      "windows-linux-security-administration",
+      "network-security-threat-detection",
+      "soc-operations-siem-fundamentals",
+      "microsoft-sentinel-defender-xdr",
+      "incident-response-soc-capstone",
+    ],
+    excludedCourses: [
+      { courseSlug: "security-engineering-identity-management", title: "Advanced & Expert Specialization courses", reason: "This plan covers the Job-Ready Foundation stage (7 courses). The Advanced and Expert Specialization stages are a natural next step after this plan, not part of it." },
+    ],
+  },
 };
 
 const HOURS_PER_DAY = 2;
