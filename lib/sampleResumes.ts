@@ -38,6 +38,8 @@ import { RESUMES as AI_INFRASTRUCTURE_ML_SYSTEMS_ENGINEER } from "./sample-resum
 import { RESUMES as BI_TO_DATA_ARCHITECT } from "./sample-resumes-data/bi-to-data-architect";
 import { RESUMES as QUANTUM_COMPUTING_ENGINEER } from "./sample-resumes-data/quantum-computing-engineer";
 import { RESUMES as SERVICENOW_DEVELOPER_ARCHITECT } from "./sample-resumes-data/servicenow-developer-architect";
+import { RESUMES as CLOUD_ENGINEER_CLOUD_ARCHITECT } from "./sample-resumes-data/cloud-engineer-cloud-architect";
+import { RESUMES as CYBERSECURITY_ANALYST_SECURITY_ENGINEER } from "./sample-resumes-data/cybersecurity-analyst-security-engineer";
 
 export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "microsoft-data-bi-developer": MICROSOFT_DATA_BI_DEVELOPER,
@@ -69,6 +71,8 @@ export const SAMPLE_RESUMES: Record<string, PathResumes> = {
   "bi-to-data-architect": BI_TO_DATA_ARCHITECT,
   "quantum-computing-engineer": QUANTUM_COMPUTING_ENGINEER,
   "servicenow-developer-architect": SERVICENOW_DEVELOPER_ARCHITECT,
+  "cloud-engineer-cloud-architect": CLOUD_ENGINEER_CLOUD_ARCHITECT,
+  "cybersecurity-analyst-security-engineer": CYBERSECURITY_ANALYST_SECURITY_ENGINEER,
 };
 
 export function getSampleResume(pathSlug: string, level: string): ResumeData | undefined {

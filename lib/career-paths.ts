@@ -2055,7 +2055,7 @@ export const CAREER_PATHS: CareerPath[] = [
     title: "Cybersecurity Analyst → Security Engineer",
     targetJobs: ["Junior SOC Analyst", "Cybersecurity Analyst", "Security Engineer"],
     description:
-      "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering, through to digital forensics, penetration testing, AI security, and enterprise security architecture — from a SOC analyst's first shift through the specialized disciplines a senior security engineer or architect draws on. Framework is live; course content for this path is still in production.",
+      "A progressive cybersecurity training pathway covering networking, system security, threat detection, security operations, incident response, cloud security, identity management, and security engineering, through to digital forensics, penetration testing, AI security, and enterprise security architecture — from a SOC analyst's first shift through the specialized disciplines a senior security engineer or architect draws on.",
     labRequirement: {
       eyebrow: "Read this before you enroll",
       heading: "Recommended Hands-On Lab Subscription",
@@ -2110,14 +2110,14 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     destinationNote:
-      "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer, with Expert Specialization opening doors toward Digital Forensics Analyst, Penetration Tester, AI Security Engineer, or Security Architect / GRC roles. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+      "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer, with Expert Specialization opening doors toward Digital Forensics Analyst, Penetration Tester, AI Security Engineer, or Security Architect / GRC roles.",
   },
   {
     slug: "cloud-engineer-cloud-architect",
     title: "Cloud Engineer → Cloud Architect",
     targetJobs: ["Cloud Support Engineer", "Junior Cloud Engineer", "Cloud Engineer", "Cloud Architect"],
     description:
-      "A progressive cloud infrastructure training pathway covering networking, Linux, Microsoft Azure, AWS, identity management, infrastructure deployment, scripting, automation, containers, cloud reliability, and enterprise cloud architecture, through to platform engineering and GitOps, hybrid/multi-cloud architecture, AI infrastructure, and site reliability engineering — from cloud-support fundamentals through the specialized disciplines a senior cloud architect or SRE draws on. Framework is live; course content for this path is still in production.",
+      "A progressive cloud infrastructure training pathway covering networking, Linux, Microsoft Azure, AWS, identity management, infrastructure deployment, scripting, automation, containers, cloud reliability, and enterprise cloud architecture, through to platform engineering and GitOps, hybrid/multi-cloud architecture, AI infrastructure, and site reliability engineering — from cloud-support fundamentals through the specialized disciplines a senior cloud architect or SRE draws on.",
     stages: [
       {
         label: "Job-Ready Foundation",
@@ -2154,7 +2154,7 @@ export const CAREER_PATHS: CareerPath[] = [
       },
     ],
     destinationNote:
-      "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect, with Expert Specialization opening doors toward Platform Engineer, Multi-Cloud/Enterprise Architect, AI Infrastructure Engineer, or Site Reliability Engineer roles. This program is a framework today — course outlines are set, but lesson content is still being produced, so every course below shows as coming soon until it's built.",
+      "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect, with Expert Specialization opening doors toward Platform Engineer, Multi-Cloud/Enterprise Architect, AI Infrastructure Engineer, or Site Reliability Engineer roles.",
   },
 ];
 
