@@ -1,0 +1,451 @@
+{
+  "questions": [
+    {
+      "id": "tfia-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes what a Terraform provider like hashicorp/azurerm actually is, per Lesson 1?",
+      "options": [
+        "A separately versioned plugin that translates Terraform's generic actions into real API calls against one specific cloud or system",
+        "An extension built into Terraform core that adds cloud-specific knowledge directly into the terraform binary",
+        "A configuration file that lists every resource a team plans to create",
+        "The hosted service that stores Terraform's state file remotely",
+        "A command-line flag that switches which cloud terraform apply targets"
+      ],
+      "correctIndex": 0,
+      "explain": "Terraform's core engine is deliberately cloud-agnostic — it only knows how to read HCL, build a dependency graph, diff against state, and produce a plan. A provider is a separately built and versioned plugin whose entire job is translating those generic instructions into real calls against one specific API, which is exactly what lets the same Terraform CLI manage Azure, AWS, and hundreds of other systems with one workflow.",
+      "distractorExplain": "Option B is the mix-up Lesson 1 specifically warns against — Terraform core knows nothing about any specific cloud by design; it's the separately maintained provider plugin, downloaded and versioned on its own, that supplies cloud-specific knowledge, not an extension baked into core."
+    },
+    {
+      "id": "tfia-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: running terraform ________ against a required_providers block downloads the matching provider plugin into .terraform/, sets up the state backend, and writes .terraform.lock.hcl.",
+      "acceptedAnswers": ["init", "terraform init"],
+      "explain": "terraform init is the preparation step: it downloads the provider plugin matching the version constraint, initializes the backend that will store state, and writes a lock file pinning the exact resolved provider version so a teammate running init later gets the same one."
+    },
+    {
+      "id": "tfia-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Put these first-time Terraform steps, from Lessons 1-2, in the correct order.",
+      "items": [
+        "Declare the provider you need in a required_providers block",
+        "Run terraform init to download the provider and set up the backend",
+        "Run terraform plan to preview what would be created",
+        "Run terraform apply and type yes to actually create the resources"
+      ],
+      "explain": "A provider has to be declared before init can download it; init has to run before plan can build a dependency graph against a resolved provider; and plan's preview is what apply re-runs and then actually executes once you confirm. Skipping or reordering any of these is exactly what each lesson's examples build up step by step."
+    },
+    {
+      "id": "tfia-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "  # azurerm_resource_group.rg will be updated in place\n  ~ resource \"azurerm_resource_group\" \"rg\" {\n      ~ location = \"eastus\" -> \"westus2\"\n    }",
+      "prompt": "Per Lesson 2, what does the ~ symbol in this terraform plan output actually mean?",
+      "options": [
+        "This resource will be updated in place, without being destroyed and recreated",
+        "This resource will be created for the first time",
+        "This resource will be destroyed",
+        "Nothing about this resource will change"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 2 lays out the full symbol vocabulary: + means created, - means destroyed, and ~ means updated in place. Changing location on an already-applied resource group is exactly the kind of change plan marks with ~ rather than proposing a destroy-and-recreate."
+    },
+    {
+      "id": "tfia-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "An engineer writes an aws_instance resource with subnet_id = aws_subnet.web.id directly, then tries the same pattern for an Azure VM: azurerm_linux_virtual_machine with subnet_id = azurerm_subnet.web.id. Per Lesson 7, why does this fail?",
+      "options": [
+        "Azure VMs don't attach to a subnet directly — they attach to a network interface, which attaches to the subnet, so azurerm_linux_virtual_machine has no subnet_id argument at all",
+        "Azure subnets only accept connections from Windows virtual machines",
+        "azurerm_linux_virtual_machine requires the exact same subnet_id argument, just written with different capitalization",
+        "Terraform does not support referencing a subnet by ID anywhere in the azurerm provider"
+      ],
+      "correctIndex": 0,
+      "explain": "Azure's resource model puts a network interface between a VM and its subnet — azurerm_network_interface is its own resource, with the subnet reference living on its ip_configuration block, and the VM then references network_interface_ids. AWS skips that for the common case, letting aws_instance reference a subnet directly, because it creates an elastic network interface behind the scenes automatically."
+    },
+    {
+      "id": "tfia-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: an aws_subnet resource references its VPC through vpc_id = aws_vpc.example.________ — a generated identifier AWS assigns at create time, rather than the plain name string an azurerm_subnet uses to reference its VNet.",
+      "acceptedAnswers": ["id"],
+      "explain": "AWS resources are identified by a generated id attribute, like vpc-0abc123456789def0, that Terraform reads back out of state automatically. azurerm_subnet instead references its VNet by the plain virtual_network_name string you chose yourself — the same underlying dependency mechanics, carried by a different kind of value."
+    },
+    {
+      "id": "tfia-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the multi-provider configuration pattern and provider aliases, per Lesson 8.",
+      "options": [
+        "A single Terraform configuration can declare both azurerm and aws in required_providers and manage both clouds from one terraform apply",
+        "A provider alias is needed the moment a configuration needs resources in two regions of the same cloud, since a provider block only holds one region value",
+        "Terraform builds one dependency graph across every resource in the file regardless of which provider each resource belongs to",
+        "Once a provider alias exists, the unaliased default provider block stops working entirely",
+        "A resource that doesn't specify provider = always fails to plan once any alias is declared anywhere in the file"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "One configuration can genuinely manage both Azure and AWS from a single required_providers block and a single apply, with Terraform planning every resource together in one graph regardless of provider. An alias exists specifically because a single provider block can only hold one region (or subscription); it doesn't disable the default block — a resource that omits provider = simply keeps using that default one."
+    },
+    {
+      "id": "tfia-08",
+      "type": "sequencing",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "For the Azure network and compute example built across Lessons 5 and 7, put these resources in the order Terraform's dependency graph actually creates them.",
+      "items": [
+        "azurerm_resource_group",
+        "azurerm_virtual_network",
+        "azurerm_subnet",
+        "azurerm_network_interface",
+        "azurerm_linux_virtual_machine"
+      ],
+      "explain": "Each resource's block references an attribute of the one before it — the VNet reads the resource group's location, the subnet reads the VNet's name, the NIC reads the subnet's id, and the VM reads the NIC's id — so Terraform's dependency graph enforces exactly this order automatically, with zero explicit depends_on written anywhere."
+    },
+    {
+      "id": "tfia-09",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly defines what a Terraform remote backend does, as distinguished from the local backend used in Chapters 1-2?",
+      "options": [
+        "It tells Terraform to read and write terraform.tfstate against a shared storage service like Azure Storage or S3, instead of a file on one person's disk",
+        "It replaces the need for a provider block, since the backend authenticates directly to the cloud on Terraform's behalf",
+        "It automatically rewrites every existing resource block into a reusable module",
+        "It stores a copy of the Terraform CLI binary centrally so teammates don't have to install it",
+        "It compiles HCL down into ARM JSON the way Bicep does",
+        "It encrypts the .tf configuration files themselves at rest on disk"
+      ],
+      "correctIndex": 0,
+      "explain": "A remote backend moves terraform.tfstate off one person's laptop and into a shared, durable storage service everyone on the team can reach — fixing both the 'no shared source of truth' problem and giving state a real security boundary through the storage service's own access controls and encryption.",
+      "distractorExplain": "Option B confuses the backend with the provider block — a remote backend only changes where state is stored and read from; authenticating to the cloud to actually create resources is still the provider block's job (or the CLI session it relies on), and configuring a backend doesn't remove the need for one."
+    },
+    {
+      "id": "tfia-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Terraform state locking, per Lesson 11.",
+      "options": [
+        "The azurerm backend locks state automatically using Azure Blob Storage's native lease mechanism, with no extra argument to configure",
+        "The s3 backend needs a separate DynamoDB table, referenced with the dynamodb_table argument, to coordinate locks",
+        "A DynamoDB locking table needs a primary key named LockID of type String",
+        "terraform force-unlock is the safe first response the moment an apply shows 'Error acquiring the state lock'",
+        "The lock error message tells you who holds the lock and what operation they're running, which usually means the right move is simply to wait"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "azurerm gets locking for free through Blob Storage's lease mechanism, while s3 needs a DynamoDB table with a String LockID primary key to do the same job. The lock error is genuinely informative — it names who holds it — and the right response is usually to wait for that person's apply to finish, not to force-unlock, which risks exactly the corruption locking exists to prevent unless you've confirmed the holding operation isn't actually still running."
+    },
+    {
+      "id": "tfia-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: terraform import only ever writes to Terraform's ________ — it never creates, modifies, or destroys anything in the real cloud.",
+      "acceptedAnswers": ["state", "state file", "terraform state", "tfstate"],
+      "explain": "The one fact to hold onto for the whole lesson: import reads the real resource from the provider's API and records it in terraform.tfstate. It never touches the real-world object at all, which is exactly why the config block still has to be written and reconciled with plan afterward."
+    },
+    {
+      "id": "tfia-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "  # azurerm_resource_group.rg will be destroyed\n  # (because azurerm_resource_group.rg is not in configuration)\n  - resource \"azurerm_resource_group\" \"rg\" {\n      - name     = \"rg-app-prod\" -> null\n      - location = \"eastus\" -> null\n    }\n\nPlan: 0 to add, 0 to change, 1 to destroy.",
+      "prompt": "An engineer runs terraform import azurerm_resource_group.rg <id> successfully, but the very next terraform plan shows the output above. Per Lesson 12, what actually caused this?",
+      "options": [
+        "The engineer ran the import but never added a matching azurerm_resource_group resource block to the .tf configuration, so plan sees the resource recorded in state with nothing in config asking for it",
+        "terraform import always marks a resource for deletion the first time plan runs afterward, as a safety check",
+        "The resource group's real location in Azure changed immediately after the import ran",
+        "terraform import silently deleted the real resource group as part of writing state"
+      ],
+      "correctIndex": 0,
+      "explain": "Import only writes to state — it never writes a resource block for you. When plan compares config against state and finds the resource in state with nothing in config declaring it, it concludes the resource is unwanted and marks it for destruction, exactly as the real workflow requires: write the matching resource block first, import, then verify with plan before considering the resource safely adopted."
+    },
+    {
+      "id": "tfia-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly defines what a Terraform module actually is, per Lesson 13?",
+      "options": [
+        "A folder of .tf files with its own input variables and outputs, callable from a module block",
+        "A special built-in Terraform engine feature that only HashiCorp-published code is allowed to use",
+        "A single resource block that has had reusable = true set on it",
+        "A separate command-line tool installed alongside Terraform for managing shared code",
+        "A .tfvars file that supplies values shared across more than one environment",
+        "A compiled binary plugin, downloaded and versioned the way a provider is"
+      ],
+      "correctIndex": 0,
+      "explain": "A module is nothing more exotic than a folder of ordinary .tf files that happens to take inputs and produce outputs — called from a module block the same way a resource block configures a resource, and reused as many times as there's real duplication to remove.",
+      "distractorExplain": "Option F describes a provider, not a module — a provider is a compiled binary plugin downloaded and versioned separately; a module is just HCL source, with no binary and no provider-style version resolution of its own (Lesson 15 covers pinning a module's version through a version argument or a git ref instead)."
+    },
+    {
+      "id": "tfia-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each term from Lesson 14's module anatomy to what it actually is.",
+      "left": ["variables.tf", "main.tf", "outputs.tf", "cidrsubnet()"],
+      "right": [
+        "Declares what the module accepts, by convention, so its interface is visible without reading the resource logic first",
+        "Holds the actual resource blocks that do the module's real work",
+        "Declares what the module hands back to whoever called it",
+        "A built-in function that carves a smaller CIDR block out of a larger address space, given an index"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Terraform doesn't enforce these filenames — it loads every .tf file in a directory as one combined configuration — but variables.tf/main.tf/outputs.tf is the conventional split that lets anyone open a module and go straight to its interface. cidrsubnet(var.address_space[0], 8, count.index) is the function that carves a non-overlapping subnet for each value of count.index, with no hand-calculated CIDR math."
+    },
+    {
+      "id": "tfia-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about pinning a Terraform module's version, per Lesson 15.",
+      "options": [
+        "The version argument in a module block only works when the module is sourced from a registry",
+        "A git-sourced module is pinned with a ?ref= query parameter appended to the source URL instead of a version argument",
+        "A private module registry works inside Terraform Cloud or Terraform Enterprise, published the same way as the public registry: by pushing a semantic-version git tag",
+        "Leaving a module source unpinned is safe, because Terraform never pulls in a new version of a module automatically",
+        "git:: at the start of a module source tells Terraform the URL points at a Git repository rather than a plain HTTP download"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "version only has meaning for a registry-sourced module; a git-sourced module is pinned entirely differently, with ?ref= naming a tag, branch, or commit. A private registry is consumed exactly like the public one, just hosted inside an org's Terraform Cloud/Enterprise account. Leaving a source unpinned is exactly the risk the lesson warns against — an unreviewed change from the module's author can land silently the next time someone runs terraform init -upgrade."
+    },
+    {
+      "id": "tfia-16",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "For the three-module environment (network, compute, database) composed in Lesson 16, put these in the order Terraform's dependency graph actually creates them, based on which module's output feeds which module's input.",
+      "items": [
+        "module \"network\" (produces subnet_ids)",
+        "module \"compute\" (consumes network.subnet_ids, produces private_ip)",
+        "module \"database\" (consumes compute.private_ip for its firewall rule)"
+      ],
+      "explain": "compute's subnet_id argument literally reads module.network.subnet_ids[0], and database's allowed_ip argument literally reads module.compute.private_ip — those references are the dependency, so Terraform's graph creates network first, then compute, then database, with no depends_on written anywhere."
+    },
+    {
+      "id": "tfia-17",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "locals {\n  vm_size_by_env = {\n    dev     = \"Standard_B1s\"\n    staging = \"Standard_B2s\"\n    prod    = \"Standard_D2s_v3\"\n  }\n}\n\nresource \"azurerm_linux_virtual_machine\" \"app\" {\n  size = lookup(local.vm_size_by_env, terraform.workspace, \"Standard_B1s\")\n  # ...\n}",
+      "prompt": "Given the configuration above, what VM size does an apply actually use after running terraform workspace select staging?",
+      "options": [
+        "Standard_B2s, because lookup() reads the vm_size_by_env map using terraform.workspace ('staging') as the key",
+        "Standard_B1s, because that's the function's fallback default regardless of the active workspace",
+        "Standard_D2s_v3, because that's the largest size in the map",
+        "The apply fails because staging was never declared with a variable block"
+      ],
+      "correctIndex": 0,
+      "explain": "terraform.workspace exposes the active workspace's name as a built-in value, and lookup(local.vm_size_by_env, terraform.workspace, \"Standard_B1s\") reads that map using whichever workspace is currently selected as the key — so selecting staging resolves to Standard_B2s, while the \"Standard_B1s\" argument only applies as a fallback if the workspace name isn't in the map at all."
+    },
+    {
+      "id": "tfia-18",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the tradeoff between Terraform workspaces and separate state files/directories per environment, per Lesson 18.",
+      "options": [
+        "Every workspace within one backend shares the same provider block and, typically, the same credentials",
+        "A directory-per-environment layout lets prod's state live in its own storage account with its own access policy, separate from dev's",
+        "Workspaces are the better choice specifically when different teams need different approval gates and different permissions per environment",
+        "A separate state file per environment means maintaining more backend.tf files than a single shared workspace setup",
+        "A compliance rule requiring that only a production-support team can even view production state is satisfied by workspaces alone"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Workspaces share one backend and one set of credentials by default, with no built-in way to restrict a credential to only one workspace — which is exactly why real isolation (different approval gates, different permissions, a compliance rule restricting who can view prod state) requires separate directories and backend blocks instead, at the cost of more files to maintain."
+    },
+    {
+      "id": "tfia-19",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: terraform apply -________=\"dev.tfvars\" explicitly tells Terraform which variable-value file to load for that run, rather than relying on whichever workspace happens to be selected.",
+      "acceptedAnswers": ["var-file", "-var-file"],
+      "explain": "-var-file makes the loaded values visible right in a CI/CD pipeline's own definition — a dev branch's stage passes dev.tfvars, a prod branch's stage passes prod.tfvars — instead of depending on a workspace someone might have forgotten to select."
+    },
+    {
+      "id": "tfia-20",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes what the cloud block in a terraform {} configuration does, and what Terraform Cloud adds beyond state storage, per Lesson 20?",
+      "options": [
+        "It replaces a backend block entirely, handing state storage to Terraform Cloud, which also adds a reviewable plan-then-approve UI and Sentinel policy-as-code enforcement",
+        "It replaces the provider block, so no cloud credentials are needed for any resource at all",
+        "It is only valid for Terraform Enterprise and has no equivalent use in Terraform Cloud's SaaS offering",
+        "It adds multi-cloud support that plain open-source Terraform does not already have",
+        "It converts an existing CLI workspace directly into a Kubernetes namespace"
+      ],
+      "correctIndex": 0,
+      "explain": "The cloud block takes over exactly what a backend block used to do — state storage — but also connects the configuration to Terraform Cloud's run model: a web UI that holds a plan for human review and approval before apply executes, plus Sentinel, HashiCorp's policy-as-code framework, which can hard-block a non-compliant run before a human even sees it.",
+      "distractorExplain": "Option D invents a capability the lesson never claims — plain open-source Terraform is already multi-cloud by design, since any provider can be declared in required_providers regardless of backend. The cloud block changes where state lives and adds review/approval plus Sentinel, not multi-cloud capability itself."
+    },
+    {
+      "id": "tfia-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "code": "param storageNames array = ['ltvstorage01','ltvstorage02','ltvstorage03']\n\nresource storageAccts 'Microsoft.Storage/storageAccounts@2023-01-01' = [\n  for name in storageNames: {\n    name: name\n    location: resourceGroup().location\n    sku: { name: 'Standard_LRS' }\n  }\n]",
+      "prompt": "Per Lesson 21, how many storage accounts does this Bicep resource block actually deploy?",
+      "options": [
+        "Three — one per entry in the storageNames array, because the for expression expands the block over the array",
+        "One, because a resource block can only ever represent a single Azure resource",
+        "Zero, because a loop cannot be used directly inside a resource declaration",
+        "It depends on a separate count parameter that isn't shown in this file"
+      ],
+      "correctIndex": 0,
+      "explain": "Bicep's for expression lets one resource block expand over an array, deploying one resource per entry — here, one storage account for each of the three names in storageNames, with no copy-pasted resource blocks."
+    },
+    {
+      "id": "tfia-22",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each Bicep concept to its closest Terraform equivalent, per Lessons 21-23.",
+      "left": ["Bicep's for expression", "Bicep's module block", "Bicep's .bicepparam file", "az deployment group what-if"],
+      "right": [
+        "Terraform's count or for_each meta-argument on a resource block",
+        "A Terraform module block with a source path",
+        "A Terraform .tfvars file loaded with -var-file",
+        "terraform plan"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each pair solves the same problem in a different syntax: looping over an array, calling a separate reusable file, supplying typed per-environment values, and previewing a deployment's changes before anything real happens. Recognizing the Terraform equivalent for each Bicep concept is exactly what Lesson 24 leans on when comparing the two tools head to head."
+    },
+    {
+      "id": "tfia-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: setting --action-on-unmanage ________ on a Deployment Stack tells Azure to clean up resources the stack no longer manages, the same outcome Terraform state gives you by default when a resource block is removed.",
+      "acceptedAnswers": ["deleteResources"],
+      "explain": "deleteResources removes resources the stack no longer manages, including when a template update drops them — closing the gap that Azure's default incremental deployment mode leaves open, since incremental mode never deletes a resource just because its block was removed from the template."
+    },
+    {
+      "id": "tfia-24",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about choosing between Terraform and Bicep for a real project, per Lesson 24.",
+      "options": [
+        "Bicep cannot manage AWS or Google Cloud resources at all",
+        "Terraform requires you to manage your own state — a remote backend, locking, and the operational discipline that comes with both",
+        "A team with strong existing Terraform skills and tooling may come out ahead staying on Terraform even for Azure-only work",
+        "New Azure resource types and API versions always appear in Terraform's azurerm provider before they appear in Bicep",
+        "Bicep requires no separate state file, because ARM itself tracks what each deployment created"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Bicep is Azure-only by design, while Terraform's multi-cloud reach comes with real state-management overhead a team has to own. The lesson's practical framework weighs team skills alongside cloud count — an Azure-first team with no Terraform experience usually gets to a working deployment faster in Bicep. It's Bicep, not Terraform, that gets day-one support for new Azure resource types and API versions, since Bicep is Microsoft's own first-party authoring layer."
+    },
+    {
+      "id": "tfia-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly explains why a GitHub Actions job targeting an environment with required reviewers configured actually blocks an unattended terraform apply, per Lesson 26?",
+      "options": [
+        "The job pauses, showing 'Waiting for review,' until a named reviewer approves it in the GitHub UI, no matter what triggered the workflow",
+        "GitHub Actions automatically inspects the Terraform plan for destructive changes and only pauses on those",
+        "The environment key changes the workflow's trigger from push to pull_request",
+        "Required reviewers only ever apply to the terraform plan step, never to the apply step",
+        "The workflow silently retries the apply in a loop until a human happens to intervene"
+      ],
+      "correctIndex": 0,
+      "explain": "environment: production ties the job to a GitHub Environment with required reviewers turned on under Settings -> Environments. That one line pauses the job until a named reviewer clicks Approve — the trigger itself (on: push: branches: [main]) is still fully automatic; it's the environment protection rule, not the trigger, that stops apply from running unattended.",
+      "distractorExplain": "Option B overstates what the environment protection rule actually does — it isn't inspecting the plan's content for destructive changes at all; it pauses the job for human approval regardless of what the change contains, which is exactly why Lesson 25's plan-on-pull-request comment still matters for letting a reviewer see what will actually happen."
+    },
+    {
+      "id": "tfia-26",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: terraform plan -detailed-exitcode returns exit code ________ specifically when the plan found real differences between state and the live infrastructure.",
+      "acceptedAnswers": ["2"],
+      "explain": "A plain terraform plan always exits 0 whether or not anything changed, which makes it useless for an automated drift check. -detailed-exitcode returns 0 for no changes, 1 for an error, and 2 specifically when differences were found — exactly the signal a scheduled drift-detection job needs to fail loudly instead of quietly succeeding."
+    },
+    {
+      "id": "tfia-27",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about handling secrets in a Terraform CI/CD pipeline, per Lesson 27.",
+      "options": [
+        "The azurerm provider reads Azure Service Principal credentials from fixed environment variable names like ARM_CLIENT_SECRET, if they're present",
+        "Marking an output sensitive = true stops its value from printing in plan or apply console output",
+        "Marking an output sensitive = true also removes its real value from the Terraform state file",
+        "Committing a credential inside a .tfvars file puts that credential into git history, even if the file is later deleted from the repo",
+        "GitHub Actions automatically masks a secret value if it happens to appear in workflow log output"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Credentials belong in the pipeline's own secret store, injected as environment variables the provider already reads (ARM_CLIENT_SECRET for azurerm). sensitive = true hides a value from console output, but the real value still lives in plaintext inside the state file — which is exactly why a properly secured remote backend still matters even after marking an output sensitive. Committing a secret to git puts it in history permanently, and GitHub Actions does mask known secret values in logs automatically."
+    },
+    {
+      "id": "tfia-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Caldwell Ridge's teammate deleted an NSG directly in the Azure Portal, and nothing has replaced it. terraform state list still shows azurerm_network_security_group.prod_web tracked. Per Lesson 31, what's the correct recovery step?",
+      "options": [
+        "terraform state rm azurerm_network_security_group.prod_web, since the entry is now stale and this only edits Terraform's bookkeeping, not anything in Azure",
+        "terraform import azurerm_network_security_group.prod_web <id>, since the resource still needs to be adopted into state",
+        "Delete the resource block from the .tf file and immediately run terraform destroy",
+        "Do nothing, because the next terraform plan will resolve the mismatch automatically with no input"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 31 draws a clear line between two situations: if nothing has replaced the deleted resource, the state entry is simply stale, and terraform state rm clears that bookkeeping without touching Azure, letting the next plan show a clean create instead of a confusing error. terraform import is the right tool only for the other situation — when someone has already recreated a similar object by hand that Terraform doesn't yet know about."
+    },
+    {
+      "id": "tfia-29",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these state-recovery steps from Lesson 31's case study in the correct order.",
+      "items": [
+        "Back up the current state with terraform state pull",
+        "Read terraform state list to see exactly what Terraform believes it manages",
+        "Decide whether the resource was simply removed or already recreated by hand",
+        "Run either terraform state rm or terraform import, matching that decision",
+        "Run terraform plan immediately afterward to verify the fix"
+      ],
+      "explain": "State surgery is unforgiving, so the backup comes first, before any state-modifying command. Reading state list confirms exactly what's tracked before deciding which of the two real situations applies, and only then is it safe to run the matching command — with plan immediately after as the real verification step, showing whether the fix actually reconciled config with reality."
+    },
+    {
+      "id": "tfia-30",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each earlier chapter to what it specifically contributed to the Caldwell Ridge capstone, per Lesson 32.",
+      "left": ["Chapter 3 (State Management)", "Chapter 4 (Modules & Reusability)", "Chapter 5 (Workspaces & Environments)", "Chapter 7 (Terraform in CI/CD)"],
+      "right": [
+        "Provided the remote backend, locking, and the state rm/import toolkit used in the Lesson 31 incident",
+        "Is why there was only ever one modules/network source, parameterized instead of duplicated",
+        "Is why Lesson 30 used directory-per-environment state with .tfvars instead of a shared workspace",
+        "Is what the project still needs layered on top: plan-on-PR, an approval gate, secrets out of state, and drift detection"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 32's whole point is that the capstone drew on every earlier chapter, not just the module chapter: Chapter 3's state toolkit directly solved a real incident, Chapter 4 is the reason the network pattern was written once, Chapter 5's workspace-vs-directory tradeoff was applied deliberately rather than picked at random, and Chapter 7 names exactly what still belongs around this project going forward."
+    }
+  ]
+}

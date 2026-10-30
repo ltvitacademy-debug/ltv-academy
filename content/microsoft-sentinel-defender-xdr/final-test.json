@@ -1,0 +1,456 @@
+{
+  "questions": [
+    {
+      "id": "msdx-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly defines what Microsoft Sentinel actually is, per Lesson 1?",
+      "options": [
+        "A cloud-native SIEM and SOAR solution built directly on Microsoft Azure, with no hardware to provision and billing based on data ingested and retained",
+        "An on-premises SIEM that requires an organization to size and buy physical or virtualized hardware up front",
+        "A SOAR-only automation product with no built-in detection or alerting capability",
+        "A free add-on to Microsoft Defender for Endpoint with no independent licensing",
+        "A third-party SIEM platform, unrelated to Microsoft Azure, that only integrates with Microsoft products via API"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 1 defines Sentinel precisely as a cloud-native SIEM and SOAR solution built directly on Azure: there's no server to provision, and an organization pays based on how much log data it actually ingests and retains, not hardware sized for a worst-case load.",
+      "distractorExplain": "Option B describes the traditional on-prem SIEM Lesson 1 explicitly contrasts Sentinel against — sizing and buying hardware up front, patching and scaling it yourself. That's exactly the operational model Sentinel's cloud-native design is built to avoid, not a description of Sentinel itself."
+    },
+    {
+      "id": "msdx-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Sentinel does not store its own, separate copy of your data — per Lesson 2, every log and event actually lands as a row in a table inside a ________, the real Azure resource underneath Sentinel.",
+      "acceptedAnswers": ["Log Analytics workspace", "Log Analytics Workspace", "workspace"],
+      "explain": "Lesson 2's core mental model is that Sentinel is a security-focused UI layer and rule engine built on top of a Log Analytics workspace, not a competing data store — every table, from SigninLogs to SecurityEvent, lives inside that workspace."
+    },
+    {
+      "id": "msdx-03",
+      "type": "matching",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Match each data connector type from Lesson 3 to what it actually is.",
+      "left": ["Service-to-service connector", "Agent-based connector", "API-based connector", "CEF"],
+      "right": [
+        "Uses the Azure Monitor Agent installed on a machine to forward logs, e.g. raw Windows Security Events or Syslog",
+        "A standardized log format many third-party firewalls and network devices export",
+        "A cloud-to-cloud integration pulling data directly from another Microsoft service's API, with no software installed, e.g. Entra ID or Office 365",
+        "Pulls data from a source that's neither a native Microsoft service nor a machine you can install an agent on, e.g. AWS CloudTrail via a cross-account role and S3 bucket"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Lesson 3 draws three real connector types: service-to-service connectors like Entra ID and Office 365 need no agent at all; agent-based connectors use the Azure Monitor Agent to pull data from machines like domain controllers or Linux servers (Syslog/CEF); and API-based connectors like the AWS CloudTrail connector cover sources that are neither a native Microsoft service nor an agent-installable machine. CEF is the standardized log format many of those third-party devices export, not a connector type itself."
+    },
+    {
+      "id": "msdx-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "A log source is valuable for compliance and audit purposes but is almost never queried for active threat hunting, and needs to be kept for years. Per Lesson 4, which storage approach fits best, and why?",
+      "options": [
+        "The archive tier — far cheaper storage, even though getting back to it later requires running a search job or restore operation first",
+        "Interactive retention extended to the maximum possible window, since that keeps the data instantly queryable at all times",
+        "Pay-as-you-go ingestion with no retention configured at all, since compliance data doesn't need to be stored",
+        "A commitment tier, since commitment tiers are specifically designed for rarely-accessed compliance data"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4 describes archive as existing specifically for the 'legally required to keep this, but we'll almost never look at it' category of data — far cheaper than interactive retention, at the cost of needing a search job or restore before it's queryable again. Paying extra every month to keep rarely-queried data in instant interactive retention is exactly the expensive mismatch Lesson 4 warns against."
+    },
+    {
+      "id": "msdx-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "SigninLogs\n| where ResultType != \"0\"\n| project UserPrincipalName, ResultType",
+      "prompt": "The KQL query above reads top-to-bottom through pipes. Per Lesson 5, what's the key structural difference between this and the equivalent SQL query `SELECT UserPrincipalName, ResultType FROM SigninLogs WHERE ResultType != '0';`?",
+      "options": [
+        "KQL's written order is its execution order — start table, then each pipe narrows or reshapes the data; SQL's clause order (SELECT/FROM/WHERE) describes the result it wants, not the steps taken to produce it",
+        "SQL is read top-to-bottom in execution order while KQL's pipe order is purely cosmetic and ignored by the query engine",
+        "KQL and SQL execute in exactly the same order; the only difference between them is which keywords are used",
+        "KQL cannot filter rows and select columns within the same query, unlike SQL"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 5 is explicit: KQL's pipe order IS the execution order, since each `|` is a checkpoint feeding the next operator. SQL is declarative instead — SELECT states what you want before FROM/WHERE describe where it comes from and how it's narrowed, describing the result rather than the steps a database takes to produce it."
+    },
+    {
+      "id": "msdx-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: KQL's ________ operator caps the number of rows returned while you're exploring data, but per Lesson 6 it returns an arbitrary sample, not necessarily the newest or most severe rows.",
+      "acceptedAnswers": ["take", "limit"],
+      "explain": "Lesson 6 names `take` (an alias for `limit`) as the operator that caps row count, and warns it's an arbitrary sample good for a quick look while building a query — not a reliable 'top N' list, which is what `summarize` and `sort by` are for instead."
+    },
+    {
+      "id": "msdx-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about `summarize` and its aggregation functions, per Lesson 7.",
+      "options": [
+        "summarize collapses a table into one row per group, rather than leaving one row per original record",
+        "count() counts rows per group, while dcount() counts distinct values of a column per group",
+        "avg() computes the numeric mean of a column per group, using the same summarize ... by shape as count() and dcount()",
+        "A sudden, unusually high DistinctIPs value for one user is described as a strong signal worth investigating, since a legitimate user typically signs in from only a couple of IPs",
+        "summarize can only be paired with count(); dcount() and avg() each require a completely separate operator"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Lesson 7 covers summarize as the operator that collapses many rows into one row per group, with count() for row counts, dcount() for distinct-value counts, and avg() for numeric means — all using the same summarize ... by shape. It also calls out a user suddenly showing DistinctIPs of 40 as exactly the kind of unusual number worth investigating, since a legitimate user typically signs in from just two or three IPs. summarize isn't limited to count() — the lesson pairs it with dcount() and avg() too."
+    },
+    {
+      "id": "msdx-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which of the following correctly defines what `join kind=inner` does, as covered in Lesson 8?",
+      "options": [
+        "Combines rows from two tables based on a matching column, keeping only rows that have a match on both sides",
+        "Combines rows from two tables, keeping every row from the left table whether or not it has a match on the right",
+        "Combines rows from two tables, keeping every row from the right table whether or not it has a match on the left",
+        "Merges two tables by stacking their rows on top of each other, regardless of column names",
+        "Filters a single table down to rows matching a condition, without referencing any second table at all",
+        "Renames a table's columns without changing which rows are present"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 8 defines `join kind=inner` as combining rows from two tables based on a matching column, keeping only rows with a match on both sides — in the worked example, only sign-ins whose IPAddress also appears as a NetworkIP in the threat intelligence table.",
+      "distractorExplain": "Option B describes keeping every left-side row regardless of a match, which is a left-outer join, not an inner join. Lesson 8's `kind=inner` specifically discards rows with no match on both sides — confusing it with a join type that keeps unmatched rows is exactly the mix-up this lesson is built to prevent."
+    },
+    {
+      "id": "msdx-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A scheduled analytics rule runs every 5 minutes with a 5-minute lookback window. Per Lesson 9, what's the real risk with this configuration, and what does Microsoft recommend instead?",
+      "options": [
+        "Log ingestion isn't instantaneous, so an event just before a run can fall into the gap between two runs and never get evaluated by either one; Microsoft recommends setting the lookback window longer than the run frequency, commonly double",
+        "The rule will run twice for every event and generate duplicate alerts, so the fix is to lengthen the run frequency to once a day",
+        "Sentinel technically caps a rule's lookback window at exactly its run frequency, so no other value is possible",
+        "There is no real risk — run frequency and lookback window are unrelated settings in Sentinel"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 9 explains that because ingestion isn't instantaneous, an event just before a scheduled run may not have finished ingesting yet and can fall between two runs undetected. Microsoft's guidance is to set the lookback window longer than the run frequency — commonly double — specifically to absorb that ingestion delay."
+    },
+    {
+      "id": "msdx-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "An analyst enables a built-in analytics rule template designed for Microsoft Defender for Endpoint data, but the rule produces zero alerts even after being turned on. Per Lesson 10, what's the first thing to check?",
+      "options": [
+        "Whether the matching data connector — Defender for Endpoint — is actually turned on and feeding the workspace, since a template is only as good as the data reaching its table",
+        "Whether the rule's severity is set to High, since Sentinel only generates alerts for High-severity rules",
+        "Whether the KQL query was ever opened in the editor, since built-in templates stop working the moment anyone views them",
+        "Whether the workspace has exceeded its free interactive retention window"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 10 is explicit that most templates need only one thing from you: the matching data connector turned on. A template built for Defender for Endpoint data obviously returns nothing if that connector isn't feeding the workspace — that's the first thing to check, not severity or retention."
+    },
+    {
+      "id": "msdx-11",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each entity-mapping term from Lesson 11 to what it actually is.",
+      "left": ["Entity mapping", "Entity type", "Identifier", "Investigation graph"],
+      "right": [
+        "The category of entity being mapped — Account, IP, Host, URL, FileHash, Mailbox, and others",
+        "The visual map of how an incident's entities connect to other alerts and activity, built from entity mapping",
+        "Telling Sentinel which column in a query's results represents a real entity like an Account, IP, or Host",
+        "What a mapped column represents for a given entity type, e.g. an Account's FullName or an IP's Address"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Lesson 11 defines entity mapping as telling Sentinel which query column represents a real entity; entity type is the category (Account, IP, Host, etc.); the identifier says what that column means for that type (FullName for Account, Address for IP); and the investigation graph (built fully in Chapter 6) is the direct payoff of having that mapping in place."
+    },
+    {
+      "id": "msdx-12",
+      "type": "sequencing",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Put these steps from Lesson 12's real brute-force detection rule in the correct order.",
+      "items": [
+        "Count failed sign-ins per user in 10-minute buckets and keep only buckets with more than 5 failures",
+        "Project every successful sign-in with its UserPrincipalName, IPAddress, and SuccessTime",
+        "Join the failure clusters to the successes on UserPrincipalName, keeping only a success that landed after the last failure and within the window",
+        "Map UserPrincipalName to the Account entity and IPAddress to the IP entity so the resulting alert carries trackable entities"
+      ],
+      "explain": "Lesson 12 builds the rule in exactly this order: the `Failures` let-statement counts and bins failures first, the `Successes` let-statement projects successful sign-ins second, the `join kind=inner` plus the `SuccessTime > LastFailure` check makes the query sequence-aware third, and entity mapping from Lesson 11 is applied last so the finished rule's alerts carry trackable Account and IP entities."
+    },
+    {
+      "id": "msdx-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "... | summarize count() by AlertSeverity",
+      "prompt": "A query ends with the line above. Per Lesson 15, which render type fits this output best, and why?",
+      "options": [
+        "render piechart — it has a category column (AlertSeverity) and one numeric column (count), and a small number of severities is exactly the 'share of the whole' shape a pie chart is suited to",
+        "render timechart — it's built for showing how a value changes over time, and AlertSeverity counts as a time column",
+        "render barchart is the only render type KQL accepts after a summarize with no bin() column",
+        "No render type applies, since summarize count() by AlertSeverity doesn't produce columns any render type can use"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 15 says `render piechart` wants a category column plus one numeric column and reads well with a small number of categories — Informational/Low/Medium/High is exactly that shape. `render timechart` specifically wants a `bin(TimeGenerated, ...)` column, which this query never produced, since it grouped by severity, not by time."
+    },
+    {
+      "id": "msdx-14",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: inside a workbook query step, a reader-supplied value for a parameter named TargetUser gets substituted into the KQL query using the syntax ________, per Lesson 16.",
+      "acceptedAnswers": ["{TargetUser}"],
+      "explain": "Lesson 16 shows a query filtering with `where UserPrincipalName == '{TargetUser}'` — `{TargetUser}` is exactly how a workbook query step reads a parameter's current value, letting one workbook serve both the overall trend view and the one-user view."
+    },
+    {
+      "id": "msdx-15",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Match each workbook-related term from Lesson 13 to what it actually is.",
+      "left": ["Workbook", "Query step", "Parameter step", "Azure Workbooks"],
+      "right": [
+        "A workbook component backed by a real KQL query run against the Log Analytics workspace",
+        "The underlying Azure Monitor reporting framework that Sentinel's Workbooks page is built on, reused across many Azure services",
+        "An interactive Azure Monitor report assembled from text, query, parameter, and link steps",
+        "A workbook control, like a dropdown or time-range picker, that other steps react to live"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Lesson 13 defines a workbook as an interactive report made of text, query, parameter, and link steps; a query step is the piece backed by a real KQL query; a parameter step is a control other steps react to live; and Azure Workbooks is the underlying Azure Monitor framework Sentinel's own Workbooks page reuses."
+    },
+    {
+      "id": "msdx-16",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly describes what Microsoft Defender XDR unifies, per Lesson 17?",
+      "options": [
+        "A cross-domain detection and response platform that correlates signal from Defender for Endpoint, Defender for Office 365, Defender for Identity, and Defender for Cloud Apps into a single incident, at security.microsoft.com",
+        "A replacement product that retires Defender for Endpoint, Defender for Office 365, and Defender for Identity entirely, running in their place",
+        "A single Defender workload focused only on email and collaboration-tool protection",
+        "An on-prem-only product with no connection whatsoever to Microsoft Sentinel",
+        "A rebranding of Microsoft Sentinel itself, with no separate Defender workloads underneath it"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 17 defines Defender XDR as the cross-domain detection and response platform sitting on top of four workloads — Defender for Endpoint, Office 365, Identity, and Cloud Apps — correlating their alerts into one incident at the unified portal, security.microsoft.com.",
+      "distractorExplain": "Option B gets the relationship backwards: Lesson 17 is explicit that Defender XDR 'doesn't replace the individual Defender products; it sits on top of them and pulls their signal into one place.' Each of the four workloads still raises its own alerts on its own — Defender XDR adds a correlation layer, it doesn't retire anything underneath it."
+    },
+    {
+      "id": "msdx-17",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about Defender for Office 365's email defenses, per Lesson 19.",
+      "options": [
+        "Safe Links re-checks a URL's destination against current threat intelligence at the moment someone clicks it, not just once at delivery",
+        "Safe Attachments opens an attachment in an isolated sandbox and watches what it actually does before delivering the message",
+        "Business Email Compromise relies on malware or a malicious link, which is why Safe Attachments is the primary defense against it",
+        "Anti-phishing policies use impersonation detection and mailbox intelligence to flag a message that claims to be from an executive but doesn't match how that person's real mail behaves",
+        "Safe Links and Safe Attachments both only check content once, at the moment an email is delivered, and never re-check it afterward"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Lesson 19 describes Safe Links re-checking a clicked URL's destination at click-time, Safe Attachments detonating attachments in a sandbox before delivery, and anti-phishing policies using impersonation detection and mailbox intelligence. It specifically says Business Email Compromise is 'a pure social-engineering attack... no malware, no link, nothing for a sandbox to detonate' — the opposite of relying on Safe Attachments — and Safe Links' whole point is re-checking again at click-time, not only once at delivery."
+    },
+    {
+      "id": "msdx-18",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Match each on-prem identity attack (or the workload that detects them) from Lesson 20 to what it actually is.",
+      "left": ["Pass-the-Hash", "Golden Ticket", "DCSync", "Defender for Identity (MDI)"],
+      "right": [
+        "Forging a Kerberos ticket-granting ticket using a stolen KRBTGT account hash, bypassing normal authentication",
+        "The Defender XDR workload that deploys a sensor directly on on-prem AD domain controllers and AD FS servers",
+        "Authenticating to another machine using a stolen NTLM hash, without ever knowing the actual password",
+        "Impersonating a domain controller to request replication of password hashes via AD's replication protocol"
+      ],
+      "correctMap": [2, 0, 3, 1],
+      "explain": "Lesson 20 explains Pass-the-Hash as authenticating with a stolen NTLM hash instead of a password, Golden Ticket as forging a TGT with a stolen KRBTGT hash, DCSync as impersonating a domain controller to request a replication of password hashes, and Defender for Identity as the workload with a sensor on the domain controllers and AD FS servers themselves that can see all three of those patterns."
+    },
+    {
+      "id": "msdx-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Sentinel's Defender XDR data connector is enabled in a workspace. Per Lesson 18, what two things does it specifically bring into that Log Analytics workspace?",
+      "options": [
+        "The already-correlated incidents Defender XDR produced, plus the underlying raw event tables its Advanced Hunting feature already queries, such as DeviceProcessEvents and DeviceLogonEvents",
+        "Only a summary count of Defender XDR incidents, with no underlying raw event data",
+        "A complete copy of the Defender for Endpoint sensor's installation files",
+        "Nothing beyond what the Microsoft Defender portal already shows, since the connector exists purely as a status indicator"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 18 names exactly two things the connector brings in: the already-correlated incidents Defender XDR produced, and the underlying raw event tables such as DeviceProcessEvents, DeviceNetworkEvents, DeviceLogonEvents, AlertInfo, and AlertEvidence — so a Sentinel analyst can join them against entirely different data sources like a VPN log table."
+    },
+    {
+      "id": "msdx-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "A Low-severity incident arrived two hours ago, and a High-severity incident arrived ten minutes ago. Per Lesson 21, which should an analyst open first, and why?",
+      "options": [
+        "The High-severity incident — the two hours an older Low incident waited cost nothing extra, while every minute a High incident waits is extra dwell time for a possible active attacker",
+        "The Low-severity incident, because incidents should always be worked strictly in arrival order",
+        "Neither in particular — incidents should be worked in alphabetical order by title",
+        "The High-severity incident, but only because it's newer, not because of its severity"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 21 makes this exact comparison: working by severity rather than arrival order is what actually limits dwell time, since the ten minutes a High-severity incident waits costs real exposure to a possible active attacker, while the extra time an older Low incident waited cost nothing extra."
+    },
+    {
+      "id": "msdx-21",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each investigation term from Lesson 22 to what it actually is.",
+      "left": ["Investigation graph", "Entity timeline", "Entity", "Entity mapping"],
+      "right": [
+        "A user, host, IP address, or file involved in an incident, identified via entity mapping",
+        "The Chapter 3 analytics-rule configuration that tells Sentinel which raw fields represent which entity type",
+        "A chronological history of all activity involving one specific entity, including things from before the current incident started",
+        "A visual map centered on an incident, showing its entities and how they connect to each other"
+      ],
+      "correctMap": [3, 2, 0, 1],
+      "explain": "Lesson 22 distinguishes the investigation graph (a visual map of the current incident's connections) from the entity timeline (one entity's full history, including activity before the incident started) — both built on top of the entity and entity-mapping concepts from Chapter 3."
+    },
+    {
+      "id": "msdx-22",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about hunting queries, per Lesson 23.",
+      "options": [
+        "A hunting query runs on demand, not on a schedule, and doesn't generate an alert on its own the way a scheduled analytics rule does",
+        "A hunting query can surface a slow, low-volume data exfiltration pattern that stays under every analytics rule's threshold, because it isn't waiting for a threshold to trip",
+        "Sentinel's built-in hunting query gallery is organized by tactic, such as credential access, lateral movement, and persistence",
+        "If a hunt turns up a pattern worth catching automatically going forward, it can be turned into a new scheduled analytics rule",
+        "A hunting query is identical to a scheduled analytics rule, just under a different name"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "Lesson 23 is explicit on all four: hunting queries run on demand with no automatic alert, they can catch an exfiltration pattern that never crosses a threshold, the built-in gallery is organized by tactic, and a hunt that finds something real can be turned into a new scheduled rule — the opposite of being identical to one."
+    },
+    {
+      "id": "msdx-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 24, pinning a bookmark to an incident attaches that saved query result directly to the incident record, and as an investigation deepens, those accumulated pinned bookmarks turn into something closer to a ________.",
+      "acceptedAnswers": ["case file", "a case file"],
+      "explain": "Lesson 24 describes exactly this: accumulated pinned bookmarks become 'something closer to a case file' — a running, timestamped record of the evidence behind an incident's final verdict."
+    },
+    {
+      "id": "msdx-24",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly describes what a Sentinel playbook actually is, per Lesson 25?",
+      "options": [
+        "A real Azure Logic App, created and run inside the separate Azure Logic Apps service, with a connector that lets it read from and act on Sentinel",
+        "A Sentinel-specific workflow engine, built and hosted entirely inside Sentinel, with no connection to Azure Logic Apps",
+        "A PowerShell script that Sentinel runs locally on the analyst's own machine",
+        "A built-in analytics rule template with no connection to any workflow automation service",
+        "A manual checklist an analyst follows by hand, with no automated execution at all"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 25 states this directly: 'a Sentinel playbook is a real Azure Logic App,' created and run inside the Azure Logic Apps service, with a connector that lets it read from and act on Sentinel.",
+      "distractorExplain": "Option B is specifically what Lesson 25 rules out: 'Sentinel doesn't build or host its own workflow engine; it triggers a workflow that Logic Apps already knows how to run.' Treating the playbook as a Sentinel-native engine misses the whole point — its designer, run history, and pricing are Logic Apps', not Sentinel's."
+    },
+    {
+      "id": "msdx-25",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Put these steps from Lesson 27's phishing-report automation example in the correct order.",
+      "items": [
+        "A phishing-report analytics rule fires and Sentinel creates a new incident",
+        "An automation rule set to trigger on incident created evaluates its condition against the new incident",
+        "Because the condition matches, the automation rule's action runs the playbook",
+        "The playbook's Microsoft Sentinel connector trigger receives the incident, and its actions run in sequence: get incident details, post to Teams, add a tag"
+      ],
+      "explain": "Lesson 27 walks through exactly this order: the incident is created first (Step 1), the automation rule evaluates its condition second (Step 2), the rule's action runs the playbook third (Step 2 resolving), and only then does the playbook's own trigger fire its three actions (Step 3) — the rule decides when, and only afterward does the playbook decide what happens."
+    },
+    {
+      "id": "msdx-26",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Select every action Lesson 28 classifies as safe to fully automate, without a human-approval step.",
+      "options": [
+        "Posting a notification to a Teams channel",
+        "Enriching an alert by checking a URL against threat intelligence, without changing anything",
+        "Tagging an incident as 'auto-notified'",
+        "Disabling a user account",
+        "Isolating a production server or endpoint"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 28 groups notifications, enrichment, and tagging as low-risk, well-understood, high-confidence actions safe to fully automate, because being wrong about any of them costs very little. Disabling an account and isolating a server are explicitly named as high-impact, hard-to-reverse actions that need an approval step instead."
+    },
+    {
+      "id": "msdx-27",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 26, a playbook never decides on its own when to run — that job belongs to a separate Sentinel object called an ________, whose trigger and conditions decide which incidents actually reach the playbook.",
+      "acceptedAnswers": ["automation rule", "an automation rule"],
+      "explain": "Lesson 26 names the automation rule as the piece that decides when a playbook runs, using a trigger ('when incident is created' or 'when incident is updated') plus conditions that narrow which incidents qualify — the playbook itself only decides what happens once triggered."
+    },
+    {
+      "id": "msdx-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "SigninLogs\n| where ResultType == \"0\"\n| extend Country = tostring(LocationDetails.countryOrRegion)\n| project TimeGenerated, UserPrincipalName, Country, IPAddress\n| join kind=inner (\n    SigninLogs\n    | where ResultType == \"0\"\n    | extend Country = tostring(LocationDetails.countryOrRegion)\n    | project TimeGenerated2 = TimeGenerated, UserPrincipalName, Country2 = Country, IPAddress2 = IPAddress\n  ) on UserPrincipalName",
+      "prompt": "In Lesson 29's impossible-travel query above, why does the rule filter on `ResultType == \"0\"` on both sides of the self-join, rather than only on the first sign-in?",
+      "options": [
+        "A failed sign-in attempt from a second country isn't proof of anything by itself — the impossible-travel pattern only means something if both sign-ins actually succeeded",
+        "KQL requires every join to filter both tables on the exact same condition, regardless of what that condition checks",
+        "Filtering only one side would make the query run faster, so both sides are filtered purely for performance, not correctness",
+        "ResultType == \"0\" on the second side is a leftover typo from an earlier draft of the query and has no real effect"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 29 states this directly: 'ResultType == \"0\" keeps only successful sign-ins — a failed attempt from a second country isn't proof of anything by itself.' Both halves of the self-join need to be successful sign-ins for the pattern to actually indicate a compromised credential being used from two places."
+    },
+    {
+      "id": "msdx-29",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Put these events from Lesson 31's case study in the order they actually happened.",
+      "items": [
+        "Defender for Office 365 flags a phishing email and the user clicks the link, entering credentials on a fake login page",
+        "Seventeen minutes later, the impossible-travel analytics rule fires on a sign-in from the office network followed by a sign-in from a different country",
+        "Because both alerts name the same Account entity, Sentinel correlates them into one multi-stage incident",
+        "An automation rule fires a playbook that posts the incident to Teams and disables the compromised account",
+        "An analyst investigates with the graph, timeline, and a hunting query, then closes the incident as True Positive with a written closing note"
+      ],
+      "explain": "Lesson 31's timeline runs exactly in this order: the phishing click at 9:14, the impossible-travel correlation at 9:31 (made possible by the shared Account entity mapping), the automated playbook response at 9:32, and the analyst's investigation and closing note from 9:35 to 9:48."
+    },
+    {
+      "id": "msdx-30",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about how this course's chapters connect, per Lesson 32's capstone review.",
+      "options": [
+        "A custom analytics rule with no entity mapping behind it never correlates with a separate alert, like a phishing detection, even if both involve the same account",
+        "A correlated incident with no automation rule and playbook behind it still gets an account disabled in seconds, since disabling happens automatically regardless of automation",
+        "Workbooks are described as the continuous-monitoring counterpart to the one-time alerts a scheduled analytics rule produces",
+        "Chapter 5 (Defender XDR) is named as the source of Lesson 31's phishing alert",
+        "Every chapter's technique was designed to catch and close an incident entirely on its own, independent of the other chapters"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Lesson 32 states that a rule with no entity mapping 'never correlates with the phishing alert at all,' that workbooks are 'the continuous-monitoring counterpart to the one-time alerts this chapter's rule produced,' and that Chapter 5 is the source of Lesson 31's phishing alert. It also states the opposite of options B and E directly: without an automation rule and playbook, an account gets disabled 'minutes later than the playbook did it,' not in seconds, and 'no single chapter's technique was ever meant to catch and close an incident on its own.'"
+    }
+  ]
+}

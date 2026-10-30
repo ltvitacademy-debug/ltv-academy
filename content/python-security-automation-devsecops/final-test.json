@@ -1,0 +1,438 @@
+{
+  "questions": [
+    {
+      "id": "psad-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly describes the three traits Lesson 1 says make a task a good automation candidate?",
+      "options": [
+        "High volume with low variance, a clear deterministic decision rule, and low blast radius if the automation is wrong",
+        "High complexity, ambiguous or conflicting signals, and an irreversible action if it's wrong",
+        "Low volume, a genuinely novel situation, and a high blast radius if it's wrong",
+        "A decision that requires human judgment under uncertainty, run as frequently as possible",
+        "Any task a SOAR platform's vendor marketing describes as fully autonomous"
+      ],
+      "correctIndex": 0,
+      "explain": "The best automation candidates are high-volume and low-variance (the same basic steps run thousands of times a day), governed by a clear deterministic decision rule a script can apply consistently, and low blast radius if the automation turns out to be wrong — enriching an alert fails safely, while an action that changes system state does not.",
+      "distractorExplain": "Option B lists almost the exact opposite set of traits — ambiguous signals, high complexity, and irreversibility are specifically what Lesson 1 says should NOT be fully automated, since a script has no way to weigh context it was never given or recognize a genuinely novel situation its rules weren't written for."
+    },
+    {
+      "id": "psad-02",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of handling an HTTP 429 response with exponential backoff, per Lesson 4, in the correct order.",
+      "items": [
+        "Make the GET request and check the response status code",
+        "If the status is 429, read the Retry-After header, or fall back to the current delay if it's missing",
+        "Sleep for that duration, then double the delay for next time",
+        "Retry the request, up to the maximum number of attempts",
+        "Once the response isn't 429, call raise_for_status() and return the parsed JSON"
+      ],
+      "explain": "Respecting Retry-After when the API provides it is more reliable than guessing your own delay, since the server knows its own limits best. The loop keeps doubling the wait between attempts until a non-429 response comes back, at which point raise_for_status() still runs to catch any other error before the data is returned."
+    },
+    {
+      "id": "psad-03",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: before correlating events across different log sources, every timestamp must be normalized to a single, ________-aware standard, commonly UTC.",
+      "acceptedAnswers": ["timezone", "timezone-aware", "timezone aware"],
+      "explain": "Every log format tends to represent time differently — syslog's no-year local-time string, a JSON log's ISO 8601 with an offset, a CSV's MM/DD/YYYY — and skipping normalization to a single timezone-aware UTC standard is one of the most common reasons a correlation script quietly produces wrong results, making two events that happened hours apart look simultaneous."
+    },
+    {
+      "id": "psad-04",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which of the following correctly describes what the Microsoft Graph Security API's alerts_v2 resource actually is?",
+      "options": [
+        "A unified, normalized alert schema returning alerts from Defender for Endpoint, Defender for Identity, Defender for Office 365, Defender for Cloud Apps, and Microsoft Sentinel in one consistent shape",
+        "A grouping of one or more correlated alerts into a single incident object with its own severity and assignedTo field",
+        "AWS's normalized finding format used by Security Hub to aggregate GuardDuty and Inspector output",
+        "The raw log table queried directly with KQL inside a Sentinel workspace"
+      ],
+      "correctIndex": 0,
+      "explain": "alerts_v2 is the Graph Security API's unified individual-alert resource, returning alerts from five different Microsoft products in a single normalized schema with severity, status, classification, and an evidence array — the whole point being one parser against one schema instead of five separate ones.",
+      "distractorExplain": "Option B describes the separate /security/incidents resource, which groups one or more alerts into a correlated incident object — a real Graph Security API resource, but a different one from alerts_v2, which represents individual alerts rather than groupings of them."
+    },
+    {
+      "id": "psad-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A script needs to mark a specific Sentinel incident closed as a true positive. Per Lesson 2, which Sentinel API surface should it call?",
+      "options": [
+        "The Sentinel management REST API under management.azure.com, since it works with incident objects directly — listing, updating status, severity, and classification",
+        "The Log Analytics data-query API, since KQL can update any table including SecurityIncident",
+        "Microsoft Graph's alerts_v2 endpoint, since it's the unified schema for all Microsoft security products",
+        "AWS Security Hub's get_findings call, since incidents and findings use the same underlying object model"
+      ],
+      "correctIndex": 0,
+      "explain": "The Log Analytics data-query API runs KQL for analyzing raw log data — it's read-only. Updating an incident's status, severity, or classification means calling the Sentinel management REST API directly, the same control-plane API the Sentinel portal itself calls when an analyst clicks 'Close incident.'"
+    },
+    {
+      "id": "psad-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about ASFF and GuardDuty, per Lesson 3.",
+      "options": [
+        "Every ASFF finding's Severity carries both a text Label (INFORMATIONAL through CRITICAL) and a 0-100 Normalized numeric score",
+        "Retrieving full GuardDuty finding details requires list_findings for matching IDs, then get_findings for the full objects — a two-call model",
+        "boto3's paginators abstract away each AWS service's own token-field name and shape, so the same for-loop pattern works across services",
+        "Security Hub's get_findings requires the same two-step list-then-get model GuardDuty uses",
+        "GuardDuty's severity.Gte filter uses the same 0-100 numeric range as ASFF's Normalized severity score"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "ASFF's Severity field carries both a label and a 0-100 normalized score. GuardDuty is a genuine two-step model — list_findings returns only IDs, get_findings fetches the full objects — while Security Hub's get_findings is a single call. boto3 paginators exist specifically so every paginated AWS API can be looped over the same way. GuardDuty's own severity scale is 0.1-8.9, a different numeric range than ASFF's 0-100 Normalized score, which matters once you start comparing severities across sources."
+    },
+    {
+      "id": "psad-07",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the cross-cloud correlation script in Lesson 4 is built around the 'automate the pipeline, gate the action' principle — it produces a decision-ready report for a ________, rather than taking the action itself.",
+      "acceptedAnswers": ["human", "a human", "analyst"],
+      "explain": "The correlation script normalizes two schemas and intersects sets to find shared IPs, but it deliberately stops there — it doesn't close the incident, isolate anything, or block an IP. It hands a human enough context (both severities, both IDs, the shared indicator) to decide what the correlation actually means."
+    },
+    {
+      "id": "psad-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "A Logic App playbook posts a standardized comment the moment an incident opens, routes it to the right queue, and closes a narrowly defined, already-proven-benign alert pattern. Per Lesson 9, is this the kind of task SOAR genuinely replaces?",
+      "options": [
+        "Yes — these are high-volume, fully deterministic tasks where the decision rule is fixed in advance and a human already agreed what 'correct' looks like",
+        "No — any action that touches an incident's status requires human judgment, regardless of how narrowly it's scoped",
+        "No — SOAR can only ever notify, never take any action on an incident at all",
+        "Yes, but only if the playbook also has the authority to disable user accounts without approval"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 9 is explicit that SOAR is excellent, with no asterisk, at anything high-volume and fully deterministic: posting a standardized comment, routing by fixed criteria, and closing a specific, already-proven-benign pattern are all cases where the decision rule was fixed in advance — the platform executes a decision that was already made, not a new one."
+    },
+    {
+      "id": "psad-09",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about what SOAR does NOT genuinely replace, per Lesson 9.",
+      "options": [
+        "It can't weigh ambiguous or conflicting signals it wasn't specifically built to check for",
+        "It can't decide whether a given action is proportionate to a specific situation",
+        "It executes exactly the condition it was given, including when that condition turns out to be wrong",
+        "It can autonomously recognize a genuinely novel attack pattern and respond correctly to it",
+        "It removes the need for a human approval gate on any destructive containment action"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A playbook has no way to know about context it wasn't specifically built to check for, can't judge proportionality, and will keep executing a fixed condition even once circumstances have changed — like continuing to auto-close 'single failed sign-in' incidents during a real password-spray campaign. It has no model of 'this is novel' at all, and that lack of judgment is exactly why Lesson 12 puts a mandatory approval gate in front of any destructive action."
+    },
+    {
+      "id": "psad-10",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Sentinel automation term from Lesson 10 to what it actually is.",
+      "left": ["Automation Rule", "Logic App (Consumption) playbook", "runAfter", "Microsoft Sentinel Automation Contributor"],
+      "right": [
+        "The role Sentinel must be granted on a Logic App's resource group before it can invoke that playbook",
+        "Decides when and whether something should run — trigger, conditions, and actions — but doesn't do the work itself",
+        "The workflow-definition field that sequences actions based on whether prior actions succeeded",
+        "The actual workflow of connector actions that performs orchestration, enrichment, and gated response"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "An Automation Rule decides when a playbook runs, based on trigger and conditions, without doing the work itself. The Logic App playbook is the actual sequence of connector actions. runAfter sequences those actions based on prior success or failure. Sentinel needs the Automation Contributor role on the Logic App's resource group, or the trigger call is rejected before the workflow ever runs."
+    },
+    {
+      "id": "psad-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 11, pulling a user risk score and writing it onto an incident counts as ________, while deciding to disable that user's account based on the score does not.",
+      "acceptedAnswers": ["enrichment"],
+      "explain": "Enrichment is retrieval — assembling facts (user risk, asset criticality, geo-IP) and writing them where a human will see them first. Nothing about pulling a risk score decides anything; the decision to act on that score is a judgment call that belongs to a human, which is exactly the line Lesson 12's containment chapter draws next."
+    },
+    {
+      "id": "psad-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "code": "let watch_ips = dynamic(['203.0.113.5', '198.51.100.7']);\nCommonSecurityLog\n| where SourceIP in (watch_ips) or DestinationIP in (watch_ips)",
+      "prompt": "Per Lesson 14, why does templating an entire IOC list into one KQL query like this beat looping a separate SIEM lookup per IOC?",
+      "options": [
+        "It checks every IOC against the SIEM in a single round trip, instead of a few thousand separate round trips for a feed that size",
+        "KQL's dynamic() array can only ever hold exactly one value, so looping is technically impossible",
+        "It automatically deduplicates IOCs across feeds, replacing the need for Lesson 13's dedupe step",
+        "It bypasses the need for any watchlist, since dynamic() IOC lists update themselves"
+      ],
+      "correctIndex": 0,
+      "explain": "A let statement with a dynamic([...]) array is KQL's version of a parameterized IN clause — one query, one round trip, checked against every IOC at once. The naive one-lookup-per-IOC approach means a few thousand round trips against a feed with a few thousand indicators, which is exactly the cost this pattern avoids (with chunking needed once the list gets large enough to hit KQL's query-length ceiling)."
+    },
+    {
+      "id": "psad-13",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the Chapter 4 threat-intel pipeline, per Lesson 16, in the correct order.",
+      "items": [
+        "Pull all feeds and normalize each source into a common schema",
+        "Dedupe IOCs across feeds, keeping the highest-confidence copy",
+        "Tag which IOCs were actually seen in the environment",
+        "Score and tier each IOC as auto_promote, analyst_review, or archive",
+        "Push only auto_promote IOCs into the detection watchlist",
+        "Prune expired entries from the watchlist"
+      ],
+      "explain": "Every function in this chapter composes into one scheduled job in this order: pull and normalize first so everything shares a schema, dedupe before scoring so the strongest signal survives, tag environment matches to feed the scoring pass, score and tier to decide what's eligible, push only the validated auto_promote set into the live detection surface, and prune what's expired so the watchlist doesn't just grow forever."
+    },
+    {
+      "id": "psad-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Match each threat-intel scoring term from Lesson 15 to what it actually is.",
+      "left": ["Confidence", "Relevance", "Recency", "Tier"],
+      "right": [
+        "A named bucket, such as auto_promote, analyst_review, or archive, that a priority score maps to",
+        "The feed's own stated certainty that an indicator is actually malicious",
+        "How recently an indicator was last reported",
+        "Whether an IOC has anything to do with your environment, including whether it was actually seen there"
+      ],
+      "correctMap": [1, 3, 2, 0],
+      "explain": "Confidence is the feed's own certainty score. Relevance asks whether the IOC has anything to do with your actual environment, weighted heavily by the 'seen in environment' tag. Recency reflects how stale the report is. The combined priority score then maps to a tier, which is what decides what actually happens to the IOC next."
+    },
+    {
+      "id": "psad-15",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Lesson 13's dedupe step keys on (ioc_type, value) and keeps whichever copy has the higher ________, so an indicator three feeds agree on survives with its strongest score.",
+      "acceptedAnswers": ["confidence"],
+      "explain": "Keying on (ioc_type, value) and keeping the higher-confidence copy means an IOC reported by multiple feeds survives deduplication with its strongest signal intact — exactly the input the scoring pass in Lesson 15 depends on."
+    },
+    {
+      "id": "psad-16",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "code": "expected = hmac.new(WEBHOOK_SECRET, raw_body, hashlib.sha256).hexdigest()\nreturn hmac.compare_digest(expected, signature_header)",
+      "prompt": "Per Lesson 17, why must this HMAC be computed against the raw request bytes rather than the parsed-and-reserialized JSON?",
+      "options": [
+        "A JSON parser can reorder keys or change whitespace when re-serializing, which would make the signature mismatch even on a genuinely legitimate request",
+        "hmac.new() only accepts byte strings and will raise an exception if given a Python dict directly",
+        "Reserializing the JSON always strips the signature header out of the request entirely",
+        "The sending tool recomputes its own signature on every retry, so the receiver's copy never has to match"
+      ],
+      "correctIndex": 0,
+      "explain": "The sender computed its signature over the exact raw bytes it sent. Flask's request.get_json() has already round-tripped the payload through a parser that can reorder keys or change whitespace, so recomputing the HMAC over that reserialized version can mismatch even for a legitimate request — which is why verification must happen against request.get_data(), the untouched raw bytes."
+    },
+    {
+      "id": "psad-17",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about ChatOps verification, per Lesson 19.",
+      "options": [
+        "A Slack interactivity endpoint requires a registered Slack app, not just an incoming webhook, before a button click can reach your code",
+        "verify_slack_request rejects requests with a timestamp more than 5 minutes old, as replay protection",
+        "A Teams Adaptive Card can be posted through a simple incoming webhook with no bot registration, for one-way notification",
+        "A plain Slack incoming webhook can both send a message with buttons and receive the resulting click",
+        "Posting a Teams Adaptive Card requires a bot token rather than an incoming webhook"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "A plain incoming webhook, on either platform, is push-only: it can render buttons but has no way to tell your code when one is clicked. Receiving a click requires a registered app with an interactivity endpoint, and Slack's verification explicitly rejects requests older than five minutes as replay protection. Teams' simplest integration genuinely is just an incoming webhook with an Adaptive Card, no bot registration required, for one-way messages."
+    },
+    {
+      "id": "psad-18",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a value generated once per logical action and sent with every retry of that action, so a well-built API returns the original result instead of repeating the side effect, is called an ________ key.",
+      "acceptedAnswers": ["idempotency", "idempotency key"],
+      "explain": "An idempotency key is generated once, outside the retry loop, and passed into every attempt of the same logical call — generating a fresh key per attempt would defeat the whole point, since the API would then see each retry as a brand-new action."
+    },
+    {
+      "id": "psad-19",
+      "type": "sequencing",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps of the create-or-update ticket flow, per Lesson 18, in the correct order.",
+      "items": [
+        "Search for an existing open ticket matching the alert's external_ref",
+        "If a matching ticket is found, add a comment noting the alert recurred",
+        "If no matching ticket is found, create a new ticket with priority mapped from the alert's severity",
+        "Store the alert's event_id as external_ref on the newly created ticket"
+      ],
+      "explain": "Searching by external_ref before creating anything is what prevents the same underlying alert from opening a duplicate ticket every time it recurs or a webhook redelivers. A found ticket just gets a comment appended; only a genuinely new alert creates a new ticket, which then gets its own external_ref stored so the same check works the next time."
+    },
+    {
+      "id": "psad-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 21, what does fixing a vulnerability found in production actually require, compared to the same vulnerability found in code review?",
+      "options": [
+        "Assessing whether it was exploited, preparing and testing a hotfix, getting emergency approval to deploy outside the normal release cadence, possibly rolling back unrelated work, and potentially notifying customers or regulators",
+        "Exactly the same small diff a code review catch would require, just submitted a few days later",
+        "Nothing additional — the cost of fixing a vulnerability is the same regardless of which stage finds it",
+        "Only an extra approval step, with no change to who gets involved or what has to happen"
+      ],
+      "correctIndex": 0,
+      "explain": "A production finding is no longer a code-review conversation — it's an incident. Someone has to assess exploitation, prepare and test a hotfix, get emergency deployment approval, possibly roll back a release that shipped unrelated work alongside the bad code, and depending on exposure, notify customers or regulators. A code-review catch is a small diff before anything is even committed, with the original developer right there and the context fresh."
+    },
+    {
+      "id": "psad-21",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about SAST, DAST, and container image scanning, per Lessons 22-23.",
+      "options": [
+        "SAST reads source code for known-dangerous patterns without ever executing the application",
+        "DAST needs a real, deployed instance of the application to send requests at, unlike SAST",
+        "Container image scanning catches vulnerabilities inherited from the base OS image, independent of whether the application's own code or dependencies have any problems",
+        "DAST can run directly against a pull-request diff, with no deployment required",
+        "SAST would catch a missing security header that only shows up in a live HTTP response"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "SAST is static — it never executes the application, which is exactly why it can run in seconds against a diff. DAST is the opposite: it sends real requests at a running instance, so it needs a deployed staging environment, not a PR diff. Container image scanning inspects the built image's base OS packages and layers, a vulnerability source neither SAST nor DAST, nor dependency scanning, ever looks at — each of the three catches a genuinely different category of problem."
+    },
+    {
+      "id": "psad-22",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a recorded snapshot of pre-existing findings at the time a scanner is first rolled out, used so the gate only fails on genuinely new issues, is called a ________.",
+      "acceptedAnswers": ["baseline"],
+      "explain": "A scanner turned on for the first time against an existing codebase usually surfaces a backlog of pre-existing issues. A baseline records that backlog so the gate only blocks on new findings introduced after rollout, while the pre-existing backlog gets triaged separately on its own timeline."
+    },
+    {
+      "id": "psad-23",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each DevSecOps scanning tool from Lessons 22-23 to what it actually does.",
+      "left": ["Bandit", "pip-audit", "OWASP ZAP", "Trivy"],
+      "right": [
+        "An open-source DAST tool that runs a baseline scan against a live URL",
+        "A SAST tool purpose-built for scanning Python source code",
+        "A scanner that checks a built container image's OS packages against vulnerability databases",
+        "A dependency-scanning tool checking installed Python packages against the Python Packaging Advisory Database"
+      ],
+      "correctMap": [1, 3, 0, 2],
+      "explain": "Bandit is Python-specific static analysis. pip-audit checks installed Python package versions against the Python Packaging Advisory Database. OWASP ZAP runs dynamic baseline scans against a live URL. Trivy inspects a built container image's layers and OS packages against vulnerability databases before it ships."
+    },
+    {
+      "id": "psad-24",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Which of the following correctly describes the right order of operations after a real credential leak is confirmed, per Lesson 25?",
+      "options": [
+        "Rotate the credential at its source immediately, then audit usage during the exposure window, then rewrite git history to remove it",
+        "Rewrite git history to remove the secret first, then rotate the credential once history is clean",
+        "Audit usage only — rotation isn't necessary if the credential doesn't appear to have been used yet",
+        "Delete the file containing the secret in a new commit, which removes it from the repository entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "Rotating the credential at its source is the only step that actually stops the bleeding, since the secret may already be cached in CI logs, scraped by a bot, or sitting in another engineer's clone, none of which you control. Auditing usage tells you whether it was a close call or an active compromise, and rewriting history only happens after rotation, as cleanup — not containment.",
+      "distractorExplain": "Option B reverses the two most important steps: rewriting history before rotating gives a false sense that the problem is solved, while the original, still-valid credential remains usable by anyone who already has a copy of it from before the history rewrite — a secret that was ever pushed to a remote is burned regardless of whether it's later scrubbed from history."
+    },
+    {
+      "id": "psad-25",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "A CI job's only job is to run the test suite. Per Lesson 26, what should its permissions block declare?",
+      "options": [
+        "contents: read, and nothing else — an explicit, minimal scope, since anything not listed is denied",
+        "The default GITHUB_TOKEN scope, left unmodified, since running tests needs broad repository access",
+        "contents: write plus issues: write, in case the test run needs to comment on anything later",
+        "No permissions block at all, since test jobs are inherently low-risk regardless of token scope"
+      ],
+      "correctIndex": 0,
+      "explain": "The default token is over-scoped for almost every job. A job that only runs tests needs contents: read and nothing else — declaring the permissions block explicitly means the platform enforces it, and anything not listed is denied, not just unused."
+    },
+    {
+      "id": "psad-26",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about SBOMs, per Lesson 27.",
+      "options": [
+        "An SBOM records name, version, supplier, license, and relationships for every component, but is an inventory, not a scan result",
+        "SPDX originated as a license-compliance format while CycloneDX was designed security-first by OWASP",
+        "A tool like grype can consume an SBOM directly to check its components against vulnerability databases",
+        "An SBOM itself tells you whether a specific component is currently dangerous",
+        "A plain requirements.txt records the same supplier, license, and relationship data an SBOM does"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "An SBOM is explicitly an inventory, not a verdict — it tells you what's there, and a scanner like grype is what judges whether any of it is currently dangerous. SPDX and CycloneDX exist for different original reasons (license compliance versus security), and neither has fully displaced the other. A plain requirements.txt lists package names and loose version ranges; it doesn't carry supplier, exact version, license, or dependency-relationship data the way a real SBOM does."
+    },
+    {
+      "id": "psad-27",
+      "type": "matching",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Match each pipeline-security term from Lessons 26 and 28 to what it actually is.",
+      "left": ["OIDC federation", "Required status check", "Self-hosted runner", "permissions block"],
+      "right": [
+        "A branch-protection setting that blocks merging until a named CI job reports success",
+        "Exchanging a short-lived, workflow-signed identity token for a temporary cloud session instead of a static secret",
+        "A machine you operate that executes CI/CD jobs, carrying whatever access its environment grants to any job scheduled on it",
+        "Explicit, minimal scopes declared for a CI job's automatic token; anything not listed is denied"
+      ],
+      "correctMap": [1, 0, 2, 3],
+      "explain": "OIDC federation trades a static secret for a short-lived, scoped session minted per job. A required status check is what makes a branch-protection gate structural rather than advisory. A self-hosted runner carries whatever secrets its environment grants to any job scheduled on it, which is exactly why fork-triggered and production-deploy workflows must never share one. A permissions block is the explicit, minimal scope declaration that makes a job's default token deny-by-default instead of over-scoped."
+    },
+    {
+      "id": "psad-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Bramwell's execute_containment function checks for dry_run and approved_by as two separate conditions. Per Lesson 29, why not rely on just one of them?",
+      "options": [
+        "They're two independent guardrails — a script run without thinking about it defaults to logging only via dry_run, and even when dry_run is explicitly turned off, a missing approved_by still blocks execution",
+        "dry_run and approved_by actually check the exact same condition, so either one alone would be redundant but harmless",
+        "Only approved_by matters in practice; dry_run exists solely for unit testing and has no real safety value",
+        "Checking both is required purely to satisfy the Microsoft Graph API's own rate-limit rules"
+      ],
+      "correctIndex": 0,
+      "explain": "dry_run=True as the default means a script run carelessly only logs what it would do. But even with dry_run explicitly set to False, the function still refuses to run without an approved_by value — two separate, independent guardrails stacking, exactly the redundancy the Lesson 31 case study shows is what actually prevents real damage when one guardrail alone would have been enough to miss."
+    },
+    {
+      "id": "psad-29",
+      "type": "multi-select",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about the Caldera Finance case study, per Lesson 31.",
+      "options": [
+        "The correlation query matched on a VPN exit IP shared by 38 unrelated employees, not just the actual attacker",
+        "The automation rule disabled all 39 accounts because it did exactly what it was told, against a signal that meant something different than the person who wrote the rule assumed",
+        "Any one of a dry-run default, a blast-radius cap, or a human approval gate would independently have prevented the mass lockout",
+        "The script had a syntax bug that caused it to throw an exception and disable every account by accident",
+        "The case study's conclusion is that containment automation is too dangerous to ever use"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "The query was correct as written — the mistake was that the incident IP it was fed turned out to be a shared VPN exit address, not the attacker's own IP, so the rule correctly matched 39 accounts against a signal that meant something broader than assumed. Any one of the three independent guardrails (dry-run, blast-radius cap, approval gate) would have caught the absurd match count before real damage happened. There was no syntax bug or thrown exception, and the lesson's actual conclusion is that bad logic should fail safely, not that automation itself is too dangerous."
+    },
+    {
+      "id": "psad-30",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a hard limit on how many accounts or resources a single automated containment action may affect, independent of how the matching logic behaves, is called a blast-radius ________.",
+      "acceptedAnswers": ["cap"],
+      "explain": "A blast-radius cap — like 'a single automated containment action may affect at most one account per execution' — makes a bad correlation query harmless on its own: it either fails loudly on 39 matches or only ever acts on one, but either way nobody loses access by surprise."
+    }
+  ]
+}

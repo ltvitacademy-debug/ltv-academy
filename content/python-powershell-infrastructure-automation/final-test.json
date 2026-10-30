@@ -1,0 +1,451 @@
+{
+  "questions": [
+    {
+      "id": "ppia-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which of the following correctly defines what it means for an automation script to be idempotent, per Lesson 3?",
+      "options": [
+        "Running the script once or five times in a row leaves the infrastructure in exactly the same end state either way, without creating duplicates or erroring on repeat runs",
+        "The script can only ever be run exactly once; running it a second time is an error by design",
+        "The script always creates a brand-new resource on every run, overwriting whatever existed before",
+        "The script requires a human to confirm each step before it executes",
+        "The script runs twice as fast the second time it's executed because Azure caches the result",
+        "The script is written in Python rather than PowerShell, which is what makes it safe to rerun"
+      ],
+      "correctIndex": 0,
+      "explain": "Idempotent means a script converges on the same correct end state no matter how many times it runs — it checks whether something already exists before acting, so a rerun does nothing instead of erroring or duplicating. Lesson 3's resource-group example makes this concrete: Get-AzResourceGroup checks first, and New-AzResourceGroup only runs if the check comes back empty.",
+      "distractorExplain": "Option B gets the goal backwards — idempotency is specifically about making a script *safe* to run any number of times, not about forbidding reruns. A script that can only run once and errors on every later attempt is the exact non-idempotent failure mode Lesson 3 opens with (calling New-AzResourceGroup directly, with no check, fails the second time)."
+    },
+    {
+      "id": "ppia-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 1, having a record that shows exactly what ran, when, and what it changed — something manual console work never leaves behind — is what makes a script ________.",
+      "acceptedAnswers": ["auditable"],
+      "explain": "Lesson 1 names three specific ways manual console work breaks down at scale: it's not repeatable, it's error-prone, and it's not auditable. A script fixes the auditable gap specifically by leaving a saved, rerunnable record of exactly what happened, instead of a resource that exists with no trail back to the decisions that produced it."
+    },
+    {
+      "id": "ppia-03",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "try {\n    New-AzStorageAccount -ResourceGroupName \"rg-prod\" -Name \"ltvdata01\" `\n        -Location \"eastus\" -SkuName \"Standard_LRS\"\n}\ncatch {\n    Write-Error \"Failed to create storage account: $_\"\n    exit 1\n}",
+      "prompt": "In the PowerShell script above, per Lesson 4, what does `exit 1` inside the catch block actually accomplish?",
+      "options": [
+        "It stops the script entirely and returns a non-zero exit code that a pipeline or scheduler can detect and flag as a failure",
+        "It retries the New-AzStorageAccount call one more time before giving up",
+        "It suppresses the error message so the script can continue to the next step quietly",
+        "It automatically deletes the partially created storage account to clean up after the failure"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 4 is explicit that exit 1 isn't just dramatic — it's a real, non-zero exit code a pipeline or scheduler can detect and flag as a failure. Combined with stopping the script immediately at the failed step, it prevents a later step (like configuring a firewall rule) from running against a resource that was never actually created."
+    },
+    {
+      "id": "ppia-04",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 3's check-then-act pattern, put these steps in the correct order for an idempotent resource-group creation script.",
+      "items": [
+        "Call Get-AzResourceGroup with -ErrorAction SilentlyContinue to check whether the resource group already exists",
+        "If the check finds nothing, call New-AzResourceGroup to create it",
+        "If the check finds the resource group already there, do nothing and move on",
+        "The script now produces the same end state whether it's run once or five times"
+      ],
+      "explain": "Check-then-act only works in this order: the existence check has to run first so the script can branch on what it finds, rather than blindly creating and hoping. Skipping straight to New-AzResourceGroup with no check first is exactly the non-idempotent version Lesson 3 opens with, which fails on any rerun."
+    },
+    {
+      "id": "ppia-05",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "A PowerShell script needs to run unattended at 2 a.m. with no person present to click through a sign-in. Per Lesson 5, what does `Connect-AzAccount` alone fail to provide, and what fixes it?",
+      "options": [
+        "Connect-AzAccount alone opens an interactive browser sign-in; the fix is authenticating as a service principal with a client secret via -ServicePrincipal -Credential $cred -Tenant $tenantId",
+        "Connect-AzAccount alone only works for AWS resources, not Azure, so the fix is switching to a different cmdlet entirely",
+        "Connect-AzAccount alone cannot ever authenticate inside any script, so the fix is hardcoding the user's password directly in the file",
+        "Connect-AzAccount alone always times out after 10 seconds, so the fix is increasing a timeout parameter"
+      ],
+      "correctIndex": 0,
+      "explain": "Connect-AzAccount by itself opens an interactive browser sign-in — fine at a console, useless inside a script that runs unattended. Lesson 5's fix is signing in as a service principal (an application identity, not a user identity) using a client secret, which waits on nothing and no one."
+    },
+    {
+      "id": "ppia-06",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about looping over Azure VMs with PowerShell, per Lesson 6.",
+      "options": [
+        "Get-AzVM -Status adds a PowerState property such as 'VM running' or 'VM deallocated' to each returned VM object",
+        "foreach loops a collection already stored in a variable, while ForEach-Object streams objects through the pipeline one at a time",
+        "Where-Object must always run after ForEach-Object in a pipeline, never before it",
+        "-Force on Stop-AzVM skips the confirmation prompt that would otherwise appear for each VM",
+        "$_ represents the current pipeline object inside a ForEach-Object or Where-Object block"
+      ],
+      "correctIndices": [0, 1, 3, 4],
+      "explain": "Get-AzVM -Status adds PowerState; foreach walks an in-memory collection while ForEach-Object streams the pipeline; -Force skips Stop-AzVM's confirmation prompt; and $_ holds the current object inside a ForEach-Object or Where-Object block. Lesson 6's own worked example runs Where-Object *before* ForEach-Object specifically to filter the VM list down before the loop acts on it, the opposite of what the false statement claims."
+    },
+    {
+      "id": "ppia-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Match each Azure Automation term from Lesson 8 to what it actually is.",
+      "left": ["Automation account", "Runbook", "Managed identity", "Schedule"],
+      "right": [
+        "The Azure resource that holds runbooks, schedules, and related settings",
+        "A script (PowerShell or Python) imported into an Automation account to run there",
+        "An Azure-managed identity a runbook authenticates with, with no stored secret",
+        "An Automation object defining when a runbook runs, linked via Register-AzAutomationScheduledRunbook"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "An Automation account is the container that holds everything Azure Automation manages. A runbook is the actual script imported into it. A managed identity lets that runbook sign in with Connect-AzAccount -Identity, with no app ID or client secret to store. A schedule is the separate object that links to a runbook to say when it fires."
+    },
+    {
+      "id": "ppia-08",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "# Stop-DevVMsNightly.ps1 — the runbook's content\nConnect-AzAccount -Identity\n\nGet-AzVM | Where-Object { $_.Tags[\"Environment\"] -eq \"Dev\" } | ForEach-Object {\n    Stop-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.Name -Force -NoWait\n}",
+      "prompt": "Per Lesson 8, what does `Connect-AzAccount -Identity` let this runbook skip entirely, compared to the service principal pattern from Lesson 5?",
+      "options": [
+        "It authenticates using the Automation account's own system-assigned managed identity, so there's no app ID, no client secret, and nothing for the script to store or leak",
+        "It skips authentication entirely and runs with no credentials at all",
+        "It logs in using whichever person happens to be signed into the Azure Portal at the time the runbook fires",
+        "It requires a stored plaintext password inside the runbook's own script file"
+      ],
+      "correctIndex": 0,
+      "explain": "Inside a runbook, Azure Automation can sign in using the Automation account's own system-assigned managed identity — an identity Azure manages for you, with no app ID, no client secret, and nothing for the script to store or leak. That identity just needs the right Azure role assigned to it, the same way any other identity would."
+    },
+    {
+      "id": "ppia-09",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: AWS's single official Python SDK package, covering nearly every AWS service through both a client and a resource interface, is called ________, per Lesson 10.",
+      "acceptedAnswers": ["Boto3", "boto3"],
+      "explain": "Boto3 ships as one package covering nearly every AWS service, with boto3.client() as the low-level interface mirroring the AWS API call-for-call, and boto3.resource() as a higher-level, more Pythonic interface for a subset of services."
+    },
+    {
+      "id": "ppia-10",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "code": "poller = storage_client.storage_accounts.begin_create(\n    resource_group,\n    storage_account_name,\n    {\n        \"sku\": {\"name\": \"Standard_LRS\"},\n        \"kind\": \"StorageV2\",\n        \"location\": location,\n    },\n)\n\nstorage_account = poller.result()",
+      "prompt": "Per Lesson 12, why does `begin_create` return a poller instead of the finished storage account immediately, and what does `.result()` do?",
+      "options": [
+        "begin_create is asynchronous because creating a storage account takes real time on Azure's side; .result() blocks until the operation finishes and returns the finished resource",
+        "begin_create always fails on its first call, and .result() silently retries it until it succeeds",
+        "The poller is a local cache of past storage accounts, and .result() just clears that cache",
+        "begin_create only validates the request without creating anything, so .result() is what actually submits it"
+      ],
+      "correctIndex": 0,
+      "explain": "Creating a storage account takes real time on Azure's side, so the SDK hands back a poller immediately instead of blocking the whole script while it waits. Calling .result() is what actually waits for the long-running operation to finish and returns the finished storage_account object."
+    },
+    {
+      "id": "ppia-11",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about DefaultAzureCredential and Boto3's credential chain, per Lesson 11.",
+      "options": [
+        "DefaultAzureCredential tries several real credential sources in order — environment variables, Managed Identity, then a locally signed-in session",
+        "boto3.client() with no key arguments checks environment variables, the ~/.aws/credentials and ~/.aws/config files, and an IAM role attached to the compute resource",
+        "Both credential chains exist specifically so a secret never has to be hardcoded directly into a script",
+        "DefaultAzureCredential requires a password to be passed as its first constructor argument",
+        "An IAM role fetched through the instance metadata service only works when the script runs on a developer's personal laptop"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "DefaultAzureCredential walks environment variables, then Managed Identity, then a locally signed-in session, in order. Boto3 checks environment variables, the shared credentials/config files, and an IAM role attached to EC2, ECS, or Lambda. Both chains exist precisely so no script ever needs a hardcoded secret — DefaultAzureCredential() takes no password argument at all, and an IAM role is fetched automatically on actual AWS compute, not a laptop."
+    },
+    {
+      "id": "ppia-12",
+      "type": "matching",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Match each Python cloud SDK term from Lesson 10 to what it actually is.",
+      "left": ["azure-mgmt-*", "azure-identity", "boto3.client()", "boto3.resource()"],
+      "right": [
+        "Family of Azure SDK packages, one per service area such as compute, storage, and network",
+        "The Azure SDK package that handles authentication",
+        "Low-level AWS interface that mirrors the AWS API call-for-call",
+        "Higher-level, more Pythonic AWS interface available for a subset of services"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "The Azure SDK is split into many azure-mgmt-* packages, one per service area, with azure-identity specifically handling authentication. Boto3 takes the opposite approach of one package, but still splits into two interfaces: client() mirrors the raw AWS API, while resource() is the cleaner, more Pythonic layer available for some services."
+    },
+    {
+      "id": "ppia-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "code": "RESOURCE_GROUPS=$(az group list --query \"[].name\" -o tsv)\n\nfor RG in $RESOURCE_GROUPS; do\n  echo \"Checking $RG...\"\ndone",
+      "prompt": "Per Lesson 13, what does `-o tsv` change about this `az group list` command's output, and why does that matter for the `for` loop below it?",
+      "options": [
+        "It strips the JSON formatting down to one plain name per line, which is exactly the shape a bash for loop wants to consume",
+        "It sorts the resource groups alphabetically before the loop ever runs",
+        "It converts every resource group name to uppercase before output",
+        "It limits the query to only the first ten resource groups in the subscription"
+      ],
+      "correctIndex": 0,
+      "explain": "-o tsv (tab-separated values) strips the JSON formatting down to one plain name per line. That matters because a bash for loop iterates over whitespace-separated words, so plain lines of text feed it directly — raw JSON would not."
+    },
+    {
+      "id": "ppia-14",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per Lesson 14, when AWS CLI text output has nothing to print for a value — like a tag that doesn't exist — it prints the literal word ________ instead of an empty line, unlike az's -o tsv.",
+      "acceptedAnswers": ["None"],
+      "explain": "This is the real quirk Lesson 14 calls out: AWS CLI text output prints the literal string \"None\" for a missing value, so a script has to check [ \"$OWNER\" == \"None\" ] rather than the -z empty-string test that worked fine for az's -o tsv output in Lesson 13."
+    },
+    {
+      "id": "ppia-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Select every true statement about jq, per Lesson 15.",
+      "options": [
+        "The . filter by itself is the identity filter — it just pretty-prints whatever JSON came in",
+        ".[] iterates over every element of a top-level JSON array",
+        "select(condition) keeps only the elements where that condition is true",
+        "-r means raw output, printing a string value without the double quotes jq would otherwise add",
+        "jq can only read JSON from a file saved on disk, never from a pipe"
+      ],
+      "correctIndices": [0, 1, 2, 3],
+      "explain": "jq's identity filter (.) pretty-prints the input unchanged, .[] iterates array elements, select() filters on a condition, and -r strips the surrounding quotes from a string result. Lesson 15's whole point is piping az or aws JSON output straight into jq, which is exactly reading from a pipe, not a saved file."
+    },
+    {
+      "id": "ppia-16",
+      "type": "sequencing",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 16's multi-cloud reconciliation script, put these steps in the order they actually run.",
+      "items": [
+        "Count Azure VMs with az vm list --output json piped into jq '. | length'",
+        "Count non-terminated AWS instances with aws ec2 describe-instances piped into a jq select() filter, then length",
+        "Compute the combined total with bash arithmetic expansion, $((AZURE_VMS + AWS_INSTANCES))",
+        "Compare the two counts with -gt inside an if/elif/else and print which cloud has more"
+      ],
+      "explain": "The script has to have both counts in hand before it can add or compare them, so the two jq counts come first, then the arithmetic expansion that sums them, and only then the -gt/-eq comparison that decides which message to print. Each step depends on the one before it."
+    },
+    {
+      "id": "ppia-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes imperative automation from declarative Infrastructure as Code, per Lesson 17?",
+      "options": [
+        "Imperative automation specifies the steps to take, in order; declarative IaC specifies the desired end state and lets the tool compute and run whatever steps are needed to reach it",
+        "Declarative IaC specifies the steps to take, in order; imperative automation specifies only the end state and lets a tool compute the steps",
+        "Imperative automation and declarative IaC are two different syntaxes for writing the exact same sequence of steps",
+        "Imperative automation can only target AWS, while declarative IaC can only target Azure",
+        "Declarative IaC requires a human to manually approve every single resource change line by line before anything can run",
+        "Imperative automation is always written in Bicep, while declarative IaC is always written in PowerShell"
+      ],
+      "correctIndex": 0,
+      "explain": "Imperative scripts (PowerShell, Python, CLI commands) answer 'what steps do I run?' — do this, then do that. Declarative IaC (Bicep, ARM, CloudFormation, Terraform) answers 'what should exist?' — you describe the end state, and the tool compares it to what's deployed and computes the steps needed to close the gap, including doing nothing if nothing's changed.",
+      "distractorExplain": "Option B swaps the two definitions backwards — it's declarative IaC that specifies the end state and lets the tool compute the steps, while imperative automation is the one that spells out the steps directly. Reversing which approach does the describing and which does the computing is exactly the mix-up Lesson 17 is built to prevent."
+    },
+    {
+      "id": "ppia-18",
+      "type": "matching",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Match each Infrastructure as Code term from Lessons 18-19 to what it actually is.",
+      "left": ["ARM template", "Bicep", "AWS CloudFormation", "Stack"],
+      "right": [
+        "Azure's native JSON deployment format, submitted directly to Azure Resource Manager",
+        "Microsoft's DSL for authoring Azure IaC, which compiles down to ARM JSON",
+        "AWS's own native Infrastructure as Code service, with templates written in YAML or JSON",
+        "A named, deployable unit in CloudFormation — every resource a template declares, managed together"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "ARM templates are Azure's native, verbose JSON format. Bicep is Microsoft's cleaner DSL that compiles to that same ARM JSON. AWS CloudFormation is AWS's own equivalent native service. A stack is CloudFormation's unit of management — delete the stack, and every resource it created for you is torn down in the right order."
+    },
+    {
+      "id": "ppia-19",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per Lesson 20, a Terraform ________ is a plugin that knows how to talk to one specific platform's API — Azure, AWS, Google Cloud, or hundreds of others — all through the same terraform CLI and HCL language.",
+      "acceptedAnswers": ["provider", "Provider plugin", "provider plugin"],
+      "explain": "Terraform doesn't talk to one cloud's API directly; it talks to whichever provider plugin is loaded. That's exactly why it's the industry-standard choice for multi-cloud teams — one skill set, one state model, any provider — unlike Bicep (Azure-only) or CloudFormation (AWS-only)."
+    },
+    {
+      "id": "ppia-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about drift detection and idempotency in declarative IaC tools, per Lessons 17-19.",
+      "options": [
+        "az deployment group what-if compares a Bicep or ARM template to the live resource graph and shows what would change, without touching anything",
+        "Running the same Bicep deployment twice is safe by default — the tool sees the resource already matches and simply does nothing",
+        "aws cloudformation detect-stack-drift compares every resource in a stack against its last-known deployed configuration",
+        "Configuration drift means the IaC tool's own CLI version has fallen out of date",
+        "A Chapter 2 PowerShell script that calls New-AzStorageAccount directly also automatically detects drift the same way a Bicep deployment does"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "what-if and detect-stack-drift are both built-in, no-touch previews of what's changed between declared and live state, and idempotency is declarative IaC's default behavior rather than something you have to code. Drift refers to a live resource silently diverging from what was declared or last deployed — not a CLI version — and a plain imperative script has no way to notice that drift at all, since it only runs and checks what you explicitly told it to."
+    },
+    {
+      "id": "ppia-21",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the VM start/stop cost-savings pattern, per Lesson 21.",
+      "options": [
+        "Stop-AzVM deallocates the VM, releasing the compute hardware and stopping the per-hour compute charge",
+        "A VM merely shut down inside the guest OS, but not deallocated, keeps billing for compute",
+        "Running a VM only 50 hours a week instead of all 168 hours is roughly a 70% reduction in runtime and compute cost",
+        "The AutoShutdown tag is applied to every VM in the subscription, including production VMs, so the schedule touches everything",
+        "Stop-AzVM needs -Force in the stop script so it doesn't wait on a confirmation prompt nobody is there to answer at 6 PM"
+      ],
+      "correctIndices": [0, 1, 2, 4],
+      "explain": "Deallocation, not just an OS shutdown, is what actually stops compute billing. A 50-hour week versus a 168-hour week is a 70% runtime cut, roughly matching a 70% cost cut. -Force skips the unattended confirmation prompt. The AutoShutdown tag is deliberately applied only to VMs meant to follow the schedule — production VMs and always-on domain controllers are left untagged, and therefore untouched, by design."
+    },
+    {
+      "id": "ppia-22",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "code": "foreach ($resource in $allResources) {\n    $tags = $resource.Tags\n    foreach ($key in $requiredTags) {\n        if (-not $tags -or -not $tags.ContainsKey($key)) {\n            $nonCompliant += [PSCustomObject]@{ Name = $resource.Name; MissingTag = $key }\n        }\n    }\n}",
+      "prompt": "Per Lesson 22, why does this compliance check include `-not $tags -or` before calling `.ContainsKey($key)`?",
+      "options": [
+        "Calling .ContainsKey() on a resource with no tags at all would error out instead of reporting it as non-compliant, so the -not $tags check catches that case first",
+        "It sorts every resource's tags alphabetically before checking each required key",
+        "It converts every tag key to lowercase so the comparison becomes case-insensitive",
+        "It skips any resource that happens to have more than two tags already set"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 22 is explicit about this detail: calling .ContainsKey() on a null $tags object would error out rather than cleanly flag the resource as non-compliant. The -not $tags -or short-circuit catches a resource with no tags at all before .ContainsKey() ever has a chance to run against nothing."
+    },
+    {
+      "id": "ppia-23",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 23, the Azure resource that stores backup data and backup job history, queried with Get-AzRecoveryServicesBackupJob, is called a ________ vault.",
+      "acceptedAnswers": ["Recovery Services", "Recovery Services vault", "recovery services"],
+      "explain": "A Recovery Services vault is what Azure Backup records every job against. Lesson 23's verification script pulls the last 24 hours of jobs from it and flags anything whose Status isn't Completed, since a backup policy looking correctly configured is not the same claim as the backup actually having succeeded."
+    },
+    {
+      "id": "ppia-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Per Lesson 24, why does the account-containment script call both `Update-MgUser -AccountEnabled:$false` and `Revoke-MgUserSignInSession`, instead of just disabling the account?",
+      "options": [
+        "Disabling sign-in stops future logins, but a session the attacker already holds keeps working on its existing token until it naturally expires — revoking sessions closes that gap immediately",
+        "Revoke-MgUserSignInSession has to run first, because Update-MgUser cannot set AccountEnabled to false otherwise",
+        "Update-MgUser only works on administrator accounts, so Revoke-MgUserSignInSession is required for any standard user",
+        "The two cmdlets do the exact same thing, and the script calls both only as a redundant precaution"
+      ],
+      "correctIndex": 0,
+      "explain": "Update-MgUser -AccountEnabled:$false stops the account from signing in again, but without revoking existing sessions, a session the attacker opened before the account was disabled could keep working until its access token naturally expires. Revoke-MgUserSignInSession invalidates those refresh tokens immediately, which is exactly why the script runs both together."
+    },
+    {
+      "id": "ppia-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes why an automation script belongs in a Git repository rather than only on one person's laptop, per Lesson 25?",
+      "options": [
+        "A pull request puts a second set of eyes on a script's diff before it can cause damage, version history gives a real rollback, and a shared repo gives the whole team visibility into what automation exists",
+        "Putting a script in Git makes it run automatically on a schedule, which a script on a laptop can never do",
+        "Storing a script in a Git repository encrypts its contents, which is the only way to keep its logic secret from other engineers",
+        "A script only needs to be added to Git once it has already been running successfully in production for at least a year",
+        "Pull requests exist to speed up how fast a script can be deployed, not to catch mistakes before it ever runs",
+        "Git version history only matters for application code, never for infrastructure automation scripts"
+      ],
+      "correctIndex": 0,
+      "explain": "Lesson 25 gives three concrete reasons: a pull request lets a reviewer catch a dangerous line — like an unscoped resource deletion — before it ever executes against anything real; git log and git revert give a real rollback a saved-over file never can; and a shared repository means the whole team can see what automation actually exists instead of it being scattered across individual laptops.",
+      "distractorExplain": "Option E gets the actual purpose of a pull request backwards. Lesson 25's entire point is that a PR's value is catching a mistake — like the cleanup script missing a -notlike 'prod-*' safety filter — before it ever runs, not simply moving a change into production faster."
+    },
+    {
+      "id": "ppia-26",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about handling secrets in a CI/CD pipeline, per Lesson 27.",
+      "options": [
+        "GitHub Actions secrets are stored under a repository's settings and injected as an environment variable only while a job is running",
+        "Azure DevOps variable groups can link directly to Azure Key Vault, so the pipeline platform doesn't even store a copy of the secret itself",
+        "GitHub Actions automatically and perfectly masks any secret value in logs, even after a step encodes or concatenates it into a different string",
+        "A secret can still leak into a build log if a step echoes or prints it, even when the secret itself is stored correctly",
+        "It's safe to hardcode a real secret value directly into a tracked pipeline YAML file as long as the repository is marked private"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "GitHub Actions secrets and Key Vault-linked Azure DevOps variable groups both keep the real value out of the pipeline file itself. But masking isn't foolproof — if a step transforms the value first, the platform may no longer recognize it as the secret and won't mask it, which is exactly why the rule is never print a secret for any reason, including debugging. A private repo's Git history still keeps a hardcoded secret readable forever to anyone with access."
+    },
+    {
+      "id": "ppia-27",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Per Lesson 28's GitHub Actions workflow that runs the Chapter 6 VM stop script, put these steps in the order they actually execute.",
+      "items": [
+        "The schedule trigger fires the job at the configured cron time (or a manual workflow_dispatch click)",
+        "actions/checkout@v4 pulls the repository's files, including the script, onto the empty hosted runner",
+        "azure/login@v2 authenticates the runner to Azure using the credential pulled from GitHub Actions secrets",
+        "The run step executes the actual PowerShell script against Azure, with the full run logged automatically"
+      ],
+      "explain": "A hosted runner starts completely empty, so the repo has to be checked out before the script even exists on the machine, and the runner has to be authenticated before the script can call any Azure cmdlet successfully. Trigger, checkout, login, run is the exact order Lesson 28 walks through, and each step depends on the one before it having already happened."
+    },
+    {
+      "id": "ppia-28",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Match each capstone script technique from Lessons 29-30 to what it actually does.",
+      "left": ["Tag-based targeting", "Power-state check before acting", "try/catch with continue", "sys.exit(1 if violations else 0)"],
+      "right": [
+        "Filters on the AutoShutdown tag so the script only ever touches VMs meant to be on the schedule, not a hardcoded VM list",
+        "Reads a VM's actual current state first, and only calls Stop-AzVM or Start-AzVM when that state doesn't already match the desired one",
+        "Keeps one VM's transient failure from stopping the whole loop, so VMs later in the list still get evaluated",
+        "Turns the script's findings into something a pipeline step can act on: zero means success, non-zero means the step should be treated as failed"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 29's cost-savings script combines tag-based targeting with an idempotent power-state check and try/catch-with-continue so one bad VM doesn't take down the whole run. Lesson 30's compliance script reuses the same discipline but reports rather than fixes, and its exit code is the entire reason Chapter 7's pipeline practices can act on the result automatically."
+    },
+    {
+      "id": "ppia-29",
+      "type": "fill-in",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: per Lesson 30, a file a pipeline run produces and retains — like the compliance script's tag-violations.csv — is called a build ________.",
+      "acceptedAnswers": ["artifact", "build artifact"],
+      "explain": "A build artifact is what makes the CSV useful beyond the moment the script runs: the pipeline keeps it, so whoever responds to a failed run has the exact list of offending resources in front of them, not just a printed number that disappeared when the terminal closed."
+    },
+    {
+      "id": "ppia-30",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "if tags.get(\"Tier\") == \"Critical\" and tags.get(\"DoNotDelete\") != \"true\":\n    violations.append({\n        \"resource\": resource.name,\n        \"type\": resource.type,\n        \"missing_tags\": \"DoNotDelete (required for Tier: Critical)\",\n    })",
+      "prompt": "Per Lesson 31's case study, why did this specific rule flag sql-prod-01 as a violation the same night an engineer removed its DoNotDelete tag during a tag-casing cleanup?",
+      "options": [
+        "The VM was tagged Tier: Critical but no longer carried DoNotDelete: true, and the rule requires both conditions together for any Tier: Critical resource",
+        "The VM had been stopped for more than 30 days, which is actually a separate, unrelated cleanup script's own trigger",
+        "The rule only runs once a year, and that particular night happened to be its scheduled run",
+        "The compliance script automatically reverted the engineer's change the moment it detected it"
+      ],
+      "correctIndex": 0,
+      "explain": "The rule specifically checks for Tier: Critical resources missing DoNotDelete: true. sql-prod-01 kept its Tier: Critical tag through the cleanup but lost DoNotDelete, which is exactly the combination this rule exists to catch — and because the script ran that same night from a pipeline, nobody had to remember to check on it."
+    }
+  ]
+}

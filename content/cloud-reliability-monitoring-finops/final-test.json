@@ -1,0 +1,450 @@
+{
+  "questions": [
+    {
+      "id": "crmf-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly distinguishes monitoring from observability, per Lesson 1?",
+      "options": [
+        "Observability is the broader property of being able to answer a question you didn't think to ask in advance using only existing telemetry, while monitoring watches a known set of signals against known thresholds",
+        "Monitoring and observability are two names for the same practice, differing only by which vendor's product you use",
+        "Observability simply means collecting more data than monitoring does, regardless of whether anyone can act on any of it",
+        "Monitoring only covers logs, while observability only covers metrics and traces",
+        "Observability requires removing every dashboard and alerting rule a team already has"
+      ],
+      "correctIndex": 0,
+      "explain": "Monitoring answers questions you thought to ask in advance — CPU over 80%, p99 over 500ms — and alerts when a known threshold is crossed. Observability is the broader property of being able to decompose a question nobody wrote a dashboard for, live, using the telemetry a system already emits. That's exactly why Lesson 1 builds all three pillars before touching a single alerting rule.",
+      "distractorExplain": "Option C is the trap Lesson 4 warns against directly — observability isn't about collecting more data, it's about whether a question can actually be answered with the data you already have. A system drowning in unused telemetry isn't more observable; it's just more expensive, which is exactly the over-instrumentation problem the chapter closes on."
+    },
+    {
+      "id": "crmf-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: per Lesson 2, the ________ field is the hinge between pillars — it's what lets you go from a slow span in a trace straight to the exact log lines that request produced, with one filter.",
+      "acceptedAnswers": ["trace_id", "trace id"],
+      "explain": "Lesson 2 calls out trace_id specifically as the field that ties a structured log line back to the trace that request produced. Without it, connecting a slow span to the log lines that explain it means guessing at a timestamp window instead of filtering on one shared ID."
+    },
+    {
+      "id": "crmf-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put the real-incident investigation from Lesson 1 in the order it actually unfolds: a p99 latency alert just fired on a checkout endpoint.",
+      "items": [
+        "A metric (p99 latency) crosses its threshold and the alert fires",
+        "Pull a trace for a slow request sampled during that window to see which span dominates the timeline",
+        "Pull logs from the specific service the dominant span pointed to, filtered to that trace ID",
+        "Find the actual exception or slow-query detail inside those filtered log lines"
+      ],
+      "explain": "Lesson 1's own summary of this walk is the reason for the order: metrics found it, a trace localized it, logs explained it. Each step narrows the investigation using exactly the pillar built for that narrowing — reversing the order, or skipping one, is why a team with only one pillar either takes ten times longer or never converges."
+    },
+    {
+      "id": "crmf-04",
+      "type": "multi-select",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about choosing what to instrument, per Lesson 4.",
+      "options": [
+        "Attaching a raw user_id as a metric label can silently explode a single metric into millions of unique time series",
+        "A component with a documented history of breaking, like a cache that's gone stale under load before, earns dedicated instrumentation shaped around how it failed last time",
+        "If a metric would never trigger an alert and a human would never act on seeing it change, it isn't earning its storage cost",
+        "Wrapping every function and logging every branch is the recommended default, because more telemetry is always safer",
+        "A raw user_id is just as safe to use as a metric label as it is to use as a log field"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Lesson 4's framework ranks instrumentation by business consequence and known failure history, and its concrete gut-check is 'what would I do differently if I saw this value change.' High-cardinality labels like a raw user_id are the specific, named trap — fine in a log field, where high cardinality is expected, but capable of exploding a metric into millions of series when used as a label instead."
+    },
+    {
+      "id": "crmf-05",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly explains why a resource's detailed logs might simply never show up in a Log Analytics workspace, per Lesson 5?",
+      "options": [
+        "Most resource logs require a diagnostic setting routing them to a destination; without one configured on that resource, they're never captured anywhere queryable",
+        "Log Analytics automatically ingests every resource log from every resource the moment it's created, with no configuration needed",
+        "Azure Monitor Metrics and Log Analytics logs share one single underlying data store, so if metrics are visible, logs are automatically visible too",
+        "The subscription-level Activity Log must be manually enabled before any resource log can appear anywhere",
+        "Log Analytics only ever accepts data that comes from Application Insights, never from platform resources directly"
+      ],
+      "correctIndex": 0,
+      "explain": "A diagnostic setting is the configuration object that actually moves a resource's log and metric categories to a destination — a Log Analytics workspace, storage, or an Event Hub. Without one attached to a specific resource, most of that resource's logs are simply never captured anywhere queryable, which Lesson 5 calls out as the single most common reason a team 'has Azure Monitor' but still can't answer a basic operational question.",
+      "distractorExplain": "Option C is the mix-up Lesson 5 is built to prevent — metrics and logs are two architecturally separate stores (a time-series metrics database versus a Log Analytics workspace), not one shared store. Having one doesn't imply having the other; a resource can emit perfectly visible platform metrics while its resource logs never land anywhere because no diagnostic setting routes them."
+    },
+    {
+      "id": "crmf-06",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "code": "Perf\n| where CounterName == \"% Processor Time\"\n| where TimeGenerated > ago(1h)\n| summarize AvgCPU = avg(CounterValue) by Computer\n| where AvgCPU > 80\n| join kind=inner (\n    Heartbeat\n    | summarize LastHeartbeat = max(TimeGenerated) by Computer\n) on Computer\n| where LastHeartbeat > ago(10m)",
+      "prompt": "In this KQL query from Lesson 6, what would changing kind=inner to kind=leftouter actually change about the result?",
+      "options": [
+        "The result would also include every high-CPU computer that had no matching Heartbeat row at all, with null Heartbeat columns, instead of only computers present in both results",
+        "The query would fail outright, because leftouter is not a valid join kind in KQL",
+        "The result would only return computers with a recent heartbeat but normal CPU, the opposite of the current filter",
+        "Switching the join kind has no effect on which rows are returned, only on which columns are displayed"
+      ],
+      "correctIndex": 0,
+      "explain": "kind controls join behavior the same way it does in a SQL JOIN, as Lesson 6 points out directly. kind=inner keeps only computers present in both the high-CPU result and the Heartbeat result. Switching to kind=leftouter would keep every row from the left side (the high-CPU computers) regardless of whether a matching Heartbeat row exists, filling in nulls for the Heartbeat columns where it doesn't."
+    },
+    {
+      "id": "crmf-07",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each KQL or Application Insights term from Lessons 6-7 to what it actually does.",
+      "left": ["summarize", "bin()", "render", "operation_Id"],
+      "right": [
+        "The aggregation operator that collapses many rows into one row per group, the way GROUP BY works in SQL",
+        "Rounds a timestamp down into fixed-width buckets, the standard way to build a time series in KQL",
+        "Draws the current result set as a chart directly in the query editor, with no separate charting tool needed",
+        "The identifier shared by every row Application Insights writes for one logical request, across requests, dependencies, and exceptions tables"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "summarize and bin() together turn a flood of raw rows into a usable time series, render draws that result inline, and operation_Id is what reconstructs one request's full story across Application Insights' separate tables — the same correlation role trace_id plays in Chapter 1, now tied to a specific Azure implementation."
+    },
+    {
+      "id": "crmf-08",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: Container Insights' current, more efficient table for a container's stdout/stderr is called ________, replacing the older ContainerLog table.",
+      "acceptedAnswers": ["ContainerLogV2", "ContainerLogV2 table"],
+      "explain": "ContainerLogV2 is the current schema Container Insights writes container stdout/stderr to; ContainerLog is the older table it replaced. Both are queried with the same KQL from Lesson 6 once log collection is enabled."
+    },
+    {
+      "id": "crmf-09",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "An EC2 CPUUtilization alarm is viewed with no dimension specified at all. Per Lesson 9, what would CloudWatch actually show instead of one specific instance's data?",
+      "options": [
+        "An aggregate across every resource matching whatever dimensions are left — useful for a fleet-wide view, but useless for identifying which single instance is actually in trouble",
+        "An error, because a dimension is mandatory for every single CloudWatch metric query",
+        "Data from only the very first EC2 instance ever launched in the account",
+        "Nothing at all — a metric queried with no dimension is silently dropped by CloudWatch"
+      ],
+      "correctIndex": 0,
+      "explain": "Namespace plus metric name plus the full set of dimension values is what uniquely identifies one specific metric stream, per Lesson 9. Drop a dimension like InstanceId and CloudWatch shows an aggregate across everything that still matches — exactly the fleet-wide view that can't tell you which single instance is actually in trouble."
+    },
+    {
+      "id": "crmf-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about CloudWatch alarms, per Lesson 10.",
+      "options": [
+        "An M-of-N alarm, like '2 out of 3' evaluation periods, tolerates one noisy period without firing on every single blip",
+        "Setting TreatMissingData to breaching treats a data gap as bad, which is appropriate for a metric that should always be reporting, like a heartbeat",
+        "A composite alarm's AlarmRule can combine the states of other alarms with AND, OR, and NOT, instead of watching a metric directly",
+        "Leaving TreatMissingData on its default setting is always the safest choice for every metric, with no exceptions",
+        "Every alarm referenced inside a composite alarm's AlarmRule must have its own notification action configured as well"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "An M-of-N rule is the deliberate middle ground between over-reacting to one noisy period and missing a real sustained trend. TreatMissingData=breaching fits a metric where silence itself is the failure. A composite alarm watches other alarms' states, not a metric, combined with AND/OR/NOT logic — and per Lesson 10, only the composite needs an action attached; the underlying alarms it references can have their own actions disabled entirely, so a human only ever hears from the composite."
+    },
+    {
+      "id": "crmf-11",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes an X-Ray segment from a subsegment, per Lesson 11?",
+      "options": [
+        "A segment is the record of one service's work on one request; a subsegment is a finer breakdown nested inside that segment, like a downstream call or a wrapped block of custom code",
+        "A segment and a subsegment are the exact same thing, just named differently depending on which AWS SDK language is used",
+        "Only the X-Ray daemon creates subsegments, while only the SDK creates segments",
+        "A segment can belong to more than one trace ID at once, while a subsegment can only ever belong to one",
+        "A subsegment always represents a database call specifically, never an HTTP call to another service"
+      ],
+      "correctIndex": 0,
+      "explain": "A segment captures one service's own work on a request — start time, end time, and metadata. A subsegment is the finer breakdown inside that segment, nested with its own start/end time, for something like a call to DynamoDB or a custom-wrapped code block. All of them, segment and subsegment alike, share one trace ID that ties the full request together.",
+      "distractorExplain": "Option C gets the division of labor backwards — per Lesson 11, the X-Ray SDK (in your application code) is what creates both segments and subsegments as code runs; the X-Ray daemon is a separate background process that only receives already-completed segment data over UDP and batches it to the X-Ray API. The daemon never creates telemetry itself."
+    },
+    {
+      "id": "crmf-12",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: the EKS Container Insights metric ________ shows a pod's usage against its own memory limit, and is the leading indicator before an OOMKill.",
+      "acceptedAnswers": ["pod_memory_utilization_over_pod_limit"],
+      "explain": "Lesson 12 names this metric specifically as the one that explains an OOMKilled pod after the fact — it tracks usage against the pod's own requests/limits, not just raw memory consumption, which is exactly what a cluster-level CPU metric can't show you."
+    },
+    {
+      "id": "crmf-13",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "A checkout API's dashboard showed average response time looking completely normal while a subset of users couldn't check out at all, because one backend instance behind the load balancer had a slow disk. Per Lesson 13, what's the actual fix to this dashboard's design?",
+      "options": [
+        "Replace the average with p99 latency, broken down per backend instance instead of one aggregated line, so a localized failure isn't diluted away",
+        "Add more vanity metrics, like a bigger 'Uptime %' tile, so the problem gets caught sooner next time",
+        "Lower the average-latency metric's polling interval from 60 seconds to 30 seconds and leave everything else unchanged",
+        "Remove the dashboard entirely, since averages can never be trusted for any metric under any circumstance"
+      ],
+      "correctIndex": 0,
+      "explain": "A few slow requests get diluted by many fast ones in an average — that's exactly why the mean barely moved while a third of requests were taking 8 seconds. The p99 latency line would have jumped immediately, and breaking it down per backend instance (rather than one aggregated line) is what exposes a problem affecting a minority of requests badly, which an aggregate is precisely built to hide."
+    },
+    {
+      "id": "crmf-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each Grafana term from Lesson 14 to what it actually is.",
+      "left": ["Data source", "Provisioning", "Panel", "Template variable"],
+      "right": [
+        "A plugin that knows how to query one specific system's real API, such as Azure Monitor or CloudWatch",
+        "Defining data sources (or dashboards) in a config file that loads automatically on startup instead of being clicked together by hand",
+        "One visualization inside a dashboard, whose datasource field decides which plugin supplies its data",
+        "A dashboard-level variable, like $region, letting one dashboard definition serve many environments without duplicating panels"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Grafana's engine is cloud-agnostic by design — it only knows how to render whatever a data source plugin hands it. Provisioning makes that setup reproducible from a YAML file, a panel's datasource field is the whole trick that lets one dashboard mix Azure and AWS panels, and template variables let that same dashboard definition cover dev, staging, and prod without copy-pasting panels."
+    },
+    {
+      "id": "crmf-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about alert routing and anti-fatigue mechanics, per Lesson 15.",
+      "options": [
+        "group_by collapses many individual firing alerts for the same root cause into one notification instead of one page per affected instance",
+        "A silence is a time-bounded, human-declared rule created before planned maintenance, which is different from an inhibit rule that suppresses automatically because another alert is already firing",
+        "Label-based routing sends an alert to whichever on-call rotation happens to be on duty, regardless of which service's labels actually match",
+        "Routing every alert through one queue at one urgency level teaches the on-call engineer to start ignoring pages",
+        "An inhibit_rules block requires a human to manually silence the suppressed alert each time it would otherwise fire"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "group_by is the deduplication mechanic that stops one root cause from paging once per affected instance. A silence is declared ahead of known work; inhibition is automatic, triggered by another alert's state, with no human action needed each time. And flooding one queue with every severity at the same urgency is exactly the mistake Lesson 15 names as training an on-call engineer to ignore pages — the opposite of label-based routing, which deliberately sends an alert to the team whose labels actually match the failing service."
+    },
+    {
+      "id": "crmf-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: attaching a ________ annotation to an alert rule carries a runbook link through Alertmanager into whatever notification channel fires, so it sits right next to the page itself.",
+      "acceptedAnswers": ["runbook_url", "runbook_url annotation"],
+      "explain": "Per Lesson 16, the runbook_url annotation on an alert rule is what gets a prepared runbook in front of the responder automatically, through Slack, PagerDuty, or email, instead of leaving them to hunt for it by alert name during an incident."
+    },
+    {
+      "id": "crmf-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes the FinOps Foundation's Inform, Optimize, Operate framework, per Lesson 17?",
+      "options": [
+        "Inform, Optimize, and Operate run as a continuous loop, not a one-time left-to-right project — Operate's improvements feed back into the next Inform cycle",
+        "Inform, Optimize, and Operate are three sequential projects, each one finished once and never revisited",
+        "Only the Engineering persona is needed to run the FinOps loop, since Finance and Business/Product only ever consume reports afterward",
+        "Optimize has to run before Inform, since you need real savings in hand before visibility into spend actually matters",
+        "Operate refers specifically to on-call incident response, not to cloud spend at all"
+      ],
+      "correctIndex": 0,
+      "explain": "The FinOps Foundation draws the framework as a circle rather than a pipeline precisely because operating well produces better data for the next Inform cycle, which surfaces new optimization opportunities, which changes what needs to be operated. Lesson 17 is explicit that none of the three personas — Finance, Engineering, Business/Product — can run this loop alone.",
+      "distractorExplain": "Option D reverses the framework's actual dependency — per Lesson 17, Optimize can't succeed until Inform has already produced trustworthy, attributed cost data; acting on spend you can't yet see or attribute correctly is exactly the failure mode the three-phase ordering exists to prevent."
+    },
+    {
+      "id": "crmf-18",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: an AWS tag must be explicitly ________ as a Cost Allocation Tag in the Billing console before Cost Explorer can group or filter by it.",
+      "acceptedAnswers": ["activated", "activate"],
+      "explain": "Lesson 18 names this as the common first speed bump in AWS cost allocation: a tag applied to a resource doesn't automatically appear as a grouping option in Cost Explorer until an administrator activates it in Billing."
+    },
+    {
+      "id": "crmf-19",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about tag taxonomy and enforcement, per Lesson 19.",
+      "options": [
+        "A tag key like team with three different spellings across resource groups fragments cost allocation into separate buckets instead of one",
+        "Azure Policy can deny the creation of a resource that's missing a required tag, rejecting it at deployment time rather than flagging it in a report later",
+        "AWS Organizations tag policies can define which tag values are allowed for a given key across an organizational unit",
+        "A resource with no tag at all gets automatically grouped under whichever tag value was most recently used elsewhere",
+        "Enforcing that a tag exists on a resource automatically makes that tag usable for grouping in AWS Cost Explorer"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Inconsistent values (payments vs. Payments) fragment allocation exactly as if the tag didn't exist at all for grouping purposes. Azure Policy's Deny effect rejects an untagged resource before it's created, and AWS tag policies constrain allowed values per key across an OU. An untagged resource lands in an 'Untagged' bucket, not under some other team's value — and enforcing a tag's existence is a separate step from activating it as a Cost Allocation Tag, which Lesson 18 already established as its own required action."
+    },
+    {
+      "id": "crmf-20",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "prompt": "A team's running spend total on day 3 of the month is nowhere near any monthly budget threshold, yet spend for one specific resource abruptly spiked that same day. Per Lesson 20, which tool is actually built to catch this?",
+      "options": [
+        "Anomaly detection, because it flags an unusual spend pattern against that resource's own historical data rather than requiring a manually set threshold to be crossed",
+        "A budget alert at the 100% actual-spend threshold, since that's the only tool that watches spend continuously",
+        "The forecast line in Cost Analysis, since a trend projection is specifically designed to catch same-day spikes",
+        "Nothing — a spike this small and this early in the month is invisible to any cost tool until the invoice arrives"
+      ],
+      "correctIndex": 0,
+      "explain": "A budget catches 'we're going to blow past what we planned to spend this month' relative to a fixed number. Anomaly detection catches an unusual pattern — a sudden spike that's abnormal for that specific resource or account — even on day 3, well before any monthly threshold would ever be near crossed, which is exactly the one-day-not-thirty-days advantage Lesson 20 and the Lesson 30 lab both rely on."
+    },
+    {
+      "id": "crmf-21",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A VM shows average CPU utilization of 12%, but it's idle most of the day and pegged near 95% for one hour during a nightly batch job. Per Lesson 21, why would right-sizing based on that average be a mistake?",
+      "options": [
+        "The average hides the load's real shape — p95 utilization would reveal the batch job's peak and prevent sizing the VM too small for it",
+        "Averages are always higher than the true peak, so sizing off the average is actually too conservative, not too aggressive",
+        "CPU utilization can't be measured on an hourly cycle at all, only continuously across a full day",
+        "Any VM that runs a batch job of any kind should always be excluded from right-sizing analysis entirely"
+      ],
+      "correctIndex": 0,
+      "explain": "A VM idle at 2% for 23 hours and pegged at 95% for one hour also averages to roughly 12%, per Lesson 21's own example — downsizing off that average would cause the batch job to start missing its window. p95 utilization captures the real peak without letting the average dilute it away, which is exactly why it's the standard right-sizing input instead of the mean."
+    },
+    {
+      "id": "crmf-22",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each cost lever from Lessons 21-22 to what it actually is.",
+      "left": ["Reserved Instance / Azure Reservation", "Savings Plan", "Spot Instance / Azure Spot VM", "Right-sizing"],
+      "right": [
+        "A 1- or 3-year commitment to a specific instance type/family and region, with zero interruption risk and zero flexibility if usage shape changes",
+        "A 1- or 3-year commitment to a dollar-per-hour compute spend, applied automatically across whatever eligible compute is actually running",
+        "Unused capacity sold at a deep discount with no uptime guarantee — the provider can reclaim it on short notice",
+        "Matching a resource's provisioned size to its actual observed usage, which has to happen before any commitment discount is purchased"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each one trades a different kind of flexibility for a different kind of discount, per Lesson 22 — and Lesson 21's right-sizing has to come first in the order that actually works, because buying a commitment discount on an oversized instance just locks in the waste for the length of the term."
+    },
+    {
+      "id": "crmf-23",
+      "type": "multi-select",
+      "chapter": "ch06",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about autoscaling as a cost lever, per Lesson 23.",
+      "options": [
+        "Scale-to-zero is a reasonable fit for a workload that's genuinely only needed on demand and can tolerate a cold-start delay on the next request",
+        "Setting minReplicas to 1 is automatically a safe cost win for every workload, since fewer running pods always lowers risk",
+        "Keeping maxReplicas generous even during a scheduled off-hours window still lets a real unexpected spike get served instead of throttled",
+        "The Cluster Autoscaler or Karpenter lets underlying node capacity shrink along with pod count, so scaling pods down actually reduces spend",
+        "Scheduled scale-down and scale-to-zero are the exact same setting, just described with different names"
+      ],
+      "correctIndices": [0, 2, 3],
+      "explain": "Scale-to-zero is the deepest form of the lever, reserved for workloads tolerant of a cold start. minReplicas of 1 is explicitly called out as a failure mode, not a safe default — a single pod dying mid-deploy leaves a real availability gap. A generous maxReplicas ceiling protects against an unexpected spike even during a lowered off-hours floor, and pairing the HPA with a node-level autoscaler is what actually turns fewer pods into real savings instead of idle, still-billed nodes."
+    },
+    {
+      "id": "crmf-24",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: before deleting an orphaned snapshot or disk, a common safe pattern is tagging it for deletion and waiting a defined ________, commonly 7-30 days, so anyone who notices has time to object.",
+      "acceptedAnswers": ["grace period", "deletion grace period"],
+      "explain": "Lesson 24 is explicit that deleting a disk or snapshot is irreversible, unlike the tiering and listing steps that come before it — a grace period between tagging a candidate for deletion and actually running the delete is what gives an unnoticed dependency time to surface."
+    },
+    {
+      "id": "crmf-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly defines an error budget, per Lesson 25?",
+      "options": [
+        "100% minus the SLO target — the amount of unreliability a team is allowed to spend before it must slow down and prioritize reliability work",
+        "The dollar amount budgeted for responding to an incident's cloud costs",
+        "The external, contractual reliability promise a company makes to its paying customers",
+        "A fixed number of incidents a team is allowed per quarter, regardless of each one's severity",
+        "The percentage of engineers on a team assigned to the on-call rotation"
+      ],
+      "correctIndex": 0,
+      "explain": "If the SLO is 99.9% availability, the team is by definition allowed 0.1% unreliability — over a 30-day window, that works out to roughly 43 minutes. That error budget reframes reliability as a resource to spend deliberately: a team with budget left has room to take real risk and ship; a team that's burned most of it should slow down and harden instead.",
+      "distractorExplain": "Option C confuses the error budget with the SLA, which Lesson 25 is careful to separate — an SLA is the external, contractual promise to customers, deliberately looser than the internal SLO so there's margin to notice and fix a problem before it ever breaches a paying customer's contract. The error budget is strictly an internal engineering number derived from the SLO, not a customer-facing promise."
+    },
+    {
+      "id": "crmf-26",
+      "type": "sequencing",
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps from Lesson 27's real SEV1 incident timeline in the correct order.",
+      "items": [
+        "Alert fires and the on-call engineer confirms it's not a false alarm",
+        "The incident is declared at its severity and an Incident Commander is assigned",
+        "The Technical Lead identifies the likely cause and a mitigation, like a rollback, is initiated",
+        "The success metric returns to normal and the Incident Commander declares the incident mitigated",
+        "Sustained normal behavior is confirmed and the Incident Commander formally closes the incident"
+      ],
+      "explain": "Lesson 27's timeline draws a real distinction between 'mitigated' and 'closed': mitigated means the symptom has stopped (checkout success rate climbing back to normal), while closed means the team has confirmed it's staying stopped before handing off to the postmortem. Declaring severity and assigning an IC has to happen early, because that's what gets the right roles coordinating before the technical investigation even starts."
+    },
+    {
+      "id": "crmf-27",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about blameless postmortems and Five Whys, per Lesson 28.",
+      "options": [
+        "Five Whys is meant to push past the first, shallow answer toward an actionable, systemic cause",
+        "A blameless postmortem assumes the person involved was doing a reasonable thing with the information and tools they had at the time",
+        "Every action item needs a specific owner, a due date, and a concrete definition of done before it's actually worth writing down",
+        "Blameless means nobody is individually accountable and mistakes are simply ignored",
+        "Five Whys must stop at exactly five questions, never fewer and never more"
+      ],
+      "correctIndices": [0, 1, 2],
+      "explain": "Five Whys existing is the whole point — 'the deploy caused it' is true but useless, and the technique forces the investigation past that to a fixable process gap. Blameless doesn't mean consequence-free; it means the investigation assumes reasonable intent so people stay honest, which gets the facts right faster. And a vague action item with no owner, date, or definition of done is, per Lesson 28, exactly where good postmortems go to die."
+    },
+    {
+      "id": "crmf-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "code": "# Before\nresource \"azurerm_kubernetes_cluster_node_pool\" \"checkout\" {\n  name       = \"checkout\"\n  node_count = 6\n  vm_size    = \"Standard_D4s_v5\"\n}\n\n# After -- merged without an SRE reviewer on the PR\nresource \"azurerm_kubernetes_cluster_node_pool\" \"checkout\" {\n  name       = \"checkout\"\n  node_count = 4\n  vm_size    = \"Standard_D4s_v5\"\n}",
+      "prompt": "In the Ridgeline Outfitters case study, this node pool change merged cleanly based on 52% average CPU utilization and standard platform-team approval. Per Lesson 31, what was actually missing from that change?",
+      "options": [
+        "An SRE reviewer who understood the checkout SLO's error budget and the headroom the six-node pool provided during traffic spikes",
+        "A second terraform plan run to double-check the same diff a second time",
+        "A larger VM size for the four remaining nodes instead of the same Standard_D4s_v5",
+        "Removing the Terraform state lock before the pull request was allowed to merge"
+      ],
+      "correctIndex": 0,
+      "explain": "The right-sizing math itself was correct — 52% average utilization really was over-provisioned by Chapter 6's own standard. What was missing was a reviewer who could connect that capacity change to the checkout SLO's error budget and the autoscaler's four-minute warm-up time, which is exactly the headroom the node pool was quietly providing. Lesson 31's real finding is that a correct cost signal still needs a reliability reviewer before it becomes a merged change."
+    },
+    {
+      "id": "crmf-29",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps from the Lesson 30 cost-dashboard lab in the order they actually happened.",
+      "items": [
+        "Tag the AKS cluster and its resources consistently with team, environment, and cost-center",
+        "Build a Cost Analysis view in Cost Management, grouped by the team tag",
+        "Pin that cost view onto the same dashboard as the existing reliability panels",
+        "Define a budget with staged thresholds, including a forecasted-100% alert",
+        "Add an anomaly detection alert scoped to the resource group, layered on top of the budget"
+      ],
+      "explain": "Lesson 30 is explicit that grouping by tag is meaningless without tagging coverage first, so tagging comes before the cost view. Pinning the view next to reliability panels comes next, so cost and reliability blast radius are visible in one place before the proactive layer — staged budget thresholds, then an anomaly alert on top — gets added last, going from reactive visibility to proactive catch."
+    },
+    {
+      "id": "crmf-30",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "Match each earlier chapter to what it specifically contributed to the Ridgeline Outfitters capstone, per Lesson 32.",
+      "left": ["Chapter 1 (Observability Fundamentals)", "Chapter 5 (FinOps Fundamentals)", "Chapter 6 (Optimizing Cloud Spend)", "Chapter 7 (SRE Fundamentals)"],
+      "right": [
+        "Supplied the metrics/logs/traces vocabulary so Lesson 29's instrumentation needed no fresh introduction",
+        "Supplied the tagging taxonomy and the staged budget-plus-anomaly pattern behind Lesson 30's cost dashboard",
+        "Supplied the right-sizing discipline that correctly flagged the node pool's 52% utilization as over-provisioned",
+        "Supplied the SLI/SLO/error-budget math that turned a latency spike into '19 of this month's 43-minute error budget, consumed in one event'"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 32's whole point is that the capstone drew on every earlier chapter, not just the two it most obviously resembles. Chapter 6's right-sizing signal was correct in isolation; Chapter 7's error-budget math is what made the resulting incident legible in numbers rather than a vague 'latency went up for a few minutes' — and neither chapter alone would have caught that the two needed to be reviewed together."
+    }
+  ]
+}

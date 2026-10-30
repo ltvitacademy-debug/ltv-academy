@@ -1,0 +1,450 @@
+{
+  "questions": [
+    {
+      "id": "dkcp-01",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes a Docker image layer, per Lesson 1?",
+      "options": [
+        "An immutable, content-addressed filesystem diff; one Dockerfile instruction that touches disk produces one layer",
+        "A separate virtual machine process that runs inside the container",
+        "A compressed copy of the final merged filesystem taken at build time",
+        "A temporary cache file deleted automatically after docker build finishes",
+        "The thin writable layer every container adds when it starts",
+        "A single file inside the image, unrelated to any Dockerfile instruction"
+      ],
+      "correctIndex": 0,
+      "explain": "Each layer is a SHA-256-addressed tarball of filesystem changes relative to the layer beneath it, produced by one instruction that touches disk (RUN, COPY, ADD). Metadata-only instructions like CMD or ENV don't create a filesystem layer at all, just a config entry.",
+      "distractorExplain": "Option E describes the writable layer a container adds at runtime, not an image layer itself — Lesson 1 draws a sharp line between the stack of read-only image layers and the one additional writable layer that only exists once a container is actually running."
+    },
+    {
+      "id": "dkcp-02",
+      "type": "fill-in",
+      "chapter": "ch01",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: a .dockerignore file keeps the build ________ lean — everything in the build directory that gets sent to the Docker daemon before any instruction runs.",
+      "acceptedAnswers": ["context", "build context"],
+      "explain": "Before Docker executes a single instruction, it packages everything in the build directory and sends it to the daemon as the build context. A .dockerignore file, same syntax as .gitignore, excludes paths so a stray file can't bloat that context or trigger a false cache miss."
+    },
+    {
+      "id": "dkcp-03",
+      "type": "sequencing",
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "prompt": "Put these Dockerfile instructions in the order that lets npm ci stay cached across source-code-only changes, per Lesson 2.",
+      "items": [
+        "COPY package.json package-lock.json ./",
+        "RUN npm ci --omit=dev",
+        "COPY . .",
+        "CMD [\"node\", \"server.js\"]"
+      ],
+      "explain": "Copying only the package files before running npm ci means that layer's cache only invalidates when package.json or package-lock.json actually change. Copying the rest of the source afterward means an ordinary code edit invalidates just the final COPY layer, leaving the much slower dependency-install layer cached."
+    },
+    {
+      "id": "dkcp-04",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch01",
+      "difficulty": "intermediate",
+      "code": "FROM golang:1.23 AS build\nWORKDIR /app\nCOPY go.mod go.sum ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 go build -o server .\n\nFROM gcr.io/distroless/static-debian12\nCOPY --from=build /app/server /server\nENTRYPOINT [\"/server\"]",
+      "prompt": "Per Lesson 3, exactly what does COPY --from=build /app/server /server carry forward into the final image above?",
+      "options": [
+        "Only the /server binary named in that line; none of the build stage's compiler, module cache, or source files carry over",
+        "The entire build stage's filesystem, including the Go compiler and module cache",
+        "Just the environment variables set during the build stage",
+        "Nothing — COPY --from only works between two stages that share the same base image"
+      ],
+      "correctIndex": 0,
+      "explain": "A multi-stage build's second FROM starts an entirely new, unrelated base image — none of the build stage's layers carry over automatically. COPY --from=build reaches back into that stage's filesystem and copies out exactly the files named, here just the compiled binary, leaving the compiler and everything else behind."
+    },
+    {
+      "id": "dkcp-05",
+      "type": "matching",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Match each base image family to what it actually is, per Lesson 5.",
+      "left": ["Full distro (ubuntu/debian)", "-slim variant", "distroless", "alpine"],
+      "right": [
+        "Complete general-purpose userland with a shell and apt; most convenient, largest attack surface",
+        "Still has apt and a shell, but drops documentation, common utilities, and build toolchains",
+        "No shell, no package manager, no coreutils at all — only the runtime and whatever you explicitly copy in",
+        "Tiny via musl libc and busybox; still has a shell and apk, which is a different kind of small than distroless"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Each base image trades convenience for attack surface differently: a full distro keeps every debugging tool at the cost of size and exposure, slim trims documentation and build tools while keeping a shell, distroless removes the shell and package manager entirely, and alpine is small through musl/busybox rather than through removing a shell."
+    },
+    {
+      "id": "dkcp-06",
+      "type": "fill-in",
+      "chapter": "ch02",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: passing ________ on a Trivy scan avoids blocking a release over a CVE that has no available fix yet, since failing the build wouldn't change anything.",
+      "acceptedAnswers": ["--ignore-unfixed", "ignore-unfixed"],
+      "explain": "--ignore-unfixed is specifically for CVEs with no patched version available — gating a build on a vulnerability nobody can fix yet just blocks every release indefinitely without making anything safer."
+    },
+    {
+      "id": "dkcp-07",
+      "type": "multi-select",
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about container hardening basics, per Lesson 7.",
+      "options": [
+        "A container process starts as root (UID 0) by default unless the Dockerfile says otherwise",
+        "--cap-drop=ALL --cap-add=NET_BIND_SERVICE drops every Linux capability and then re-adds only the one needed to bind a low-numbered port",
+        "Mounting a container's root filesystem read-only removes the need for any writable space at all, even for temporary files",
+        "runAsNonRoot: true in a Pod's securityContext makes Kubernetes refuse to start the pod if the image would run as root",
+        "Running as a non-root user makes --cap-drop=ALL unnecessary, since non-root processes already have no capabilities to drop"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Root is a convenience default, not a requirement, and dropping every capability before re-adding exactly one is the real point of narrowing privilege. A read-only root filesystem still needs an explicit --tmpfs for anything that genuinely must write somewhere, and non-root status doesn't make capability dropping redundant — capabilities and UID are separate privilege dimensions."
+    },
+    {
+      "id": "dkcp-08",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch02",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes an image tag from a content digest, per Lesson 8?",
+      "options": [
+        "A tag is a mutable, human-readable label that can be repointed to a different image by a later push; a digest is a SHA-256 hash of the manifest that always resolves to the exact same bytes",
+        "A tag and a digest are two names for the identical concept, just written in different formats",
+        "A digest can be changed by pushing a new image under the same digest, the same way a tag can be repointed",
+        "A tag is assigned only by Docker Hub; ACR and ECR use digests exclusively and have no concept of a tag",
+        "latest is a special digest reserved for whichever image was most recently built"
+      ],
+      "correctIndex": 0,
+      "explain": "A tag like myapp:1.4.2 is just a label; docker push with the same tag silently repoints it. A digest is content-addressed — it's mathematically tied to the exact bytes of the manifest, which is why production Kubernetes manifests increasingly pin to a digest for zero ambiguity about what's actually running.",
+      "distractorExplain": "Option C gets the core property backwards — a digest is a SHA-256 hash of the manifest's actual content, so it cannot be repointed to different bytes while keeping the same digest; it is tags, not digests, that a later push can silently reassign to a different image."
+    },
+    {
+      "id": "dkcp-09",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes the division of labor between kube-scheduler and kubelet, per Lesson 9?",
+      "options": [
+        "kube-scheduler decides which node a Pod should run on and writes that decision back through the API server; the kubelet on that node then actually starts the container",
+        "kube-scheduler starts the container directly once it picks a node, and kubelet only reports health afterward",
+        "kubelet decides which node a Pod runs on; kube-scheduler only monitors resource usage",
+        "Both components do exactly the same job, redundantly, for failover purposes",
+        "kube-scheduler runs on every worker node, while kubelet runs only on the control plane"
+      ],
+      "correctIndex": 0,
+      "explain": "The scheduler only decides — it watches for unscheduled Pods and writes the chosen node's name back via the API server, but it never starts a container itself. The kubelet on that node is the agent that actually talks to the container runtime and gets the container running, then reports status back continuously.",
+      "distractorExplain": "Option E swaps where each component actually runs — kube-scheduler is a control-plane component, and kubelet is the per-node agent present on every worker node; reversing that placement is exactly backwards from the architecture Lesson 9 lays out."
+    },
+    {
+      "id": "dkcp-10",
+      "type": "multi-select",
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "prompt": "Select every true statement about the Pod, ReplicaSet, and Deployment relationship, per Lesson 10.",
+      "options": [
+        "A ReplicaSet's reconciliation loop reconciles the count of matching Pods, never their content",
+        "Editing a running Deployment's Pod template creates a brand-new ReplicaSet rather than modifying the existing Pods in place",
+        "A ReplicaSet identifies which Pods belong to it by name, not by a label selector",
+        "A Pod is the smallest deployable unit in Kubernetes, and most Pods wrap exactly one container",
+        "If a Pod is deleted, the ReplicaSet notices exactly which Pod was removed and recreates one with the identical name"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A ReplicaSet only ever reconciles count — editing its template never changes a running Pod's image, which is precisely why a Deployment exists to create a new ReplicaSet for any template change instead. Objects are linked by label selector, not by name, and a ReplicaSet never notices which specific Pod disappeared, only that the count dropped — the replacement gets a brand-new random suffix, not the old name back."
+    },
+    {
+      "id": "dkcp-11",
+      "type": "fill-in",
+      "chapter": "ch03",
+      "difficulty": "foundational",
+      "prompt": "Fill in the blank: kubectl get secret <name> -o yaml stores a Secret's values ________-encoded, not encrypted.",
+      "acceptedAnswers": ["base64", "base64-encoded"],
+      "explain": "Base64 is an encoding, not encryption — anyone with read access and a decoder gets the plaintext value back instantly. Real protection comes from RBAC restricting who can read Secret objects at all, and from encrypting etcd at rest, not from the encoding itself."
+    },
+    {
+      "id": "dkcp-12",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch03",
+      "difficulty": "intermediate",
+      "code": "spec:\n  replicas: 3\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1\n      maxUnavailable: 0",
+      "prompt": "Per Lesson 12, what does maxUnavailable: 0 combined with maxSurge: 1 guarantee during this Deployment's rollout?",
+      "options": [
+        "The rollout never drops below 3 available Pods, and may briefly run 4 while a new Pod comes up before an old one is removed",
+        "The rollout always keeps exactly 3 Pods running, never more and never fewer, at every instant",
+        "The rollout allows up to 1 Pod to be unavailable at a time while swapping in new replicas",
+        "maxSurge and maxUnavailable only take effect during a rollback, never during a forward rollout"
+      ],
+      "correctIndex": 0,
+      "explain": "maxUnavailable: 0 means the rollout must bring a new Pod fully up before removing an old one — it can never drop below the target count. maxSurge: 1 is what allows it to briefly exceed that target by one Pod while the swap happens, which together is the safest common setting for a service that can't take a capacity dip."
+    },
+    {
+      "id": "dkcp-13",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly describes the relationship between ClusterIP, NodePort, and LoadBalancer Service types, per Lesson 13?",
+      "options": [
+        "NodePort does everything ClusterIP does, plus opening the same port on every node; LoadBalancer does everything NodePort does, plus provisioning a real external cloud load balancer",
+        "The three types are unrelated alternatives with no overlapping behavior",
+        "ClusterIP is a superset of NodePort, which is in turn a superset of LoadBalancer",
+        "LoadBalancer entirely replaces the need for a Service's label selector",
+        "NodePort can only be used behind an Ingress controller and never works on its own"
+      ],
+      "correctIndex": 0,
+      "explain": "Each type strictly builds on the one before it: ClusterIP gives an internal-only virtual IP, NodePort adds a fixed high port on every node routing to that same Service, and LoadBalancer adds a provisioned cloud load balancer targeting that NodePort — each later type is a superset of the one before.",
+      "distractorExplain": "Option C reverses the actual superset relationship entirely — Lesson 13 is explicit that NodePort builds on top of ClusterIP and LoadBalancer builds on top of NodePort, not the other way around."
+    },
+    {
+      "id": "dkcp-14",
+      "type": "matching",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Match each term from Lessons 14-15 to what it actually is.",
+      "left": ["Ingress resource", "Ingress controller", "CoreDNS", "The svc segment in a Service's FQDN"],
+      "right": [
+        "A declarative set of HTTP(S) routing rules that has no effect on traffic at all by itself",
+        "The running component (e.g. ingress-nginx) that actually implements an Ingress resource's rules",
+        "The in-cluster DNS server that resolves a Service's name to its ClusterIP",
+        "A fixed segment meaning 'this is a Service record,' present in every Service's fully qualified name"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "An Ingress object is only ever a config — it takes a running controller to turn its rules into real routing. CoreDNS is what actually answers the name lookups that let a Service's stable virtual IP be reached by name instead of a hardcoded address, and svc is the fixed, always-present marker segment in every resulting FQDN."
+    },
+    {
+      "id": "dkcp-15",
+      "type": "multi-select",
+      "chapter": "ch04",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Kubernetes NetworkPolicy, per Lesson 16.",
+      "options": [
+        "By default, a stock Kubernetes cluster applies zero network restrictions between Pods",
+        "A NetworkPolicy only has any effect if the cluster's CNI plugin actually enforces it",
+        "podSelector: {} with no matchLabels and no rules listed selects zero Pods in the namespace",
+        "The standard production pattern is to start with a namespace-wide deny-all and then add narrow allow rules on top",
+        "A NetworkPolicy can restrict incoming traffic only — it has no concept of restricting outgoing traffic"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Every Pod can reach every other Pod by default until a NetworkPolicy says otherwise, and that policy only takes effect if the installed CNI actually enforces NetworkPolicy objects at all. podSelector: {} with no matchLabels selects every Pod in the namespace, not zero — which is exactly the mechanism behind a deny-all policy — and NetworkPolicy explicitly supports both Ingress and Egress rule types."
+    },
+    {
+      "id": "dkcp-16",
+      "type": "fill-in",
+      "chapter": "ch04",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: a Pod calling a Service in a different namespace should use at least the service.________ form of the name instead of the bare Service name, to avoid resolving inside the caller's own namespace first.",
+      "acceptedAnswers": ["namespace"],
+      "explain": "Kubernetes configures each Pod's DNS search path to try its own namespace first, which is exactly why a bare Service name can silently resolve to the wrong object, or fail, once the caller is in a different namespace than the Service."
+    },
+    {
+      "id": "dkcp-17",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch05",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly distinguishes a PersistentVolume from a PersistentVolumeClaim, per Lesson 17?",
+      "options": [
+        "A PersistentVolume represents a real piece of provisioned storage; a PersistentVolumeClaim is a request for storage with certain characteristics that the control plane binds to a matching PV",
+        "A PersistentVolumeClaim is the actual disk; a PersistentVolume is just a request for one",
+        "Both objects represent the exact same thing, just named differently for historical reasons",
+        "A PersistentVolume is namespaced, while a PersistentVolumeClaim is cluster-scoped",
+        "A Pod mounts a PersistentVolume directly in its volumes block, never a PersistentVolumeClaim"
+      ],
+      "correctIndex": 0,
+      "explain": "A PV is the cluster-scoped object representing real storage, created independently of any workload. A PVC is the namespaced request a workload actually references, and the control plane binds the two together once it finds a PV satisfying the claim's size and access mode.",
+      "distractorExplain": "Option D has the scoping exactly backwards — a PersistentVolume is cluster-scoped and exists independently of any namespace, while the PersistentVolumeClaim is the namespaced object that a Pod in a specific namespace actually references."
+    },
+    {
+      "id": "dkcp-18",
+      "type": "fill-in",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: setting volumeBindingMode: ________ on a StorageClass delays disk creation until a Pod using the claim is actually scheduled, so the disk lands in the same availability zone as the node.",
+      "acceptedAnswers": ["WaitForFirstConsumer"],
+      "explain": "WaitForFirstConsumer specifically waits to provision the disk until a Pod needing it is scheduled, avoiding the problem of guessing a zone upfront and possibly creating the disk somewhere the Pod can never actually reach."
+    },
+    {
+      "id": "dkcp-19",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch05",
+      "difficulty": "intermediate",
+      "code": "kubectl get pvc\n# pgdata-postgres-0   Bound   20Gi\n# pgdata-postgres-1   Bound   20Gi\n# pgdata-postgres-2   Bound   20Gi",
+      "prompt": "Per Lesson 19, if the postgres-1 Pod is deleted and Kubernetes recreates it, which PVC does the new postgres-1 Pod reattach to?",
+      "options": [
+        "pgdata-postgres-1 — the same dedicated PVC it had before, because volumeClaimTemplates stamps out one PVC per replica by name",
+        "Whichever PVC happens to bind first, chosen at random",
+        "pgdata-postgres-0, since that replica started first in the ordered startup sequence",
+        "A brand-new PVC with a freshly generated name every time the Pod restarts"
+      ],
+      "correctIndex": 0,
+      "explain": "volumeClaimTemplates stamps out one PVC per replica, named by convention <template name>-<pod name>. Because postgres-1 keeps its stable name across restarts, the recreated Pod binds back to the exact same pgdata-postgres-1 PVC and the same underlying data — the guarantee a Deployment's interchangeable Pods can't give."
+    },
+    {
+      "id": "dkcp-20",
+      "type": "multi-select",
+      "chapter": "ch05",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about running a database in Kubernetes versus using a managed database service, per Lesson 20.",
+      "options": [
+        "A VolumeSnapshot captures whatever was physically on disk at that instant, with no guarantee the database's internal state was consistent",
+        "A managed database service like Azure Database for PostgreSQL absorbs failover orchestration that a plain StatefulSet does not provide",
+        "Restarting postgres-0 inside a StatefulSet automatically makes it a healthy primary again, even if its data was corrupted",
+        "An operator is a controller that automates day-2 operations like backup and failover beyond what a plain StatefulSet provides",
+        "Running a database inside Kubernetes is never a reasonable engineering choice under any circumstances"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "A disk-level snapshot says nothing about whether a transaction was mid-write or the WAL had been flushed — it's not the same as an application-consistent backup. A managed service absorbs failover orchestration a StatefulSet's ordered Pod management was never designed to do, which is exactly why restarting a corrupted primary doesn't heal it on its own. An operator exists precisely to close that day-2 gap for self-hosted systems, and the lesson is explicit that self-hosting is a legitimate choice when the team has genuinely built that operational maturity."
+    },
+    {
+      "id": "dkcp-21",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch06",
+      "difficulty": "foundational",
+      "prompt": "Which statement correctly describes what Helm actually is and does, per Lessons 21-22?",
+      "options": [
+        "A package manager for Kubernetes that resolves a versioned chart of manifest templates against a set of values, still generating and applying plain Kubernetes YAML through the API underneath",
+        "A replacement for kubectl that bypasses the Kubernetes API server entirely",
+        "A built-in Kubernetes object type that ships with every cluster by default",
+        "A tool that only works for Deployments, never for Services or Ingress objects",
+        "A CI/CD platform that replaces GitHub Actions for Kubernetes projects"
+      ],
+      "correctIndex": 0,
+      "explain": "Helm installs an application by resolving a chart — a bundled, versioned package of manifest templates — against a set of values. It doesn't replace kubectl; underneath, it still generates plain Kubernetes YAML and applies it through the same Kubernetes API, adding templating and a release history on top.",
+      "distractorExplain": "Option B overstates what Helm changes — Helm never bypasses the API server or replaces kubectl; it still generates ordinary Kubernetes manifests and applies them through the exact same API kubectl itself uses."
+    },
+    {
+      "id": "dkcp-22",
+      "type": "fill-in",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Fill in the blank: in Chart.yaml, ________ is the chart's own version number, while appVersion is the version of the application it deploys — the two move independently.",
+      "acceptedAnswers": ["version"],
+      "explain": "A chart's version tracks changes to its templates and defaults; appVersion tracks the application image it currently points at. You can bump one without the other — patching a template doesn't mean the application changed, and vice versa."
+    },
+    {
+      "id": "dkcp-23",
+      "type": "matching",
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "Match each Helm concept to its direct parallel from the Terraform course, per Lesson 23.",
+      "left": ["values.yaml (base)", "values-prod.yaml (override)", "--values (stacked flag)", "Release name + namespace"],
+      "right": [
+        "The chart's defaults — what applies if nothing overrides it, the Helm equivalent of a Terraform config's own defaults",
+        "Holds only the keys that differ for one environment, the Helm equivalent of a Terraform .tfvars override file",
+        "Layers one values file on top of another, left to right, the Helm equivalent of terraform apply -var-file",
+        "Helm's practical equivalent of a Terraform workspace for keeping per-environment installs from colliding"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 23 draws the parallel deliberately: one template plus environment-specific override files is the same discipline Terraform's .tfvars pattern already taught, even though Helm has no direct equivalent to a Terraform workspace for isolating state — that job falls to a distinct release name paired with a distinct namespace instead."
+    },
+    {
+      "id": "dkcp-24",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch06",
+      "difficulty": "intermediate",
+      "prompt": "A helm upgrade --install run with --atomic --wait times out because the new Pods never become ready. Per Lesson 24, what happens next?",
+      "options": [
+        "Helm automatically rolls the release back to its previous working revision",
+        "Helm leaves the cluster half-upgraded and exits with only a warning",
+        "Helm deletes the release and every revision in its entire history",
+        "Nothing — --atomic only affects helm install, never helm upgrade"
+      ],
+      "correctIndex": 0,
+      "explain": "--atomic is specifically the safety net for this situation: if the upgrade fails or the --wait timeout is reached, Helm automatically rolls the release back to its previous working state instead of leaving the cluster in a half-upgraded condition."
+    },
+    {
+      "id": "dkcp-25",
+      "type": "single-select",
+      "traditional": true,
+      "chapter": "ch07",
+      "difficulty": "intermediate",
+      "prompt": "Which statement correctly distinguishes binding a ClusterRole with a RoleBinding versus binding it with a ClusterRoleBinding, per Lesson 25?",
+      "options": [
+        "A RoleBinding grants a ClusterRole's rules scoped down to just its own namespace; a ClusterRoleBinding grants that same ClusterRole across the entire cluster",
+        "A RoleBinding and a ClusterRoleBinding always grant identical, cluster-wide scope regardless of which one is used",
+        "Only a ClusterRole can be bound with a RoleBinding; a plain Role can only ever be bound with a ClusterRoleBinding",
+        "A ClusterRoleBinding is namespaced, while a RoleBinding is cluster-scoped",
+        "Binding a ClusterRole with a RoleBinding is invalid syntax that Kubernetes rejects outright"
+      ],
+      "correctIndex": 0,
+      "explain": "A ClusterRole's rules can be reused in two very different ways: bound with a RoleBinding, they only apply inside that RoleBinding's own namespace; bound with a ClusterRoleBinding, the same rules apply cluster-wide. That's exactly the distinction that makes a ClusterRoleBinding the one to be careful with.",
+      "distractorExplain": "Option D has the scoping exactly backwards — it's the RoleBinding that is namespaced and the ClusterRoleBinding that is cluster-scoped; reversing that is precisely the mix-up that leads to accidentally granting permissions far more broadly than intended."
+    },
+    {
+      "id": "dkcp-26",
+      "type": "multi-select",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Select every true statement about Pod Security Standards and Pod Security Admission, per Lesson 26.",
+      "options": [
+        "The Restricted standard requires containers to run as a non-root user and drop all Linux capabilities except what's explicitly added back",
+        "Pod Security Admission enforces a namespace's chosen standard through labels on the namespace itself, with no extra component to install",
+        "Setting pod-security.kubernetes.io/warn: restricted on a namespace immediately rejects any Pod that violates the Restricted standard",
+        "The Privileged standard is equivalent to no policy at all, reserved for system-level infrastructure workloads",
+        "PodSecurityPolicy is still the recommended mechanism for restricting Pods in current Kubernetes versions"
+      ],
+      "correctIndices": [0, 1, 3],
+      "explain": "Restricted layers non-root and full capability-dropping on top of Baseline, and PSA enforces whichever standard a namespace's labels name, built in since 1.25 with nothing extra to install. warn only prints a warning to the client without blocking anything — only the enforce label actually rejects a violating Pod — and PodSecurityPolicy was removed entirely in 1.25, replaced by exactly this mechanism."
+    },
+    {
+      "id": "dkcp-27",
+      "type": "fill-in",
+      "chapter": "ch07",
+      "difficulty": "advanced",
+      "prompt": "Fill in the blank: an EncryptionConfiguration resource, wired in with --encryption-provider-config, encrypts specific resources like Secrets before they're written to ________, which by default only stores them base64-encoded.",
+      "acceptedAnswers": ["etcd"],
+      "explain": "Every cluster object, including every Secret, is stored in etcd — and by default that storage is only base64-encoded, not encrypted. An EncryptionConfiguration resource is what actually encrypts specific resource types before they're persisted there."
+    },
+    {
+      "id": "dkcp-28",
+      "type": "single-select",
+      "traditional": false,
+      "chapter": "ch08",
+      "difficulty": "advanced",
+      "prompt": "In Lesson 31's incident, order-worker's Pod shows OOMKilled while order-api's Pod on the same node shows Evicted. What's the actual difference between those two outcomes?",
+      "options": [
+        "OOMKilled means the Linux kernel's OOMKiller killed that specific process because it scored as the best candidate when memory ran out; Evicted means the kubelet proactively removed the Pod from the node to relieve memory pressure before the kernel had to act",
+        "OOMKilled and Evicted are two names for the exact same event, logged differently purely by coincidence",
+        "Evicted means the Pod's own container crashed on its own; OOMKilled means the entire node rebooted",
+        "OOMKilled only happens to Pods that have resource limits set; Evicted only happens to Pods that have none"
+      ],
+      "correctIndex": 0,
+      "explain": "Both failure modes were real and both happened on the same node: the kernel's OOMKiller separately scored and killed order-worker's process, while the kubelet proactively evicted order-api's Pod to relieve system-wide memory pressure before the kernel intervened further — neither Pod had anything wrong with its own manifest."
+    },
+    {
+      "id": "dkcp-29",
+      "type": "sequencing",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Put these steps from Harrow Creek's resource-limit incident response in the order they actually happened, per Lesson 31.",
+      "items": [
+        "A CronJob pod ships with no resources block at all",
+        "The pod's memory use climbs with no ceiling, destabilizing neighboring pods on the same node",
+        "The kubelet evicts one neighboring pod while the kernel's OOMKiller kills another",
+        "The platform team adds requests and limits to the CronJob's container",
+        "The platform team adds a namespace-wide LimitRange so future containers get safe defaults automatically"
+      ],
+      "explain": "The incident started with a missing resources block, which let one pod's memory use climb without any ceiling and destabilize its neighbors, triggering both eviction and an OOM kill. The immediate fix was adding requests/limits to that one CronJob; the platform-wide fix was a LimitRange so the next engineer's forgotten resources block gets safe defaults automatically instead of repeating the incident."
+    },
+    {
+      "id": "dkcp-30",
+      "type": "matching",
+      "chapter": "ch08",
+      "difficulty": "intermediate",
+      "prompt": "Match each earlier chapter to what it specifically contributed to the Harrow Creek Goods capstone, per Lesson 32.",
+      "left": ["Chapter 2 (Production-Grade Container Images)", "Chapter 5 (Kubernetes Storage & Stateful Workloads)", "Chapter 6 (Deploying with Helm)", "Chapter 7 (Kubernetes Security & RBAC)"],
+      "right": [
+        "Is why the runtime stage used a distroless base, ran as non-root, and was tagged 1.0.0 instead of latest",
+        "Is what made order-worker's PersistentVolumeClaim possible through dynamic provisioning from a StorageClass",
+        "Is why Lesson 30 collected every object into one templated chart instead of four hand-applied YAML files",
+        "Is the lens Lesson 31's incident has to be read through: BestEffort QoS, OOMKilled vs. Evicted, and a LimitRange as a safety net"
+      ],
+      "correctMap": [0, 1, 2, 3],
+      "explain": "Lesson 32's review is explicit that the capstone drew on every earlier chapter, not just the Kubernetes-objects chapter: production-image discipline, dynamic storage provisioning, chart templating, and resource governance each did real, specific work rather than appearing only as abstract vocabulary."
+    }
+  ]
+}
