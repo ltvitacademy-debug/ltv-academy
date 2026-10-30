@@ -1,0 +1,51 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Troubleshooting & Validation · Full-Circle Implementation Series",
+    "titlePlain": "Fixing the Label Mismatch and Proving ",
+    "titleEmphasis": "Telemetry Flows End to End",
+    "titleSuffix": "",
+    "subtitle": "Video 16 of 20 · Fairmont Grain Co-op: The Data That Went Quiet During Harvest"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Three fixes, not one",
+    "titlePlain": "Closing the gap, ",
+    "titleEmphasis": "structurally",
+    "titleSuffix": "",
+    "steps": [
+      {
+        "label": "One chart, one source of truth",
+        "sub": "NetworkPolicy merged into the Deployment's Helm chart"
+      },
+      {
+        "label": "CI label-match check",
+        "sub": "fails any PR where the selector and pod labels disagree"
+      },
+      {
+        "label": "Synthetic DB health check",
+        "sub": "a real SELECT 1 against Azure SQL every 2 minutes"
+      }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The corrected NetworkPolicy (now inside the chart)",
+    "code": "# charts/grain-ingest/templates/networkpolicy.yaml\napiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmetadata:\n  name: grain-ingest-allow-sql\nspec:\n  podSelector:\n    matchLabels:\n      app: {{ .Values.labels.app }}   # was hand-typed \"ingest\"; now shared\n  policyTypes: [Egress]\n  egress:\n    - to: [{ ipBlock: { cidr: {{ .Values.azureSqlCidr | quote }} } }]\n      ports: [{ protocol: TCP, port: 1433 }]",
+    "caption": "Deployment and NetworkPolicy now read the exact same label value."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Validated against a fresh autoscale event",
+    "code": "running_pods:    6 -> 15  (HPA scales, as before)\nestimated_cost:  rising in step with running_pods\navg_dtu:         18% -> 54%, rising in step this time -- MATCHES",
+    "caption": "Pods, cost, and database load all move together. Zero telemetry gap."
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Video 17",
+    "titlePlain": "Explaining the Forty-Minute Gap to Fairmont's Leadership and Elevator ",
+    "titleEmphasis": "Managers",
+    "titleSuffix": "",
+    "subtitle": "Video 17 of 20 · Fairmont Grain Co-op"
+  }
+]
