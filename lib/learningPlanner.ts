@@ -148,6 +148,20 @@ const PATH_CONFIG: Record<string, { courseOrder: string[]; excludedCourses: Plan
       { courseSlug: "security-engineering-identity-management", title: "Advanced & Expert Specialization courses", reason: "This plan covers the Job-Ready Foundation stage (7 courses). The Advanced and Expert Specialization stages are a natural next step after this plan, not part of it." },
     ],
   },
+  "cloud-engineer-cloud-architect": {
+    courseOrder: [
+      "how-it-teams-work",
+      "networking-linux-cloud-fundamentals",
+      "microsoft-azure-administration",
+      "aws-cloud-infrastructure-administration",
+      "identity-networking-cloud-security",
+      "python-powershell-infrastructure-automation",
+      "cloud-infrastructure-deployment-capstone",
+    ],
+    excludedCourses: [
+      { courseSlug: "terraform-iac-for-cloud-architects", title: "Advanced & Expert Specialization courses", reason: "This plan covers the Job-Ready Foundation stage (7 courses). The Advanced and Expert Specialization stages are a natural next step after this plan, not part of it." },
+    ],
+  },
 };
 
 const HOURS_PER_DAY = 2;
