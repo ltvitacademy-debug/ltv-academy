@@ -1,0 +1,60 @@
+{
+  "lesson": "configuring-cross-cloud-replication",
+  "questions": [
+    {
+      "q": "Why does Driftwood export a `.bacpac` file instead of relying only on Azure SQL's built-in point-in-time restore?",
+      "options": [
+        "Point-in-time restore doesn't actually work",
+        "A portable, cloud-agnostic backup file can live outside Azure, which point-in-time restore alone cannot provide",
+        "`.bacpac` files are required by AWS",
+        "It's faster than point-in-time restore"
+      ],
+      "answer": 1,
+      "explain": "Point-in-time restore only protects data inside Azure; a portable export is what actually lets a copy live in a second cloud."
+    },
+    {
+      "q": "What triggers the cross-cloud replication workflow?",
+      "options": [
+        "Every push to the `main` branch",
+        "A cron schedule, running once every night, independent of any code push",
+        "A manual button click in the Azure portal",
+        "It only runs once, during initial setup"
+      ],
+      "answer": 1,
+      "explain": "The workflow uses `on: schedule: cron: \"0 7 * * *\"` — it's a recurring nightly job, not tied to deploys."
+    },
+    {
+      "q": "How does the workflow get AWS credentials to upload to S3?",
+      "options": [
+        "A static AWS access key and secret key stored in GitHub Secrets",
+        "`aws-actions/configure-aws-credentials` exchanges GitHub's OIDC token for short-lived credentials scoped to `driftwood-replication-role`",
+        "It uses the same Azure credentials to talk to AWS",
+        "It doesn't need AWS credentials because the bucket is public"
+      ],
+      "answer": 1,
+      "explain": "OIDC token exchange on the AWS side means no static AWS keys are ever stored in GitHub Secrets."
+    },
+    {
+      "q": "What IAM role does this replication job assume, and what can that role actually do?",
+      "options": [
+        "A root-account role with full administrative access",
+        "`driftwood-replication-role`, limited to `s3:PutObject` and `s3:ListBucket` on only the backups bucket, per Lesson 6's policy",
+        "No specific role; it uses the default AWS account permissions",
+        "A role that can also modify the AKS cluster"
+      ],
+      "answer": 1,
+      "explain": "The role assumed here is exactly the narrowly-scoped one whose IAM policy was written in Lesson 6."
+    },
+    {
+      "q": "What command confirms a backup actually landed in the S3 bucket after a scheduled run?",
+      "options": [
+        "`terraform apply`",
+        "`aws s3 ls s3://driftwood-app-backups/`",
+        "`kubectl get pods`",
+        "`docker build`"
+      ],
+      "answer": 1,
+      "explain": "Listing the bucket and seeing a new dated prefix confirms the export-to-replication chain worked end to end."
+    }
+  ]
+}

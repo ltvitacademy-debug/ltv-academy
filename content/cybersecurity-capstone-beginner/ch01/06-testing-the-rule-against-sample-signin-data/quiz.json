@@ -1,0 +1,60 @@
+{
+  "lesson": "testing-the-rule-against-sample-signin-data",
+  "questions": [
+    {
+      "q": "Why does Mara build synthetic `datatable` scenarios in Sentinel's Logs blade before relying on this rule?",
+      "options": [
+        "Because datatable is required syntax for every KQL query",
+        "Because a rule that compiles without error isn't the same claim as a rule that behaves correctly, and testing known scenarios is how you confirm the second one",
+        "Because Sentinel won't save a rule without a test table",
+        "Because real SigninLogs data can't be queried directly"
+      ],
+      "answer": 1,
+      "explain": "The lesson's core point: \"the query ran without an error\" and \"the query behaves correctly\" are different claims, and only testing against known scenarios confirms the second."
+    },
+    {
+      "q": "In Scenario 1 (six failures in five minutes, then a success at 09:06:00), what should the query return?",
+      "options": [
+        "Zero rows, because six failures is too many",
+        "One result row, since this is the exact failures-then-success pattern the rule targets",
+        "Six result rows, one per failure",
+        "An error, because the time window is too short"
+      ],
+      "answer": 1,
+      "explain": "This scenario is the true positive — a failure cluster immediately followed by a success is exactly what the rule was built to catch, so it should produce one matching row."
+    },
+    {
+      "q": "In Scenario 2 (six failures, but no success ever follows), why does the query correctly return zero rows?",
+      "options": [
+        "Because FailedCount never exceeds 5 in this scenario",
+        "Because the join kind=inner against Successes finds no matching successful sign-in to pair the failure cluster with",
+        "Because ResultType \"50126\" is not a valid failure code",
+        "Because the rule requires at least two different users"
+      ],
+      "answer": 1,
+      "explain": "The Failures portion does flag this cluster, but the inner join has nothing on the Successes side to match against, so no row survives — correct behavior, not a bug."
+    },
+    {
+      "q": "In Scenario 3 (one failure, then a success two minutes later), why does the query correctly stay silent?",
+      "options": [
+        "Because the success happened too soon after the failure",
+        "Because a single failure never clears the FailedCount > 5 threshold, so the Failures query returns nothing for that user at all",
+        "Because ResultType \"0\" is treated as a failure",
+        "Because the join requires at least two users"
+      ],
+      "answer": 1,
+      "explain": "This is the false-positive case the rule is specifically designed to avoid — an ordinary typo should never generate an incident, and FailedCount never reaches the threshold here."
+    },
+    {
+      "q": "What would happen if this rule were deployed straight from Lesson 5 without the testing in this lesson?",
+      "options": [
+        "Nothing different — testing is purely optional once the KQL syntax is correct",
+        "A subtle bug like a backwards join condition or an off-by-one time window could compile fine but still miss real attacks or flood the SOC with false alerts from ordinary typos",
+        "Sentinel would refuse to save the rule",
+        "The rule would automatically test itself on first run"
+      ],
+      "answer": 1,
+      "explain": "A query can run without a syntax error and still be logically wrong — testing against known scenarios is what catches that before the rule is trusted with real traffic."
+    }
+  ]
+}

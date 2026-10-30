@@ -1,0 +1,54 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cybersecurity Capstone · Beginner Project",
+    "titlePlain": "Writing the First Sentinel ",
+    "titleEmphasis": "Analytics Rule",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · Chapter 1: Baseline Security Hardening and the First Detection Rule"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 · count the failures",
+    "code": "SigninLogs\n| where ResultType != \"0\"\n| summarize FailedCount = count() by UserPrincipalName, bin(TimeGenerated, 10m)\n| where FailedCount > 5",
+    "caption": "A real query -- but not sequence-aware yet. It fires with or without a later success."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 · failures, then a success",
+    "code": "let Failures = SigninLogs | where ResultType != \"0\"\n  | summarize FailedCount=count(), LastFailure=max(TimeGenerated)\n    by UserPrincipalName, bin(TimeGenerated, 10m)\n  | where FailedCount > 5;\nlet Successes = SigninLogs | where ResultType == \"0\"\n  | project SuccessTime=TimeGenerated, UserPrincipalName, IPAddress;\nFailures | join kind=inner Successes on UserPrincipalName\n| where SuccessTime > LastFailure and SuccessTime < LastFailure + 10m",
+    "caption": "The join plus the where clause is what makes this query sequence-aware."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Scheduled Analytics Rule settings",
+    "titlePlain": "Four settings, one ",
+    "titleEmphasis": "rule",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Run query every", "sub": "10 minutes" },
+      { "label": "Lookup data from the last", "sub": "20 minutes -- longer than the run frequency" },
+      { "label": "Alert threshold", "sub": "results > 0" },
+      { "label": "Entity mapping", "sub": "UserPrincipalName -> Account, IPAddress -> IP" }
+    ]
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why lookback is longer than run frequency",
+    "titlePlain": "Closing the ",
+    "titleEmphasis": "ingestion gap",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "10-minute lookback", "sub": "risks missing a just-ingested event" },
+      { "label": "20-minute lookback", "sub": "absorbs the ingestion delay" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Testing the Rule Against Sample ",
+    "titleEmphasis": "Sign-In Data",
+    "titleSuffix": "",
+    "subtitle": "Confirming it fires on the real pattern and stays quiet on normal activity."
+  }
+]

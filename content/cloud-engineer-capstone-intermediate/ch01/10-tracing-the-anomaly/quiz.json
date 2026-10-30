@@ -1,0 +1,60 @@
+{
+  "lesson": "tracing-the-anomaly",
+  "questions": [
+    {
+      "q": "What does `kubectl get hpa` reveal about the storefront app?",
+      "options": [
+        "The HPA is crashing and not functioning",
+        "minReplicas is set to 10 with CPU utilization at only 22%, far below the 70% scale-up target",
+        "The app has no autoscaler configured at all",
+        "maxReplicas is set lower than minReplicas"
+      ],
+      "answer": 1,
+      "explain": "The HPA is working exactly as configured; the configured floor of 10 replicas is the actual problem, not a malfunction."
+    },
+    {
+      "q": "What does pulling p95 CPU utilization over two weeks confirm?",
+      "options": [
+        "That ten replicas are barely enough to handle peak traffic",
+        "That utilization is low and flat, and two replicas would comfortably cover real traffic with headroom",
+        "That the app needs even more replicas than ten",
+        "That utilization data isn't available for this workload"
+      ],
+      "answer": 1,
+      "explain": "Real p95 utilization data, not a guess, confirms two replicas is the right baseline — the same right-sizing discipline applied to autoscaling."
+    },
+    {
+      "q": "Where did the minReplicas: 10 setting actually come from?",
+      "options": [
+        "A random default value in the Helm chart",
+        "Terraform's Lesson 4 module referenced the 'peak-season' scaling profile (minReplicas 10/maxReplicas 20) instead of the 'standard' profile (2/6), most likely copied from a different, higher-traffic environment's config",
+        "Someone manually edited the HPA in the Kubernetes dashboard",
+        "A bug in the Horizontal Pod Autoscaler controller itself"
+      ],
+      "answer": 1,
+      "explain": "The root cause is a Terraform module referencing the wrong named scaling profile, not a Kubernetes bug or manual edit."
+    },
+    {
+      "q": "Why does running 10 replicas instead of 2 cost real money beyond just the extra pods?",
+      "options": [
+        "Extra pods have no cost impact at all",
+        "The cluster autoscaler keeps roughly 3 extra nodes running continuously to host the idle extra pods, plus associated load balancer and disk overhead",
+        "AKS charges per HTTP request regardless of replica count",
+        "Only the Terraform state file grows larger"
+      ],
+      "answer": 1,
+      "explain": "Extra always-on pods force the cluster autoscaler to keep extra nodes alive to host them, which is where most of the real cost overshoot comes from."
+    },
+    {
+      "q": "What are the correct 'standard' profile values that should have been used for Driftwood's everyday production traffic?",
+      "options": [
+        "minReplicas: 10, maxReplicas: 20",
+        "minReplicas: 0, maxReplicas: 2",
+        "minReplicas: 2, maxReplicas: 6",
+        "minReplicas: 2, maxReplicas: 2"
+      ],
+      "answer": 2,
+      "explain": "The 'standard' profile (2/6) matches Driftwood's real observed traffic, keeping a generous ceiling for genuine spikes while fixing the floor."
+    }
+  ]
+}

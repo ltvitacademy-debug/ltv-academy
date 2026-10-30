@@ -89,6 +89,12 @@ import { SNOWFLAKE_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./snowflake-capstone-i
 import { AZURE_DBA_CAPSTONE_BEGINNER_CHAPTERS } from "./azure-dba-capstone-beginner-outline";
 import { AZURE_DBA_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./azure-dba-capstone-intermediate-outline";
 import { AZURE_DBA_CAPSTONE_ADVANCED_CHAPTERS } from "./azure-dba-capstone-advanced-outline";
+import { CYBERSECURITY_CAPSTONE_BEGINNER_CHAPTERS } from "./cybersecurity-capstone-beginner-outline";
+import { CYBERSECURITY_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./cybersecurity-capstone-intermediate-outline";
+import { CYBERSECURITY_CAPSTONE_ADVANCED_CHAPTERS } from "./cybersecurity-capstone-advanced-outline";
+import { CLOUD_ENGINEER_CAPSTONE_BEGINNER_CHAPTERS } from "./cloud-engineer-capstone-beginner-outline";
+import { CLOUD_ENGINEER_CAPSTONE_INTERMEDIATE_CHAPTERS } from "./cloud-engineer-capstone-intermediate-outline";
+import { CLOUD_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS } from "./cloud-engineer-capstone-advanced-outline";
 import { PYTHON_FOR_AI_CHAPTERS } from "./python-for-ai-outline";
 import { GIT_GITHUB_SWE_CHAPTERS } from "./git-github-swe-outline";
 import { APIS_JSON_AI_CHAPTERS } from "./apis-json-ai-outline";
@@ -830,6 +836,60 @@ export const COURSES: CourseMeta[] = [
     status: "available",
     chapters: AZURE_DBA_CAPSTONE_ADVANCED_CHAPTERS,
     contentBase: "azure-dba-capstone-advanced",
+  },
+  {
+    slug: "cybersecurity-capstone-beginner",
+    title: "Cybersecurity Capstone — Beginner Project",
+    tagline:
+      "Your first real project: a baseline security hardening pass on Windows and Linux servers and your first Sentinel detection rule, for one worried IT manager.",
+    status: "available",
+    chapters: CYBERSECURITY_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "cybersecurity-capstone-beginner",
+  },
+  {
+    slug: "cybersecurity-capstone-intermediate",
+    title: "Cybersecurity Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: multi-source Sentinel detection, a Conditional Access pilot, an incident-response runbook — and a real overly-broad firewall rule to find and fix before anyone trusts the baseline.",
+    status: "available",
+    chapters: CYBERSECURITY_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "cybersecurity-capstone-intermediate",
+  },
+  {
+    slug: "cybersecurity-capstone-advanced",
+    title: "Cybersecurity Capstone — Advanced Project",
+    tagline:
+      "The full platform: a zero-trust pilot, dual-cloud Azure/AWS identity, Python security automation, a GRC risk register, and a real incident where the SIEM and the compliance audit disagree — reconciled before the board meeting.",
+    status: "available",
+    chapters: CYBERSECURITY_CAPSTONE_ADVANCED_CHAPTERS,
+    contentBase: "cybersecurity-capstone-advanced",
+  },
+  {
+    slug: "cloud-engineer-capstone-beginner",
+    title: "Cloud Engineer Capstone — Beginner Project",
+    tagline:
+      "Your first real project: migrate one app's static assets and a VM workload to Azure, with basic monitoring, for one deadline-driven stakeholder.",
+    status: "available",
+    chapters: CLOUD_ENGINEER_CAPSTONE_BEGINNER_CHAPTERS,
+    contentBase: "cloud-engineer-capstone-beginner",
+  },
+  {
+    slug: "cloud-engineer-capstone-intermediate",
+    title: "Cloud Engineer Capstone — Intermediate Project",
+    tagline:
+      "A bigger ask: containerize the app, add Terraform and CI/CD, add AWS as a backup target — and a real cost anomaly and open storage bucket to find and fix.",
+    status: "available",
+    chapters: CLOUD_ENGINEER_CAPSTONE_INTERMEDIATE_CHAPTERS,
+    contentBase: "cloud-engineer-capstone-intermediate",
+  },
+  {
+    slug: "cloud-engineer-capstone-advanced",
+    title: "Cloud Engineer Capstone — Advanced Project",
+    tagline:
+      "The full platform: Kubernetes, multi-cloud Terraform, a FinOps dashboard, and a real incident during the company's biggest sale — reconciled before the after-action report.",
+    status: "available",
+    chapters: CLOUD_ENGINEER_CAPSTONE_ADVANCED_CHAPTERS,
+    contentBase: "cloud-engineer-capstone-advanced",
   },
   {
     slug: "python-for-ai-engineering",

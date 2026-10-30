@@ -1,0 +1,60 @@
+{
+  "lesson": "writing-the-python-enrichment-automation",
+  "questions": [
+    {
+      "q": "Why isn't a single group-membership query enough to answer 'who has access to the OT/SCADA boundary'?",
+      "options": [
+        "Group membership queries are too slow to run in production",
+        "Hartwell's break-glass procedure has, in the past, granted a handful of accounts direct, individually-assigned access that bypasses the groups entirely, so a group-only query would never see those accounts",
+        "Microsoft Graph does not support querying group membership",
+        "AWS IAM groups don't exist as a concept"
+      ],
+      "answer": 1,
+      "explain": "Break-glass access can be granted directly to a user, never added to the group — a script that only checks group membership would never surface those accounts at all."
+    },
+    {
+      "q": "What does the AWS call list_entities_for_policy with EntityFilter=\"User\" specifically return?",
+      "options": [
+        "Every IAM user in the account, regardless of policy",
+        "Exactly the users a given policy is attached to directly, not including users who only have it through group membership",
+        "Only users who have never logged in",
+        "The full text of the policy document itself"
+      ],
+      "answer": 1,
+      "explain": "This call returns direct attachments only — it must run as a separate query from get_group, because it does not include access inherited through group membership."
+    },
+    {
+      "q": "In the output schema this script produces, what does the access_path field distinguish?",
+      "options": [
+        "Which cloud region the account is in",
+        "Whether an account's access came through group membership or was granted directly to that individual account",
+        "Whether the account is a human or a service account",
+        "The account's password complexity score"
+      ],
+      "answer": 1,
+      "explain": "access_path is set to either \"group_membership\" or \"direct_assignment\", and this single field is what later lets anyone distinguish accounts a group-only review would catch from ones it would miss."
+    },
+    {
+      "q": "What does the script compute as count_direct_assignment_only, and why does it matter most to later lessons?",
+      "options": [
+        "The total number of AWS accounts Hartwell owns",
+        "The count of accounts whose SCADA access exists only through direct assignment, not group membership — exactly the population a group-only review would never see",
+        "The number of accounts that have been formally reviewed and approved",
+        "A count of failed login attempts against the SCADA gateway"
+      ],
+      "answer": 1,
+      "explain": "count_direct_assignment_only isolates accounts with standing access granted outside any group — the exact gap a group-membership-only methodology misses, which is the mechanism this capstone's later discrepancy depends on."
+    },
+    {
+      "q": "Where do the normalized inventory records get written, and why does that matter?",
+      "options": [
+        "Only to a local CSV file on Mara's laptop, with no further use",
+        "Into a Log Analytics custom table named ScadaAccessInventory_CL via the Logs Ingestion API, making it queryable from Microsoft Sentinel rather than a one-off script output",
+        "Directly into the Entra ID directory as a new attribute",
+        "Into an email sent to the whole IT department"
+      ],
+      "answer": 1,
+      "explain": "Writing into the ScadaAccessInventory_CL custom log table through the Logs Ingestion API is what makes this a SIEM-based inventory — any Sentinel analyst can query current standing access with KQL instead of re-running the script's raw output."
+    }
+  ]
+}

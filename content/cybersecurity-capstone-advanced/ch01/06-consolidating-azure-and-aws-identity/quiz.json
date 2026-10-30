@@ -1,0 +1,60 @@
+{
+  "lesson": "consolidating-azure-and-aws-identity",
+  "questions": [
+    {
+      "q": "What AWS service does Mara federate to Entra ID to build the consolidated identity view?",
+      "options": [
+        "AWS Secrets Manager",
+        "AWS IAM Identity Center, using SAML 2.0 with Entra ID as the identity provider",
+        "Amazon Cognito",
+        "AWS Organizations' Service Control Policies"
+      ],
+      "answer": 1,
+      "explain": "Mara enables AWS IAM Identity Center and configures SAML 2.0 federation with Entra ID as the identity provider, making Entra ID the single place authentication actually happens."
+    },
+    {
+      "q": "Why is SCIM provisioning needed in addition to SAML federation?",
+      "options": [
+        "SCIM is required purely for compliance paperwork, with no functional purpose",
+        "SAML federation alone only solves authentication; SCIM automatically syncs Entra ID group membership changes into IAM Identity Center so access stays current without a manual AWS-side step",
+        "SCIM replaces the need for any permission sets in AWS",
+        "SCIM is only needed for non-human workload identities"
+      ],
+      "answer": 1,
+      "explain": "Federation solves sign-in; SCIM closes the sync gap by automatically provisioning or deprovisioning AWS access whenever Entra ID group membership changes, which is exactly the drift problem Lesson 3 found."
+    },
+    {
+      "q": "How does the ScadaOTAdministrator permission set get assigned in the target design?",
+      "options": [
+        "Directly to named individuals, one at a time",
+        "To the Entra ID group SCADA-OT-Admins, so anyone added to or removed from that group automatically gains or loses the AWS permission set via SCIM sync",
+        "It is assigned permanently and never re-evaluated",
+        "It is shared identically across all three Hartwell AWS accounts"
+      ],
+      "answer": 1,
+      "explain": "Permission sets are assigned to the Entra ID group rather than individuals, so AWS access follows group membership automatically instead of requiring a second, manually maintained system."
+    },
+    {
+      "q": "How does this consolidation directly address the long-lived access key finding from Lesson 3?",
+      "options": [
+        "It doesn't — key rotation is a separate, unrelated project",
+        "Users identified with long-lived keys are migrated to federated, short-lived sessions through IAM Identity Center, and their standing IAM users and keys are then deactivated and deleted",
+        "It simply extends the expiration date on existing keys",
+        "It moves the long-lived keys to a more secure storage location without removing them"
+      ],
+      "answer": 1,
+      "explain": "Migrating affected users to federated sessions and then deactivating their standing IAM users and access keys removes the long-lived credentials Lesson 3 flagged, rather than just documenting them."
+    },
+    {
+      "q": "What is deliberately kept outside of this identity consolidation, and why?",
+      "options": [
+        "Executive accounts, because they're considered too sensitive to federate",
+        "Non-human workload identities (like EC2 or Lambda service roles), because federation and SCIM solve human identity consolidation, and mixing in workload identity would recreate a different version of the same sprawl problem",
+        "The Hartwell-DevTest account, because it's being decommissioned",
+        "Nothing is kept outside — the plan consolidates every identity type into IAM Identity Center"
+      ],
+      "answer": 1,
+      "explain": "Workload identities continue using AWS IAM roles directly, scoped per workload, because federation and SCIM are built for human identity — forcing non-human identity through the same model would create a new sprawl problem."
+    }
+  ]
+}

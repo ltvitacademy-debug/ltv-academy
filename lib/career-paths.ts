@@ -2111,6 +2111,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Junior SOC Analyst → Cybersecurity Analyst → Security Engineer, with Expert Specialization opening doors toward Digital Forensics Analyst, Penetration Tester, AI Security Engineer, or Security Architect / GRC roles.",
+    capstoneProjects: {
+      beginnerCourseSlug: "cybersecurity-capstone-beginner",
+      intermediateCourseSlug: "cybersecurity-capstone-intermediate",
+      advancedCourseSlug: "cybersecurity-capstone-advanced",
+    },
   },
   {
     slug: "cloud-engineer-cloud-architect",
@@ -2155,6 +2160,11 @@ export const CAREER_PATHS: CareerPath[] = [
     ],
     destinationNote:
       "Cloud Support / Junior Cloud Engineer → Cloud Engineer → Cloud Architect, with Expert Specialization opening doors toward Platform Engineer, Multi-Cloud/Enterprise Architect, AI Infrastructure Engineer, or Site Reliability Engineer roles.",
+    capstoneProjects: {
+      beginnerCourseSlug: "cloud-engineer-capstone-beginner",
+      intermediateCourseSlug: "cloud-engineer-capstone-intermediate",
+      advancedCourseSlug: "cloud-engineer-capstone-advanced",
+    },
   },
 ];
 

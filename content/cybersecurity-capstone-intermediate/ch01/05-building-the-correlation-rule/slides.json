@@ -1,0 +1,46 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cybersecurity Capstone · Intermediate Project",
+    "titlePlain": "Building a Correlation Rule Across ",
+    "titleEmphasis": "Sources",
+    "titleSuffix": "",
+    "subtitle": "Lesson 5 · External RDP Allow + Entra Sign-In Correlation"
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Why one source isn't enough",
+    "titlePlain": "Two signals, one ",
+    "titleEmphasis": "pattern",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "Firewall alone", "sub": "Can't tell routine vendor access from a problem" },
+      { "label": "Sign-ins alone", "sub": "Can't tell travel from something suspicious" }
+    ]
+  },
+  {
+    "type": "code",
+    "eyebrow": "The full rule",
+    "code": "let Lookback = 1h;\nlet RdpAllows = CommonSecurityLog\n    | where TimeGenerated > ago(Lookback)\n    | where DeviceAction == \"Allow\" and DestinationPort == 3389\n    | project FirewallTime = TimeGenerated, SourceIP, DestinationIP;\nlet EntraSignIns = SigninLogs\n    | where TimeGenerated > ago(Lookback)\n    | project SignInTime = TimeGenerated, UserPrincipalName, IPAddress, ResultType, Location;\nRdpAllows\n| join kind=inner EntraSignIns on $left.SourceIP == $right.IPAddress\n| where SignInTime > FirewallTime and SignInTime < FirewallTime + 15m\n| project FirewallTime, SourceIP, DestinationIP, SignInTime, UserPrincipalName, ResultType, Location\n| order by FirewallTime asc",
+    "caption": "External RDP Allow + Entra Sign-In Correlation -- the rule that will eventually catch the firewall mistake."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "One rule, two stakeholders",
+    "titlePlain": "Serving Owen ",
+    "titleEmphasis": "and",
+    "titleSuffix": " Renee",
+    "steps": [
+      { "label": "Owen", "sub": "Real cross-source visibility, not two separate dashboards" },
+      { "label": "Renee", "sub": "A documented detection with a named threat scenario" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 6",
+    "titlePlain": "Configuring a Conditional Access Pilot ",
+    "titleEmphasis": "Policy",
+    "titleSuffix": "",
+    "subtitle": "A scoped access-control improvement, piloted first."
+  }
+]

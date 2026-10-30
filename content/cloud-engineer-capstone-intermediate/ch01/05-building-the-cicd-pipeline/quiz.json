@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-cicd-pipeline",
+  "questions": [
+    {
+      "q": "How are container images tagged in this pipeline, and why?",
+      "options": [
+        "Always tagged `latest`, for simplicity",
+        "Tagged with `${{ github.sha }}`, so every image in ACR is traceable to the exact commit that produced it",
+        "Tagged with a random UUID",
+        "Not tagged at all"
+      ],
+      "answer": 1,
+      "explain": "SHA-tagging means any image can be traced back to the commit that built it, which matters for rollbacks."
+    },
+    {
+      "q": "How does the deploy job authenticate to Azure?",
+      "options": [
+        "With a long-lived client secret stored in GitHub Secrets",
+        "With an OIDC federated credential — GitHub issues a short-lived token that Azure AD exchanges for a short-lived access token",
+        "By prompting a human to type in a password during the workflow run",
+        "It doesn't need to authenticate; AKS is public"
+      ],
+      "answer": 1,
+      "explain": "azure/login@v2 here uses OIDC token exchange, so there is no stored client secret to steal or rotate."
+    },
+    {
+      "q": "What does `helm upgrade --install` do on the very first deploy versus every deploy after?",
+      "options": [
+        "It fails on the first deploy and only works afterward",
+        "It creates the release on the first run and upgrades it in place on every subsequent run — the same command either way",
+        "It requires a different command for the first deploy",
+        "It deletes the cluster and recreates it every time"
+      ],
+      "answer": 1,
+      "explain": "`helm upgrade --install` is idempotent: the same command works whether this is deploy #1 or deploy #400."
+    },
+    {
+      "q": "Does this pipeline re-derive or question the autoscaling numbers in `values-prod.yaml` before deploying?",
+      "options": [
+        "Yes, it recalculates them from live traffic before every deploy",
+        "No — it applies whatever is currently in that file faithfully, every single time, without questioning it",
+        "It asks Casey to approve the numbers manually each time",
+        "It ignores `values-prod.yaml` entirely and uses hardcoded defaults"
+      ],
+      "answer": 1,
+      "explain": "The pipeline's job is to apply values-prod.yaml exactly as written on every deploy — including whatever autoscaling numbers it already contains."
+    },
+    {
+      "q": "What does the smoke test step do after `helm upgrade --install` runs?",
+      "options": [
+        "Nothing; there is no smoke test in this pipeline",
+        "It waits for the rollout to finish and checks a health endpoint before the deploy counts as successful",
+        "It deletes the deployment if a test fails",
+        "It only runs once per week, not on every deploy"
+      ],
+      "answer": 1,
+      "explain": "`kubectl rollout status` plus a health-endpoint curl gate the deploy so a broken rollout doesn't silently pass as a success."
+    }
+  ]
+}

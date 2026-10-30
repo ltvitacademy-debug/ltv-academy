@@ -57,8 +57,9 @@ console.log(uploadOut);
 const result = JSON.parse(uploadOut);
 const secureUrl = result.secure_url;
 const duration = result.duration;
-const mins = Math.floor(duration / 60);
-const secs = Math.round(duration % 60);
+const totalSecs = Math.round(duration);
+const mins = Math.floor(totalSecs / 60);
+const secs = totalSecs % 60;
 const durationLabel = mins > 0 ? `${mins} min ${secs} s` : `${secs} s`;
 
 let outline = fs.readFileSync(outlineFile, "utf8");

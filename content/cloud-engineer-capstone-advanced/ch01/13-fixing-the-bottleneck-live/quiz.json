@@ -1,0 +1,60 @@
+{
+  "lesson": "fixing-the-bottleneck-live",
+  "questions": [
+    {
+      "q": "Why won't simply adding more replicas or deleting the overloaded pods fix this incident?",
+      "options": [
+        "Because Kubernetes doesn't allow deleting pods during an incident",
+        "Because neither action touches the root cause — with no spread rule, the scheduler can just as easily recreate the same zone imbalance",
+        "Because adding replicas always costs more than Driftwood's budget allows",
+        "Because deleting pods is a prohibited operation in AKS"
+      ],
+      "answer": 1,
+      "explain": "Without a topology spread constraint, kube-scheduler has no new information and can rebuild the exact same imbalance, possibly after a brief outage from the deletion itself."
+    },
+    {
+      "q": "In the topologySpreadConstraints block Theo adds, what does maxSkew: 1 guarantee?",
+      "options": [
+        "Exactly one pod will run in each zone, no matter how many replicas exist",
+        "The pod count in the most-loaded zone can differ from the least-loaded zone by at most 1",
+        "Only one zone is allowed to run checkout-api pods at all",
+        "The Deployment can only have 1 replica total"
+      ],
+      "answer": 1,
+      "explain": "maxSkew: 1 bounds the difference in matching-pod count between the most- and least-loaded topology domain to at most one pod."
+    },
+    {
+      "q": "What does whenUnsatisfiable: DoNotSchedule do?",
+      "options": [
+        "Deletes any pod that violates the spread constraint",
+        "Leaves a pod in Pending status rather than scheduling it in a way that would violate the spread rule",
+        "Automatically creates a new zone to satisfy the constraint",
+        "Ignores the spread constraint and schedules the pod anyway"
+      ],
+      "answer": 1,
+      "explain": "DoNotSchedule means the scheduler will leave the pod unscheduled (Pending) rather than break the configured spread."
+    },
+    {
+      "q": "Why does Theo confirm the PodDisruptionBudget is in place before applying the fix?",
+      "options": [
+        "The PDB is unrelated and doesn't need to be checked",
+        "Because the rolling update that applies this Pod-template change needs the PDB's minimum-available guarantee so fixing an availability problem doesn't cause a worse one mid-sale",
+        "Because PDBs control the dollar cost of the cluster",
+        "Because PDBs determine which availability zone pods are scheduled into"
+      ],
+      "answer": 1,
+      "explain": "kubectl apply on a changed Pod template triggers a rolling update; the PDB (set during Lesson 8's load-testing work) guarantees a minimum number of checkout-api pods stay available throughout that rollout."
+    },
+    {
+      "q": "What does labelSelector.matchLabels.app: checkout-api do inside the topologySpreadConstraints block?",
+      "options": [
+        "It deletes any pod that isn't labeled checkout-api",
+        "It restricts the skew calculation to only count other checkout-api pods, not every pod in the cluster",
+        "It sets the container image for checkout-api",
+        "It defines the Kubernetes namespace"
+      ],
+      "answer": 1,
+      "explain": "The labelSelector scopes the spread calculation to pods matching app: checkout-api, so unrelated workloads elsewhere in the cluster don't affect the skew math."
+    }
+  ]
+}

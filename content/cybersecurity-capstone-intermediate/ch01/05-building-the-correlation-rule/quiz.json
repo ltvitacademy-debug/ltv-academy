@@ -1,0 +1,60 @@
+{
+  "lesson": "building-the-correlation-rule",
+  "questions": [
+    {
+      "q": "Why isn't a rule that only watches CommonSecurityLog enough on its own?",
+      "options": [
+        "CommonSecurityLog doesn't exist in Sentinel",
+        "An external address allowed through the firewall to an admin port is also true for every legitimate vendor session, including Meridian's",
+        "Firewall logs can't be queried with KQL",
+        "It only works for Windows, not Linux"
+      ],
+      "answer": 1,
+      "explain": "Watching the firewall alone can't separate a routine vendor session from something worth a human's attention -- both look the same from that one source."
+    },
+    {
+      "q": "What is this analytics rule named, and what does it watch?",
+      "options": [
+        "Brute-Force Logon Detector; watches only SigninLogs",
+        "External RDP Allow + Entra Sign-In Correlation; watches CommonSecurityLog for RDP allows and SigninLogs for sign-ins from the same address",
+        "Linux Syslog Anomaly Rule; watches only Syslog",
+        "CEF Health Check; watches connector status only"
+      ],
+      "answer": 1,
+      "explain": "The rule joins firewall allow events reaching the RDP port against Entra ID sign-ins from the same source address."
+    },
+    {
+      "q": "In the join `RdpAllows | join kind=inner EntraSignIns on $left.SourceIP == $right.IPAddress`, what does `$left` refer to?",
+      "options": [
+        "EntraSignIns",
+        "RdpAllows, the table before the join",
+        "Neither table",
+        "The Sentinel workspace itself"
+      ],
+      "answer": 1,
+      "explain": "$left refers to the table before `join` -- here, RdpAllows -- and $right refers to the table inside the parentheses, EntraSignIns."
+    },
+    {
+      "q": "What does the `where SignInTime > FirewallTime and SignInTime < FirewallTime + 15m` clause enforce?",
+      "options": [
+        "Nothing -- it's optional",
+        "That the sign-in landed after the firewall allow and within 15 minutes of it, not just sometime in the same hour",
+        "That the sign-in happened before the firewall allow",
+        "That the two events happened on different days"
+      ],
+      "answer": 1,
+      "explain": "This keeps the match tight: a sign-in shortly after the firewall allow, from the same address -- a narrower, more specific pattern than either event alone."
+    },
+    {
+      "q": "Why does this one rule serve both Owen and Renee at the same time?",
+      "options": [
+        "It doesn't -- it only serves Owen",
+        "It gives Owen real cross-source visibility and gives Renee a documented detection built for a specific, named threat scenario",
+        "It replaces the need for an incident-response runbook entirely",
+        "It only matters for compliance, not operations"
+      ],
+      "answer": 1,
+      "explain": "The rule is both the operational visibility Owen wants and the auditable, use-case-justified detection Renee wants."
+    }
+  ]
+}

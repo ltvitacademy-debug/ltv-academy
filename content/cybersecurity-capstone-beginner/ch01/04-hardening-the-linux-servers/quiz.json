@@ -1,0 +1,60 @@
+{
+  "lesson": "hardening-the-linux-servers",
+  "questions": [
+    {
+      "q": "What is the safe rollout order for setting `PasswordAuthentication no` on hru-web01 and hru-db01?",
+      "options": [
+        "Edit sshd_config and restart sshd immediately from the only open session",
+        "Confirm key-based login works from a second, still-open session, run `sshd -t`, restart sshd, then verify a brand-new session works before closing the originals",
+        "Disable fail2ban first, then change the SSH config",
+        "Change the SSH port before touching password authentication"
+      ],
+      "answer": 1,
+      "explain": "Restarting sshd from the only open session without a verified second connection is the single most common way to get locked out of a remote Linux server — this order avoids that."
+    },
+    {
+      "q": "Why does `AllowUsers mvoss dgranger deploy` matter even though SSH already uses key-based authentication?",
+      "options": [
+        "It replaces the need for keys entirely",
+        "It's an explicit allow-list checked after authentication, so even an account with a valid key is rejected if it isn't named",
+        "It only affects password authentication, not keys",
+        "It automatically rotates SSH keys"
+      ],
+      "answer": 1,
+      "explain": "AllowUsers is a hard backstop on top of key-based auth — only the named accounts may connect at all, regardless of whether they hold a valid key."
+    },
+    {
+      "q": "Why does fail2ban stay enabled on both servers even after PasswordAuthentication is set to no?",
+      "options": [
+        "fail2ban has nothing left to do once keys are required",
+        "Defense in depth: a future misconfiguration could re-enable password auth, and fail2ban also catches connection floods and failed key attempts that clutter logs",
+        "fail2ban is required for ufw to function",
+        "fail2ban replaces the need for AllowUsers"
+      ],
+      "answer": 1,
+      "explain": "fail2ban is a backstop against both future misconfiguration and ongoing noise from failed attempts, not something made redundant by key-only SSH."
+    },
+    {
+      "q": "Why does hru-web01 get unattended-upgrades specifically called out as important, more than an internal-only server might?",
+      "options": [
+        "Because it runs a different Linux distribution",
+        "Because it sits directly on the internet, making it the server most likely to actually face exploitation of a known, unpatched vulnerability if patching lags",
+        "Because unattended-upgrades only works on internet-facing servers",
+        "Because hru-db01 doesn't support automatic updates"
+      ],
+      "answer": 1,
+      "explain": "An internet-facing host is exposed to opportunistic exploitation the moment a vulnerability becomes public, which is exactly why automatic patching matters most there."
+    },
+    {
+      "q": "Why is hru-db01's ufw rule for its database port scoped to `10.20.5.11` specifically, rather than the whole internal subnet?",
+      "options": [
+        "Because ufw doesn't support subnet ranges",
+        "Because hru-db01 should only ever be reachable from hru-web01, the one server that legitimately needs it, not from every host on the internal network",
+        "Because 10.20.5.11 is the database server's own address",
+        "Because the whole subnet is already blocked by default"
+      ],
+      "answer": 1,
+      "explain": "Scoping to the exact IP of the one server that needs access (hru-web01) is tighter and more defensible than opening the port to an entire subnet."
+    }
+  ]
+}

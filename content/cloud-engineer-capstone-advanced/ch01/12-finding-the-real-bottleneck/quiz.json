@@ -1,0 +1,60 @@
+{
+  "lesson": "finding-the-real-bottleneck",
+  "questions": [
+    {
+      "q": "When Theo splits checkout-api's pods by availability zone, what does he find?",
+      "options": [
+        "The twelve pods are split evenly, four per zone",
+        "Eight of the twelve pods are running in a single zone, eastus2-2, while the other two zones have only two pods each",
+        "All twelve pods are in one zone and none in the others",
+        "The pods are spread across six different zones"
+      ],
+      "answer": 1,
+      "explain": "The per-zone pod listing shows eastus2-2 running eight of the twelve checkout-api pods, with eastus2-1 and eastus2-3 holding only two each."
+    },
+    {
+      "q": "What are the real per-zone CPU utilization numbers Theo finds, and how do they relate to the 72% cluster-wide average?",
+      "options": [
+        "Every zone is at exactly 72% — the average was accurate all along",
+        "eastus2-2's 8 pods run at ~96% while eastus2-1 and eastus2-3's pods run at ~24% each; blended together these produce the 72% average",
+        "All zones are at 0% because the pods are not actually running",
+        "The per-zone numbers cannot be computed from pod-level CPU data"
+      ],
+      "answer": 1,
+      "explain": "(96×8 + 24×2 + 24×2) / 12 ≈ 72% — the average is mathematically correct, but it blends a saturated zone with two nearly-idle ones into a number that looks healthy."
+    },
+    {
+      "q": "Is kube-scheduler malfunctioning by packing eight pods into one zone?",
+      "options": [
+        "Yes, this is a scheduler bug that needs a Kubernetes upgrade",
+        "No — the scheduler is bin-packing efficiently exactly as designed; nothing in the Deployment spec told it to spread pods across zones",
+        "Yes, because schedulers always spread pods evenly by default",
+        "It's impossible to know without contacting Microsoft support"
+      ],
+      "answer": 1,
+      "explain": "kube-scheduler packs pods onto nodes with available capacity unless a topology spread constraint or anti-affinity rule tells it to do otherwise — and checkout-api's Deployment spec has neither."
+    },
+    {
+      "q": "What exact root cause does Theo identify in the checkout-api Deployment spec built back in Lesson 4?",
+      "options": [
+        "Too many replicas were requested",
+        "The missing topologySpreadConstraints / pod anti-affinity rule — nothing ever told the scheduler to distribute pods evenly across zones",
+        "The wrong container image was deployed",
+        "The Deployment has no CPU requests set at all"
+      ],
+      "answer": 1,
+      "explain": "The AKS cluster and checkout-api Deployment were never given a topology spread constraint or anti-affinity rule, so the scheduler was free to pack pods wherever was efficient — which, under this sale's traffic, meant stacking most of them into one zone."
+    },
+    {
+      "q": "Why does this lesson mark the turning point of the incident?",
+      "options": [
+        "Because the sale has ended",
+        "Because the problem has gone from a confusing metric disagreement to a specific, fixable bug — a missing scheduling constraint",
+        "Because the FinOps dashboard has been deleted",
+        "Because Theo has decided to ignore the reliability dashboard going forward"
+      ],
+      "answer": 1,
+      "explain": "Once the per-zone data traces the imbalance to a missing topology spread constraint, the team has a concrete, fixable root cause instead of an open question."
+    }
+  ]
+}

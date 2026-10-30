@@ -1,0 +1,41 @@
+[
+  {
+    "type": "title",
+    "eyebrow": "Cloud Engineer Capstone · Intermediate Project",
+    "titlePlain": "Configuring Cross-Cloud ",
+    "titleEmphasis": "Replication",
+    "titleSuffix": "",
+    "subtitle": "Lesson 7 · Azure to AWS, Every Night"
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 1 — a portable export",
+    "code": "az sql db export \\\n  --resource-group rg-driftwood-prod \\\n  --server driftwood-sql-prod \\\n  --name storefrontdb \\\n  --storage-uri \"https://driftwoodstorageprod.blob.core.windows.net/db-backups/storefrontdb-$(date +%F).bacpac\"",
+    "caption": "A nightly .bacpac export lands the storefront database in Blob Storage."
+  },
+  {
+    "type": "code",
+    "eyebrow": "Step 2 — scheduled cross-cloud copy",
+    "code": "on:\n  schedule:\n    - cron: \"0 7 * * *\"\n\nsteps:\n  - uses: azure/login@v2        # OIDC, Azure side\n  - run: az storage blob download ...\n  - uses: aws-actions/configure-aws-credentials@v4   # OIDC, AWS side\n    with:\n      role-to-assume: arn:aws:iam::123456789012:role/driftwood-replication-role\n  - run: aws s3 cp ./latest-backup.bacpac s3://driftwood-app-backups/...",
+    "caption": "Two OIDC trust relationships, zero stored long-lived secrets."
+  },
+  {
+    "type": "steps",
+    "eyebrow": "Verifying it worked",
+    "titlePlain": "One command, end to ",
+    "titleEmphasis": "end",
+    "titleSuffix": "",
+    "steps": [
+      { "label": "aws s3 ls", "sub": "Confirms a new dated prefix landed after the scheduled run" },
+      { "label": "The whole chain", "sub": "Azure SQL export -> Blob Storage -> scheduled workflow -> S3" }
+    ]
+  },
+  {
+    "type": "outro",
+    "eyebrow": "Up next · Lesson 8",
+    "titlePlain": "The First Deploy to ",
+    "titleEmphasis": "Production",
+    "titleSuffix": "",
+    "subtitle": "Every piece built so far, running together for the first time."
+  }
+]

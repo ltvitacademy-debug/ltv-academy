@@ -1,0 +1,60 @@
+{
+  "lesson": "writing-the-first-sentinel-rule",
+  "questions": [
+    {
+      "q": "In `summarize FailedCount = count(), LastFailure = max(TimeGenerated) by UserPrincipalName, bin(TimeGenerated, 10m)`, what does `bin(TimeGenerated, 10m)` do?",
+      "options": [
+        "Deletes rows older than 10 minutes",
+        "Rounds each timestamp down into fixed 10-minute buckets, so failures group by both user and time window",
+        "Counts how many users signed in during the last 10 minutes",
+        "Converts TimeGenerated into IP addresses"
+      ],
+      "answer": 1,
+      "explain": "bin() rounds a datetime down into fixed-size buckets, which is what lets summarize group failures by user AND by a specific 10-minute window rather than across all time."
+    },
+    {
+      "q": "Why isn't the simple failure-count query (`FailedCount > 5`) enough on its own to detect the pattern this rule targets?",
+      "options": [
+        "Because it runs too slowly against SigninLogs",
+        "Because it fires on any user with 5+ failures regardless of whether a success ever followed, so it isn't sequence-aware of the specific \"failures then success\" pattern",
+        "Because KQL doesn't support summarize on SigninLogs",
+        "Because it only works for Linux servers"
+      ],
+      "answer": 1,
+      "explain": "A count-only query can't distinguish \"failures then a success\" from \"failures with no success at all\" — it's missing the order-sensitive check the join adds."
+    },
+    {
+      "q": "What does `join kind=inner Successes on UserPrincipalName` combined with `where SuccessTime > LastFailure and SuccessTime < LastFailure + 10m` accomplish?",
+      "options": [
+        "It deletes all failed sign-in records",
+        "It keeps only cases where a successful sign-in landed after a user's failure cluster and within a reasonable window of it — making the query sequence-aware",
+        "It counts distinct IP addresses per user",
+        "It disables the account automatically"
+      ],
+      "answer": 1,
+      "explain": "This is exactly the piece that turns a plain failure-count into a real \"failures, then a success\" detection — checking that the success happened after, not just that both occurred."
+    },
+    {
+      "q": "Why does the rule set \"Lookup data from the last\" to 20 minutes when it runs every 10 minutes?",
+      "options": [
+        "Because Sentinel requires lookback to always be double the run frequency",
+        "To absorb log ingestion delay — an event just before a run that hasn't finished ingesting yet could otherwise fall into a gap between two runs",
+        "Because KQL queries can't run on windows shorter than 20 minutes",
+        "To reduce the number of alerts generated"
+      ],
+      "answer": 1,
+      "explain": "Setting the lookback window longer than the run frequency is the standard way to avoid missing events that are still being ingested right at the boundary between two scheduled runs."
+    },
+    {
+      "q": "What does mapping `UserPrincipalName` to the Account entity and `IPAddress` to the IP address entity actually enable?",
+      "options": [
+        "It makes the query run faster",
+        "It lets Sentinel correlate this alert with any other alert touching the same account or IP address, instead of leaving it as an isolated match",
+        "It automatically blocks the IP address",
+        "It's required for the query to compile"
+      ],
+      "answer": 1,
+      "explain": "Entity mapping is what makes an alert investigable — without it, Sentinel has no way to link this match to other activity involving the same user or address."
+    }
+  ]
+}
