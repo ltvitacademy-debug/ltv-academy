@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import MemberTokenBridge from "@/components/MemberTokenBridge";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -103,6 +104,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body>
+        <MemberTokenBridge />
         <ScrollToTop />
         <Header />
         {children}

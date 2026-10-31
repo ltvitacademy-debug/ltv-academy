@@ -4,20 +4,25 @@
 // can stop someone who has a bare lesson URL from loading it directly —
 // without this, the static HTML is served to anyone, logged in or not.
 //
-// The real membership check happens on the Wix side (wixUsers.currentUser.loggedIn,
+// The real membership check happens on the Wix side (currentMember.getMember(),
 // verified server-side in Velo backend code): Wix mints a short-lived signed
-// token and appends it to the embedded iframe's src as ?k=. This function just
-// verifies that token was signed with the shared secret and hasn't expired —
-// it never talks to Wix directly.
+// token for logged-in members. It arrives here two ways:
+//   - ?k=<token> on the iframe's initial src (the first request only)
+//   - an ltv_k cookie, set by MemberTokenBridge.tsx once it reads the ?k= param
+//     off the URL — this is what keeps client-side lesson-to-lesson navigation
+//     inside the SPA working without Wix having to reload the whole iframe.
+// This function never talks to Wix directly — it only verifies the token was
+// signed with the shared secret and hasn't expired.
 //
-// Companion piece: the Wix Velo backend code that mints tokens with the same
-// secret (kept in Wix Secrets Manager, mirrored here as LESSON_GATE_SECRET).
+// Companion pieces: the Wix Velo backend code that mints tokens with the same
+// secret (kept in Wix Secrets Manager, mirrored here as LESSON_GATE_SECRET),
+// and components/MemberTokenBridge.tsx on the Next.js side.
 
 const TOKEN_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours — comfortably covers a study session; Wix refreshes the token periodically while the page is open
 
 export default async (request: Request) => {
   const url = new URL(request.url);
-  const token = url.searchParams.get("k") ?? "";
+  const token = url.searchParams.get("k") ?? readCookie(request, "ltv_k");
   const secret = Deno.env.get("LESSON_GATE_SECRET");
 
   if (secret && (await isValidToken(token, secret))) {
@@ -26,6 +31,16 @@ export default async (request: Request) => {
 
   return lockedResponse();
 };
+
+function readCookie(request: Request, name: string): string {
+  const header = request.headers.get("cookie") ?? "";
+  for (const part of header.split(";")) {
+    const i = part.indexOf("=");
+    if (i < 0) continue;
+    if (part.slice(0, i).trim() === name) return decodeURIComponent(part.slice(i + 1).trim());
+  }
+  return "";
+}
 
 async function isValidToken(token: string, secret: string): Promise<boolean> {
   const dot = token.indexOf(".");
