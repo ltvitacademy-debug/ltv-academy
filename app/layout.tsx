@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -19,6 +19,11 @@ const inter = Inter({
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://ltv-academy.netlify.app";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

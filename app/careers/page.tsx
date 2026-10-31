@@ -36,9 +36,9 @@ function PathCard({
         dark
           ? "border-gold/25 bg-crimson-deep hover:border-gold"
           : "border-ink/15 bg-crimson-deep hover:border-gold"
-      } ${spanFull ? "sm:col-span-2 sm:flex-row sm:min-h-[240px]" : ""}`}
+      } ${spanFull ? "md:col-span-2 md:flex-row md:min-h-[240px]" : ""}`}
     >
-      <div className={`relative overflow-hidden bg-ink ${spanFull ? "aspect-[16/10] sm:aspect-auto sm:w-80 sm:flex-shrink-0" : "aspect-[16/10]"}`}>
+      <div className={`relative overflow-hidden bg-ink ${spanFull ? "aspect-[16/10] md:aspect-auto md:w-80 md:flex-shrink-0" : "aspect-[16/10]"}`}>
         {hasPhoto ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -104,7 +104,7 @@ export default function CareerPathsPage() {
           and start entirely on their own.
         </p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {firstChoicePaths.map((p, i) => (
             <PathCard key={p.slug} path={p} index={i} dark={false} />
           ))}
@@ -122,7 +122,7 @@ export default function CareerPathsPage() {
             above eventually converge.
           </p>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
             {destinationPaths.map((p, i) => (
               <PathCard key={p.slug} path={p} index={i} dark spanFull={destinationPaths.length % 2 === 1 && i === destinationPaths.length - 1} />
             ))}
