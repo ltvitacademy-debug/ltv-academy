@@ -1,0 +1,132 @@
+{
+  "careerPath": "snowflake-data-engineer",
+  "_note": "Phase B (Interview Intelligence) — the 10-minute scenario-based problem-solving section. Revised per the administrator's second-round approval: grading is an AI reading the transcript against passingCriteria/failingCriteria (reasoning and accuracy), NOT literal keyword/phrase matching — see lib/interviewScoring.ts buildGradableItems/buildGradingPrompt. Phase C: lessonLinks are real lessons from lib/snowflake-outline.ts (verified against the actual chapter list before adding); a scenario with no strong direct lesson match is left with an empty array rather than inventing one.",
+  "scenarios": [
+    {
+      "id": "snde-scn-beg-dashboard-slow",
+      "title": "A dashboard that used to be fast suddenly isn't",
+      "prompt": "A sales dashboard that queries a Snowflake table has run fine for months. This morning, users say it's taking over a minute to load instead of a few seconds. Nothing about the dashboard's query changed. Walk me through how you'd figure out what's going on.",
+      "difficulty": "beginner",
+      "skills": ["Warehouses", "Query History", "Troubleshooting"],
+      "assessmentFocus": ["troubleshooting methodology", "communication"],
+      "modelApproach": "Check whether the warehouse the dashboard runs on is undersized for current load, suspended/cold-starting, or queued behind other queries at that time of day; check Query History / QUERY_HISTORY for the actual query's execution time and queuing time rather than guessing; check if the underlying table's row count grew significantly (more data, same warehouse size). Resist jumping straight to 'resize the warehouse' before looking at what actually changed.",
+      "passingCriteria": "Student proposes checking actual evidence (query history / execution vs. queuing time, warehouse state, data volume change) before proposing a fix, and reasons about WHY the slowdown could be happening rather than guessing a single cause.",
+      "failingCriteria": "Student jumps straight to a fix (e.g. 'just resize the warehouse') with no diagnostic step, or cannot name any concrete way to actually investigate what changed.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "warehouse-sizing-and-expensive-queries", "label": "Warehouse Sizing & Finding Expensive/Slow Queries" },
+        { "courseSlug": "snowflake", "lessonSlug": "query-profile-and-query-history", "label": "Query Profile & Query History" }
+      ]
+    },
+    {
+      "id": "snde-scn-beg-load-failed-overnight",
+      "title": "The overnight load didn't run",
+      "prompt": "You come in and a scheduled COPY INTO task that loads yesterday's files didn't run overnight — the table is missing a day of data and a report is due in an hour. What do you actually do, in order?",
+      "difficulty": "beginner",
+      "skills": ["Tasks", "COPY INTO", "Incident response"],
+      "assessmentFocus": ["prioritization", "troubleshooting methodology"],
+      "modelApproach": "First communicate the delay/risk to whoever needs the report rather than silently trying to fix it quietly; check the Task's run history / error for why it didn't fire (suspended task, warehouse issue, upstream file never landed); once the cause is known, manually run the load for the missing day; then address the root cause so it doesn't repeat. Order matters: communicate, diagnose, recover, prevent.",
+      "passingCriteria": "Student gives a sensible ORDER of operations that includes communicating the risk early, diagnosing the actual cause before acting, recovering the missing data, and addressing the root cause — not just one of these in isolation.",
+      "failingCriteria": "Student only mentions fixing the immediate data gap with no communication step, no attempt to find the actual cause, or no mention of preventing a repeat.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "tasks-scheduled-processing", "label": "Tasks: Scheduled Processing" }
+      ]
+    },
+    {
+      "id": "snde-scn-beg-wrong-numbers",
+      "title": "Someone says the numbers look wrong",
+      "prompt": "A stakeholder messages you that a report's revenue total 'looks way too low' compared to what they expected. How do you approach confirming whether there's actually a data problem?",
+      "difficulty": "beginner",
+      "skills": ["Data validation", "Communication"],
+      "assessmentFocus": ["methodical validation", "communication"],
+      "modelApproach": "Don't assume either direction — get specifics (which time period, which segment, what number were they expecting and why); reproduce the number independently with a simple query against the source table; check for an obvious cause (filter applied, date range, a recent schema/pipeline change, duplicate or missing rows); only then conclude whether it's a real data issue or a misunderstanding.",
+      "passingCriteria": "Student describes gathering specifics and independently reproducing/verifying the number against source data before concluding anything, rather than assuming the stakeholder or the system is automatically right.",
+      "failingCriteria": "Student either assumes it must be a bug without checking, or dismisses the concern without any verification step.",
+      "lessonLinks": []
+    },
+    {
+      "id": "snde-scn-int-cost-spike",
+      "title": "The Snowflake bill doubled this month",
+      "prompt": "Finance flags that the Snowflake bill roughly doubled last month with no major new project launched. You're asked to find out why and bring back a recommendation. Where do you start, and what do you look at?",
+      "difficulty": "intermediate",
+      "skills": ["Cost management", "Warehouse sizing", "Query optimization"],
+      "assessmentFocus": ["cost reasoning", "troubleshooting methodology"],
+      "modelApproach": "Start with ACCOUNT_USAGE / warehouse metering history to see which warehouse(s) actually drove the increase, not guess; look for warehouses left without auto-suspend, a size increase nobody reverted, a new scheduled job running too often, or a query pattern that got much more expensive (e.g. a changed join, exploded row counts). Recommendation should target the specific driver found, not a blanket 'resize everything down.'",
+      "passingCriteria": "Student describes using actual usage/metering data to isolate which warehouse or workload drove the increase before recommending anything, and the eventual recommendation targets that specific driver.",
+      "failingCriteria": "Student proposes a generic cost-cutting action (e.g. 'shrink all warehouses') without any step to identify what actually changed, or can't name a real source of cost data to check.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "snowflake-credits-and-warehouse-costs", "label": "Snowflake Credits & Warehouse Costs" },
+        { "courseSlug": "snowflake", "lessonSlug": "resource-monitors-preventing-runaway-costs", "label": "Resource Monitors — Preventing Runaway Compute Costs" }
+      ]
+    },
+    {
+      "id": "snde-scn-int-pipeline-duplicates",
+      "title": "A retried load duplicated rows",
+      "prompt": "An ingestion job failed partway through, got automatically retried, and now a downstream table has duplicate rows for part of a day. The business has already seen the inflated numbers. How do you fix the data, and how do you stop it from happening again?",
+      "difficulty": "intermediate",
+      "skills": ["Idempotency", "Data quality", "MERGE"],
+      "assessmentFocus": ["root-cause thinking", "remediation planning"],
+      "modelApproach": "Identify exactly which rows are duplicated (by a natural key / load batch id) and remove or correctly merge them rather than reloading everything; notify whoever saw the bad numbers once corrected. Prevention requires making the load idempotent — e.g. MERGE on a natural key, or delete-then-insert by batch/date, instead of a plain append — so a retry can never double-count.",
+      "passingCriteria": "Student proposes a targeted fix that identifies the specific duplicated rows (not a full reload) AND separately explains how to make the load idempotent going forward (e.g. MERGE on a key, delete-and-replace by batch) so a retry can't double-count again.",
+      "failingCriteria": "Student describes only a one-time manual fix with no idempotency change, or cannot explain why the duplication actually happened (a retry hitting a non-idempotent append).",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "merge-in-snowflake", "label": "MERGE in Snowflake" }
+      ]
+    },
+    {
+      "id": "snde-scn-int-schema-change",
+      "title": "A source system added a column without telling anyone",
+      "prompt": "A nightly load starts failing with a schema-mismatch error. It turns out the upstream source system added a new column to the file it exports, with no warning. The business needs the data flowing again today. How do you handle it right now, and how do you prevent being blindsided like this again?",
+      "difficulty": "intermediate",
+      "skills": ["Schema evolution", "File formats", "Process"],
+      "assessmentFocus": ["immediate fix vs. long-term fix", "communication"],
+      "modelApproach": "Immediate fix: update the target table/file format to accept the new column (or explicitly ignore it) so loading resumes without losing the new data's meaning; don't just drop the column silently without checking if it matters. Longer-term: push for a heads-up process with the source-system owner, and/or build in more tolerance (e.g. schema detection, alerting on a shape change) so a surprise column doesn't take down the pipeline again.",
+      "passingCriteria": "Student separates an immediate, deliberate fix (that considers whether the new column matters, not a silent drop) from a distinct longer-term prevention idea (process or technical) for future schema surprises.",
+      "failingCriteria": "Student only describes making the error go away (e.g. ignore/drop the column) with no consideration of whether it matters, and no prevention idea at all.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "file-formats-csv-json-parquet", "label": "File Formats: CSV, JSON & Parquet" }
+      ]
+    },
+    {
+      "id": "snde-scn-adv-multi-team-contention",
+      "title": "Two teams are fighting over the same warehouse",
+      "prompt": "Two different teams share a Snowflake warehouse. One team's ad-hoc analytics queries keep queuing behind the other team's scheduled ELT jobs, and both sides are escalating. You're asked to redesign the setup. What do you actually propose, and what tradeoffs are you weighing?",
+      "difficulty": "advanced",
+      "skills": ["Warehouse architecture", "Cost/performance tradeoffs", "Workload isolation"],
+      "assessmentFocus": ["architectural reasoning", "stakeholder tradeoffs"],
+      "modelApproach": "Recommend splitting into separate warehouses per workload (so one team's load can't queue behind the other), sized and auto-suspended independently for each workload's actual pattern — batch ELT often wants a bigger warehouse for a short burst, ad-hoc analytics wants something small and always-on-ish. Explicitly weigh the added cost of running two warehouses against the cost of continued contention/escalation, and consider resource monitors to cap runaway spend on either.",
+      "passingCriteria": "Student proposes workload isolation (separate warehouses sized for each pattern) AND explicitly reasons about the cost/contention tradeoff of doing so, rather than treating it as a free win.",
+      "failingCriteria": "Student proposes a fix with no cost or tradeoff reasoning at all, or doesn't recognize that shared-warehouse contention is itself a workload-isolation problem.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "warehouse-sizing-and-expensive-queries", "label": "Warehouse Sizing & Finding Expensive/Slow Queries" },
+        { "courseSlug": "snowflake", "lessonSlug": "resource-monitors-preventing-runaway-costs", "label": "Resource Monitors — Preventing Runaway Compute Costs" }
+      ]
+    },
+    {
+      "id": "snde-scn-adv-migration-risk",
+      "title": "Migrating a critical pipeline with zero acceptable downtime",
+      "prompt": "You need to migrate a business-critical daily pipeline to a new table design (different clustering, new columns) without the business ever seeing a missing or wrong day of data. Walk me through how you'd actually execute that migration.",
+      "difficulty": "advanced",
+      "skills": ["Migration strategy", "Risk management", "Validation"],
+      "assessmentFocus": ["risk management", "validation rigor"],
+      "modelApproach": "Build and backfill the new table in parallel alongside the existing one (never replace in place); validate the new table against the old one row-for-row / total-for-total for a real production day before cutting anything over; cut consumers (dashboards/downstream jobs) over to the new table only after validation passes, with the old table kept as a fallback for a defined period before being retired.",
+      "passingCriteria": "Student describes building/validating the new table in parallel BEFORE cutting consumers over, with an explicit validation step comparing old vs. new, and keeping a fallback for a period after cutover.",
+      "failingCriteria": "Student describes replacing the table in place, or cutting consumers over before any validation against the old table happened.",
+      "lessonLinks": []
+    },
+    {
+      "id": "snde-scn-adv-security-incident",
+      "title": "An overly broad role was discovered in production",
+      "prompt": "During a routine access review you discover a role with far more access than it should have — it can read raw customer data it was never meant to touch — and it's been that way for months, actively used by a few people. What do you do, in what order?",
+      "difficulty": "advanced",
+      "skills": ["RBAC", "Incident response", "Least privilege"],
+      "assessmentFocus": ["incident handling order of operations", "least-privilege reasoning"],
+      "modelApproach": "Don't silently revoke access first without understanding who's actively depending on it for legitimate work — that itself can break things and hide the real finding. Assess current usage and intended access, loop in whoever owns security/compliance given it may need to be reported, then correct the role to least-privilege and migrate any legitimately-dependent use cases to an appropriately-scoped role before fully revoking the old one.",
+      "passingCriteria": "Student describes assessing actual usage and involving security/compliance BEFORE abruptly revoking access, and plans a migration path for any legitimate dependent use cases rather than just cutting access and letting things break.",
+      "failingCriteria": "Student's first move is to immediately revoke access with no assessment of current legitimate usage, or never mentions involving security/compliance despite the data-exposure angle.",
+      "lessonLinks": [
+        { "courseSlug": "snowflake", "lessonSlug": "users-roles-and-role-hierarchy", "label": "Users, Roles & the Snowflake Role Hierarchy" },
+        { "courseSlug": "snowflake", "lessonSlug": "grant-privileges-and-least-privilege", "label": "GRANT, Privileges & Least Privilege in Snowflake" }
+      ]
+    }
+  ]
+}

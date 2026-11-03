@@ -1,5 +1,15 @@
 [build]
-  command = "npm run build"
+  # Without the first two steps, Prisma's own `postinstall` hook already ran
+  # `prisma generate` against the DEFAULT schema (prisma/schema.prisma,
+  # provider = "sqlite") during `npm install` — so `next build` alone would
+  # ship a SQLite-bound @prisma/client in the deployed functions, which
+  # fails against the real Postgres DATABASE_URL set in Netlify's env vars.
+  # prisma:postgres regenerates schema.production.prisma (provider =
+  # "postgresql", otherwise identical — see scripts/generate-production-schema.js)
+  # and the explicit `prisma generate --schema=...` re-generates the client
+  # against THAT schema, overwriting the SQLite-bound one before the app
+  # that imports it gets bundled.
+  command = "npm run prisma:postgres && npx prisma generate --schema=prisma/schema.production.prisma && npm run build"
   # next.config.ts sets output: "export" — the build always writes a
   # fully static site to out/, so publish it directly. No plugin is
   # needed (or wanted): @netlify/plugin-nextjs's job is packaging
@@ -8,3 +18,17 @@
   # deploys — see the comment in next.config.ts for the full story.
   # A plain static publish sidesteps function packaging entirely.
   publish = "out"
+
+[functions]
+  # Prisma's generated client ships a native query-engine binary
+  # (node_modules/.prisma/client/query_engine-*.dll.node — 20MB+). esbuild's
+  # default single-file bundling doesn't carry it along, so Netlify instead
+  # COPIES it per-function into .netlify/functions-serve/<fn>/... — and on
+  # this Windows machine, two functions copying that same 20MB+ source file
+  # at once intermittently hits EBUSY (most likely real-time antivirus
+  # scanning the file on first access), which can crash netlify dev
+  # entirely. external_node_modules avoids the copy altogether: the module
+  # is required from the existing root node_modules at runtime instead of
+  # being bundled/copied, so there's nothing to race on.
+  external_node_modules = ["@prisma/client", ".prisma/client"]
+

@@ -36,3 +36,29 @@
   generated classroom image.
 - [ ] **Seal vs. copy founding year** — the seal artwork reads "Founded in MMXVIII" (2018) but
   all site copy (and the spec) says Est. 2017. Ask Bill which is right.
+
+## Professional Mock Interview — Postgres migration process (Phase D)
+
+Production uses `prisma/schema.production.prisma` (generated, datasource = postgresql) while
+local dev keeps using `prisma/schema.prisma` (sqlite) with plain `prisma db push` — that's fine
+for throwaway local data with no migration history. Production must NEVER use `db push`: it
+diffs and applies schema changes on the fly with no reviewable history and no safety rails
+against an accidental destructive change landing in the middle of a deploy.
+
+**One-time setup** (before the first production deploy, once a real Postgres `DATABASE_URL` exists):
+1. `npm run prisma:migrate:new` — pointed at a real (ideally staging, not live) Postgres
+   instance. This generates the first migration's SQL under `prisma/migrations/` and applies it
+   to whatever `DATABASE_URL` is active when you run it. **Review the generated SQL before
+   committing it** — this is the whole point of migrations over `db push`: a human reads the
+   diff before it ever touches real data.
+2. Commit the resulting `prisma/migrations/<timestamp>_init/migration.sql`.
+
+**Every production build after that**: `npm run prisma:migrate:deploy` — applies only
+already-committed, already-reviewed migrations in order; never generates new ones, never guesses,
+never drops/recreates a column on its own interpretation of "what changed." This is the command
+that belongs in the production build pipeline, not `db push`.
+
+**Every future schema change**: edit `prisma/schema.prisma` (the dev/sqlite source of truth) →
+run `npm run prisma:migrate:new` again (regenerates the production schema, then generates a NEW
+migration against it) → review the generated SQL → commit it → it ships on the next
+`prisma:migrate:deploy` run.

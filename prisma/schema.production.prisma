@@ -1,0 +1,261 @@
+// GENERATED FILE — do not hand-edit. Run `npm run prisma:postgres` to
+// regenerate from prisma/schema.prisma (see scripts/generate-production-schema.js).
+// Every model/field/index below is identical to the dev schema; only the
+// datasource is different (postgresql instead of sqlite).
+// LTV Academy Professional Mock Interview — data model.
+//
+// Dev/local: SQLite (file:./prisma/dev.db), set via DATABASE_URL in .env.local.
+// Production target: Postgres (Netlify DB / Neon) — swap the `provider` and
+// DATABASE_URL when we connect a real environment in Phase D. The schema
+// below is written to be Postgres-compatible from day one (cuid ids, no
+// SQLite-only types) so that swap is just a provider + URL change, not a
+// schema rewrite.
+//
+// Netlify Functions are stateless/serverless — there is no persistent
+// process memory between invocations, so every piece of session state that
+// needs to survive across a student's turns (and across a resumed session)
+// must live here, not in function memory.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Phase D follow-up: replaces the shared-secret-only admin gate
+// (MOCK_INTERVIEW_ADMIN_SECRET) with real authenticated, role-based access
+// — a login (email + password, scrypt-hashed — see lib/adminAuth.ts) rather
+// than a single secret anyone with it can use indistinguishably from
+// anyone else. `role` is a plain string, not a Postgres-native enum, on
+// purpose: Prisma enums are migration-heavy to extend, and the only thing
+// that needs to be easy to add later is a new role value (e.g. "reviewer"
+// with lesser permissions), not a new column. Seeded via
+// scripts/create-admin.js (a local CLI script — never an HTTP endpoint, so
+// bootstrapping the first admin account has no network attack surface).
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   // scrypt: "<saltHex>:<hashHex>" — see lib/adminAuth.ts
+  role         String   @default("admin") // "admin" today; room for e.g. "reviewer" later
+  createdAt    DateTime @default(now())
+}
+
+// A student is identified by their Wix member info (email + Wix member id),
+// carried over via the existing signed-token handoff (MemberTokenBridge /
+// member-gate.ts) rather than a separate login system of our own.
+model Student {
+  id            String   @id @default(cuid())
+  wixMemberId   String   @unique
+  email         String
+  fullName      String?
+  createdAt     DateTime @default(now())
+
+  credits       InterviewCredit[]
+  sessions      MockInterviewSession[]
+}
+
+// One row per confirmed $19.97 purchase. orderId is the Wix order id and is
+// the duplicate-webhook guard: the credit-issuing function must look up by
+// orderId first and refuse to insert a second row for the same order.
+model InterviewCredit {
+  id            String   @id @default(cuid())
+  student       Student  @relation(fields: [studentId], references: [id])
+  studentId     String
+
+  wixOrderId    String   @unique
+  careerPath    String   // e.g. "snowflake-data-engineer"
+  // Phase D: nullable — the $19.97 Wix purchase is ONE flexible credit, not
+  // three separately-priced plans per difficulty. Null means "not chosen
+  // yet"; the student picks beginner/intermediate/advanced at session
+  // start, and the claim transaction (mock-interview-session.ts) sets this
+  // atomically at that point. A dev-mode credit minted with a difficulty
+  // already set (mintDevCredit) must still be claimed at that exact
+  // difficulty — this field isn't reopened for choice once it's non-null.
+  difficulty    String?  // "beginner" | "intermediate" | "advanced" | null (not yet chosen)
+
+  // Atomic-claim fields. Consuming a credit is a single conditional update
+  // (status: "unused" -> "consumed") so two concurrent "start interview"
+  // requests can never both win — see mock-interview-session.ts.
+  status        String   @default("unused") // "unused" | "consumed" | "refunded"
+  consumedAt    DateTime?
+
+  session       MockInterviewSession?
+
+  createdAt     DateTime @default(now())
+
+  @@index([studentId, status])
+}
+
+// One interview attempt. Sections/timing are tracked here so the UI can
+// show accurate progress and so a disconnect can be resumed into a *new*
+// session that's primed with what was already completed (see Phase 1 §12 —
+// true mid-call resume isn't realistic for a live voice session; this is
+// the practical version of resume).
+model MockInterviewSession {
+  id              String   @id @default(cuid())
+  student         Student  @relation(fields: [studentId], references: [id])
+  studentId       String
+
+  // Phase C security (spec requirement 9): a random, unguessable secret
+  // generated at session creation and handed to the client ONCE, in the
+  // creation response. Every later read of this session's data (the GET
+  // session endpoint, the report, the certificate) requires this token, not
+  // just the student's email — email alone is guessable/typeable by anyone
+  // in the current dev-mode auth posture (there is no real identity-bearing
+  // token until Phase D's Wix member-token integration lands), so this is
+  // the real access control until then, not the email check.
+  accessToken     String   @unique
+
+  credit          InterviewCredit @relation(fields: [creditId], references: [id])
+  creditId        String   @unique
+
+  careerPath      String
+  difficulty      String
+  mode            String   @default("text") // "text" (Phase A/B dev+testing) | "voice" (Phase E)
+
+  // Timing revised 2026-11: no separate "introduction" section any more —
+  // the interview opens directly in "technical-competency" after an
+  // untimed greeting (see lib/mockInterviewTypes.ts SECTION_SCHEDULE).
+  currentSection  String   @default("technical-competency")
+  // "technical-competency" | "project-ownership" |
+  // "scenario-problem-solving" | "coaching" | "complete"
+
+  status          String   @default("in-progress") // "in-progress" | "interrupted" | "complete"
+
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+
+  // Phase F — Fish Audio Agents (hands-free, continuous voice). Null until a
+  // live-voice session is actually started; overwritten in place (not
+  // versioned) because a dropped call just gets a fresh Fish session_id —
+  // the SAME MockInterviewSession/InterviewTurn history keeps going
+  // regardless, see netlify/functions/mock-interview-voice-agent-start.ts.
+  // Corrected after verifying Fish's actual API: Custom-LLM calls are
+  // authenticated by ONE shared secret configured on the Agent itself
+  // (env FISH_AGENT_LLM_SHARED_SECRET, checked as a Bearer header), not a
+  // per-session secret — so there is no per-session webhook secret to
+  // store any more; the Fish session_id itself is how a Custom-LLM call is
+  // matched back to this row (see mock-interview-agent-llm.ts).
+  voiceAgentSessionId    String?  @unique  // Fish Audio Agents' own session_id
+  voiceAgentStatus       String?           // "active" | "ended" | null (hands-free voice never used)
+
+  turns           InterviewTurn[]
+  competencyResults CompetencyResult[]
+  report          InterviewReport?
+  certificate     Certificate?
+}
+
+// One exchange: a question/prompt from the AI, the student's response, and
+// which section/competency it was assessing. This is the evidence log the
+// scoring pass and the admin dispute-review process both read from — every
+// scored decision must be traceable back to the actual turns that produced it.
+model InterviewTurn {
+  id              String   @id @default(cuid())
+  session         MockInterviewSession @relation(fields: [sessionId], references: [id])
+  sessionId       String
+
+  turnIndex       Int      // ordering within the session
+  section         String
+  competencyId    String?  // set when this turn is assessing a specific critical competency
+  questionId      String?  // set when this turn is drawn from the existing interview-prep bank
+
+  aiMessage       String
+  studentResponse String?
+
+  elapsedSeconds  Int      // seconds into the session when this turn was asked
+
+  createdAt       DateTime @default(now())
+
+  @@index([sessionId, turnIndex])
+}
+
+// One row per critical competency actually assessed in this session —
+// deliberately separate from scoring logic (Phase B) so Phase A can persist
+// "this competency was asked about and here's what was observed" before the
+// pass/fail rubric is wired up. met stays null until a scoring pass runs.
+model CompetencyResult {
+  id              String   @id @default(cuid())
+  session         MockInterviewSession @relation(fields: [sessionId], references: [id])
+  sessionId       String
+
+  competencyId    String   // matches an id in content/mock-interview/<path>/competencies.json
+  met             Boolean? // null = not yet scored
+  clarificationUsed Boolean @default(false)
+  evidence        String?  // short note citing which turn(s) support the verdict
+
+  // Phase C: the grading pipeline upserts one row per competency actually
+  // graded (lib/formalAssessmentPipeline.ts) — this is what makes that
+  // idempotent (re-running grading, or an admin resolution, updates the
+  // existing row instead of creating a duplicate).
+  @@unique([sessionId, competencyId])
+  @@index([sessionId])
+}
+
+model InterviewReport {
+  id              String   @id @default(cuid())
+  session         MockInterviewSession @relation(fields: [sessionId], references: [id])
+  sessionId       String   @unique
+
+  overallScore    Int?
+  outcome         String   @default("incomplete") // "pass" | "fail" | "incomplete"
+
+  sectionScores   String   // JSON blob: { [section]: number }
+  reportJson      String   // full structured report (strengths, weaknesses, recommendations, etc.)
+
+  disputed        Boolean  @default(false)
+  adminReviewedAt DateTime?
+
+  createdAt       DateTime @default(now())
+}
+
+// Payment-recovery follow-up — a durable record of a webhook delivery
+// whose Wix payment verification was UNAVAILABLE (not "unpaid" — missing
+// WIX_API_KEY/WIX_SITE_ID, or Wix's API was unreachable). The fail-closed
+// rule in lib/interviewCreditGrant.ts never grants a credit on an
+// unverified payload, so this table is what keeps a genuinely-paid order
+// from being silently lost when verification can't happen on the first
+// try: Wix's own webhook retries (up to 12 over ~2 days — see
+// lib/pendingCreditVerification.ts), a scheduled Netlify Function, and an
+// admin "retry now" action all attempt recovery against this row, with
+// exactly the same grantInterviewCreditForOrder idempotency guarantee
+// (unique InterviewCredit.wixOrderId) preventing any of them from ever
+// creating a duplicate credit. Never stores anything secret — order id,
+// Wix member id, plan id, and attempt/backoff bookkeeping only.
+model PendingCreditVerification {
+  id            String   @id @default(cuid())
+  wixOrderId    String   @unique
+  wixMemberId   String
+  email         String
+  planId        String?
+
+  // The webhook payload's OWN claimed lastPaymentStatus — audit/debugging
+  // only, never re-used as the basis for a grant decision on retry.
+  payloadStatus String
+
+  status        String   @default("pending") // "pending" | "resolved" | "exhausted"
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime
+  lastError     String?  // non-sensitive reason only, e.g. "wix-api-unreachable" — never a raw error object or secret
+  resolution    String?  // "granted" | "not-paid", set once status becomes "resolved"
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status, nextAttemptAt])
+}
+
+model Certificate {
+  id              String   @id @default(cuid())
+  session         MockInterviewSession @relation(fields: [sessionId], references: [id])
+  sessionId       String   @unique
+
+  certificateNumber String @unique
+  studentName     String
+  careerPath      String
+  difficulty      String
+  passingScore    Int
+  issuedAt        DateTime @default(now())
+}

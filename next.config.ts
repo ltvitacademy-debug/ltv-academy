@@ -13,6 +13,31 @@ import type { NextConfig } from "next";
 // (and the trace question) entirely by shipping static HTML only.
 const nextConfig: NextConfig = {
   output: "export",
+  // `netlify dev`'s proxy (Next dev server -> Netlify's edge-function-aware
+  // proxy -> browser) was labeling responses `content-encoding: gzip` while
+  // actually sending plain, uncompressed HTML — real Chrome correctly
+  // refuses this (net::ERR_CONTENT_DECODING_FAILED), curl silently didn't
+  // care, which is why only the browser test hit it. Reproduced with raw
+  // bytes: header said gzip, body started with literal "<!DOCTYPE html>"
+  // rather than gzip's magic bytes. Disabling Next's own dev-server
+  // compression removes the mismatched header Netlify's proxy was
+  // otherwise forwarding uncompressed under.
+  compress: false,
+  // `next dev` (via `netlify dev`) crashed on Windows with an EPERM error
+  // from its file watcher — traced to webpack's dev-server watcher trying
+  // to track the 1.8GB+ content/ tree (hundreds of course folders) on top
+  // of node_modules and the Prisma dev database. None of that needs
+  // hot-reload: content/ is read at request time via fs, not imported as a
+  // module, so changes there were never going to trigger a recompile
+  // anyway — excluding it from the watcher doesn't change course content
+  // or its own hot-reload behavior, it just stops the watcher choking on it.
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ["**/content/**", "**/node_modules/**", "**/.netlify/**", "**/.git/**", "**/prisma/dev.db*"],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

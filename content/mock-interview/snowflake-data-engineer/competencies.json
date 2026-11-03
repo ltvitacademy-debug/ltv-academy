@@ -1,0 +1,183 @@
+{
+  "careerPath": "snowflake-data-engineer",
+  "approved": false,
+  "approvedAt": null,
+  "approvedBy": null,
+  "_note": "DRAFT — per the approved Phase 1 spec (section 5), automatic critical-failure decisions must stay OFF until an administrator reviews and sets approved: true. Session logic reads this flag (see lib/mockInterview.ts) and will not auto-fail a student on any of these until it's flipped.",
+  "competencies": {
+    "beginner": [
+      {
+        "id": "snowflake-beg-warehouse-vs-database",
+        "name": "Virtual warehouse vs. database",
+        "description": "Can the student explain that a virtual warehouse is Snowflake's compute layer and a database is Snowflake's storage/organizational layer, and that the two scale and are billed independently?",
+        "difficulty": "beginner",
+        "assessmentQuestions": [
+          "In Snowflake, what's the difference between a virtual warehouse and a database?",
+          "If I need more compute power for a query, do I resize my database or something else?"
+        ],
+        "expectedKnowledge": "A warehouse is compute (the thing that actually runs queries, billed per-second while running); a database (with its schemas/tables) is where data is stored. Resizing a warehouse changes compute power; it has no effect on where or how data is stored.",
+        "passingCriteria": "Student correctly separates compute from storage and can say which one you'd resize for query performance.",
+        "failingCriteria": "Student conflates the two, or believes storage structure determines query speed independent of warehouse size.",
+        "clarificationPrompt": "Let's come at it from a different angle — if a query is running slowly, is the fix usually to change something about the warehouse, or something about the database?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "virtual-warehouses-scaling-auto-suspend-resume", "label": "Virtual Warehouses, Scaling & Auto-Suspend/Auto-Resume" },
+          { "courseSlug": "snowflake", "lessonSlug": "databases-schemas-and-tables", "label": "Databases, Schemas & Tables in Snowflake" }
+        ]
+      },
+      {
+        "id": "snowflake-beg-inner-vs-left-join",
+        "name": "INNER JOIN vs. LEFT JOIN",
+        "description": "Foundational SQL, not Snowflake-specific — but explicitly called out in the approved spec as a hard requirement: a SQL-focused candidate who can't explain this should not pass, regardless of other performance.",
+        "difficulty": "beginner",
+        "assessmentQuestions": [
+          "What's the difference between an INNER JOIN and a LEFT JOIN?",
+          "If I LEFT JOIN orders to customers and a customer has no orders, what happens to that row?"
+        ],
+        "expectedKnowledge": "INNER JOIN returns only matching rows from both tables; LEFT JOIN returns every row from the left table regardless of a match, with NULLs filling the right side when there's no match.",
+        "passingCriteria": "Student correctly predicts what happens to a non-matching left-side row in a LEFT JOIN (kept, NULLs on the right) vs. an INNER JOIN (dropped).",
+        "failingCriteria": "Student cannot predict row-keeping behavior, or reverses which join type keeps unmatched rows.",
+        "clarificationPrompt": "Think about it concretely: I have 10 customers, only 7 have placed orders. If I LEFT JOIN customers to orders, how many rows come back?",
+        "lessonLinks": [
+          { "courseSlug": "t-sql-development", "lessonSlug": "inner-join", "label": "INNER JOIN (T-SQL Development course)" },
+          { "courseSlug": "t-sql-development", "lessonSlug": "left-join", "label": "LEFT JOIN (T-SQL Development course)" }
+        ]
+      },
+      {
+        "id": "snowflake-beg-copy-into-basics",
+        "name": "COPY INTO for bulk loading",
+        "description": "Can the student explain, at a conceptual level, how data actually gets into a Snowflake table from a file?",
+        "difficulty": "beginner",
+        "assessmentQuestions": [
+          "If I have a CSV file sitting in cloud storage, how does that data actually end up in a Snowflake table?"
+        ],
+        "expectedKnowledge": "COPY INTO loads staged file data into a table, using a file format to describe the file's structure (CSV/JSON/Parquet); a stage is where the file lives before/during loading.",
+        "passingCriteria": "Student mentions COPY INTO (or clearly describes its function even if they blank on the exact keyword) and the general stage → table flow.",
+        "failingCriteria": "Student has no working model of how data gets loaded at all (e.g. assumes it's purely manual/GUI-only, or confuses it with a transformation step).",
+        "clarificationPrompt": "No need for exact syntax — just walk me through it in plain English: file in cloud storage, now it's a queryable table. What has to happen in between?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "copy-into-bulk-loading-fundamentals", "label": "COPY INTO — Bulk Loading Fundamentals" },
+          { "courseSlug": "snowflake", "lessonSlug": "internal-vs-external-stages", "label": "Internal vs. External Stages" }
+        ]
+      }
+    ],
+    "intermediate": [
+      {
+        "id": "snowflake-int-clustering-keys",
+        "name": "Clustering keys and when they matter",
+        "description": "Can the student explain what a clustering key does and recognize when a table actually needs one?",
+        "difficulty": "intermediate",
+        "assessmentQuestions": [
+          "What does a clustering key do in Snowflake, and how would you decide whether a table needs one?"
+        ],
+        "expectedKnowledge": "Clustering keys influence how micro-partitions co-locate data to improve pruning on large tables with a clear, frequently-filtered column; they're not needed on small tables and come with a re-clustering cost.",
+        "passingCriteria": "Student connects clustering to partition pruning / query performance on large tables, and doesn't recommend clustering everything by default.",
+        "failingCriteria": "Student has no concept of partition pruning, or treats clustering as a universal performance fix.",
+        "clarificationPrompt": "Would you add a clustering key to a 10,000-row lookup table? Why or why not?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "clustering-and-caching", "label": "Clustering & Caching" },
+          { "courseSlug": "snowflake", "lessonSlug": "micro-partitions-and-partition-pruning", "label": "Micro-Partitions & Partition Pruning" }
+        ]
+      },
+      {
+        "id": "snowflake-int-star-schema-design",
+        "name": "Basic star-schema design",
+        "description": "Can the student design (or critique) a simple fact/dimension split for a given business scenario?",
+        "difficulty": "intermediate",
+        "assessmentQuestions": [
+          "I have raw order-line data. How would you split that into fact and dimension tables?"
+        ],
+        "expectedKnowledge": "A fact table holds measurable events/transactions at a defined grain with foreign keys to dimensions; dimension tables hold descriptive attributes (customer, product, date). Grain must be stated explicitly.",
+        "passingCriteria": "Student identifies at least one fact table and plausible dimensions, and can state the fact table's grain when asked.",
+        "failingCriteria": "Student cannot separate measures from descriptive attributes, or can't articulate what one row in the fact table represents.",
+        "clarificationPrompt": "Forget the dimensions for a second — just tell me, in one sentence, what does a single row in your fact table represent?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "star-schemas-fact-and-dimension-tables-in-snowflake", "label": "Star Schemas, Fact & Dimension Tables in Snowflake" },
+          { "courseSlug": "snowflake", "lessonSlug": "surrogate-keys-in-snowflake", "label": "Surrogate Keys in Snowflake" }
+        ]
+      },
+      {
+        "id": "snowflake-int-snowpipe-vs-scheduled-copy",
+        "name": "Snowpipe vs. a scheduled COPY INTO",
+        "description": "Can the student articulate the real tradeoff between continuous and batch ingestion, not just define both terms?",
+        "difficulty": "intermediate",
+        "assessmentQuestions": [
+          "When would you reach for Snowpipe instead of a scheduled COPY INTO, and why?"
+        ],
+        "expectedKnowledge": "Snowpipe loads files automatically and near-continuously as they land (event-driven, serverless compute); a scheduled COPY INTO (often via a Task) runs on a fixed cadence and uses a warehouse you control. The real tradeoff is latency need vs. cost/control predictability.",
+        "passingCriteria": "Student states a latency-driven or event-driven reason for Snowpipe, not just 'it's newer' or 'it's automatic.'",
+        "failingCriteria": "Student can't articulate any real tradeoff, or thinks they're functionally interchangeable with no difference in when you'd pick one.",
+        "clarificationPrompt": "If a business only needs fresh data once a day at 6am, would Snowpipe actually be the better choice? Why or why not?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "snowpipe-and-continuous-ingestion", "label": "Snowpipe & Continuous Ingestion" },
+          { "courseSlug": "snowflake", "lessonSlug": "tasks-scheduled-processing", "label": "Tasks: Scheduled Processing" }
+        ]
+      },
+      {
+        "id": "snowflake-int-time-travel-real-use",
+        "name": "Time Travel — real use, not just the definition",
+        "description": "Does the student understand Time Travel as a practical recovery/auditing tool with real limits, not just 'Snowflake can undo things'?",
+        "difficulty": "intermediate",
+        "assessmentQuestions": [
+          "Someone on your team accidentally ran an UPDATE with no WHERE clause an hour ago. Walk me through how Time Travel actually helps here."
+        ],
+        "expectedKnowledge": "Time Travel lets you query or restore a table as of a past point in time within its retention window; a practical fix is querying/cloning the table AT/BEFORE the bad statement and restoring the correct rows — it is not unlimited and has a retention-period boundary.",
+        "passingCriteria": "Student describes querying or cloning as of a past timestamp/offset and mentions a retention limit exists.",
+        "failingCriteria": "Student treats Time Travel as unlimited undo with no retention boundary, or can't describe a concrete recovery step.",
+        "clarificationPrompt": "What happens if that mistake was made 95 days ago instead of an hour ago — does Time Travel still save you?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "streams-change-tracking", "label": "Streams: Change Tracking in Snowflake" }
+        ]
+      }
+    ],
+    "advanced": [
+      {
+        "id": "snowflake-adv-snowpark-execution-model",
+        "name": "Snowpark's execution model vs. plain SQL",
+        "description": "Can the student explain where Snowpark code actually executes and why that matters?",
+        "difficulty": "advanced",
+        "assessmentQuestions": [
+          "When I write a Snowpark DataFrame transformation in Python, where does that code actually run, and why does that matter for performance?"
+        ],
+        "expectedKnowledge": "Snowpark DataFrame operations are lazily evaluated and pushed down as generated SQL that executes inside Snowflake's compute (the warehouse) — not pulled into a local Python process — which is what makes it scale the same way native SQL does; only certain UDF/UDTF code genuinely runs outside that pushdown model.",
+        "passingCriteria": "Student describes pushdown/lazy evaluation and distinguishes it from 'pull data out and process in Python locally.'",
+        "failingCriteria": "Student assumes Snowpark always pulls data into a Python runtime outside Snowflake, missing the pushdown/performance rationale entirely.",
+        "clarificationPrompt": "If Snowpark just pulled all the data into Python and processed it there, what would that mean for a 500-million-row table? Does that match what you'd expect from using it in practice?",
+        "lessonLinks": []
+      },
+      {
+        "id": "snowflake-adv-warehouse-sizing-cost-tradeoff",
+        "name": "Warehouse sizing and cost tradeoffs",
+        "description": "Can the student reason about right-sizing a warehouse for a given workload, not just recite that 'bigger is faster'?",
+        "difficulty": "advanced",
+        "assessmentQuestions": [
+          "A nightly batch job on a Large warehouse finishes in 10 minutes. Someone suggests scaling up to X-Large to finish faster. Walk me through how you'd actually evaluate that."
+        ],
+        "expectedKnowledge": "Warehouse credit cost roughly doubles per size step regardless of whether the workload benefits; scaling up only helps if the job is actually compute-bound and parallelizable, and even then the cost-per-second-saved tradeoff needs to be weighed against the business need for that speed. Auto-suspend and workload scheduling often matter more than raw size.",
+        "passingCriteria": "Student raises the cost-doubling-per-size-step tradeoff and asks whether the workload is actually bottlenecked on compute before recommending a resize.",
+        "failingCriteria": "Student reflexively recommends scaling up with no cost or bottleneck reasoning.",
+        "clarificationPrompt": "If that job finishing in 5 minutes instead of 10 doesn't matter to anyone downstream, is upsizing still the right call?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "snowflake-credits-and-warehouse-costs", "label": "Snowflake Credits & Warehouse Costs" },
+          { "courseSlug": "snowflake", "lessonSlug": "warehouse-sizing-and-expensive-queries", "label": "Warehouse Sizing & Finding Expensive/Slow Queries" }
+        ]
+      },
+      {
+        "id": "snowflake-adv-rbac-least-privilege-design",
+        "name": "RBAC / least-privilege design",
+        "description": "Can the student design a role hierarchy that reflects least privilege, not just name roles?",
+        "difficulty": "advanced",
+        "assessmentQuestions": [
+          "You're setting up access for a new analytics team that should read from the warehouse layer but never touch raw ingestion tables. How would you structure that in Snowflake's role model?"
+        ],
+        "expectedKnowledge": "Roles should be scoped to the minimum access needed (e.g. a read-only analytics role granted SELECT only on the warehouse/reporting schema, with no grants on the raw/staging schema), composed through a role hierarchy rather than granting broad access to functional roles directly to users.",
+        "passingCriteria": "Student explicitly withholds raw-schema access from the analytics role and reasons in terms of least privilege, not just 'give them a role.'",
+        "failingCriteria": "Student grants broad/blanket access for convenience, or can't articulate why raw-table access should be withheld.",
+        "clarificationPrompt": "If that analytics role later needs to debug a data-quality issue that originates in raw ingestion, what's the right way to handle that — permanent broad access, or something more scoped?",
+        "lessonLinks": [
+          { "courseSlug": "snowflake", "lessonSlug": "users-roles-and-role-hierarchy", "label": "Users, Roles & the Snowflake Role Hierarchy" },
+          { "courseSlug": "snowflake", "lessonSlug": "grant-privileges-and-least-privilege", "label": "GRANT, Privileges & Least Privilege in Snowflake" }
+        ]
+      }
+    ]
+  }
+}
