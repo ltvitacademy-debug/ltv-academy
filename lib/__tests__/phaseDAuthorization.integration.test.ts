@@ -9,7 +9,7 @@ import sessionHandler from "../../netlify/functions/mock-interview-session.ts";
 // @ts-expect-error
 import historyHandler from "../../netlify/functions/mock-interview-history.ts";
 // @ts-expect-error
-import turnHandler from "../../netlify/functions/mock-interview-turn.ts";
+import turnHandler from "../../netlify/functions/mock-interview-turn.mts";
 
 const WIX_SECRET = "phase-d-test-secret";
 

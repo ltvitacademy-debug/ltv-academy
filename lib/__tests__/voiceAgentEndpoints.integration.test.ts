@@ -35,7 +35,7 @@ vi.mock("@anthropic-ai/sdk", () => {
 // @ts-expect-error — .ts extension import, consistent with other Netlify Function tests in this project
 import startHandler from "../../netlify/functions/mock-interview-voice-agent-start.ts";
 // @ts-expect-error
-import llmHandler from "../../netlify/functions/mock-interview-agent-llm.ts";
+import llmHandler from "../../netlify/functions/mock-interview-agent-llm.mts";
 // @ts-expect-error
 import endHandler from "../../netlify/functions/mock-interview-voice-agent-end.ts";
 

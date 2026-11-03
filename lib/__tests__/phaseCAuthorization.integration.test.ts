@@ -9,13 +9,13 @@ import { hashPassword, signAdminSessionToken } from "../adminAuth";
 // @ts-expect-error — .ts extension import, consistent with how Netlify Functions import each other in this project
 import sessionHandler from "../../netlify/functions/mock-interview-session.ts";
 // @ts-expect-error
-import turnHandler from "../../netlify/functions/mock-interview-turn.ts";
+import turnHandler from "../../netlify/functions/mock-interview-turn.mts";
 // @ts-expect-error
-import reportHandler from "../../netlify/functions/mock-interview-report.ts";
+import reportHandler from "../../netlify/functions/mock-interview-report.mts";
 // @ts-expect-error
-import certificateHandler from "../../netlify/functions/mock-interview-certificate.ts";
+import certificateHandler from "../../netlify/functions/mock-interview-certificate.mts";
 // @ts-expect-error
-import adminReviewHandler from "../../netlify/functions/mock-interview-admin-review.ts";
+import adminReviewHandler from "../../netlify/functions/mock-interview-admin-review.mts";
 // @ts-expect-error
 import adminLoginHandler from "../../netlify/functions/admin-login.ts";
 
