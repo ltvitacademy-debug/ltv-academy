@@ -16,6 +16,9 @@ function SessionPageInner() {
   const path = params.get("path") ?? "";
   const difficulty = (params.get("difficulty") as "beginner" | "intermediate" | "advanced") || "beginner";
   const resume = params.get("resume") ?? undefined;
+  const voiceParam = params.get("voice");
+  const requestedVoiceMode = voiceParam === "hands-free" || voiceParam === "push-to-talk" ? voiceParam : undefined;
+  const resumeAccessToken = params.get("token") ?? undefined;
 
   if (path !== "snowflake-data-engineer") {
     return (
@@ -37,7 +40,14 @@ function SessionPageInner() {
         {" · "}
         <span className="capitalize">{difficulty}</span>
       </nav>
-      <MockInterviewChat pathSlug={path} pathTitle="Snowflake Data / Analytics Engineer" difficulty={difficulty} resumeSessionId={resume} />
+      <MockInterviewChat
+        pathSlug={path}
+        pathTitle="Snowflake Data / Analytics Engineer"
+        difficulty={difficulty}
+        resumeSessionId={resume}
+        requestedVoiceMode={requestedVoiceMode}
+        resumeAccessToken={resumeAccessToken}
+      />
     </main>
   );
 }

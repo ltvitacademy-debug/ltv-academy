@@ -279,10 +279,9 @@ export function parseGradingResponse(raw: string, items: GradableItem[]): Graded
 }
 
 // `callModel` is injected so every test can supply a fixture/mock instead of
-// a live Anthropic call. Production wiring (not yet connected — spec
-// requirement 13) would pass a thin wrapper around `client.messages.create`,
-// the same pattern netlify/functions/mock-interview-turn.ts already uses for
-// the conversational turns.
+// a live Anthropic call. Production wiring is lib/interviewTurnEngine.ts's
+// callClaudeForGrading, gated behind MOCK_INTERVIEW_ENABLE_LIVE_GRADING —
+// the same client.messages.create pattern used for the conversational turns.
 export async function gradeFormalAssessment(
   items: GradableItem[],
   careerPath: string,

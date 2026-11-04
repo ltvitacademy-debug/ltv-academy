@@ -79,6 +79,22 @@ function toSessionDTO(session: {
 class CreditUnavailableError extends Error {}
 class DifficultyMismatchError extends Error {}
 
+// Lets specific, cryptographically-verified real Wix accounts (the site
+// owner/admin — never a client-supplied email) start interviews without
+// an existing paid credit, in production. Deliberately an explicit,
+// narrow allowlist rather than a blanket "no production check" — unlike
+// the old mintDevCredit/isProductionEnvironment() gap this replaces for
+// that identity, this can never be reached by anyone whose Wix member
+// token doesn't verify as one of these exact email addresses. Off by
+// default (empty env var) — nothing changes unless configured.
+function isUnlimitedTestEmail(email: string): boolean {
+  const allowlist = (process.env.MOCK_INTERVIEW_UNLIMITED_TEST_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return allowlist.includes(email.trim().toLowerCase());
+}
+
 // Spec Phase D priority 1: identity comes from a verified Wix member token
 // whenever one is present. devStudentEmail is accepted ONLY when there is
 // no Wix identity AND this isn't production — a real deployment must never
@@ -87,7 +103,7 @@ class DifficultyMismatchError extends Error {}
 async function resolveStudentIdentity(
   req: Request,
   devStudentEmail: string
-): Promise<{ studentId: string } | { error: string; status: number }> {
+): Promise<{ studentId: string; email: string } | { error: string; status: number }> {
   const identity = resolveWixIdentity(req);
   if (identity) {
     const student = await prisma.student.upsert({
@@ -95,7 +111,7 @@ async function resolveStudentIdentity(
       update: { email: identity.email },
       create: { wixMemberId: wixStudentKey(identity.memberId), email: identity.email },
     });
-    return { studentId: student.id };
+    return { studentId: student.id, email: identity.email };
   }
   if (isProductionEnvironment()) {
     return { error: "Missing or invalid Wix member login.", status: 401 };
@@ -108,7 +124,7 @@ async function resolveStudentIdentity(
     update: {},
     create: { wixMemberId: `dev:${devStudentEmail}`, email: devStudentEmail },
   });
-  return { studentId: student.id };
+  return { studentId: student.id, email: devStudentEmail };
 }
 
 export default async (req: Request) => {
@@ -159,7 +175,7 @@ export default async (req: Request) => {
 
   const identityResult = await resolveStudentIdentity(req, devStudentEmail);
   if ("error" in identityResult) return json({ error: identityResult.error }, identityResult.status);
-  const { studentId } = identityResult;
+  const { studentId, email: studentEmail } = identityResult;
 
   // Dev/test only — races two "start" calls against the SAME credit.
   // Hard-disabled in production: nothing should be able to mint a free
@@ -194,10 +210,26 @@ export default async (req: Request) => {
           where: { studentId, careerPath, status: "unused" },
           orderBy: { createdAt: "asc" },
         });
-        if (!existingUnused) {
+        if (existingUnused) {
+          creditId = existingUnused.id;
+        } else if (isUnlimitedTestEmail(studentEmail)) {
+          if (!VALID_DIFFICULTIES.includes(requestedDifficulty as InterviewDifficulty)) {
+            return json({ error: "Invalid difficulty — must be beginner, intermediate, or advanced" }, 400);
+          }
+          creditId = (
+            await prisma.interviewCredit.create({
+              data: {
+                studentId,
+                wixOrderId: `admin-test-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                careerPath,
+                difficulty: requestedDifficulty,
+                status: "unused",
+              },
+            })
+          ).id;
+        } else {
           return json({ error: "No available interview credit for this career path. Please purchase one first." }, 402);
         }
-        creditId = existingUnused.id;
       } else {
         // Dev/test convenience only.
         if (!VALID_DIFFICULTIES.includes(requestedDifficulty as InterviewDifficulty)) {

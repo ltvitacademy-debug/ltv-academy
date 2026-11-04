@@ -31,6 +31,8 @@ export default function MockInterviewChat({
   pathTitle,
   difficulty,
   resumeSessionId,
+  requestedVoiceMode,
+  resumeAccessToken,
 }: {
   pathSlug: string;
   pathTitle: string;
@@ -39,6 +41,16 @@ export default function MockInterviewChat({
   // starting a brand-new one (which would consume another credit). Set when
   // the student got here from their history list via an in-progress entry.
   resumeSessionId?: string;
+  // Set only by the new tab openVoiceInNewTab() opens (see below) via the
+  // ?voice= URL param — getUserMedia() needs a REAL click in THIS tab's own
+  // document (a click in the embedded iframe doesn't transfer), so this
+  // can't auto-start voice; it's used purely to make the one remaining
+  // click impossible to miss instead of leaving the student staring at a
+  // plain text-mode screen with no indication anything is different.
+  requestedVoiceMode?: "push-to-talk" | "hands-free";
+  // Also set only by openVoiceInNewTab() via the ?token= URL param — see
+  // the comment there for why this can't just rely on localStorage.
+  resumeAccessToken?: string;
 }) {
   const [phase, setPhase] = useState<"pre-check" | "resuming" | "in-progress" | "error">(resumeSessionId ? "resuming" : "pre-check");
   const [email, setEmail] = useState("");
@@ -72,6 +84,13 @@ export default function MockInterviewChat({
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
+  // window.open() from inside the Wix iframe is NOT reliable — mobile
+  // browsers in particular will silently block it, especially on a second
+  // attempt, with no error to catch. Rather than trust it blindly, this
+  // also renders a real, visible link as a guaranteed fallback the student
+  // can tap directly; a genuine click on an <a target="_blank"> is treated
+  // very differently from a popup than a script-triggered window.open().
+  const [voiceTabUrl, setVoiceTabUrl] = useState<string | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -81,6 +100,50 @@ export default function MockInterviewChat({
     stopSpeaking();
     setMode("text");
     setVoiceNotice(message);
+  }
+
+  // Wix embeds this page in an iframe, and Wix's HTML-embed component only
+  // ever grants an embedded iframe "camera", "encrypted-media", or
+  // "fullscreen" — confirmed against Wix's own Velo docs for $w.HtmlComponent's
+  // `allow` property, which does not list "microphone" among the permissions
+  // it supports at all. There is no Wix-side configuration that fixes this;
+  // getUserMedia() is silently blocked by the browser's Permissions Policy
+  // before either voice mode can ever connect. The workaround is to run the
+  // voice session in a real top-level tab instead, where that restriction
+  // doesn't apply — resuming the SAME session via localStorage's saved
+  // accessToken (lib/mockInterviewClientAuth.ts), so no credit or progress
+  // is reused/lost by opening a second tab.
+  function isEmbeddedInIframe(): boolean {
+    try {
+      return window.self !== window.top;
+    } catch {
+      // A cross-origin parent throws on window.top access — that IS being embedded.
+      return true;
+    }
+  }
+
+  function openVoiceInNewTab(targetVoiceMode: "push-to-talk" | "hands-free") {
+    if (!session || !accessToken) return;
+    // The new tab can't rely on localStorage alone to pick up the access
+    // token: on mobile Safari/Chrome, storage written by this component
+    // while running inside the Wix iframe (a third-party context) is
+    // partitioned away from a direct top-level visit to the same origin,
+    // so the new tab's own localStorage read can come back empty even
+    // though this tab clearly has the token. Carrying it in the URL (the
+    // same thing the resume GET request already does, see the
+    // resumeSessionId effect below) means the new tab is never stuck
+    // waiting on storage that may never arrive.
+    const url = `${window.location.origin}/app/mock-interview/session?path=${encodeURIComponent(pathSlug)}&difficulty=${encodeURIComponent(difficulty)}&resume=${encodeURIComponent(session.id)}&voice=${targetVoiceMode}&token=${encodeURIComponent(accessToken)}`;
+    const opened = window.open(url, "_blank", "noopener");
+    // A blocked popup returns null/undefined (no exception) — can't be
+    // caught, only detected after the fact. Either way, show the real
+    // link too, so there's always a guaranteed way to actually get there.
+    setVoiceTabUrl(url);
+    setVoiceNotice(
+      opened
+        ? "Voice modes need their own browser tab to use your microphone — opened your interview there. If you don't see the new tab, use the link below. This tab can stay open or be closed; nothing is lost either way."
+        : "Your browser blocked the new tab. Use the link below to open your interview and start voice there — nothing is lost."
+    );
   }
 
   // --- Phase F: Fish Audio Agents (hands-free, continuous voice) ---------
@@ -168,7 +231,13 @@ export default function MockInterviewChat({
   // MockInterviewSession/InterviewTurn, not in whichever Fish session_id
   // happens to be attached at the moment.
   async function startHandsFree() {
-    if (!session || !accessToken) return;
+    if (!session || !accessToken) {
+      // Previously a silent no-op — if this ever fires again (missing
+      // session/token for some other reason), the student should see
+      // something instead of a dead button.
+      setVoiceNotice("Couldn't start hands-free voice — your interview session didn't load correctly. Try reloading this tab.");
+      return;
+    }
     setVoiceNotice(null);
     setHandsFreeStatus("connecting");
     try {
@@ -389,7 +458,10 @@ export default function MockInterviewChat({
     // token (authorizeSessionAccess also accepts their verified identity —
     // spec Phase D priority 6); the stored token just saves a round-trip
     // when we do have it, and is the ONLY path for a dev-mode/local session.
-    const storedToken = getSessionAccessToken(resumeSessionId);
+    // resumeAccessToken (carried in the URL by openVoiceInNewTab) takes
+    // priority over localStorage — see the comment there for why the
+    // stored copy can be missing in this exact new-tab-for-voice case.
+    const storedToken = resumeAccessToken || getSessionAccessToken(resumeSessionId);
     const url = storedToken
       ? `/api/mock-interview-session?id=${encodeURIComponent(resumeSessionId)}&accessToken=${encodeURIComponent(storedToken)}`
       : `/api/mock-interview-session?id=${encodeURIComponent(resumeSessionId)}`;
@@ -402,7 +474,10 @@ export default function MockInterviewChat({
           return;
         }
         setSession(data.session);
-        if (storedToken) setAccessToken(storedToken);
+        if (storedToken) {
+          setAccessToken(storedToken);
+          saveSessionAccessToken(resumeSessionId, storedToken);
+        }
         setPhase("in-progress");
       })
       .catch(() => {
@@ -435,13 +510,24 @@ export default function MockInterviewChat({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ careerPath: pathSlug, difficulty, mode: "text", devStudentEmail: email.trim() || undefined }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Could not start the interview.");
-      setSession(data.session);
-      setAccessToken(data.accessToken);
-      saveSessionAccessToken(data.session.id, data.accessToken);
+      // A server-side crash (a timeout, a misconfiguration) can return a
+      // non-JSON body — showing the raw JSON.parse error to a student
+      // ("Unexpected token...") is both confusing and unhelpful, so this
+      // falls back to one clear message instead of letting that exception
+      // propagate as-is.
+      let data: { session?: Session; accessToken?: string; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Something went wrong starting the interview. Please try again in a moment.");
+      }
+      if (!res.ok || !data.session || !data.accessToken) throw new Error(data?.error || "Could not start the interview.");
+      const { session: newSession, accessToken: newAccessToken } = data;
+      setSession(newSession);
+      setAccessToken(newAccessToken);
+      saveSessionAccessToken(newSession.id, newAccessToken);
       setPhase("in-progress");
-      await submitTurn(data.session.id, "", data.accessToken);
+      await submitTurn(newSession.id, "", newAccessToken);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong starting the interview.");
     } finally {
@@ -550,11 +636,11 @@ export default function MockInterviewChat({
       </div>
 
       {!isComplete && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-stone">
-          <span>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-xs text-stone">
             {mode === "hands-free" ? "Hands-free voice (beta)" : mode === "push-to-talk" ? "Push-to-talk voice (beta)" : "Text mode"}
           </span>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {mode !== "text" && (
               <button
                 type="button"
@@ -564,7 +650,7 @@ export default function MockInterviewChat({
                   setMode("text");
                   setVoiceNotice(null);
                 }}
-                className="text-crimson hover:text-crimson-deep"
+                className="border-2 border-crimson px-4 py-2 text-xs font-semibold uppercase tracking-wide text-crimson transition hover:bg-crimson hover:text-parchment"
               >
                 Switch to text
               </button>
@@ -573,11 +659,15 @@ export default function MockInterviewChat({
               <button
                 type="button"
                 onClick={() => {
+                  if (isEmbeddedInIframe()) {
+                    openVoiceInNewTab("push-to-talk");
+                    return;
+                  }
                   if (mode === "hands-free") void endHandsFreeSession();
                   setMode("push-to-talk");
                   setVoiceNotice(null);
                 }}
-                className="text-crimson hover:text-crimson-deep"
+                className="border-2 border-crimson px-4 py-2 text-xs font-semibold uppercase tracking-wide text-crimson transition hover:bg-crimson hover:text-parchment"
               >
                 Try push-to-talk (beta)
               </button>
@@ -586,10 +676,14 @@ export default function MockInterviewChat({
               <button
                 type="button"
                 onClick={() => {
+                  if (isEmbeddedInIframe()) {
+                    openVoiceInNewTab("hands-free");
+                    return;
+                  }
                   if (mode === "push-to-talk") stopSpeaking();
                   void startHandsFree();
                 }}
-                className="text-crimson hover:text-crimson-deep"
+                className="border-2 border-crimson px-4 py-2 text-xs font-semibold uppercase tracking-wide text-crimson transition hover:bg-crimson hover:text-parchment"
               >
                 Try hands-free (beta)
               </button>
@@ -597,7 +691,42 @@ export default function MockInterviewChat({
           </div>
         </div>
       )}
-      {voiceNotice && <p className="mb-4 text-sm text-gold">{voiceNotice}</p>}
+      {voiceNotice && (
+        <div className="mb-4 border border-gold/40 bg-gold/10 p-3 text-sm text-ink">
+          <p>{voiceNotice}</p>
+          {voiceTabUrl && (
+            <a
+              href={voiceTabUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block bg-crimson px-4 py-2 text-xs font-semibold uppercase tracking-wide text-parchment hover:bg-crimson-deep"
+            >
+              Open voice interview in a new tab
+            </a>
+          )}
+        </div>
+      )}
+      {requestedVoiceMode && mode === "text" && !isComplete && (
+        <div className="mb-4 border-2 border-crimson bg-crimson/5 p-4 text-center">
+          <p className="mb-2 text-sm text-ink">
+            One more tap to start {requestedVoiceMode === "hands-free" ? "hands-free" : "push-to-talk"} voice — your browser needs you to
+            start it directly in this tab.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              if (requestedVoiceMode === "hands-free") {
+                void startHandsFree();
+              } else {
+                setMode("push-to-talk");
+              }
+            }}
+            className="bg-crimson px-6 py-3 text-sm font-semibold uppercase tracking-wide text-parchment hover:bg-crimson-deep"
+          >
+            Start {requestedVoiceMode === "hands-free" ? "hands-free" : "push-to-talk"} voice
+          </button>
+        </div>
+      )}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioElRef} className="hidden" />
 

@@ -63,15 +63,7 @@ export default function MockInterviewPage() {
         certificate.
       </p>
 
-      <div className="mt-6 border border-gold/40 bg-gold/10 p-4 text-sm text-ink">
-        <strong>Development preview.</strong> This page is running in text-based testing mode
-        while the question engine is tested (voice comes later). The scoring engine, report, and
-        certificate system are built and tested, but automatic grading is still awaiting final
-        administrator sign-off before it runs for real students — no payment is active yet,
-        this is for internal review only.
-      </div>
-
-      <div className="mt-4 border border-crimson/30 bg-crimson/5 p-4 text-sm text-ink">
+      <div className="mt-6 border border-crimson/30 bg-crimson/5 p-4 text-sm text-ink">
         <strong className="text-crimson-deep">Certificate eligibility.</strong> Every difficulty
         level gives you a full score, personalized coaching, and a detailed performance report.
         Only the <strong>Advanced</strong> interview can earn the printable{" "}

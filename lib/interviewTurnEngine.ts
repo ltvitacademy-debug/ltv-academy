@@ -48,7 +48,7 @@ export type InterviewTurnResult =
   // has no HTTP-status concept to hand back to Fish).
   | { kind: "no-op"; aiMessage: string };
 
-function sectionForElapsedMinutes(minutes: number): InterviewSectionId {
+export function sectionForElapsedMinutes(minutes: number): InterviewSectionId {
   let cumulative = 0;
   for (const s of SECTION_SCHEDULE) {
     cumulative += s.minutes;
@@ -195,9 +195,16 @@ export async function generateInterviewTurn(sessionId: string, studentResponseRa
   });
 
   const client = new Anthropic();
+  // The coaching debrief (spec: a ~2-4 minute spoken performance review,
+  // covering result/score/category breakdown/strengths/weaknesses/next
+  // steps) genuinely needs more room than a normal one-question turn —
+  // 600 tokens risks truncating it mid-JSON, which parseTurnOutput() below
+  // has to recover from gracefully either way, but giving coaching more
+  // headroom avoids hitting that path in the first place.
+  const maxTokens = computedSection === "coaching" ? 1200 : 600;
   const response = await client.messages.create({
     model: "claude-sonnet-5-5",
-    max_tokens: 600,
+    max_tokens: maxTokens,
     output_config: { effort: "medium" },
     system: systemPrompt,
     messages: isFirstTurn ? [{ role: "user", content: "Begin the interview." }] : history,
@@ -228,7 +235,7 @@ export async function generateInterviewTurn(sessionId: string, studentResponseRa
   return { kind: "turn", aiMessage: parsed.message, sectionChanged };
 }
 
-function buildSystemPrompt(args: {
+export function buildSystemPrompt(args: {
   careerPath: string;
   difficulty: InterviewDifficulty;
   section: InterviewSectionId;
@@ -250,22 +257,41 @@ function buildSystemPrompt(args: {
     : "(No competency framework has been drafted for this career path yet — ask strong general technical questions for the difficulty level instead.)";
 
   const enforceableNote = args.enforceable
-    ? "The Critical Competency Framework above has been administrator-approved. You may treat these as must-demonstrate competencies, but you must still offer ONE neutral clarification question before treating any single competency as unmet — never declare a failure outright mid-interview."
+    ? "The Critical Competency Framework above has been administrator-approved. You may treat these as must-demonstrate competencies, but you must still offer ONE neutral clarification question before treating any single competency as unmet — never declare a failure outright mid-interview, and never tell the student, directly or indirectly, whether they met a competency. That judgment is made privately, after the interview, not by anything you say now."
     : "IMPORTANT: The Critical Competency Framework above is still a DRAFT and has NOT been approved by an administrator. Use it only to choose good, relevant questions — do NOT tell the student they have failed, passed, or are at risk of failing anything. Never mention scoring, passing, or failing during the interview itself. Just ask strong questions and let their answers speak for themselves; scoring happens separately, after approval.";
 
   const seedBlock = args.seedQuestions.length
     ? args.seedQuestions.map((q) => `- [${q.id}] ${q.title ?? ""}: ${q.prompt}`).join("\n").slice(0, 6000)
     : "(No seed question bank found for this path/difficulty.)";
 
-  const sectionSpecificBlock = buildSectionSpecificBlock(args.section, args.projectOwnershipProbe, args.scenarioQuestions, args.formalAssessmentReport);
+  const sectionSpecificBlock = buildSectionSpecificBlock(
+    args.section,
+    args.difficulty,
+    args.projectOwnershipProbe,
+    args.scenarioQuestions,
+    args.formalAssessmentReport
+  );
 
   return `You are the AI interviewer conducting the "LTV Academy Professional Mock Interview" — a premium, realistic technical interview simulation for the "${args.careerPath}" career path at "${args.difficulty}" difficulty.
 
-This is a REAL professional-interview experience, not a quiz. Ask one clear, natural question or follow-up at a time. Listen to what the student actually says and adapt — do not simply read questions off a list verbatim. You may draw inspiration from the seed questions below, but phrase things conversationally, the way a real senior interviewer would. Every question or competency you've already used in this session is excluded from the lists below — never ask about the same thing twice.
+This is a REAL professional-interview experience, not a tutoring session or a quiz. You are an experienced, serious-but-respectful technical hiring manager — never a teacher. Ask one clear, natural question or follow-up at a time. Listen to what the student actually says and adapt — do not simply read questions off a list verbatim. You may draw inspiration from the seed questions below, but phrase things conversationally, the way a real senior interviewer would. Every question or competency you've already used in this session is excluded from the lists below — never ask about the same thing twice.
+
+STRICT RULES while interviewing — these apply in every section EXCEPT "Corrections and coaching" (that section fully replaces them with its own instructions below):
+- NEVER tell the candidate whether an answer was correct, incorrect, strong, or weak — not even subtly. Do not say things like "That's correct," "Excellent answer," "You're absolutely right," "Good job," or "Not quite."
+- NEVER explain why an answer is right or wrong, and never volunteer a lesson, hint, or the solution. If the candidate asks YOU a question — for clarification, confirmation, or to be taught something — do not answer or explain it. A real interviewer doesn't tutor mid-interview: acknowledge briefly, then either restate your own question once plainly, or move on.
+- NEVER reveal scores, grading decisions, which competencies you're probing, or rubric requirements during the interview itself.
+- Never let the wording of a follow-up question give away the answer.
+- Acknowledge each answer with a brief, NEUTRAL, VARIED transition — e.g. "Thank you." / "Understood." / "All right." / "I see." / "Let's move to another area." Don't default to "Thank you" after every answer — vary it, and sometimes move straight into the next question with no acknowledgment phrase at all, the way a real interview actually flows.
+- If an answer seems strong, you may go deeper — implementation detail, trade-offs, edge cases, real-world application — but frame it as ordinary interview curiosity, never as praise that reveals the answer was good.
+- If an answer is incomplete, ask ONE neutral clarification question without hinting at what's missing.
+- If an answer seems incorrect, you may offer one neutral clarification where the framework below permits it — never correct, teach, or say outright that it's wrong. Note it to yourself and move forward.
+- If the candidate says "I don't know" (or similar), acknowledge professionally and move straight to the next question — never supply the answer yourself.
+- Follow-ups must be purposeful, not automatic. Don't drill the same subject repeatedly — keep the interview moving so every required area is covered in the time available.
+- Never repeat the candidate's answer back to them at length, and never interrupt — let them finish.
 
 Schedule (54 minutes total, you are currently in the "${args.sectionLabel}" section, ~${Math.round(args.elapsedMinutes)} of ${args.totalMinutes} minutes elapsed):
 ${SECTION_SCHEDULE.map((s) => `- ${s.label} (${s.minutes} min)`).join("\n")}
-There is no separate introduction section — the clock starts at the first technical-competency question. The first 45 minutes are the formal assessment. The final 9 minutes ("Corrections and coaching") happen only after the formal assessment — if you are in that section, shift tone: explain what was strong/weak, give stronger example answers, and recommend specific LTV Academy lessons, instead of asking new assessment questions. Nothing you say in the coaching section affects the score — that has already been finalized from the formal assessment alone.
+There is no separate introduction section — the clock starts at the first technical-competency question. The first 45 minutes are the formal assessment, governed by the strict rules above. The final 9 minutes ("Corrections and coaching") happen only after the formal assessment — if you are in that section, the strict rules above no longer apply: shift fully into evaluator/coach mode per that section's own instructions below. Nothing you say in the coaching section affects the score — that has already been finalized from the formal assessment alone.
 
 ${args.isFirstTurn ? "This is the very first message of the interview. Give a brief, warm, professional greeting (a sentence or two — do NOT spend time on a separate introduction/background phase), then move directly into your first technical-competency question for this difficulty. The greeting itself doesn't use up assessment time, but don't pad it — get to the first real question quickly." : "Continue the interview naturally from the conversation so far."}
 
@@ -283,30 +309,65 @@ Respond with ONLY a single JSON object, no other text, in this exact shape:
 {"message": "<what you say to the student next>", "competencyId": "<id from the framework above if this message is probing one, else null>", "questionId": "<id from the seed bank, the project-ownership probe, or the scenario bank if this message is drawn from one of those, else null>"}`;
 }
 
-function buildSectionSpecificBlock(
+export function buildSectionSpecificBlock(
   section: InterviewSectionId,
+  difficulty: InterviewDifficulty,
   probe: ProjectOwnershipProbe | null,
   scenarios: ScenarioQuestion[],
   formalAssessmentReport: ScoredSessionResult | null
 ): string {
   if (section === "coaching") {
     if (!formalAssessmentReport) {
-      return "Coaching section: the formal assessment's score has already been finalized (or grading is pending) — you don't have the detailed breakdown available right now, so coach generically: review the overall flow of the interview from the conversation above, call out anything you noticed that was strong or weak, and recommend they revisit the LTV Academy lessons most relevant to whatever seemed shakiest. Do not invent a specific score or pass/fail result you don't actually have.";
+      return "Coaching section: the formal assessment's score has already been finalized (or grading is pending) — you don't have the detailed breakdown available right now, so coach generically: thank the student for completing the interview, review the overall flow of the conversation above, call out anything you noticed that was strong or weak, and recommend they revisit the LTV Academy topics most relevant to whatever seemed shakiest. Do not invent a specific score or pass/fail result you don't actually have — tell them their full report, with the final result, will be ready in the student portal shortly.";
     }
-    const weak = formalAssessmentReport.gradedItems.filter((i) => i.verdict === "not-met").map((i) => `- ${i.itemId}: ${i.explanation}`);
-    const strong = formalAssessmentReport.gradedItems.filter((i) => i.verdict === "met").map((i) => `- ${i.itemId}: ${i.explanation}`);
-    return `Coaching section — the formal assessment is FINALIZED and scored (overall ${formalAssessmentReport.criteria.overallScore}/100, category scores: technical ${formalAssessmentReport.categoryScores.technicalKnowledge}, project ownership ${formalAssessmentReport.categoryScores.projectOwnership}, scenario reasoning ${formalAssessmentReport.categoryScores.scenarioReasoning}, communication ${formalAssessmentReport.categoryScores.communication}). Use this REAL evidence to coach — do not ask new assessment questions, and nothing you say here can change the score, which is already locked in:
-Strengths to acknowledge:
-${strong.length ? strong.join("\n") : "(none scored as a clear strength)"}
-Weaknesses to coach on — be specific and constructive, and point them toward revisiting the relevant LTV Academy lesson(s) when one is available from the context above:
-${weak.length ? weak.join("\n") : "(no clear weaknesses — focus coaching on polish and interview presence)"}`;
+
+    const label = resultLabel(difficulty, formalAssessmentReport.outcome);
+    const allWeak = formalAssessmentReport.gradedItems.filter((i) => i.verdict === "not-met");
+    const allStrong = [...formalAssessmentReport.gradedItems.filter((i) => i.verdict === "met")].sort((a, b) => b.score - a.score);
+    // Failed critical competencies matter most and are never buried behind
+    // lower-stakes weaknesses — they lead the prioritized list.
+    const failedCompetencies = allWeak.filter((i) => i.itemType === "competency");
+    const otherWeaknesses = allWeak.filter((i) => i.itemType !== "competency");
+    const prioritizedWeak = [...failedCompetencies, ...otherWeaknesses].slice(0, 5);
+    const remainingWeakCount = Math.max(0, allWeak.length - prioritizedWeak.length);
+
+    const strongLines = allStrong.slice(0, 4).map((i) => `- [${i.itemType}] ${i.questionAsked}: ${i.explanation}`);
+    const weakLines = prioritizedWeak.map(
+      (i) =>
+        `- [${i.itemType}${i.itemType === "competency" ? ", FAILED CRITICAL COMPETENCY" : ""}] ${i.questionAsked}: ${i.explanation} — what a stronger answer needed: ${i.rubric}`
+    );
+
+    return `Coaching section — the formal assessment is FINALIZED and scored. You are now the EVALUATOR AND COACH, not the interviewer — the strict no-evaluation rules above are LIFTED for this section only.
+
+Deliver a professional, spoken performance debrief as natural flowing speech (never read this as a literal bulleted list), covering, in roughly this order:
+1. Thank the candidate for completing the interview.
+2. State the result plainly: "${label}" (overall score ${formalAssessmentReport.criteria.overallScore}/100).${
+      formalAssessmentReport.outcome === "needs-review"
+        ? ' Explain that a couple of answers need a quick administrator review before the result is fully finalized — this happens occasionally and is not a bad sign on its own.'
+        : ""
+    }
+3. Briefly summarize performance across the four areas: technical knowledge ${formalAssessmentReport.categoryScores.technicalKnowledge}/100, project ownership ${formalAssessmentReport.categoryScores.projectOwnership}/100, scenario reasoning ${formalAssessmentReport.categoryScores.scenarioReasoning}/100, communication ${formalAssessmentReport.categoryScores.communication}/100.
+4. Call out the strongest demonstrated skills, drawn from this real evidence:
+${strongLines.length ? strongLines.join("\n") : "(nothing scored as a clear strength — be honest but constructive about this instead)"}
+5. Walk through the most important weaknesses, drawn from this real evidence:
+${weakLines.length ? weakLines.join("\n") : "(no clear weaknesses — focus this part on polish and interview presence instead)"}
+   Be explicit when something above is marked FAILED CRITICAL COMPETENCY — name it as a required competency, and explain in plain terms what a stronger answer would have included.
+${
+  remainingWeakCount > 0
+    ? `   There are ${remainingWeakCount} more weaker answers beyond the ones listed above — do NOT read them all aloud. Mention briefly that there were a few more (and any recurring pattern you notice), and point the student to their written report in the student portal for the complete question-by-question breakdown.`
+    : ""
+}
+6. Recommend specific topics or skill areas from the LTV Academy coursework worth revisiting, based on the weaknesses above — speak in terms of topics, not exact lesson titles (the written report lists exact lessons).
+7. Close with the candidate's single most important next step.
+
+This entire debrief should run roughly 2 to 4 minutes of natural speech, and the coaching section itself is capped at 9 minutes. Prioritize the result, the score, and the most important findings over reciting every detail — nothing you say here can change the score, which is already locked in, and the complete record is always in the written report regardless of what you have time to say out loud.`;
   }
 
   if (section === "project-ownership") {
     if (!probe) {
-      return "Project-ownership section: no playbook has been drafted for this path/difficulty yet — ask the student to walk you through a real project they built and press for specifics (what exactly they did, why, what broke) using your own judgment.";
+      return "Project-ownership section: no playbook has been drafted for this path/difficulty yet — ask the student to walk you through a real project they built and press for specifics (what exactly they did, why, what broke) using your own judgment. Follow the strict rules above — never indicate whether their account of ownership sounds genuine or rehearsed; that judgment happens privately, afterward.";
     }
-    return `Project-ownership section — use this playbook (id: ${probe.id}). Open with the prompt, then use the follow-ups ADAPTIVELY based on what the student actually says — you don't have to ask every follow-up, and you can reorder them, but your goal is genuinely separating hands-on ownership from a rehearsed or team-credited answer:
+    return `Project-ownership section — use this playbook (id: ${probe.id}). Open with the prompt, then use the follow-ups ADAPTIVELY based on what the student actually says — you don't have to ask every follow-up, and you can reorder them, but your goal is genuinely separating hands-on ownership from a rehearsed or team-credited answer. Follow the strict rules above throughout — never indicate, during this section, whether their account sounds genuine or rehearsed; that judgment happens privately, afterward.
 Opening prompt: ${probe.prompt}
 Follow-ups available: ${probe.followUps.map((f) => `"${f}"`).join(" | ")}
 What a passing answer looks like: ${probe.passingCriteria}
@@ -316,9 +377,9 @@ Set questionId to "${probe.id}" for every message in this section.`;
 
   if (section === "scenario-problem-solving") {
     if (!scenarios.length) {
-      return "Scenario-based problem-solving section: no scenario bank has been drafted for this path/difficulty yet — pose a realistic workplace problem for this role using your own judgment and probe their reasoning process.";
+      return "Scenario-based problem-solving section: no scenario bank has been drafted for this path/difficulty yet — pose a realistic workplace problem for this role using your own judgment and probe their reasoning process. Follow the strict rules above — never indicate whether their reasoning is on the right track.";
     }
-    return `Scenario-based problem-solving section — pose ONE of these realistic workplace scenarios at a time (pick one not yet used), let the student reason through it out loud, and ask natural follow-ups about their reasoning (don't just accept a one-line answer):
+    return `Scenario-based problem-solving section — pose ONE of these realistic workplace scenarios at a time (pick one not yet used), let the student reason through it out loud, and ask natural follow-ups about their reasoning (don't just accept a one-line answer). Follow the strict rules above throughout — never indicate whether their reasoning is on the right track; stay curious and neutral regardless of where they're headed:
 ${scenarios.map((s) => `- [${s.id}] ${s.title}: ${s.prompt}`).join("\n")}
 Set questionId to the scenario's id (e.g. "${scenarios[0].id}") when you pose or follow up on one of these.`;
   }
@@ -326,9 +387,9 @@ Set questionId to the scenario's id (e.g. "${scenarios[0].id}") when you pose or
   return "";
 }
 
-function parseTurnOutput(raw: string): { message: string; competencyId: string | null; questionId: string | null } {
+export function parseTurnOutput(raw: string): { message: string; competencyId: string | null; questionId: string | null } {
+  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/, "");
   try {
-    const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/```\s*$/, "");
     const obj = JSON.parse(cleaned);
     if (typeof obj.message === "string" && obj.message.trim()) {
       return {
@@ -338,10 +399,23 @@ function parseTurnOutput(raw: string): { message: string; competencyId: string |
       };
     }
   } catch {
-    // fall through — treat the raw text as the message so a malformed JSON
-    // response never breaks the interview for the student
+    // Most often a response truncated mid-sentence against max_tokens (the
+    // coaching debrief is the long case this matters for) — recover just
+    // the "message" field's text rather than ever showing the student raw
+    // JSON scaffolding like `{"message": "Thank you for...`.
+    const match = cleaned.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)/);
+    if (match) {
+      try {
+        const recovered = JSON.parse(`"${match[1]}"`);
+        if (typeof recovered === "string" && recovered.trim()) {
+          return { message: recovered.trim(), competencyId: null, questionId: null };
+        }
+      } catch {
+        // the partial string itself ended on a dangling escape — fall through
+      }
+    }
   }
-  return { message: raw.trim() || "Could you tell me more about that?", competencyId: null, questionId: null };
+  return { message: "Thank you — let's continue.", competencyId: null, questionId: null };
 }
 
 // The real production grading call — only ever reached when
