@@ -64,6 +64,10 @@ export default function MockInterviewChat({
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Set only on a 402 from the backend (no unused credit for this path and
+  // not on the admin test-email allowlist) so the error view can offer a
+  // real purchase link instead of just the plain error text.
+  const [needsPurchase, setNeedsPurchase] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
@@ -499,6 +503,7 @@ export default function MockInterviewChat({
   async function startInterview() {
     setPending(true);
     setError(null);
+    setNeedsPurchase(false);
     try {
       // A real, logged-in Wix member needs no email at all — their identity
       // comes from the ltv_wm cookie server-side (spec Phase D priority 1).
@@ -521,7 +526,10 @@ export default function MockInterviewChat({
       } catch {
         throw new Error("Something went wrong starting the interview. Please try again in a moment.");
       }
-      if (!res.ok || !data.session || !data.accessToken) throw new Error(data?.error || "Could not start the interview.");
+      if (!res.ok || !data.session || !data.accessToken) {
+        if (res.status === 402) setNeedsPurchase(true);
+        throw new Error(data?.error || "Could not start the interview.");
+      }
       const { session: newSession, accessToken: newAccessToken } = data;
       setSession(newSession);
       setAccessToken(newAccessToken);
@@ -566,12 +574,65 @@ export default function MockInterviewChat({
   }
 
   if (phase === "error" && !session) {
+    if (needsPurchase) {
+      return (
+        <div className="mx-auto max-w-xl border border-crimson/30 bg-crimson/5 p-6 text-center">
+          <p className="eyebrow mb-2">Purchase required</p>
+          <h2 className="display text-xl text-ink">You&apos;ll need a Mock Interview to begin</h2>
+          <p className="mt-3 text-sm text-stone">
+            This interview isn&apos;t included with your current plan. A Professional Mock
+            Interview is a one-time $19.97 purchase — once it&apos;s on your account, come back
+            here and pick any difficulty to start.
+          </p>
+          <a
+            href="https://www.ltvacademy.com/pricing-plans/plans-pricing"
+            target="_top"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
+          >
+            Purchase a Mock Interview — $19.97
+          </a>
+          <div className="mt-4">
+            <Link href="/app/mock-interview/history" className="text-sm text-crimson-deep hover:underline">
+              Back to my history
+            </Link>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mx-auto max-w-xl border border-crimson/30 bg-crimson/5 p-6 text-center">
         <p className="text-sm text-crimson">{error ?? "Something went wrong."}</p>
         <Link href="/app/mock-interview/history" className="mt-4 inline-block text-sm text-crimson-deep hover:underline">
           Back to my history
         </Link>
+      </div>
+    );
+  }
+
+  if (phase === "pre-check" && needsPurchase) {
+    return (
+      <div className="mx-auto max-w-xl border border-crimson/30 bg-crimson/5 p-6 text-center">
+        <p className="eyebrow mb-2">Purchase required</p>
+        <h2 className="display text-xl text-ink">You&apos;ll need a Mock Interview to begin</h2>
+        <p className="mt-3 text-sm text-stone">
+          This interview isn&apos;t included with your current plan. A Professional Mock
+          Interview is a one-time $19.97 purchase — once it&apos;s on your account, come back
+          here and pick any difficulty to start.
+        </p>
+        <a
+          href="https://www.ltvacademy.com/pricing-plans/plans-pricing"
+          target="_top"
+          rel="noopener noreferrer"
+          className="mt-6 inline-block rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
+        >
+          Purchase a Mock Interview — $19.97
+        </a>
+        <div className="mt-4">
+          <Link href="/app/mock-interview" className="text-sm text-crimson-deep hover:underline">
+            Back to interview selection
+          </Link>
+        </div>
       </div>
     );
   }
