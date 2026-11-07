@@ -29,6 +29,16 @@
   # "Cannot find module '@tailwindcss/postcss'". This forces npm to install
   # devDependencies regardless of NODE_ENV, during the build step only.
   NPM_FLAGS = "--include=dev"
+  # `next build` was getting OOM-killed (exit 137, bare "Killed", no JS heap
+  # error) even after capping static-gen workers to 1 (next.config.ts) — so
+  # it wasn't worker parallelism, it's memory growing inside a single
+  # process past what this build sandbox actually has. In a container, V8
+  # sizes its default heap ceiling off the host's total memory, not the
+  # container's real cap, so it can let the heap balloon well past the
+  # sandbox's limit before ever hitting its own "heap out of memory" error —
+  # the OS kills the process first. Capping it explicitly below the real
+  # ceiling forces GC to kick in earlier instead.
+  NODE_OPTIONS = "--max-old-space-size=4096"
 
 [functions]
   # Prisma's generated client ships a native query-engine binary
