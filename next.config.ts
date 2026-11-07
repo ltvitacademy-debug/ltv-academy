@@ -13,6 +13,16 @@ import type { NextConfig } from "next";
 // (and the trace question) entirely by shipping static HTML only.
 const nextConfig: NextConfig = {
   output: "export",
+  // Next spawns one static-generation worker per CPU core by default, each
+  // rendering pages (and loading their guide.md/quiz.json/slide content) in
+  // parallel. With ~10,769 generated pages across all courses, that
+  // concurrency now outgrows the Netlify build machine's RAM and the build
+  // gets OOM-killed (exit 137) partway through "Creating an optimized
+  // production build". Capping workers to 1 serializes generation — slower,
+  // but keeps peak memory low enough to finish instead of dying silently.
+  experimental: {
+    cpus: 1,
+  },
   // `netlify dev`'s proxy (Next dev server -> Netlify's edge-function-aware
   // proxy -> browser) was labeling responses `content-encoding: gzip` while
   // actually sending plain, uncompressed HTML — real Chrome correctly
