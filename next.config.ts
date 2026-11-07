@@ -10,16 +10,25 @@ import type { NextConfig } from "next";
 // of slide/source-image PNGs across all three courses) into that
 // handler's bundle, blowing past AWS Lambda's 250MB unzipped limit and
 // failing the Netlify deploy. `output: "export"` removes the Lambda
-// (and the trace question) entirely by shipping static HTML only.
+// itself by shipping static HTML only — but as it turns out below, the
+// tracer still ran and still walked that same directory regardless.
 const nextConfig: NextConfig = {
   output: "export",
-  // Next spawns one static-generation worker per CPU core by default, each
-  // rendering pages (and loading their guide.md/quiz.json/slide content) in
-  // parallel. With ~10,769 generated pages across all courses, that
-  // concurrency now outgrows the Netlify build machine's RAM and the build
-  // gets OOM-killed (exit 137) partway through "Creating an optimized
-  // production build". Capping workers to 1 serializes generation — slower,
-  // but keeps peak memory low enough to finish instead of dying silently.
+  // Capping static-gen workers to 1, and separately capping Node's V8 heap
+  // via NODE_OPTIONS in netlify.toml, both failed to fix the build OOM
+  // (still a bare "Killed", exit 137, no JS heap error, same ~3-4 min
+  // timing) — so the leak isn't page-render parallelism or V8 heap growth.
+  // The likelier culprit, per the comment above (now removed) about
+  // loadLessonContent()'s dynamic fs path: Next's build-time output file
+  // tracer can't statically narrow that path, so it conservatively walks
+  // and holds the *entire* content/ directory (1.8GB+ of slide/source-image
+  // PNGs) in memory while tracing — previously only known to matter for
+  // Lambda bundle size, but the trace itself is expensive regardless of
+  // what (if anything) consumes its output. `output: "export"` means there
+  // are no server functions for pages to trace for in the first place, so
+  // disabling tracing outright removes that work entirely instead of
+  // guessing at how to shrink it.
+  outputFileTracing: false,
   experimental: {
     cpus: 1,
   },
