@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import MockInterviewChat from "@/components/app/MockInterviewChat";
-import { getCareerPath } from "@/lib/career-paths";
-import { MOCK_INTERVIEW_PATHS } from "@/lib/mockInterviewPaths";
 
 // Client-rendered: this app is a static export (next.config.ts sets
 // output: "export"), so there is no server available at request time to
@@ -22,9 +20,7 @@ function SessionPageInner() {
   const requestedVoiceMode = voiceParam === "hands-free" || voiceParam === "push-to-talk" ? voiceParam : undefined;
   const resumeAccessToken = params.get("token") ?? undefined;
 
-  const careerPath = MOCK_INTERVIEW_PATHS.includes(path) ? getCareerPath(path) : undefined;
-
-  if (!careerPath) {
+  if (path !== "snowflake-data-engineer") {
     return (
       <main className="mx-auto max-w-2xl px-4 py-10 text-center sm:px-6">
         <p className="text-stone">That career path isn&apos;t available for the mock interview yet.</p>
@@ -46,7 +42,7 @@ function SessionPageInner() {
       </nav>
       <MockInterviewChat
         pathSlug={path}
-        pathTitle={careerPath.title}
+        pathTitle="Snowflake Data / Analytics Engineer"
         difficulty={difficulty}
         resumeSessionId={resume}
         requestedVoiceMode={requestedVoiceMode}

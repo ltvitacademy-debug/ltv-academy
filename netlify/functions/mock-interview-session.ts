@@ -17,15 +17,15 @@
 //
 // Credit handling (Phase D — real Wix Pricing Plans purchases land via
 // netlify/functions/wix-interview-purchase-webhook.ts, which creates
-// InterviewCredit rows with careerPath: null AND difficulty: null — "not
-// chosen yet", shared-product model, 2026-11). Claiming an existing credit
-// only lets the request choose careerPath/difficulty when the credit
-// doesn't already have one locked in — once either is set, a student can no
-// longer redirect that SAME credit to a different careerPath/difficulty
-// than what they already started spending it on. The claim + session-create
-// still happen inside a single DB transaction: if session creation fails
-// for any reason, the credit claim rolls back with it, so a failed start
-// never permanently burns a credit (see the vitest coverage for this).
+// InterviewCredit rows with difficulty: null — "not chosen yet"). Claiming
+// an existing credit takes its careerPath from the CREDIT itself, never
+// from the request body, and only lets the request choose difficulty when
+// the credit doesn't already have one locked in — a student can no longer
+// point a credit at an arbitrary careerPath/difficulty by passing different
+// values than what they actually paid for. The claim + session-create still
+// happen inside a single DB transaction: if session creation fails for any
+// reason, the credit claim rolls back with it, so a failed start never
+// permanently burns a credit (see the vitest coverage for this).
 import type { Config } from "@netlify/functions";
 import { prisma } from "../../lib/db";
 import { SECTION_SCHEDULE } from "../../lib/mockInterviewTypes";
@@ -204,22 +204,12 @@ export default async (req: Request) => {
       if (isProductionEnvironment()) {
         // Production never mints a credit from nothing — only a real,
         // already-paid-for credit (granted by the Wix webhook) may be
-        // claimed. Auto-select the student's own oldest unused credit that
-        // can actually be spent on this careerPath: either one already
-        // bound to it, or a shared credit (careerPath still null) that
-        // hasn't been spent on anything yet — so the frontend doesn't need
-        // to track credit ids. Prefer an exact-path match first so an
-        // older, already-bound credit isn't left stranded behind a newer
-        // shared one.
-        const existingUnused =
-          (await prisma.interviewCredit.findFirst({
-            where: { studentId, careerPath, status: "unused" },
-            orderBy: { createdAt: "asc" },
-          })) ??
-          (await prisma.interviewCredit.findFirst({
-            where: { studentId, careerPath: null, status: "unused" },
-            orderBy: { createdAt: "asc" },
-          }));
+        // claimed. Auto-select the student's own oldest unused one for
+        // this careerPath so the frontend doesn't need to track credit ids.
+        const existingUnused = await prisma.interviewCredit.findFirst({
+          where: { studentId, careerPath, status: "unused" },
+          orderBy: { createdAt: "asc" },
+        });
         if (existingUnused) {
           creditId = existingUnused.id;
         } else if (isUnlimitedTestEmail(studentEmail)) {
@@ -271,15 +261,10 @@ export default async (req: Request) => {
       const credit = await tx.interviewCredit.findFirst({ where: { id: creditId, studentId } });
       if (!credit) throw new CreditUnavailableError();
 
-      // If the credit already has a careerPath locked in, that's
-      // authoritative, never the request body's — once a real credit is
-      // bound to a path, a differing request value is silently ignored
-      // rather than redirecting it (spec priorities 2 & 5: a student can't
-      // point an existing credit at a different path than what it was
-      // actually started against). A still-unbound (shared) credit takes
-      // whatever careerPath this request asks for — the first path it's
-      // ever spent on.
-      const finalCareerPath = credit.careerPath ?? careerPath;
+      // The credit's OWN careerPath is authoritative, never the request
+      // body's — once a real credit exists, you can't redirect it to a
+      // different path than what was actually paid for.
+      const finalCareerPath = credit.careerPath;
       if (credit.difficulty && requestedDifficulty && credit.difficulty !== requestedDifficulty) {
         throw new DifficultyMismatchError();
       }
@@ -290,7 +275,7 @@ export default async (req: Request) => {
 
       const claim = await tx.interviewCredit.updateMany({
         where: { id: creditId, studentId, status: "unused" },
-        data: { status: "consumed", consumedAt: new Date(), careerPath: finalCareerPath, difficulty: finalDifficulty },
+        data: { status: "consumed", consumedAt: new Date(), difficulty: finalDifficulty },
       });
       if (claim.count !== 1) {
         throw new CreditUnavailableError();

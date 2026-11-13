@@ -7,6 +7,7 @@ import { prisma } from "../db";
 import {
   parseWixOrderPurchasedEvent,
   grantInterviewCreditForOrder,
+  mapWixPlanIdToCareerPath,
   isMockInterviewPlan,
   type ParsedWixOrderEvent,
   type WixOrderPaymentStatus,
@@ -92,6 +93,10 @@ describe("parseWixOrderPurchasedEvent — confirmed real payload shapes", () => 
     expect(parseWixOrderPurchasedEvent({ data: { order: { _id: "order-4" } } })).toBeNull(); // no buyer at all
   });
 
+  it("mapWixPlanIdToCareerPath currently maps every plan to the single pilot path", () => {
+    expect(mapWixPlanIdToCareerPath("any-plan-id")).toBe("snowflake-data-engineer");
+    expect(mapWixPlanIdToCareerPath(undefined)).toBe("snowflake-data-engineer");
+  });
 });
 
 describe("isMockInterviewPlan — plan-id gating (spec priority 3: never touch the existing $297/mo subscription)", () => {
@@ -229,7 +234,7 @@ describe("grantInterviewCreditForOrder — fail-closed authoritative verificatio
     const credit = await prisma.interviewCredit.findUniqueOrThrow({ where: { id: result.creditId } });
     expect(credit.status).toBe("unused");
     expect(credit.difficulty).toBeNull(); // chosen later, not baked into the purchase
-    expect(credit.careerPath).toBeNull(); // shared credit — career path also chosen later, not baked into the purchase
+    expect(credit.careerPath).toBe("snowflake-data-engineer");
 
     const student = await prisma.student.findUniqueOrThrow({ where: { wixMemberId: wixStudentKey(event.wixMemberId) } });
     createdStudentIds.push(student.id);
