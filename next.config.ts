@@ -24,11 +24,22 @@ const nextConfig: NextConfig = {
   // and holds the *entire* content/ directory (1.8GB+ of slide/source-image
   // PNGs) in memory while tracing — previously only known to matter for
   // Lambda bundle size, but the trace itself is expensive regardless of
-  // what (if anything) consumes its output. `output: "export"` means there
-  // are no server functions for pages to trace for in the first place, so
-  // disabling tracing outright removes that work entirely instead of
-  // guessing at how to shrink it.
-  outputFileTracing: false,
+  // what (if anything) consumes its output.
+  //
+  // 2026-11-13: the plain `outputFileTracing: false` boolean this relied on
+  // silently stopped being a recognized config key as of Next 15.5.25 ("⚠
+  // Invalid next.config.ts options detected: Unrecognized key(s) in
+  // object: 'outputFileTracing'") — confirmed against
+  // node_modules/next/dist/server/config-schema.js, which only defines
+  // outputFileTracingRoot/Excludes/Includes now, no bare on/off switch.
+  // That means tracing had silently started walking content/ again on
+  // every build since whenever this dependency last updated, which is the
+  // real explanation for builds that kept OOMing even after this file
+  // supposedly already disabled it. outputFileTracingExcludes is the
+  // still-supported replacement — "*" applies it to every route.
+  outputFileTracingExcludes: {
+    "*": ["./content/**/*"],
+  },
   experimental: {
     cpus: 1,
   },
