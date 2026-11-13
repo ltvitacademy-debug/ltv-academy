@@ -15,14 +15,15 @@
 import { prisma } from "./db";
 import { wixStudentKey } from "./wixMemberToken";
 
-// Only one career path exists today (the Snowflake pilot — see
-// CLAUDE.md/app/app/mock-interview/page.tsx's PILOT_PATHS). If/when more
-// paths sell their own $19.97 interview, map Wix's planId to a careerPath
-// here instead of adding a branch anywhere else.
-const DEFAULT_CAREER_PATH = "snowflake-data-engineer";
-export function mapWixPlanIdToCareerPath(_planId: string | undefined): string {
-  return DEFAULT_CAREER_PATH;
-}
+// Shared-product model (2026-11): the ONE $19.97 Wix plan sells a credit
+// good for ANY mock-interview career path, not a path-specific product —
+// so a grant no longer stamps a careerPath at all (InterviewCredit.careerPath
+// is null here, same as difficulty already was). The student picks which
+// path to spend it on at session start; mock-interview-session.ts sets
+// careerPath on the credit atomically at that point, exactly like it
+// already does for difficulty. If a path-specific product is ever sold
+// again later, give it its own planId and look it up here instead of
+// leaving every grant unbound.
 
 // The ONE Plan this webhook is allowed to act on. Every OTHER Plan on the
 // site — including the existing $297/mo subscription — fires the exact same
@@ -220,7 +221,6 @@ export async function grantInterviewCreditForOrder(event: ParsedWixOrderEvent): 
     return { granted: false, reason: "not-paid" };
   }
 
-  const careerPath = mapWixPlanIdToCareerPath(event.planId);
   const resolvedEmail = (await resolveMemberEmail(event.wixMemberId)) ?? event.email;
 
   const student = await prisma.student.upsert({
@@ -235,7 +235,7 @@ export async function grantInterviewCreditForOrder(event: ParsedWixOrderEvent): 
     create: {
       studentId: student.id,
       wixOrderId: event.wixOrderId,
-      careerPath,
+      careerPath: null, // chosen by the student at session start, not baked into the Wix purchase
       difficulty: null, // chosen by the student at session start, not baked into the Wix purchase
       status: "unused",
     },

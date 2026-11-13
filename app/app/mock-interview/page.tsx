@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { getCareerPath } from "@/lib/career-paths";
-
-// Phase A pilot scope (approved spec, section 14): Snowflake Data /
-// Analytics Engineer only. Adding a path later is a config change here, not
-// a rebuild — the session/turn engine (Netlify Functions) is already
-// careerPath-driven.
-const PILOT_PATHS = ["snowflake-data-engineer"];
+import { MOCK_INTERVIEW_PATHS } from "@/lib/mockInterviewPaths";
 
 const DIFFICULTIES: {
   id: "beginner" | "intermediate" | "advanced";
@@ -34,7 +29,7 @@ const DIFFICULTIES: {
 ];
 
 export default function MockInterviewPage() {
-  const paths = PILOT_PATHS.map((slug) => getCareerPath(slug)).filter((p): p is NonNullable<typeof p> => !!p);
+  const paths = MOCK_INTERVIEW_PATHS.map((slug) => getCareerPath(slug)).filter((p): p is NonNullable<typeof p> => !!p);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
