@@ -1,0 +1,57 @@
+name: Build and deploy to Netlify
+
+# Netlify's own hosted build container (8GB RAM on the Free/Personal plan,
+# 11GB on Pro) can't finish this site's ~10,800-page static export even
+# after fixing the real memory bug (see next.config.ts's
+# outputFileTracingExcludes) and raising its own heap cap — see
+# netlify.toml's NODE_OPTIONS comment for that history. This repo is
+# public, so GitHub's own ubuntu-latest runners give 4 CPUs / 16GB RAM for
+# free and unlimited, comfortably more headroom than Netlify offers on any
+# plan short of Enterprise. Netlify's own auto-build-on-push is paused
+# (stop_builds, set via the Netlify API) so this workflow is the only
+# thing that builds and publishes production now — `netlify deploy` here
+# uploads the already-built out/ directory directly, the same as a local
+# manual deploy, just running on GitHub's infrastructure instead of a
+# developer's own machine.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # No NODE_ENV=production here on purpose — npm skips devDependencies
+      # whenever it is, and @tailwindcss/postcss/tailwindcss/typescript (all
+      # devDependencies) are required just to run `next build` (see the
+      # NPM_FLAGS comment in netlify.toml for the same gotcha on Netlify's
+      # side).
+      - name: Install dependencies
+        run: npm ci
+
+      # schema.prisma's postinstall already generated a SQLite-bound
+      # client; regenerate it against the real Postgres schema before
+      # `next build` bundles whatever's currently in node_modules/@prisma/client.
+      - name: Generate production Prisma client
+        run: |
+          npm run prisma:postgres
+          npx prisma generate --schema=prisma/schema.production.prisma
+
+      - name: Build static site
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=14336"
+
+      - name: Deploy to Netlify
+        run: npx netlify-cli deploy --prod --dir=out --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
