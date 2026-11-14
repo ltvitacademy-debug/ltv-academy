@@ -1,0 +1,1536 @@
+{
+  "questions": [
+    {
+      "id": "bda-beg-001",
+      "questionCode": "LTV-BDA-BEG-001",
+      "title": "ISNULL vs. COALESCE vs. NULLIF",
+      "prompt": "In T-SQL, what's the difference between ISNULL(), COALESCE(), and NULLIF(), and when would you actually reach for each one on the job?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "NULL Handling"],
+      "code": "SELECT ISNULL(DiscountPct, 0), COALESCE(DiscountPct, StandardDiscount, 0), NULLIF(DiscountPct, 0)\nFROM Sales.SalesOrderDetail;",
+      "modelAnswer": "ISNULL(expr, replacement) is a SQL Server-only function that takes exactly two arguments and returns the first one if it isn't NULL, otherwise the second. Its return type is determined by the first argument, which can silently truncate a wider replacement value. COALESCE(expr1, ..., exprN) is the ANSI-standard equivalent, accepts any number of arguments, and returns the first non-NULL one, with its data type determined by precedence across all arguments supplied — that makes it more predictable and portable across SQL Server, Snowflake, Postgres, and other platforms this role touches. NULLIF(expr1, expr2) does the opposite job: it compares two expressions and returns NULL if they're equal, otherwise the first expression — the standard use is turning a known placeholder value like 0 into a real NULL so a division or aggregate doesn't quietly produce a wrong answer.",
+      "professionalAnswer": "I default to COALESCE for replacing NULLs because it works the same way across every platform I touch in this stack, not just SQL Server, and it lets me chain more than one fallback value in a row, which ISNULL can't do with just two arguments. I'll still use ISNULL inside a SQL-Server-only stored procedure where the slight performance edge or the shorter syntax doesn't matter much, but I don't reach for it out of habit. NULLIF comes up for a different reason entirely — usually when I'm dividing two columns and a denominator of 0 would blow up the query with a divide-by-zero error, so I wrap the denominator in NULLIF(Denominator, 0) to turn that zero into a NULL, which division handles gracefully by returning NULL instead of erroring.",
+      "example": "-- Safe division using NULLIF to avoid a divide-by-zero error\nSELECT SalesAmount / NULLIF(UnitsSold, 0) AS AvgPricePerUnit\nFROM Sales.SalesSummary;",
+      "commonMistakes": [
+        "Assuming ISNULL and COALESCE are fully interchangeable instead of noticing COALESCE accepts more arguments and is cross-platform",
+        "Not realizing ISNULL's return type comes from its first argument, which can truncate a longer replacement string",
+        "Forgetting NULLIF compares for equality and returns NULL on a match, not the other way around",
+        "Writing a nested CASE expression to replace a NULL with a default instead of the much shorter COALESCE or ISNULL"
+      ],
+      "keyPoints": [
+        "ISNULL takes exactly two arguments and is SQL-Server-specific",
+        "COALESCE takes any number of arguments and is ANSI-standard/cross-platform",
+        "ISNULL's output type comes from its first argument and can truncate",
+        "NULLIF returns NULL when two expressions are equal, often used to prevent divide-by-zero"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes ISNULL from COALESCE", "weight": 40},
+        {"criterion": "Correctly explains NULLIF's behavior and a real use case", "weight": 35},
+        {"criterion": "Notes the portability/type-truncation nuance", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-002",
+      "questionCode": "LTV-BDA-BEG-002",
+      "title": "The CASE expression",
+      "prompt": "What is a CASE expression in T-SQL, and how does the searched form (CASE WHEN condition THEN ...) differ from the simple form (CASE column WHEN value THEN ...)?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "CASE Expressions"],
+      "code": "SELECT Name,\n  CASE WHEN ListPrice = 0 THEN 'Not for Sale'\n       WHEN ListPrice < 50 THEN 'Budget'\n       ELSE 'Premium' END AS PriceTier\nFROM Production.Product;",
+      "modelAnswer": "A CASE expression returns a single value chosen from a set of conditional branches, and it can appear anywhere a regular expression can — in SELECT, WHERE, ORDER BY, or even inside an aggregate. The simple form, CASE column WHEN value1 THEN result1 ... END, only tests one column for equality against a list of literal values, which is compact but limited. The searched form, CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ... ELSE default END, allows any Boolean condition in each branch — ranges, comparisons across multiple columns, even subqueries — which is why it's used far more often in real reporting logic like bucketing a price into tiers. Conditions are evaluated top to bottom and the first one that's true wins, so order matters, and an ELSE branch should generally be included to avoid an unexpected NULL when nothing matches.",
+      "professionalAnswer": "I think of the simple CASE as a shortcut for 'if this one column equals this value' and the searched CASE as the general-purpose version that can test any condition, including ranges and multiple columns at once, which is why I use the searched form constantly and the simple form only occasionally. The thing I always watch for is evaluation order — CASE checks branches top to bottom and stops at the first true one, so if I accidentally put a broader condition before a narrower one, the narrower one never gets a chance to fire. I also make it a habit to always add an ELSE, even if it's just ELSE 'Other', because without one, any row that doesn't match a WHEN silently comes back as NULL, and that's an easy thing to miss in a report until someone asks why a bucket is empty.",
+      "example": "-- Simple form: equality against one column only\nSELECT Name, CASE Size WHEN 'S' THEN 'Small' WHEN 'M' THEN 'Medium' ELSE 'Other' END\nFROM Production.Product;",
+      "commonMistakes": [
+        "Putting a broader WHEN condition before a narrower one, so the narrower branch can never fire",
+        "Leaving off the ELSE branch and being surprised when non-matching rows return NULL",
+        "Trying to test a range or multiple columns using the simple CASE form instead of the searched form",
+        "Confusing CASE (an expression returning a value) with an IF statement (a control-flow block)"
+      ],
+      "keyPoints": [
+        "CASE is an expression that returns one value, usable anywhere an expression can appear",
+        "Simple CASE tests one column for equality; searched CASE allows any Boolean condition",
+        "Branches evaluate top to bottom; the first true one wins",
+        "Always include ELSE to avoid unexpected NULLs"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes simple vs. searched CASE", "weight": 40},
+        {"criterion": "Explains top-to-bottom evaluation order", "weight": 30},
+        {"criterion": "Mentions the importance of ELSE", "weight": 30}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-003",
+      "questionCode": "LTV-BDA-BEG-003",
+      "title": "Fact tables vs. dimension tables",
+      "prompt": "In a star schema, what's the difference between a fact table and a dimension table, and what kinds of columns would you expect to find in each?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Dimensional Modeling"],
+      "modelAnswer": "A fact table holds the measurable events of the business — things like sales transactions, order lines, or page views — and its rows are typically numeric and additive: quantity, amount, cost. Each fact row also carries a set of foreign keys pointing out to the dimension tables that give that event context. A dimension table holds the descriptive attributes used to filter, group, and label those facts — things like Customer, Product, Date, or Store — and its columns are mostly text or categorical attributes rather than numbers meant to be summed. The practical test is: if a column is something you'd aggregate (SUM, AVG, COUNT), it belongs in the fact table; if it's something you'd filter, slice, or group by, it belongs in a dimension. A well-designed star schema has one central fact table surrounded by several dimension tables joined to it by single-column surrogate keys, which keeps queries simple and fast.",
+      "professionalAnswer": "I'd describe the fact table as the 'what happened' table — every row is one event, like one line item on one order, and most of its columns are numbers I'll eventually sum or average. The dimension tables are the 'who, what, when, where' tables that give that event meaning: the Customer dimension tells me who bought it, the Date dimension tells me when, the Product dimension tells me what. My rule of thumb when I'm not sure where a column belongs is to ask whether I'd ever aggregate it — if yes, it's a fact column; if I'd only ever filter or group by it, it's a dimension attribute. I also expect the fact table to be joined to each dimension through a simple surrogate key rather than a long natural key, since that keeps the joins fast and the model easy to extend later.",
+      "example": "-- FactSales: SalesAmount, Quantity, DiscountAmount, plus FKs to DimDate/DimProduct/DimCustomer\n-- DimProduct: ProductKey, ProductName, Category, Color, Size (descriptive, not summed)",
+      "commonMistakes": [
+        "Putting a descriptive attribute like a product name directly in the fact table instead of a dimension",
+        "Treating a dimension's numeric-looking attribute (like a ZIP code) as something to sum rather than just a label",
+        "Forgetting that fact tables are usually much taller (more rows) while dimension tables are usually much wider (more columns)",
+        "Joining facts to dimensions on a long natural key instead of a short surrogate key"
+      ],
+      "keyPoints": [
+        "Fact table = measurable business events, mostly additive numeric columns",
+        "Dimension table = descriptive context used to filter/group/label",
+        "Rule of thumb: aggregate it -> fact; filter/group by it -> dimension",
+        "Facts join to dimensions via surrogate keys in a star schema"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes fact from dimension tables", "weight": 45},
+        {"criterion": "Gives a usable rule of thumb for classifying a column", "weight": 30},
+        {"criterion": "Mentions surrogate key joins", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-004",
+      "questionCode": "LTV-BDA-BEG-004",
+      "title": "SCD Type 1 vs. Type 2",
+      "prompt": "What's the difference between a Type 1 and a Type 2 slowly changing dimension, and why would a data warehouse ever need to track history instead of just overwriting a changed value?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Dimensional Modeling"],
+      "modelAnswer": "A Type 1 slowly changing dimension simply overwrites the old attribute value with the new one — if a customer moves from Texas to Colorado, the row is updated in place and no record of Texas ever remains. That's fine when history genuinely doesn't matter and you only care about the current state. A Type 2 slowly changing dimension instead preserves history by inserting a brand-new row for the changed record rather than updating the old one — the old row is typically marked with an end date and an IsCurrent flag set to false, and the new row gets a new surrogate key, a start date, and IsCurrent set to true. This matters because a fact table row for a sale made while the customer still lived in Texas should still show Texas when you report on it later, even though the customer has since moved — overwriting with Type 1 would make it look like every past sale happened in Colorado, which misrepresents history.",
+      "professionalAnswer": "I'd explain Type 1 as the 'just fix it' approach — the old value is gone the moment it changes, which is perfectly fine for something like correcting a typo in a customer's name. Type 2 is for when the history itself is the point: if a sales rep gets promoted from one territory to another halfway through the year, I don't want every historical sale from before the promotion to suddenly look like it happened under their new territory. So instead of updating that row, I insert a new row with a new surrogate key, flip the old row's IsCurrent flag off and give it an end date, and the new row becomes the current one. Any fact row recorded before the change keeps pointing at the old surrogate key, so historical reporting stays accurate, while new sales automatically pick up the new row through the active key.",
+      "example": "-- Type 2: customer moves from TX to CO\n-- Old row: CustomerKey=101, State='TX', IsCurrent=0, EndDate='2026-06-01'\n-- New row: CustomerKey=205, State='CO', IsCurrent=1, EndDate=NULL\n-- Past fact rows still point at CustomerKey=101, preserving history.",
+      "commonMistakes": [
+        "Using Type 1 for an attribute where historical accuracy actually matters, silently rewriting history",
+        "Forgetting Type 2 requires a new surrogate key for the new row, not just a new value in the same row",
+        "Not maintaining the IsCurrent flag / end date, making it hard to find 'the current version' of a dimension row",
+        "Assuming every attribute in a dimension needs the same SCD treatment, instead of applying Type 1 or Type 2 per column based on business need"
+      ],
+      "keyPoints": [
+        "Type 1 overwrites the old value; no history is kept",
+        "Type 2 inserts a new row to preserve history, with a new surrogate key",
+        "Type 2 typically uses IsCurrent flags and start/end dates to mark the active row",
+        "Fact rows recorded before a change keep pointing at the old dimension row under Type 2"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes Type 1 from Type 2", "weight": 40},
+        {"criterion": "Explains why history preservation matters with a concrete scenario", "weight": 35},
+        {"criterion": "Mentions surrogate key / IsCurrent flag mechanics", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-005",
+      "questionCode": "LTV-BDA-BEG-005",
+      "title": "The EXISTS vs. IN NULL trap",
+      "prompt": "What's the difference between filtering with EXISTS and filtering with NOT IN against a subquery, and why can NOT IN silently return zero rows when the subquery's column contains a NULL?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Subqueries"],
+      "code": "SELECT Name FROM Production.Product\nWHERE ProductID NOT IN (SELECT ProductID FROM Sales.SalesOrderDetail);",
+      "modelAnswer": "EXISTS checks whether a subquery returns any rows at all for the current outer row, and it stops as soon as it finds one match — it never actually compares values against NULL, it just asks a yes/no question. IN and NOT IN, on the other hand, build a literal list of values from the subquery and compare the outer value against that list using equality logic. The trap is specifically with NOT IN: SQL uses three-valued logic, so comparing a value against a NULL in that list doesn't evaluate to false, it evaluates to unknown — and if even one NULL appears anywhere in the subquery's result, the entire NOT IN expression can evaluate to unknown for every row, which the WHERE clause treats the same as false, silently returning zero rows even when matches clearly should exist. NOT EXISTS doesn't have this problem because it never compares values directly; it only checks for row existence inside a correlated subquery. The safe practice is to either filter NULLs out of the subquery explicitly or default to NOT EXISTS/EXISTS instead of IN/NOT IN whenever NULLs might be present.",
+      "professionalAnswer": "This is one of those bugs that doesn't throw an error, it just quietly returns the wrong answer, which is exactly why I bring it up. If I write WHERE ProductID NOT IN (SELECT ProductID FROM SalesOrderDetail) and that subquery's ProductID column happens to contain even a single NULL, the whole NOT IN condition can collapse to unknown for every row, and I get an empty result set with no error message telling me why. EXISTS and NOT EXISTS avoid this entirely because they're not comparing values — they're just asking 'does at least one matching row exist,' which is a yes/no question that NULL can't poison. So as a habit, I reach for NOT EXISTS over NOT IN whenever there's any chance the subquery's column allows NULLs, which in practice is most of the time unless I've explicitly verified otherwise.",
+      "example": "-- Safer equivalent using NOT EXISTS, immune to the NULL trap\nSELECT p.Name FROM Production.Product p\nWHERE NOT EXISTS (\n  SELECT 1 FROM Sales.SalesOrderDetail sod WHERE sod.ProductID = p.ProductID\n);",
+      "commonMistakes": [
+        "Using NOT IN against a subquery without checking whether that column can contain NULL",
+        "Assuming a NULL in the subquery would just be skipped, rather than potentially poisoning the entire comparison",
+        "Not recognizing that an empty result from NOT IN with no error is itself a red flag worth investigating",
+        "Treating EXISTS and IN as always interchangeable instead of understanding the underlying three-valued-logic difference"
+      ],
+      "keyPoints": [
+        "EXISTS checks row existence; IN/NOT IN compares values against a literal list",
+        "SQL uses three-valued logic: true, false, and unknown",
+        "A NULL anywhere in a NOT IN subquery's result can make the whole condition unknown for every row",
+        "NOT EXISTS is immune to this because it never compares values directly"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains the NOT IN / NULL trap mechanism", "weight": 50},
+        {"criterion": "Correctly contrasts EXISTS's existence-check behavior", "weight": 30},
+        {"criterion": "Recommends a safe practice to avoid the trap", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-006",
+      "questionCode": "LTV-BDA-BEG-006",
+      "title": "Normalization basics: 1NF, 2NF, 3NF",
+      "prompt": "At a beginner level, what problem does normalization solve, and what does each of 1NF, 2NF, and 3NF add on top of the last?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Database Design", "Normalization"],
+      "modelAnswer": "Normalization organizes a database's tables to eliminate redundant data and the update/insert/delete anomalies that redundancy causes — if the same fact is stored in five places, updating it means finding and fixing all five, and missing even one leaves the database internally inconsistent. First normal form (1NF) requires every column to hold a single, atomic value — no comma-separated lists or repeating groups crammed into one cell — and every row must be uniquely identifiable. Second normal form (2NF) builds on 1NF by requiring every non-key column to depend on the entire primary key, not just part of it, which only becomes relevant with composite keys — a column that depends on just one part of a two-column key is a 2NF violation and should move to its own table. Third normal form (3NF) goes further and requires every non-key column to depend only on the primary key and nothing else — not on another non-key column — eliminating what's called a transitive dependency, like storing both a ZIP code and a city/state in an orders table when the city and state are fully determined by the ZIP code and arguably belong in their own lookup table.",
+      "professionalAnswer": "The core problem normalization solves is: if the same piece of information lives in multiple rows, I now have multiple places that can disagree with each other, and the database has no way of knowing which one is right. 1NF is the simplest rule — one value per cell, no lists jammed into a single column. 2NF only comes up once there's a composite primary key, and it just means every other column has to depend on the whole key, not half of it. 3NF is the one I think about most in practice: it says a non-key column can't depend on another non-key column — so if I've got a City and a ZIP code both sitting in the same table and City is fully determined by ZIP, that's a sign City might not belong there and should live in its own lookup table instead, with the orders table just referencing the ZIP.",
+      "example": null,
+      "commonMistakes": [
+        "Storing a comma-separated list of values in one column, violating 1NF immediately",
+        "Not recognizing 2NF only applies when a composite (multi-column) primary key is involved",
+        "Confusing 3NF's transitive dependency rule with 2NF's partial dependency rule",
+        "Assuming more normalization is always better, without weighing the extra joins it requires at query time"
+      ],
+      "keyPoints": [
+        "Normalization reduces redundancy and the anomalies it causes",
+        "1NF: atomic values, no repeating groups",
+        "2NF: every non-key column depends on the whole (composite) key",
+        "3NF: no non-key column depends on another non-key column (no transitive dependency)"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains the redundancy problem normalization solves", "weight": 30},
+        {"criterion": "Correctly describes 1NF, 2NF, and 3NF individually", "weight": 50},
+        {"criterion": "Gives a concrete example of a violation", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-007",
+      "questionCode": "LTV-BDA-BEG-007",
+      "title": "Query folding in Power Query",
+      "prompt": "What is query folding in Power Query, and why does the order in which you apply transformation steps affect whether folding happens?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Power BI", "Power Query"],
+      "modelAnswer": "Query folding is Power Query's ability to translate the transformation steps you build in the Power Query editor — filtering, removing columns, grouping, renaming — back into a single native query (SQL, for a relational source) that runs on the source system itself, rather than pulling all the raw data into Power BI first and then transforming it locally. When folding happens, the source database does the filtering and aggregating, which is dramatically faster and lighter on both the network and Power BI's own engine, especially against a large table. Folding can break partway through a query if you add a step that the source can't translate — a step using a Power-Query-only function, a call to another query, or certain custom-column logic — and once folding breaks at a given step, every step after it runs locally in Power BI's own engine instead, even if those later steps individually could have folded on their own. Because of that, a practical habit is to do the steps that fold well (filtering rows, removing columns, simple renames) as early as possible, before steps that are more likely to break folding.",
+      "professionalAnswer": "I think of query folding as Power Query being smart enough to hand its work back to the source database instead of doing everything itself after dragging all the rows across the network first. When it's working, a filter I apply in the Power Query editor literally becomes a WHERE clause in the SQL query sent to the source, which is a huge difference in performance on a large table. The step order matters because folding is sequential — the moment one step can't be translated back to the source, every step after it falls back to running locally in Power BI, even if a later step on its own would have folded fine. So in practice I try to filter rows and drop unused columns as early as possible in my step list, and I save anything exotic — a custom M function, a merge with another non-foldable query — for as late as possible, to keep as much of the pipeline folding as I can.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming every Power Query step always folds back to the source regardless of order or complexity",
+        "Adding a custom-column or non-foldable step early, which breaks folding for every step after it",
+        "Not checking (via View Native Query) whether a query is actually folding before assuming performance is fine",
+        "Removing columns or filtering rows too late in the step order, after non-foldable steps have already broken folding"
+      ],
+      "keyPoints": [
+        "Query folding translates Power Query steps into a native query run on the source",
+        "Folding pushes filtering/aggregation work to the source instead of Power BI's local engine",
+        "Folding can break at a step the source can't translate; everything after that step runs locally",
+        "Ordering foldable steps (filter, remove columns) early preserves folding for longer"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly defines query folding and its performance benefit", "weight": 45},
+        {"criterion": "Explains why folding can break and what happens when it does", "weight": 35},
+        {"criterion": "Gives a practical step-ordering recommendation", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-008",
+      "questionCode": "LTV-BDA-BEG-008",
+      "title": "Relationship cardinality in Power BI",
+      "prompt": "In Power BI's data model, what does a one-to-many relationship mean, and why does it matter which side is the 'one' and which is the 'many' when you're deciding how to build a model?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Power BI", "Data Modeling"],
+      "modelAnswer": "A one-to-many relationship means a single row on the 'one' side can relate to multiple rows on the 'many' side, but each row on the 'many' side relates to exactly one row on the 'one' side. In a typical star schema, the dimension table (like Product) is the 'one' side and the fact table (like Sales) is the 'many' side, because one product can appear on many sales rows, but each sales row belongs to exactly one product. Power BI enforces this by requiring the 'one' side's related column to contain unique values — it's effectively acting like a key for the relationship — while the 'many' side's column can repeat freely. This direction matters because filters naturally flow from the 'one' side to the 'many' side by default: filtering Product to a single color filters down to only the matching sales rows, which is the behavior almost every report depends on. If a model is accidentally built the other way, or as a many-to-many relationship, filtering stops behaving predictably and can silently produce inflated or incorrect totals.",
+      "professionalAnswer": "I'd explain it with the Product-to-Sales example, since it's the one every model eventually has. Product is the 'one' side because each product has one row in the Product table, but that same product can show up on dozens of rows in the Sales table, which is the 'many' side. Power BI actually requires the 'one' side to have unique values in that column, which is part of how it figures out the direction automatically when I build the relationship. The reason I care which side is which isn't academic — filters flow from one to many by default, so when a user clicks a product in a slicer, that filter flows down into Sales and only shows matching rows. If I ever end up with a many-to-many relationship instead, that clean one-directional filtering breaks down, and I usually treat that as a signal to rework the model with a proper bridge table rather than just accepting the default many-to-many behavior.",
+      "example": null,
+      "commonMistakes": [
+        "Not realizing the 'one' side's column must contain unique values for the relationship to work as intended",
+        "Assuming filter direction is symmetric instead of flowing from one to many by default",
+        "Building a many-to-many relationship by accident instead of recognizing it needs a bridge table",
+        "Confusing which table is the dimension (one side) and which is the fact (many side) in a star schema"
+      ],
+      "keyPoints": [
+        "One-to-many: one row on the 'one' side relates to many rows on the 'many' side",
+        "The 'one' side's related column must contain unique values",
+        "Dimension tables are typically the 'one' side; fact tables the 'many' side",
+        "Filters flow from the one side to the many side by default"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains one-to-many cardinality", "weight": 40},
+        {"criterion": "Correctly identifies which side is which in a star schema", "weight": 30},
+        {"criterion": "Explains the filter-direction consequence", "weight": 30}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-009",
+      "questionCode": "LTV-BDA-BEG-009",
+      "title": "Tableau live connection vs. extract",
+      "prompt": "In Tableau, what's the difference between a live connection and an extract (the Hyper engine), and what factors would make you choose one over the other for a given dashboard?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Tableau", "Data Connections"],
+      "modelAnswer": "A live connection sends a query directly to the source database every time a view is loaded or a filter changes, so the data is always as current as the source itself, but performance depends entirely on how fast that source can answer the query. An extract instead takes a snapshot of the data and stores it in Tableau's own highly compressed, columnar Hyper engine format, so dashboards built on it are typically much faster and don't hammer the source with repeated queries — the trade-off is that the data is only as fresh as the last extract refresh, and very large extracts take time and storage to build and refresh. The choice generally comes down to three questions: how fresh does the data need to be, how fast is the source at answering ad hoc queries, and how large is the dataset. A small, frequently updated source with a fast database often works fine live; a huge dataset or a slow source is usually a strong case for an extract with a scheduled refresh.",
+      "professionalAnswer": "I'd frame it as freshness versus speed. A live connection means every click in the dashboard re-queries the actual source, so it's always current, but it's only as fast as that source — if the source is a slow, heavily used transactional database, a live-connected dashboard can feel sluggish and also adds query load onto a system that probably has other jobs to do. An extract takes a compressed snapshot into Tableau's own Hyper format, which makes the dashboard noticeably snappier and takes load off the source entirely, but now I'm managing a refresh schedule, and users are looking at data that's only as current as the last refresh. In practice, for a reporting dashboard that gets used constantly throughout the day against a large table, I lean toward an extract with a nightly or hourly refresh; for something that genuinely needs to reflect what just happened, like an operational monitoring view, I'd keep it live even if that costs some speed.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming live connections are always 'more accurate' without weighing the performance cost on the source",
+        "Not scheduling extract refreshes, leaving a dashboard quietly showing stale data",
+        "Choosing an extract for a dataset too large to refresh in a reasonable window without first checking incremental refresh options",
+        "Forgetting that a live connection adds repeated query load directly onto the source system"
+      ],
+      "keyPoints": [
+        "Live connection queries the source directly every time; always current, speed depends on the source",
+        "Extract snapshots data into Tableau's Hyper engine; fast but only as fresh as the last refresh",
+        "Choice depends on required freshness, source speed, and data volume",
+        "Extracts need a scheduled refresh to stay usefully current"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains the live vs. extract mechanics", "weight": 45},
+        {"criterion": "Gives a sensible decision framework", "weight": 35},
+        {"criterion": "Mentions refresh scheduling for extracts", "weight": 20}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-010",
+      "questionCode": "LTV-BDA-BEG-010",
+      "title": "Linked services vs. datasets in Azure Data Factory",
+      "prompt": "In Azure Data Factory, what's the difference between a linked service and a dataset, and why does ADF separate these two concepts instead of combining them into one object?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Azure Data Factory", "Data Integration"],
+      "modelAnswer": "A linked service is the connection information to a system — the server/account, authentication method (connection string, managed identity, or a Key Vault reference), and other connectivity details needed to reach that source or destination. A dataset is a named reference to a specific piece of data within that connection — a particular table, file, or folder path — along with its schema and format. ADF separates them because the relationship is naturally one-to-many: a single linked service to a SQL Server or storage account can back many different datasets (different tables, different files in different folders), so defining connection details once in the linked service and reusing it across many datasets avoids repeating the same credentials and connection logic over and over. It also makes maintenance far simpler — if a password or connection string changes, there's exactly one linked service to update, and every dataset built on top of it automatically picks up the change.",
+      "professionalAnswer": "I'd describe the linked service as 'how do I connect' and the dataset as 'what specific thing am I pointing at once I'm connected.' One linked service to an Azure SQL Database, for example, can back a dozen different datasets, each pointing at a different table, because the connection details don't change — only the specific object does. Keeping these separate is what makes maintenance manageable: if a connection string or a managed identity setup ever changes, I update it in exactly one place, the linked service, and every pipeline using any dataset built on top of it just keeps working without me having to hunt down a dozen hardcoded connection strings scattered across datasets.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming a linked service and a dataset are the same object instead of a one-to-many relationship",
+        "Hardcoding connection details inside a dataset instead of referencing a linked service",
+        "Not using Key Vault or managed identity for linked service credentials, falling back to plaintext connection strings",
+        "Creating a new linked service for every dataset instead of reusing one across many datasets pointing at the same system"
+      ],
+      "keyPoints": [
+        "Linked service = connection info to a system (how to connect)",
+        "Dataset = a specific table/file/path within that connection (what to point at)",
+        "One linked service can back many datasets",
+        "Separating them centralizes credential/connection maintenance"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes linked service from dataset", "weight": 50},
+        {"criterion": "Explains the one-to-many relationship and why it's useful", "weight": 30},
+        {"criterion": "Mentions secure credential handling (Key Vault/managed identity)", "weight": 20}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-011",
+      "questionCode": "LTV-BDA-BEG-011",
+      "title": "Snowflake's storage/compute separation",
+      "prompt": "What does it mean that Snowflake separates storage from compute, and why does that matter for a team where multiple people or workloads need to query the same data at once?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Snowflake", "Cloud Data Warehousing"],
+      "modelAnswer": "In Snowflake, data is stored once in a central, cloud-based storage layer, completely independent of the compute resources (virtual warehouses) that actually run queries against it. A virtual warehouse is a cluster of compute resources that can be resized, suspended, resumed, or spun up as an entirely separate warehouse, without touching the underlying stored data at all. Because storage and compute are decoupled, multiple virtual warehouses can query the exact same underlying data simultaneously without contending with each other for compute resources — a finance team's reporting warehouse and a data engineering team's ETL warehouse can both hit the same tables at the same time without slowing each other down, something that's much harder in a traditional database where storage and compute are tied to the same server. It also means compute can be scaled or shut off independently of storage: a warehouse can auto-suspend when idle to stop costing money, while the data it would have queried sits there unaffected, ready for the next warehouse that needs it.",
+      "professionalAnswer": "I'd explain this with the contention problem it solves. In a traditional database, if a heavy reporting query and a heavy ETL load both hit the same server at the same time, they compete for the same CPU and memory, and everyone's queries slow down together. Snowflake avoids that because storage is one shared layer and compute is a separate, resizable fleet of virtual warehouses — I could spin up one warehouse just for the BI team's dashboards and a completely separate one for an overnight load job, and because they're independent compute clusters, neither one starves the other, even though they're both reading and writing the same underlying tables. It also means I'm not paying for compute I'm not using — a warehouse can auto-suspend after a few minutes of inactivity, and the data itself doesn't disappear or become any less available just because the compute cluster that was reading it spun down.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming Snowflake works like a traditional database where storage and compute live on the same server",
+        "Not realizing multiple virtual warehouses can query the same data simultaneously without contention",
+        "Forgetting that resizing or suspending a warehouse has no effect on the underlying stored data",
+        "Thinking separating storage and compute means data is duplicated per warehouse, rather than shared"
+      ],
+      "keyPoints": [
+        "Storage is a single shared layer, independent of compute",
+        "Virtual warehouses are separate, resizable compute clusters",
+        "Multiple warehouses can query the same data concurrently without contention",
+        "Compute can scale or auto-suspend independently of storage, controlling cost"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains the storage/compute separation", "weight": 40},
+        {"criterion": "Explains the concurrency/contention benefit with a scenario", "weight": 35},
+        {"criterion": "Mentions the cost-control implication (auto-suspend)", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z",
+      "deepDive": [
+        {
+          "heading": "Why this architecture is worth understanding early",
+          "content": "A lot of candidates memorize 'Snowflake separates storage and compute' as a slogan without being able to explain why it's actually valuable. The concrete payoff is workload isolation: a company can run a dozen virtual warehouses of different sizes against the same tables at the same time, each sized for its own job, and none of them compete for the same hardware the way they would on a traditional single-server database. That's also why Snowflake billing is based on compute seconds, not storage access -- storage is billed separately and cheaply, while compute is billed per-second only while a warehouse is actively running, which is why AUTO_SUSPEND and AUTO_RESUME settings matter so much for cost control in a real environment."
+        }
+      ]
+    },
+    {
+      "id": "bda-beg-012",
+      "questionCode": "LTV-BDA-BEG-012",
+      "title": "dbt's ref() function and the DAG",
+      "prompt": "What does dbt's ref() function actually do, and how does using it instead of hardcoding a table name let dbt build a dependency graph (DAG) of your models automatically?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["dbt", "Analytics Engineering"],
+      "modelAnswer": "ref() is how one dbt model refers to another model inside its SQL, instead of hardcoding a fully-qualified table name. At compile time, dbt resolves ref('stg_orders') into whatever the actual database, schema, and table name is for that model in the current environment — which means the same code works unchanged whether it's running in a dev schema, a staging schema, or production, since dbt figures out the right physical name each time. The bigger reason ref() matters is that it's how dbt builds its dependency graph: because every model declares its upstream dependencies through ref() calls rather than hardcoded names, dbt can parse the whole project and know exactly which models depend on which, which lets it run models in the correct order automatically and only rebuild what's actually downstream of something that changed. Hardcoding a table name instead of using ref() breaks this entirely — dbt has no way to see that dependency, so it can't guarantee the referenced model is built first, and documentation/lineage graphs lose that connection too.",
+      "professionalAnswer": "I'd explain ref() as dbt's way of saying 'depend on this other model, not on a specific hardcoded table name.' When I write SELECT * FROM {{ ref('stg_orders') }} inside a downstream model, dbt swaps that in at compile time for whatever stg_orders actually resolves to in whichever environment I'm running in, so the same model code works in dev and in production without me touching it. The real payoff, though, is the DAG — because every ref() is a declared dependency, dbt can look at my whole project and figure out the correct build order on its own, run models in parallel where it's safe to, and when I only need to rebuild one model and everything downstream of it, dbt run --select stg_orders+ knows exactly what that means. If I'd hardcoded the table name instead of using ref(), none of that works -- dbt has no idea that dependency exists, so the build order isn't guaranteed and the lineage graph in the docs would be missing that connection entirely.",
+      "example": "-- models/marts/fct_orders.sql\nSELECT o.order_id, o.customer_id, c.customer_name\nFROM {{ ref('stg_orders') }} o\nJOIN {{ ref('stg_customers') }} c ON o.customer_id = c.customer_id",
+      "commonMistakes": [
+        "Hardcoding a schema.table name inside a model instead of using ref(), breaking environment portability",
+        "Not realizing ref() is what lets dbt infer build order automatically rather than something declared separately",
+        "Confusing ref() (for other dbt models) with source() (for raw tables not built by dbt)",
+        "Assuming the DAG has to be manually configured somewhere instead of being inferred from ref()/source() calls"
+      ],
+      "keyPoints": [
+        "ref() resolves to the correct physical table name per environment at compile time",
+        "ref() calls are how dbt infers each model's upstream dependencies",
+        "dbt uses those dependencies to build a DAG and determine correct run order",
+        "Hardcoding table names instead of ref() breaks both portability and lineage"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains what ref() resolves to and when", "weight": 35},
+        {"criterion": "Correctly explains how ref() enables the DAG/run order", "weight": 40},
+        {"criterion": "Notes the consequence of hardcoding instead of using ref()", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-013",
+      "questionCode": "LTV-BDA-BEG-013",
+      "title": "Pagination syntax across SQL dialects",
+      "prompt": "If you need to return just the top 10 rows of a result set, how does the syntax differ between T-SQL (TOP), Oracle (ROWNUM or FETCH FIRST), MySQL/Postgres (LIMIT), and the ANSI-standard OFFSET/FETCH clause, and why does this matter when moving between platforms in this stack?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["SQL Dialects", "T-SQL"],
+      "code": "-- T-SQL\nSELECT TOP 10 Name, ListPrice FROM Production.Product ORDER BY ListPrice DESC;",
+      "modelAnswer": "T-SQL uses SELECT TOP (n) at the very start of the column list, which is SQL-Server/Azure-SQL-specific syntax. MySQL and Postgres use LIMIT n (optionally with OFFSET n for pagination) at the end of the query, after ORDER BY. Oracle historically required filtering on the pseudo-column ROWNUM in a WHERE clause (a quirk because ROWNUM is assigned before ORDER BY sorts the rows, so getting the top N by some order required wrapping the query in a subquery first), though modern Oracle also supports the ANSI-standard FETCH FIRST n ROWS ONLY. That ANSI-standard OFFSET/FETCH syntax -- OFFSET n ROWS FETCH NEXT n ROWS ONLY -- is also supported in T-SQL as an alternative to TOP, and in Postgres, making it the most portable choice when a query needs to run unmodified across more than one of these platforms, which comes up constantly in this stack where the same logic might touch SQL Server, Snowflake, and a cloud warehouse. The practical risk is assuming any one syntax is universal -- a query hardcoded with TOP breaks the moment it's run against Postgres or Snowflake, and ROWNUM filtering breaks in a non-obvious way if you forget it's applied before sorting.",
+      "professionalAnswer": "I'd walk through the syntax differences quickly since I've actually had to migrate queries between these platforms. TOP 10 is SQL Server's own syntax and sits right after SELECT. LIMIT 10 is what MySQL and Postgres use instead, tacked onto the end of the query. Oracle is the one that trips people up -- older Oracle code filters on ROWNUM <= 10 in the WHERE clause, but ROWNUM gets assigned before any ORDER BY sorting happens, so if I actually want the top 10 by price, I have to wrap the sorted query in a subquery first and filter ROWNUM on the outside, otherwise I just get an arbitrary 10 rows that happen to sort first by price after the fact. When I need something portable across more than one of these systems, I reach for the ANSI OFFSET/FETCH syntax instead, since both T-SQL and Postgres support it and it reads the same way everywhere, which matters a lot when a company's stack spans more than one database platform.",
+      "example": "-- ANSI-standard, portable across T-SQL and Postgres\nSELECT Name, ListPrice FROM Production.Product\nORDER BY ListPrice DESC\nOFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;",
+      "commonMistakes": [
+        "Assuming TOP, LIMIT, or ROWNUM syntax is universal across all SQL platforms",
+        "Filtering on Oracle's ROWNUM without realizing it's assigned before ORDER BY sorts the rows",
+        "Forgetting LIMIT needs an explicit ORDER BY to be meaningful, otherwise which rows come back is not guaranteed",
+        "Not knowing the ANSI OFFSET/FETCH syntax exists as the portable option across multiple platforms"
+      ],
+      "keyPoints": [
+        "T-SQL: TOP (n); MySQL/Postgres: LIMIT n [OFFSET n]",
+        "Oracle: legacy ROWNUM (assigned pre-sort) or modern FETCH FIRST n ROWS ONLY",
+        "ANSI-standard OFFSET/FETCH is supported by both T-SQL and Postgres for portability",
+        "Mismatched assumptions about syntax are a common source of migration bugs across platforms"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly states the syntax for at least three platforms", "weight": 45},
+        {"criterion": "Correctly explains the Oracle ROWNUM pre-sort quirk", "weight": 30},
+        {"criterion": "Mentions the ANSI OFFSET/FETCH portable option", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-014",
+      "questionCode": "LTV-BDA-BEG-014",
+      "title": "Write a CASE-based price tier query",
+      "prompt": "Write a T-SQL query against Production.Product that returns each product's Name, ListPrice, and a new column called PriceTier that labels products as 'Not for Sale' when ListPrice is 0, 'Budget' when ListPrice is under 100, 'Mid-Range' when it's 100 to 499.99, and 'Premium' otherwise.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "CASE Expressions"],
+      "code": "-- Production.Product (AdventureWorks2012): Name, ListPrice\nUSE AdventureWorks2012;\nGO",
+      "modelAnswer": "This calls for a searched CASE expression because the conditions are ranges, not equality checks against a single value. Branch order matters: the 0 check and the under-100 check must come before the broader 100-to-499.99 check, otherwise a $0 product would never reach the 'Not for Sale' branch if a looser condition above it already matched. An ELSE catches anything at or above 500, which doubles as 'Premium' and as a safety net so no row is left with an unexpected NULL.",
+      "professionalAnswer": "I'd write this as one searched CASE expression with the branches ordered from most specific to least, since CASE stops at the first true condition. The $0 check has to come first, since a product that isn't for sale at all shouldn't accidentally land in 'Budget' just because 0 is technically under 100. After that it's just a sequence of range checks, and I finish with an ELSE for 'Premium' so I'm not relying on an explicit upper bound that I'd have to remember to update if prices ever change.",
+      "example": "SELECT Name, ListPrice,\n  CASE WHEN ListPrice = 0 THEN 'Not for Sale'\n       WHEN ListPrice < 100 THEN 'Budget'\n       WHEN ListPrice < 500 THEN 'Mid-Range'\n       ELSE 'Premium' END AS PriceTier\nFROM Production.Product\nORDER BY ListPrice;",
+      "commonMistakes": [
+        "Ordering the branches so a broader condition shadows the 'Not for Sale' check",
+        "Using the simple CASE form, which can't express range conditions like ListPrice < 100",
+        "Forgetting an ELSE and leaving the highest-priced products with a NULL tier",
+        "Writing overlapping, non-exclusive conditions that make the result depend on branch order in a confusing way"
+      ],
+      "keyPoints": [
+        "Searched CASE is required for range-based conditions",
+        "Order branches from most specific to least specific",
+        "CASE evaluates top to bottom and stops at the first true branch",
+        "ELSE both defines the open-ended top tier and prevents unexpected NULLs"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct searched CASE syntax", "weight": 40},
+        {"criterion": "Branches correctly ordered to avoid shadowing", "weight": 35},
+        {"criterion": "Includes ELSE and handles the boundary values correctly", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-015",
+      "questionCode": "LTV-BDA-BEG-015",
+      "title": "Write a COALESCE-based reporting query",
+      "prompt": "Write a T-SQL query against Sales.SalesOrderHeader that returns SalesOrderID and a DeliveryLabel column, using COALESCE to show ShipDate if it exists, otherwise 'Not Yet Shipped', formatted as text.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "NULL Handling"],
+      "code": "-- Sales.SalesOrderHeader (AdventureWorks2012): SalesOrderID, ShipDate (nullable datetime)\nUSE AdventureWorks2012;\nGO",
+      "modelAnswer": "COALESCE needs its arguments to share a compatible data type, and ShipDate is a datetime while 'Not Yet Shipped' is a string literal, so ShipDate has to be explicitly converted to a character type first (CONVERT or CAST) before combining them in the same COALESCE call -- otherwise SQL Server will attempt an implicit conversion of the string into a datetime and throw a conversion error. Once both arguments are the same type, COALESCE simply returns the first non-NULL value, which here means the formatted ship date whenever one exists, and the fallback text whenever ShipDate is NULL.",
+      "professionalAnswer": "The part I'd be careful about here isn't COALESCE itself, it's the data type mismatch -- ShipDate is a datetime and my fallback is a plain string, and COALESCE needs both sides to resolve to a compatible type. If I just write COALESCE(ShipDate, 'Not Yet Shipped') without converting ShipDate first, SQL Server tries to implicitly convert my string into a datetime, which obviously fails since 'Not Yet Shipped' isn't a valid date. So I convert ShipDate to varchar explicitly first, and then COALESCE just picks whichever one isn't NULL.",
+      "example": "SELECT SalesOrderID,\n  COALESCE(CONVERT(varchar(10), ShipDate, 101), 'Not Yet Shipped') AS DeliveryLabel\nFROM Sales.SalesOrderHeader;",
+      "commonMistakes": [
+        "Mixing a datetime and a string literal in COALESCE without converting first, causing a conversion error",
+        "Assuming COALESCE automatically formats a date the way you want rather than just returning it as-is",
+        "Using ISNULL instead and hitting the same type-mismatch issue since it has the same requirement",
+        "Forgetting COALESCE returns the data type with the highest precedence among its arguments once types are compatible"
+      ],
+      "keyPoints": [
+        "COALESCE requires compatible data types across all arguments",
+        "A datetime and a string literal must be explicitly converted before combining",
+        "COALESCE returns the first non-NULL argument once types line up",
+        "CONVERT/CAST should happen before, not instead of, the COALESCE logic"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly converts ShipDate to a compatible type", "weight": 40},
+        {"criterion": "Correct COALESCE usage and syntax", "weight": 35},
+        {"criterion": "Explains why the conversion is necessary", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-016",
+      "questionCode": "LTV-BDA-BEG-016",
+      "title": "Write a LAG-based period comparison",
+      "prompt": "Write a T-SQL query that uses the LAG() window function to show each month's total sales next to the previous month's total sales, from a table MonthlySales(SalesMonth date, TotalSales money).",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Window Functions"],
+      "code": "-- MonthlySales(SalesMonth date, TotalSales money)",
+      "modelAnswer": "LAG(column, offset) OVER (ORDER BY ...) looks backward a specified number of rows (1, by default) within the ordering defined inside OVER, and returns that earlier row's value alongside the current row -- without needing a self-join. Because there's no PARTITION BY needed here (there's only one sales total per month, not per group), ORDER BY SalesMonth alone defines which row is 'previous.' The first row in the ordered set has no prior row to look back to, so LAG returns NULL there by default, which is expected and should be left as NULL or explicitly handled with a default second argument rather than treated as an error.",
+      "professionalAnswer": "I'd reach for LAG specifically because it avoids a self-join -- the old-school way to get 'previous month' in the same row would be joining the table to itself on month minus one, which gets awkward fast. LAG(TotalSales) OVER (ORDER BY SalesMonth) just looks one row back in the ordering I specify and hands me that value directly. The one thing I always flag is that the very first month in the dataset has nothing before it, so LAG returns NULL there, which is correct behavior, not a bug -- I wouldn't want to accidentally filter that row out or treat the NULL as zero when calculating a month-over-month change.",
+      "example": "SELECT SalesMonth, TotalSales,\n  LAG(TotalSales) OVER (ORDER BY SalesMonth) AS PriorMonthSales,\n  TotalSales - LAG(TotalSales) OVER (ORDER BY SalesMonth) AS MoMChange\nFROM MonthlySales\nORDER BY SalesMonth;",
+      "commonMistakes": [
+        "Reaching for a self-join instead of LAG() when a built-in window function does the job more simply",
+        "Forgetting the first row's LAG value is NULL and treating that as an error instead of expected behavior",
+        "Adding an unnecessary PARTITION BY when there's no actual grouping dimension in the data",
+        "Mixing up LAG (looks backward) with LEAD (looks forward)"
+      ],
+      "keyPoints": [
+        "LAG() looks backward N rows within an OVER(ORDER BY ...) window, avoiding a self-join",
+        "PARTITION BY is only needed when comparing within groups, not across the whole result",
+        "The first row in the ordering has no prior row, so LAG returns NULL there by default",
+        "LEAD() is the mirror function, looking forward instead of backward"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct LAG() syntax and ORDER BY usage", "weight": 45},
+        {"criterion": "Correctly computes the month-over-month change", "weight": 30},
+        {"criterion": "Explains the first-row NULL behavior correctly", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-017",
+      "questionCode": "LTV-BDA-BEG-017",
+      "title": "Write a CTE to simplify a multi-step calculation",
+      "prompt": "Write a T-SQL query using a CTE that first computes each ProductSubcategoryID's average ListPrice, then returns only the subcategories whose average price is above the overall average across all subcategories.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "CTEs"],
+      "code": "-- Production.Product (AdventureWorks2012): ProductSubcategoryID, ListPrice\nUSE AdventureWorks2012;\nGO",
+      "modelAnswer": "This needs two levels of aggregation: the per-subcategory average, and then the overall average of those per-subcategory averages, compared back against each one. A CTE makes this far more readable than nesting subqueries, because the per-subcategory averages can be named once (SubcategoryAverages) and then referenced twice in the outer query -- once directly and once inside a scalar subquery computing the overall average across all rows of the CTE itself.",
+      "professionalAnswer": "I'd build this with one CTE that computes AVG(ListPrice) grouped by ProductSubcategoryID, and then write the outer query against that CTE, comparing each subcategory's average against the overall average of all the CTE's rows -- which I get by wrapping another AVG() around a SELECT from the same CTE. Doing this without a CTE would mean nesting that same GROUP BY logic inside two separate subqueries, which works but reads much less clearly than giving the intermediate result a name once.",
+      "example": "WITH SubcategoryAverages AS (\n  SELECT ProductSubcategoryID, AVG(ListPrice) AS AvgPrice\n  FROM Production.Product\n  WHERE ProductSubcategoryID IS NOT NULL\n  GROUP BY ProductSubcategoryID\n)\nSELECT ProductSubcategoryID, AvgPrice\nFROM SubcategoryAverages\nWHERE AvgPrice > (SELECT AVG(AvgPrice) FROM SubcategoryAverages);",
+      "commonMistakes": [
+        "Trying to compute the overall average directly from Production.Product instead of from the per-subcategory CTE, producing a different (row-weighted) number",
+        "Forgetting to filter out NULL subcategory IDs before grouping",
+        "Nesting the logic in subqueries instead of a CTE, making the query much harder to read",
+        "Referencing the CTE's aggregated column (AvgPrice) incorrectly as if it were a raw ListPrice value"
+      ],
+      "keyPoints": [
+        "A CTE can be referenced more than once in the statement that follows it",
+        "Two levels of aggregation are needed: per-group, then across the groups",
+        "The overall average must be computed from the CTE's grouped results, not the raw table",
+        "CTEs improve readability over nested nested subqueries for multi-step logic"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct CTE structure with per-subcategory aggregation", "weight": 40},
+        {"criterion": "Correctly computes the overall average from the CTE, not the raw table", "weight": 35},
+        {"criterion": "Clean, readable query structure", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-018",
+      "questionCode": "LTV-BDA-BEG-018",
+      "title": "Write a SUMX-based DAX measure",
+      "prompt": "Write a DAX measure called 'Total Line Revenue' that correctly calculates revenue as the sum of (Quantity * UnitPrice) per row in a Sales table, and explain why a naive SUM(Sales[Quantity]) * SUM(Sales[UnitPrice]) would give the wrong answer.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Power BI", "DAX"],
+      "code": "-- Model: Sales[Quantity], Sales[UnitPrice]",
+      "modelAnswer": "SUMX is an iterator function: it walks row by row through the table given as its first argument, evaluates the expression in its second argument once per row, and then sums all of those per-row results together -- so SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]) correctly multiplies each row's own quantity by that same row's own unit price, then adds up those row-level products. SUM(Sales[Quantity]) * SUM(Sales[UnitPrice]) does something entirely different: it first adds up every quantity in the whole table, separately adds up every unit price in the whole table, and only then multiplies those two already-summed totals together -- which mathematically is not the same as summing the per-row products, and will produce an inflated, meaningless number as soon as rows have different quantities and prices.",
+      "professionalAnswer": "I'd write Total Line Revenue = SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]), because SUMX goes row by row, multiplies quantity by price within that same row, and only sums those row-level results at the end. The naive version, SUM(Quantity) * SUM(UnitPrice), is a classic trap -- it adds up all the quantities first, adds up all the prices separately, and multiplies those two totals, which is a completely different number mathematically unless every row happens to have the exact same price. I've seen this exact mistake produce a revenue number that's wildly inflated and nobody notices until someone cross-checks it against the source system.",
+      "example": "Total Line Revenue = SUMX(Sales, Sales[Quantity] * Sales[UnitPrice])\n-- 2 rows: Qty=2,Price=10 and Qty=3,Price=20\n-- SUMX: (2*10) + (3*20) = 20 + 60 = 80 (correct)\n-- SUM(Qty)*SUM(Price): (2+3) * (10+20) = 5 * 30 = 150 (wrong)",
+      "commonMistakes": [
+        "Writing SUM(Quantity) * SUM(UnitPrice) and not noticing it's mathematically different from a per-row product sum",
+        "Not recognizing SUMX as an iterator that evaluates its expression once per row",
+        "Forgetting SUMX's first argument is the table to iterate over, not the column to sum",
+        "Assuming the error only shows up with very different row values, when it actually appears any time rows aren't all identical"
+      ],
+      "keyPoints": [
+        "SUMX iterates row by row, evaluating an expression per row before summing",
+        "The expression should reference row-level columns, like Quantity * UnitPrice",
+        "SUM(A) * SUM(B) is not the same as summing A*B per row",
+        "The error is invisible in the formula bar -- it only shows up as a wrong number"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct SUMX syntax", "weight": 40},
+        {"criterion": "Correctly explains why the naive SUM*SUM version is wrong", "weight": 40},
+        {"criterion": "Worked numeric example demonstrates the difference", "weight": 20}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-019",
+      "questionCode": "LTV-BDA-BEG-019",
+      "title": "Building a one-to-many relationship in Power BI",
+      "prompt": "Walk through the steps you'd take in Power BI Desktop to correctly build a relationship between a Product dimension table and a Sales fact table, and how you'd verify the cardinality came out right.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Power BI", "Data Modeling"],
+      "modelAnswer": "In Model view, I'd drag from Sales[ProductID] to Product[ProductID] (or let Power BI auto-detect the relationship on load, then verify it) to create the join. Power BI inspects both columns and should automatically mark Product[ProductID] as the 'one' side, since it contains unique values, and Sales[ProductID] as the 'many' side, since the same product repeats across many sales rows. I'd then double-click the relationship line to open its properties and confirm the cardinality shows One to Many with Product on the one side, the cross-filter direction is set to single (flowing from Product to Sales) unless there's a specific reason to need both directions, and that the relationship is marked active. As a sanity check, I'd drop ProductID from Product next to a measure like SUM(Sales[LineTotal]) in a table visual and confirm the totals make sense and that filtering by a product actually filters the sales table, which confirms the relationship is wired correctly and in the right direction.",
+      "professionalAnswer": "I'd start in Model view and either let Power BI's autodetect create the relationship when I first load both tables, or drag ProductID from Sales onto ProductID in Product myself. Either way, I don't just trust it silently -- I double-click the line it creates and check three things: that Product is on the 'one' side and Sales on the 'many' side, that the cross-filter direction is single unless I have a specific reason for bidirectional, and that it's marked active rather than inactive. Then I do a quick visual sanity check -- drop Product[Name] and a sales total measure into a table and make sure the numbers look reasonable and that clicking a single product in a slicer actually filters the sales rows down, which tells me the relationship is both correctly typed and pointing the direction I expect.",
+      "example": null,
+      "commonMistakes": [
+        "Trusting autodetected relationships without opening them to verify cardinality and direction",
+        "Setting cross-filter direction to bidirectional by default instead of only when there's a real need",
+        "Not noticing when Power BI creates the relationship as many-to-many due to duplicate values on both sides",
+        "Skipping a visual sanity check and only verifying the relationship exists, not that it behaves correctly"
+      ],
+      "keyPoints": [
+        "Build the relationship by matching the shared key column between tables",
+        "Verify which side is 'one' and which is 'many' rather than assuming",
+        "Default cross-filter direction to single unless bidirectional is specifically needed",
+        "Confirm behavior with a visual sanity check, not just by inspecting the relationship properties"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Describes correct steps to build the relationship", "weight": 40},
+        {"criterion": "Describes how to verify cardinality and direction", "weight": 35},
+        {"criterion": "Includes a practical sanity check", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-020",
+      "questionCode": "LTV-BDA-BEG-020",
+      "title": "Write a Tableau calculated field for profit ratio",
+      "prompt": "Write the Tableau calculated field formula for 'Profit Ratio' (Profit divided by Sales), and explain how you'd guard it against a divide-by-zero error when Sales is 0 for a given mark.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Tableau", "Calculated Fields"],
+      "code": "-- Fields available: [Profit], [Sales] (both Measures)",
+      "modelAnswer": "A straightforward calculated field would be SUM([Profit]) / SUM([Sales]), aggregating both measures before dividing so the ratio is computed at whatever level of detail the view is currently showing, rather than per unaggregated row. To guard against a zero in the denominator, Tableau's IFNULL/ZN functions aren't quite right here since the issue is division by zero, not a NULL value -- the correct guard is an IF/THEN check: IF SUM([Sales]) = 0 THEN NULL ELSE SUM([Profit]) / SUM([Sales]) END, which returns NULL (which Tableau will simply leave blank or omit, depending on the visual) instead of erroring out or displaying an uninterpretable infinite value.",
+      "professionalAnswer": "I'd write it as SUM([Profit]) / SUM([Sales]), making sure both sides are aggregated so the ratio respects whatever level of detail the current view is at, rather than trying to divide two unaggregated row-level values. For the zero-denominator case, I wrap the whole thing in an IF check: IF SUM([Sales]) = 0 THEN NULL ELSE SUM([Profit]) / SUM([Sales]) END. I specifically return NULL rather than 0 in that case, because a 0% profit ratio and 'there's no sales data to compute a ratio from' are two very different things, and silently returning 0 would make a no-data situation look like a 0% margin.",
+      "example": "Profit Ratio:\nIF SUM([Sales]) = 0 THEN NULL\nELSE SUM([Profit]) / SUM([Sales])\nEND",
+      "commonMistakes": [
+        "Dividing [Profit] / [Sales] on unaggregated fields instead of SUM([Profit]) / SUM([Sales])",
+        "Not guarding against a zero denominator at all, risking a divide-by-zero error or null/infinite display",
+        "Returning 0 instead of NULL for the zero-sales case, misrepresenting 'no data' as a real 0% ratio",
+        "Forgetting the calculation needs to respect the current level of detail in the view, not a fixed grain"
+      ],
+      "keyPoints": [
+        "Aggregate both measures (SUM) before dividing so the ratio matches the view's level of detail",
+        "Guard the denominator explicitly with an IF/THEN check for zero",
+        "Return NULL rather than 0 when there's genuinely no sales to compute a ratio from",
+        "The guard belongs in the calculated field itself, not left to chance in every worksheet that uses it"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct aggregated division formula", "weight": 40},
+        {"criterion": "Correctly guards against division by zero", "weight": 40},
+        {"criterion": "Chooses NULL over 0 for the no-data case and explains why", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-021",
+      "questionCode": "LTV-BDA-BEG-021",
+      "title": "Describe building a basic ADF Copy activity pipeline",
+      "prompt": "Walk through the steps to build an Azure Data Factory pipeline that copies a CSV file from Azure Blob Storage into a table in Azure SQL Database using a Copy activity.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Azure Data Factory", "Copy Activity"],
+      "modelAnswer": "First, create a linked service to the Blob Storage account and a second linked service to the Azure SQL Database, ideally authenticating with a managed identity or a Key Vault-stored secret rather than a plaintext connection string. Next, create a source dataset pointing at the specific container/file path in Blob Storage, and a sink dataset pointing at the destination table in Azure SQL. Then add a Copy activity to a new pipeline, set its source to the Blob dataset (configuring the file format, such as delimited text with the correct delimiter and header settings) and its sink to the SQL dataset, and map the source columns to the destination columns, either automatically by matching names or manually if they differ. Before publishing, I'd use Data Factory's Debug run to test the pipeline against a sample file, check the activity output for rows read/written and any skipped rows, and then publish and optionally add a trigger (schedule or event-based, firing when a new file lands in the container) once the one-off test run succeeds.",
+      "professionalAnswer": "I'd set up both linked services first -- one to Blob Storage, one to the Azure SQL Database -- using managed identity or Key Vault rather than typing a password into a connection string. Then I build a source dataset pointing at the actual blob file or folder, and a sink dataset pointing at the destination table, and drop a Copy activity into a pipeline connecting the two. The part I pay the most attention to is the column mapping -- I check that source and destination columns line up correctly, especially if the CSV's column order or headers don't exactly match the table schema. Before I trust this pipeline with real data, I always run it in debug mode against a small sample file first and check the activity's output for the row counts and any errors, and only after that passes do I publish it and, if it needs to run automatically, add an event trigger so it fires whenever a new file lands in the container.",
+      "example": null,
+      "commonMistakes": [
+        "Hardcoding credentials into a linked service instead of using managed identity or Key Vault",
+        "Not verifying column mapping between source and sink, causing silent data misalignment",
+        "Skipping a debug run and publishing a pipeline straight to production untested",
+        "Forgetting to configure the source dataset's file format details (delimiter, header row) correctly for the actual CSV"
+      ],
+      "keyPoints": [
+        "Create linked services for both source and destination with secure authentication",
+        "Create source and sink datasets pointing at the specific file and table",
+        "Add a Copy activity, configure source format and column mapping",
+        "Debug-run before publishing, then add a trigger if automation is needed"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly sequences linked service -> dataset -> Copy activity", "weight": 40},
+        {"criterion": "Mentions secure authentication for the linked services", "weight": 25},
+        {"criterion": "Mentions testing/debugging before publishing and automating with a trigger", "weight": 35}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-022",
+      "questionCode": "LTV-BDA-BEG-022",
+      "title": "Write a Snowflake COPY INTO statement",
+      "prompt": "Write a Snowflake COPY INTO statement that loads all CSV files from an internal stage called my_stage into a table called raw_orders, skipping the header row, and explain what happens if you run the exact same COPY INTO statement a second time without any new files added.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["Snowflake", "Data Loading"],
+      "code": "-- Table: raw_orders already created matching the CSV's column structure\n-- Stage: @my_stage already holds uploaded CSV files",
+      "modelAnswer": "COPY INTO raw_orders FROM @my_stage FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1); loads every file sitting in the stage into raw_orders, skipping the first row of each file as a header. Snowflake tracks, per stage, which specific files it has already successfully loaded (by file name and a checksum), so running the exact same COPY INTO statement again with no new files added will load nothing -- Snowflake recognizes those files were already loaded and skips them by default, rather than re-loading and duplicating every row. This load-history tracking is what makes COPY INTO safe to re-run as part of a scheduled or retried job without manually managing which files have or haven't been processed yet, though it can be overridden with FORCE = TRUE if a genuine reload is intentionally needed.",
+      "professionalAnswer": "I'd write COPY INTO raw_orders FROM @my_stage FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1);. The behavior I'd specifically call out is what happens on a re-run: Snowflake keeps track of exactly which files in that stage it already loaded, by filename and checksum, so if I run this same statement again and no new files have shown up, it loads zero rows -- it's not going to duplicate data just because I ran the command twice. That's actually really convenient for scheduled jobs, since I don't have to build my own logic to track which files have already been processed; Snowflake already does that for me. If I genuinely need to force a reload of a file that's already been loaded, I'd add FORCE = TRUE, but I wouldn't do that by default.",
+      "example": "COPY INTO raw_orders\nFROM @my_stage\nFILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1);",
+      "commonMistakes": [
+        "Forgetting SKIP_HEADER = 1, loading the header row as if it were data",
+        "Assuming re-running COPY INTO will duplicate already-loaded rows instead of being skipped automatically",
+        "Not knowing FORCE = TRUE exists to intentionally override the default skip-already-loaded behavior",
+        "Confusing an internal stage (Snowflake-managed storage) with an external stage (a cloud storage bucket you manage)"
+      ],
+      "keyPoints": [
+        "COPY INTO loads staged files into a target table with a specified file format",
+        "Snowflake tracks which files were already successfully loaded per stage",
+        "Re-running COPY INTO with no new files loads nothing by default, avoiding duplicates",
+        "FORCE = TRUE can override that default when an intentional reload is needed"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct COPY INTO syntax including SKIP_HEADER", "weight": 40},
+        {"criterion": "Correctly explains the file-tracking/no-duplicate-load behavior", "weight": 40},
+        {"criterion": "Mentions FORCE = TRUE as the override", "weight": 20}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-023",
+      "questionCode": "LTV-BDA-BEG-023",
+      "title": "Write a basic dbt staging model",
+      "prompt": "Write a simple dbt staging model (stg_customers.sql) that selects and renames a few raw columns from a source table, using source() rather than ref() or a hardcoded table name, and explain why a staging model like this typically shouldn't contain business logic like joins or aggregations.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["dbt", "Analytics Engineering"],
+      "code": "-- sources.yml declares: source 'raw', table 'customers'\n-- raw.customers columns: cust_id, cust_fname, cust_lname, cust_email_addr",
+      "modelAnswer": "A staging model's job is narrow and deliberate: rename cryptic raw column names into clean, consistent ones, cast data types if needed, and otherwise pass the data through mostly unchanged -- one staging model per raw source table, referenced through source(), which (like ref() for other dbt models) lets dbt track it as a declared dependency and resolve the correct physical table name per environment. Staging models avoid joins, aggregations, or business logic specifically so that every downstream model built on top of them is working from a clean, predictable, one-to-one representation of the raw data -- pushing that complexity down into staging models instead would make it much harder to trace where a join or a business rule actually lives when something downstream needs debugging, and would duplicate that logic across every staging model that happened to need it instead of keeping it in one shared intermediate or mart-level model.",
+      "professionalAnswer": "I'd keep this model intentionally boring -- just select the raw columns from source('raw', 'customers'), rename them to something clean and consistent like customer_id and first_name, and stop there. The reason I don't add a join or an aggregation here is about where logic should live: if every staging model does its own ad hoc business logic, that logic gets duplicated and scattered everywhere, and when a number looks wrong two layers downstream, I have no idea which staging model to even start checking. Keeping staging models as a thin, consistent renaming layer means I always know exactly where to look for real business logic -- it lives in the intermediate or mart layer, not here.",
+      "example": "-- models/staging/stg_customers.sql\nSELECT\n  cust_id AS customer_id,\n  cust_fname AS first_name,\n  cust_lname AS last_name,\n  cust_email_addr AS email\nFROM {{ source('raw', 'customers') }}",
+      "commonMistakes": [
+        "Hardcoding the raw table name instead of using source(), losing dbt's dependency tracking and lineage",
+        "Adding a join or aggregation into a staging model instead of keeping it a thin renaming layer",
+        "Not giving columns clean, consistent names, leaving cryptic raw names to propagate downstream",
+        "Confusing source() (for raw tables dbt didn't build) with ref() (for other dbt models)"
+      ],
+      "keyPoints": [
+        "Staging models use source() to reference raw tables, preserving dbt's dependency tracking",
+        "Staging models rename/cast columns but avoid joins, aggregations, and business logic",
+        "Keeping staging thin makes it easy to know where real business logic lives downstream",
+        "One staging model typically maps to one raw source table"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct use of source() rather than hardcoding or ref()", "weight": 35},
+        {"criterion": "Correct, clean column renaming", "weight": 30},
+        {"criterion": "Explains why business logic doesn't belong in staging", "weight": 35}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-024",
+      "questionCode": "LTV-BDA-BEG-024",
+      "title": "Write a PIVOT query",
+      "prompt": "Write a T-SQL query using PIVOT that turns rows of (Color, ListPrice) from Production.Product into a single result with one column per color, showing the average ListPrice for each color.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "PIVOT"],
+      "code": "-- Production.Product (AdventureWorks2012): Color, ListPrice\nUSE AdventureWorks2012;\nGO",
+      "modelAnswer": "PIVOT turns distinct values from one column into separate output columns, aggregating another column's values into each one. The syntax requires wrapping the source query in a derived table that includes only the columns actually needed (Color and ListPrice here), then specifying the aggregate function to apply (AVG), the column whose values become new columns (Color), and the explicit list of values to pivot into columns, written out by hand since PIVOT doesn't dynamically discover distinct values on its own -- any color not listed in that IN() clause is silently excluded from the result rather than causing an error.",
+      "professionalAnswer": "I'd build the inner query first, selecting just Color and ListPrice, since PIVOT only works cleanly against the specific columns it needs. Then the PIVOT clause itself names AVG(ListPrice) as the aggregation, Color as the column to spread out, and an explicit list of the actual color values in IN(). The thing I'd flag as a gotcha is that this list has to be hand-typed -- if a new color gets added to the product catalog later and I don't update the IN() list, that color just silently disappears from the pivoted result instead of throwing any kind of warning, which is why PIVOT works best for a known, stable set of categories rather than something that changes often.",
+      "example": "SELECT [Black], [Blue], [Red], [Silver]\nFROM (SELECT Color, ListPrice FROM Production.Product) AS SourceTable\nPIVOT (\n  AVG(ListPrice) FOR Color IN ([Black], [Blue], [Red], [Silver])\n) AS PivotTable;",
+      "commonMistakes": [
+        "Forgetting PIVOT requires hand-listing every distinct value to include, with no automatic discovery",
+        "Not restricting the inner query to only the needed columns before pivoting",
+        "Expecting a color left out of the IN() list to cause an error instead of being silently dropped",
+        "Trying to pivot on a column with too many distinct values, producing an unreasonably wide result"
+      ],
+      "keyPoints": [
+        "PIVOT spreads distinct values of one column into separate output columns",
+        "Requires an inner query restricted to only the relevant columns",
+        "The list of values to pivot must be explicitly specified, not auto-discovered",
+        "Values not included in the list are silently excluded from the result"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct PIVOT syntax including the inner query", "weight": 45},
+        {"criterion": "Correct aggregate function and pivot column choice", "weight": 30},
+        {"criterion": "Notes the explicit-value-list limitation", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-025",
+      "questionCode": "LTV-BDA-BEG-025",
+      "title": "Write a stored procedure with TRY/CATCH",
+      "prompt": "Write a T-SQL stored procedure that inserts a new row into a Products table and uses TRY/CATCH to handle any error gracefully, returning the error message instead of letting the batch fail silently or crash the caller.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Error Handling"],
+      "code": "-- Products(ProductID int PK, Name nvarchar(50), ListPrice money)",
+      "modelAnswer": "BEGIN TRY wraps the risky statement (here, the INSERT, which could fail on a primary key violation, a type mismatch, or a constraint violation); if it throws, control jumps to the matching BEGIN CATCH block instead of letting the error propagate uncaught. Inside CATCH, the built-in functions ERROR_MESSAGE(), ERROR_NUMBER(), and ERROR_SEVERITY() capture details about exactly what went wrong, which can be returned to the caller, logged, or re-thrown with THROW if the procedure shouldn't swallow the error entirely. This pattern matters because without it, an unhandled error in a stored procedure can leave the caller with a cryptic failure and no useful diagnostic information, or in some cases leave a transaction in an inconsistent state if multiple statements were involved.",
+      "professionalAnswer": "I'd wrap the INSERT in BEGIN TRY / END TRY, and in the matching BEGIN CATCH / END CATCH block, capture ERROR_MESSAGE() and ERROR_NUMBER() and return them to the caller instead of letting the error just bubble up as a raw SQL Server exception. That gives whoever's calling this procedure something actually useful to look at instead of a generic failure. If this insert were part of a larger multi-statement transaction, I'd also make sure to roll that transaction back inside the CATCH block before returning, since an error partway through a transaction can otherwise leave data in a half-finished state.",
+      "example": "CREATE PROCEDURE usp_InsertProduct\n  @ProductID INT, @Name NVARCHAR(50), @ListPrice MONEY\nAS\nBEGIN\n  BEGIN TRY\n    INSERT INTO Products (ProductID, Name, ListPrice)\n    VALUES (@ProductID, @Name, @ListPrice);\n  END TRY\n  BEGIN CATCH\n    SELECT ERROR_NUMBER() AS ErrorNumber, ERROR_MESSAGE() AS ErrorMessage;\n  END CATCH\nEND;",
+      "commonMistakes": [
+        "Not wrapping risky statements in TRY/CATCH at all, letting an error crash the caller with no diagnostic detail",
+        "Catching the error but not surfacing ERROR_MESSAGE()/ERROR_NUMBER() to the caller in any useful way",
+        "Forgetting to roll back a transaction inside CATCH when the failed statement was part of a multi-step transaction",
+        "Using CATCH to silently swallow every error instead of distinguishing errors worth surfacing from ones genuinely safe to ignore"
+      ],
+      "keyPoints": [
+        "BEGIN TRY wraps the statement(s) that might fail",
+        "BEGIN CATCH captures control on failure instead of letting the error propagate uncaught",
+        "ERROR_MESSAGE()/ERROR_NUMBER() provide diagnostic detail inside CATCH",
+        "A transaction should be rolled back inside CATCH if the failure occurred mid-transaction"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correct TRY/CATCH syntax", "weight": 40},
+        {"criterion": "Correctly surfaces error detail to the caller", "weight": 35},
+        {"criterion": "Mentions transaction rollback consideration", "weight": 25}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-026",
+      "questionCode": "LTV-BDA-BEG-026",
+      "title": "Troubleshooting a join fan-out inflating totals",
+      "prompt": "A report's total revenue is showing almost double the correct number after you added a join to bring in shipping details. How would you diagnose and fix a join that's unexpectedly multiplying rows (a 'fan-out')?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["T-SQL", "Joins"],
+      "modelAnswer": "A fan-out happens when the newly joined table has more than one matching row per row on the other side -- here, if a single order has multiple shipping-detail rows (say, a package split into two shipments), joining Orders to Shipping duplicates that order's revenue once for every matching shipping row, and summing after the join counts that same revenue multiple times. The fix is to figure out the actual grain mismatch: either aggregate the shipping table down to one row per order before joining (e.g., summing shipment count but not revenue, or picking just the most recent shipment), or move the shipping detail into a separate query entirely rather than joining it at the same grain as the revenue calculation. The general diagnostic step is to count rows before and after adding the join -- if the row count jumped without a corresponding real increase in the underlying order count, that's the fan-out revealing itself immediately.",
+      "professionalAnswer": "The first thing I'd check is whether the row count changed when I added that join -- if orders went from, say, 10,000 rows to 15,000 rows after joining shipping details, that's the tell that shipping has more than one row per order, and every extra matching row is duplicating that order's revenue in the sum. Once I confirm that's the cause, I have a choice: either pre-aggregate the shipping table down to one row per order before joining it (if I just need something like a shipment count, not a sum that compounds the duplication), or pull the shipping detail into a completely separate query so I'm not joining two different grains together in the same SUM. I'd never just add a DISTINCT to paper over it, since that can hide real duplicate orders along with the fan-out duplicates and isn't addressing the actual grain mismatch.",
+      "example": null,
+      "commonMistakes": [
+        "Adding DISTINCT to 'fix' the symptom instead of addressing the underlying grain mismatch",
+        "Not checking row counts before and after adding a join to catch a fan-out early",
+        "Assuming every join to a 'detail' table is safe without checking whether it's actually one-to-many",
+        "Fixing the fan-out for one measure but leaving other aggregates in the same query still inflated"
+      ],
+      "keyPoints": [
+        "A fan-out occurs when a join brings in more than one matching row per original row",
+        "Summing after a fan-out double- or multi-counts the original row's values",
+        "Checking row counts before/after a join reveals the fan-out quickly",
+        "Fix by pre-aggregating to the correct grain or separating the queries, not by bolting on DISTINCT"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly diagnoses the fan-out mechanism", "weight": 40},
+        {"criterion": "Describes a real diagnostic step (row count check)", "weight": 30},
+        {"criterion": "Proposes a correct fix, not a superficial workaround", "weight": 30}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-027",
+      "questionCode": "LTV-BDA-BEG-027",
+      "title": "Troubleshooting inflated totals from a many-to-many relationship",
+      "prompt": "A Power BI report's total sales number is inflated after a new dimension table was added to the model. You suspect the relationship between it and the fact table is many-to-many instead of one-to-many. How would you confirm that and fix the model?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Power BI", "Data Modeling"],
+      "modelAnswer": "First, I'd open Model view and check the relationship line's cardinality indicator -- Power BI marks a many-to-many relationship distinctly from one-to-many. If it's showing many-to-many, that means the column used for the relationship contains duplicate values on both sides, not just the fact table side, which is the actual root cause. Many-to-many relationships behave differently under the hood: without a true shared, unique key on at least one side, filter propagation becomes ambiguous and can effectively multiply matching rows together, inflating aggregated totals. The real fix is almost always to introduce a proper bridge or lookup table containing the unique key values, turning what was one many-to-many relationship into two clean one-to-many relationships -- fact-to-bridge and dimension-to-bridge -- rather than leaving the model with an ambiguous many-to-many join.",
+      "professionalAnswer": "I'd go straight to Model view and look at the relationship's cardinality marker, since Power BI will tell me directly if it created a many-to-many relationship instead of one-to-many. If that's what happened, it almost always means the column I used for the join has duplicates on both sides, not a clean unique key on either one. Rather than just leaving that many-to-many relationship in place and hoping the numbers work out, I'd build a small bridge table that has the unique key values exactly once, and reconnect both the fact table and the dimension table to that bridge instead of to each other directly -- that turns one ambiguous many-to-many relationship into two clean one-to-many relationships, which is what actually fixes the inflated totals rather than just hiding the symptom.",
+      "example": null,
+      "commonMistakes": [
+        "Not checking the relationship cardinality indicator in Model view before assuming the cause",
+        "Leaving a many-to-many relationship in place and trying to fix the inflated numbers with DAX instead of the model structure",
+        "Not recognizing that a many-to-many relationship means duplicates exist on both sides, not just one",
+        "Building a bridge table but forgetting to make its key column actually unique"
+      ],
+      "keyPoints": [
+        "Check the relationship's cardinality in Model view to confirm many-to-many",
+        "Many-to-many means duplicate values exist on both sides of the join column",
+        "A many-to-many relationship can make filter propagation ambiguous and inflate totals",
+        "The standard fix is a bridge table creating two clean one-to-many relationships"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly identifies how to confirm many-to-many cardinality", "weight": 35},
+        {"criterion": "Correctly explains why it inflates totals", "weight": 30},
+        {"criterion": "Proposes the bridge table fix correctly", "weight": 35}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-028",
+      "questionCode": "LTV-BDA-BEG-028",
+      "title": "Troubleshooting an ADF pipeline authentication failure",
+      "prompt": "An Azure Data Factory pipeline that's been running fine for months suddenly starts failing every run with an authentication error against the source database. How would you investigate and resolve it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Azure Data Factory", "Troubleshooting"],
+      "modelAnswer": "I'd start in the ADF monitoring pane, open the failed run, and read the actual error message on the failing activity rather than guessing -- authentication failures usually come with a specific error code (expired credential, locked account, access revoked) that narrows the cause immediately. The most common culprits for a pipeline that 'suddenly' breaks after working fine are a password or secret that expired or was rotated in the source system without updating the linked service, a managed identity that lost a role assignment (someone cleaned up permissions elsewhere), or a firewall/network rule change on the source database blocking the integration runtime's IP. I'd check the linked service's connection test directly from the ADF authoring UI, verify whether the credential is a Key Vault reference (and if so, check whether that secret itself expired or was rotated in the vault, not just in ADF), and confirm the identity or account still has the correct role assignment on the source resource.",
+      "professionalAnswer": "I wouldn't guess -- I'd open the monitoring view, find the failed activity, and read the actual error text, since Data Factory is usually specific about whether it's an expired credential, a blocked network path, or a missing permission. Given it was working for months and suddenly broke, my first suspicion is something changed on the source side rather than in ADF itself -- a rotated password, an expired Key Vault secret, or a managed identity that lost a role assignment during some unrelated cleanup. I'd test the linked service's connection directly from the ADF UI to isolate whether it's a connectivity problem or an authentication problem specifically, and if it's using Key Vault, I'd check the secret's expiration and version in the vault itself, not just assume ADF's reference to it is still valid.",
+      "example": null,
+      "commonMistakes": [
+        "Re-running the pipeline repeatedly without reading the actual error message first",
+        "Assuming the problem is in ADF itself instead of checking whether something changed on the source system",
+        "Not testing the linked service connection directly to isolate authentication from network connectivity",
+        "Overlooking that a Key Vault-referenced secret can itself expire or rotate independently of the ADF configuration"
+      ],
+      "keyPoints": [
+        "Start with the actual error message on the failed activity in the monitoring pane",
+        "Consider expired/rotated credentials, lost role assignments, and network/firewall changes",
+        "Test the linked service connection directly to isolate authentication from other failure types",
+        "Check Key Vault secret validity separately from the ADF linked service configuration"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Starts diagnosis from the actual error message, not guessing", "weight": 30},
+        {"criterion": "Identifies plausible real causes (credential rotation, role loss, firewall)", "weight": 40},
+        {"criterion": "Describes a concrete verification step", "weight": 30}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-029",
+      "questionCode": "LTV-BDA-BEG-029",
+      "title": "Troubleshooting a slow Snowflake query",
+      "prompt": "A dashboard query against Snowflake that used to run in a few seconds is now taking several minutes. What would you check first, and what are the most common beginner-level causes?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Snowflake", "Performance"],
+      "modelAnswer": "I'd start by checking the Query Profile in Snowflake's history/monitoring view for that specific query run, which shows where time was actually spent -- scanning data, waiting on a queue, or something else. The most common beginner-level causes are: the virtual warehouse is undersized for the amount of data now being scanned (data volume grew since the query was first written, but the warehouse size never changed), the warehouse was suspended and the first query after a resume pays a brief cold-start cost, the warehouse is being shared by other heavy workloads at the same time and the query is waiting in a queue rather than actually running slowly, or a result-cache hit that used to make the query feel instant stopped applying because the underlying data changed. I'd also check whether the query is scanning far more partitions than it needs to -- a missing or ineffective filter on a large table, now that the table has grown, can mean a query that used to scan a small amount of data is now scanning a much larger one.",
+      "professionalAnswer": "The first thing I'd pull up is the Query Profile for that specific run, since it tells me exactly where the time went instead of me guessing. A few things I'd specifically rule in or out: has the underlying table grown a lot since this query was first written, meaning the same filter now scans way more data; is the warehouse sized appropriately for that volume, or did it stay small while the data grew; is the warehouse being hammered by other jobs at the same time, so some of that 'slowness' is actually queueing, not query execution; and was this query previously benefiting from Snowflake's result cache, which stops helping the moment the underlying data changes. I wouldn't jump straight to resizing the warehouse bigger as the fix -- that costs more money, and if the real issue is a missing filter or a queueing problem, a bigger warehouse won't necessarily solve it.",
+      "example": null,
+      "commonMistakes": [
+        "Jumping straight to resizing the warehouse bigger without checking the Query Profile first",
+        "Not considering that query queueing from other concurrent workloads can look like slowness",
+        "Forgetting that a previously cache-hit query stops benefiting once the underlying data changes",
+        "Not checking whether the underlying table has simply grown since the query was first written"
+      ],
+      "keyPoints": [
+        "Start with the Query Profile to see where time is actually spent",
+        "Check for data volume growth against a warehouse size that hasn't changed",
+        "Consider queueing from concurrent workloads on the same warehouse",
+        "Consider loss of result-cache benefit if underlying data changed"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Starts with the Query Profile rather than guessing", "weight": 30},
+        {"criterion": "Identifies plausible real causes", "weight": 45},
+        {"criterion": "Avoids jumping straight to 'just make the warehouse bigger'", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-030",
+      "questionCode": "LTV-BDA-BEG-030",
+      "title": "Troubleshooting a failing dbt test",
+      "prompt": "A dbt run completes successfully, but a unique test on a model's primary key column starts failing. Walk through how you'd investigate and what a beginner should check first.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["dbt", "Data Quality"],
+      "modelAnswer": "A dbt run and a dbt test are separate steps -- the run can succeed (the model built without a SQL error) while the test still fails, because tests check the resulting data's quality, not whether the SQL executed. I'd start by running dbt test --select <model_name> to confirm exactly which test failed and look at the generated query dbt ran to check uniqueness -- dbt stores a compiled SQL file for every test that I can open and run manually to see the actual duplicate rows. The most common beginner causes are an upstream source that introduced a genuine duplicate (a source system sent the same record twice), a join earlier in the model's logic fanning out and producing more than one row per key, or a key that was never actually guaranteed unique by the source system in the first place, meaning the test's assumption was wrong from the start, not the data. I'd look at the actual duplicate rows the compiled test query returns before guessing at a fix, since the right fix depends entirely on which of these it turns out to be.",
+      "professionalAnswer": "The first thing I'd remind myself is that a successful dbt run and a passing dbt test are two different things -- the model can build fine and the test can still catch a real data quality problem. I'd run dbt test --select that model specifically, then go find the compiled SQL dbt generated for that test, which I can run directly to see the actual duplicate key values rather than just knowing the test failed. From there it usually comes down to one of three things: a genuine duplicate showed up upstream in the source, a join inside the model is fanning out rows, or the key was never truly unique to begin with and the test's assumption needs to change rather than the model. I always look at the real duplicate rows before touching any code, because fixing the wrong thing based on a guess usually just hides the symptom instead of solving it.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming a successful dbt run means the data is fine, without checking test results separately",
+        "Trying to fix the model's code before looking at the actual duplicate rows the test caught",
+        "Not knowing dbt generates a compiled, runnable SQL query for each test that can be inspected directly",
+        "Assuming the key itself was always guaranteed unique instead of questioning that assumption"
+      ],
+      "keyPoints": [
+        "A successful dbt run does not guarantee passing dbt tests",
+        "dbt test --select isolates which specific test failed",
+        "The compiled test SQL can be run directly to inspect the actual offending rows",
+        "Common root causes: upstream duplicates, a fan-out join, or a key that was never truly unique"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes a dbt run from a dbt test", "weight": 30},
+        {"criterion": "Describes inspecting the actual failing rows before fixing", "weight": 35},
+        {"criterion": "Identifies plausible root causes", "weight": 35}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-031",
+      "questionCode": "LTV-BDA-BEG-031",
+      "title": "Troubleshooting a T-SQL deadlock",
+      "prompt": "A stored procedure that normally runs fine starts intermittently failing with error 1205, a deadlock victim error. What is a deadlock, and what would you check or change to reduce how often it happens?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["T-SQL", "Concurrency"],
+      "modelAnswer": "A deadlock happens when two transactions each hold a lock the other one needs, and each is waiting for the other to release it -- neither can proceed, so SQL Server detects the cycle and forcibly kills one of them (the 'deadlock victim') with error 1205 so the other can continue. Because it depends on timing and which two transactions happen to collide, it's typically intermittent rather than reproducible on demand. A practical first step is turning on trace flag 1222 or enabling the system_health extended events session to capture the deadlock graph, which shows exactly which two statements and which resources were involved. Common beginner-level fixes include making sure transactions access tables in a consistent order across all procedures that touch them (so two transactions can't lock resources in opposite orders), keeping transactions as short as possible so locks are held for less time, and adding appropriate indexes so a transaction isn't holding a broader lock than it needs to because it's scanning more rows than necessary.",
+      "professionalAnswer": "A deadlock is basically two transactions stuck in a standoff -- each one is holding a lock the other needs, so neither can move forward, and SQL Server eventually steps in and kills one of them to break the tie, which is exactly what error 1205 means. The fact that it's intermittent rather than constant is actually expected, since it depends on the unlucky timing of two specific transactions colliding. The first thing I'd do is capture the deadlock graph, either through the system_health extended events session or trace flag 1222, because that tells me exactly which two statements and which resources were actually involved instead of me guessing. From there, the usual fixes are making sure every procedure that touches the same set of tables accesses them in the same order, keeping transactions as short as possible so they're not holding locks longer than necessary, and checking whether a missing index is forcing a broader scan and lock than the query actually needs.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming a deadlock is a bug in one specific procedure rather than a timing collision between two transactions",
+        "Not capturing the deadlock graph before attempting a fix, and guessing at the cause instead",
+        "Fixing table access order in one procedure but leaving another procedure touching the same tables in a different order",
+        "Wrapping everything in a longer transaction 'to be safe' instead of keeping transactions as short as possible"
+      ],
+      "keyPoints": [
+        "A deadlock is a circular lock-wait between two transactions, resolved by killing one as the 'victim'",
+        "Error 1205 is intermittent because it depends on unlucky timing between two specific transactions",
+        "Capture the deadlock graph (trace flag 1222 or system_health) before guessing at a fix",
+        "Common fixes: consistent table access order, shorter transactions, appropriate indexing"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains what a deadlock is and why 1205 occurs", "weight": 40},
+        {"criterion": "Describes a concrete diagnostic step (deadlock graph)", "weight": 30},
+        {"criterion": "Proposes sensible mitigation strategies", "weight": 30}
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-032",
+      "questionCode": "LTV-BDA-BEG-032",
+      "title": "Troubleshooting a stale Tableau extract",
+      "prompt": "Users are complaining that a Tableau dashboard is showing numbers from last week, even though the underlying source data is updated daily. How would you figure out why and fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Tableau", "Troubleshooting"],
+      "modelAnswer": "Since the dashboard is behind on data that the source already has, the most likely explanation is that the workbook is connected via an extract rather than a live connection, and the scheduled refresh for that extract either failed, was never actually scheduled, or is running on a cadence (say, weekly) that doesn't match expectations (daily). I'd check Tableau Server/Cloud's extract refresh schedule and run history for that specific workbook first -- the history will show whether refreshes have been running on schedule and whether any have been failing silently, which is common if an upstream credential expired or a source table was renamed. If refreshes are running successfully but the data still looks old, I'd check whether the extract itself is an incremental refresh configured against a column that isn't actually being updated correctly, which can cause new rows to be silently skipped even though the refresh 'succeeds.'",
+      "professionalAnswer": "My first assumption is that this is an extract, not a live connection, since a live connection by definition can't show week-old data if the source itself is current. I'd go straight to the extract's refresh schedule and run history on Tableau Server or Cloud and check two things: is it actually scheduled to run as often as people expect, and are those scheduled runs actually succeeding, or failing silently in the background. A failed refresh due to an expired credential or a renamed source table is a really common cause, and it often fails quietly enough that nobody notices until a user flags stale numbers. If the schedule and run history both look fine, my next suspicion would be an incremental refresh that's misconfigured against the wrong date column, which can make a refresh report success while actually missing the new rows it should have picked up.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming the dashboard is live-connected without checking whether it's actually an extract",
+        "Not checking the extract's refresh run history, missing a silently failing scheduled refresh",
+        "Fixing the schedule's frequency without first confirming the refreshes were even succeeding",
+        "Not considering a misconfigured incremental refresh as a cause of a 'successful' refresh that still misses new data"
+      ],
+      "keyPoints": [
+        "Stale data on a dashboard that should be current points strongly to an extract, not a live connection",
+        "Check the extract's scheduled refresh history for failures, not just whether a schedule exists",
+        "A refresh can fail silently due to an expired credential or renamed source object",
+        "A misconfigured incremental refresh can report success while still missing new rows"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly identifies the extract/refresh schedule as the likely cause", "weight": 40},
+        {"criterion": "Describes checking refresh run history, not just the schedule", "weight": 35},
+        {"criterion": "Considers a silent-failure or incremental-refresh misconfiguration scenario", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-033",
+      "questionCode": "LTV-BDA-BEG-033",
+      "title": "Troubleshooting a NULL-skewed aggregate",
+      "prompt": "A COUNT(DiscountCode) on an orders table returns a much smaller number than COUNT(*) on the same table, and a report built on top of it looks wrong as a result. Why does this happen, and how would you decide which one is actually correct for the report?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "sql",
+      "skills": ["T-SQL", "Aggregation"],
+      "code": "SELECT COUNT(*) AS AllOrders, COUNT(DiscountCode) AS OrdersWithCodeCounted\nFROM Sales.Orders;",
+      "modelAnswer": "COUNT(*) counts every row in the table regardless of NULLs anywhere, while COUNT(<column>) counts only the rows where that specific column is not NULL -- so the gap between the two numbers is exactly the number of orders that have no discount code at all. Neither number is inherently 'wrong'; they're answering two different questions. The real fix is figuring out which question the report actually needs to answer: if the report is meant to say 'how many orders were placed in total,' COUNT(*) is correct; if it's meant to say 'how many orders actually had a discount applied,' COUNT(DiscountCode) is correct, and the smaller number is the accurate one, not a bug. The mistake worth avoiding is assuming one of the two counts must be broken just because they don't match, rather than checking which business question the report is supposed to be answering.",
+      "professionalAnswer": "This isn't actually a bug in either count -- COUNT(*) counts rows, period, while COUNT(DiscountCode) specifically skips any row where that column is NULL, so the difference between them is literally the number of orders with no discount code. Before I'd change anything, I'd go back to whoever's using this report and ask which question they're actually trying to answer: total order volume, or orders that specifically had a discount applied. If it's the latter, the smaller COUNT(DiscountCode) number is the right one and the report was built correctly -- there's no fix needed on the query, just a clearer label on what the metric actually represents, since 'orders' without more context is ambiguous enough to cause this exact kind of confusion.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming the smaller number from COUNT(<column>) is a bug rather than expected behavior",
+        "Not checking which business question the report is actually meant to answer before changing the query",
+        "Forgetting COUNT(*) counts rows while COUNT(column) counts non-NULL values of that specific column",
+        "Mislabeling the metric in the report instead of clarifying what it actually represents"
+      ],
+      "keyPoints": [
+        "COUNT(*) counts all rows; COUNT(column) counts only non-NULL values in that column",
+        "The gap between the two is exactly the count of NULLs in that column",
+        "Neither number is wrong -- they answer different questions",
+        "The fix is usually clarifying the report's intent and labeling, not changing the query"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly explains the COUNT(*) vs. COUNT(column) difference", "weight": 45},
+        {"criterion": "Recognizes neither number is inherently wrong", "weight": 25},
+        {"criterion": "Proposes clarifying business intent rather than assuming a bug", "weight": 30}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-034",
+      "questionCode": "LTV-BDA-BEG-034",
+      "title": "Choosing star vs. snowflake schema",
+      "prompt": "At a beginner level, what's the difference between a star schema and a snowflake schema, and why would you typically default to a star schema for a reporting data mart unless there's a specific reason not to?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Dimensional Modeling"],
+      "modelAnswer": "A star schema has one central fact table surrounded directly by denormalized dimension tables -- each dimension holds all of its own descriptive attributes in one flat table, even if that means some repeated data (like repeating a category name across every product row that belongs to it). A snowflake schema takes those dimensions a step further and normalizes them into additional related sub-dimension tables -- Product might reference a separate ProductCategory table, which references a separate ProductDepartment table, and so on. Star schemas are generally preferred for reporting because they require fewer joins to get from a fact table to any given attribute, which both simplifies queries that analysts and BI tools write and typically performs better, especially in columnar/MPP warehouses that are optimized for scanning flat, wide tables rather than chasing many small joins. Snowflaking makes sense when storage efficiency genuinely matters more than query simplicity, or when a dimension's hierarchy itself needs to be modeled and maintained with strict referential integrity -- but for most BI reporting use cases, the extra joins aren't worth the storage savings, especially now that storage is cheap relative to compute.",
+      "professionalAnswer": "I'd describe a star schema as the dimension tables staying flat and a little repetitive -- Product has Category right there as a column, even though that means the word 'Electronics' is physically repeated on every electronics product row. A snowflake schema takes that same Category out into its own separate table and links to it, which is more storage-efficient but means an extra join every time a query needs that category. My default for a reporting mart is star schema, because BI tools and the people writing queries against it both benefit from fewer joins, and most modern warehouses are built to scan a flat table efficiently rather than reward normalized joins the way an OLTP system would. I'd only lean toward snowflaking a dimension if there's a real reason -- like a deep, genuinely hierarchical structure that needs to be maintained with strict integrity on its own, or a storage cost concern that's actually material, which is rare enough in practice that star schema stays my default.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming snowflaking is always 'more correct' because it's more normalized, without weighing the extra joins",
+        "Not recognizing that denormalized dimensions in a star schema intentionally repeat data for simplicity",
+        "Choosing snowflake schema purely out of habit from OLTP normalization training rather than the reporting use case",
+        "Forgetting storage savings from snowflaking are often negligible compared to modern storage costs"
+      ],
+      "keyPoints": [
+        "Star schema: flat, denormalized dimensions directly around one fact table",
+        "Snowflake schema: dimensions further normalized into related sub-tables",
+        "Star schema requires fewer joins, generally simpler and faster for reporting",
+        "Snowflaking trades storage efficiency for additional joins; usually not worth it for BI reporting"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes star from snowflake schema", "weight": 40},
+        {"criterion": "Explains the reporting-performance rationale for defaulting to star", "weight": 35},
+        {"criterion": "Identifies a legitimate reason to snowflake when appropriate", "weight": 25}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-035",
+      "questionCode": "LTV-BDA-BEG-035",
+      "title": "ETL vs. ELT",
+      "prompt": "What's the difference between ETL and ELT, and why has ELT become the more common pattern now that cloud warehouses like Snowflake and tools like dbt are part of the standard stack?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Engineering", "ELT"],
+      "modelAnswer": "ETL (Extract, Transform, Load) transforms data in a separate processing layer before it ever reaches the warehouse -- data is pulled from the source, cleaned and reshaped by an external engine, and only the finished result is loaded into the destination. ELT (Extract, Load, Transform) instead loads the raw data into the warehouse first, mostly as-is, and does the transformation afterward using the warehouse's own compute -- which is exactly the model dbt is built around, writing transformation logic as SQL models that run inside Snowflake, Databricks, or another modern warehouse rather than in a separate tool. ELT became the dominant pattern because modern cloud warehouses have cheap, elastically scalable compute that can comfortably absorb heavy transformation workloads, and keeping the raw, untransformed data available in the warehouse (rather than discarding it after an external ETL tool processes it) makes it much easier to re-run a changed transformation later or debug by going back to the original source data. ETL still has its place when a transformation has to happen before data is allowed to land anywhere, such as scrubbing sensitive fields for a compliance reason before the data is stored at all.",
+      "professionalAnswer": "I'd explain ETL as transform-before-you-land -- the data gets reshaped outside the warehouse, by some other engine, and only the final, already-clean result actually makes it into the warehouse. ELT flips that: load the raw data in first, mostly untouched, and do the transformation afterward using the warehouse's own compute, which is literally what dbt does -- it's just SQL models running inside Snowflake or wherever the warehouse lives. The reason ELT took over is mostly that cloud warehouse compute got cheap and elastic enough that doing the transformation there isn't a burden anymore, and keeping the raw data sitting in the warehouse means if I ever need to change a transformation or debug something, I've still got the original source data to go back to instead of having thrown it away during an ETL step. I'd still reach for a true ETL approach if there were a hard requirement to scrub something sensitive before it's ever allowed to land in the warehouse at all, but that's the exception now, not the default.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming ETL and ELT are just a reordering of the same letters with no real architectural difference",
+        "Not connecting ELT's rise to specific enablers like cheap elastic cloud compute and tools like dbt",
+        "Forgetting raw data retention in ELT is itself a benefit for debugging and re-running changed logic",
+        "Not recognizing legitimate cases (compliance scrubbing) where ETL is still the right call"
+      ],
+      "keyPoints": [
+        "ETL transforms before loading into the warehouse, using a separate processing layer",
+        "ELT loads raw data first, then transforms it using the warehouse's own compute",
+        "ELT's rise is tied to cheap elastic cloud compute and tools like dbt",
+        "Retaining raw data in ELT makes re-running/debugging transformations easier"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes ETL from ELT", "weight": 40},
+        {"criterion": "Explains why ELT became dominant with modern cloud tooling", "weight": 40},
+        {"criterion": "Notes a legitimate remaining use case for ETL", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-036",
+      "questionCode": "LTV-BDA-BEG-036",
+      "title": "OLTP vs. OLAP",
+      "prompt": "What's the difference between an OLTP system and an OLAP system, and why is it usually a bad idea to run heavy analytical reporting queries directly against a production OLTP database?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Warehousing", "Database Design"],
+      "modelAnswer": "OLTP (Online Transaction Processing) systems are optimized for fast, small, frequent reads and writes -- a point-of-sale system inserting one order at a time, an application updating one customer's address -- and their schema is usually highly normalized to keep those individual writes fast and consistent. OLAP (Online Analytical Processing) systems are optimized for the opposite workload: large, complex queries that scan and aggregate huge volumes of historical data, usually structured with denormalized dimensional models like a star schema specifically to make that kind of scanning efficient. Running heavy analytical queries directly against a production OLTP database is risky for two reasons: the query patterns are fundamentally mismatched with what the OLTP system's indexes and schema were designed for, so those queries tend to be slow and resource-intensive, and more importantly, a long-running analytical query can hold locks or consume enough resources to actually slow down or block the live transactions the business depends on in real time -- which is exactly why a separate reporting warehouse or replica exists, so analytics and live transaction processing don't compete for the same resources.",
+      "professionalAnswer": "OLTP is built for lots of small, fast transactions happening constantly -- think of every individual order being placed, normalized tightly so those writes stay quick and consistent. OLAP is the opposite workload -- big, scan-heavy queries aggregating years of history, usually against a denormalized star schema built specifically for that kind of scanning. The reason I wouldn't run a heavy analytical report straight against the production OLTP database isn't just that it would be slow, though it usually is -- it's that a long-running report can hold locks or eat up resources the live application needs to keep processing real orders, which can mean actual customers experiencing a slow or broken checkout because someone's dashboard query is hogging the database. That's the whole reason a separate data warehouse or at least a read replica exists -- so reporting and live transactions aren't fighting over the same resources.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming the main risk of querying OLTP directly is just query speed, not impact on live transactions",
+        "Not connecting the schema difference (normalized vs. denormalized) to the workload each is optimized for",
+        "Assuming a read replica or warehouse is just a 'nice to have' rather than a real operational safeguard",
+        "Confusing OLTP's 'many small transactions' pattern with OLAP's 'few large scans' pattern"
+      ],
+      "keyPoints": [
+        "OLTP: fast, small, frequent transactions, normalized schema",
+        "OLAP: large, complex analytical queries, typically denormalized dimensional schema",
+        "Running analytics on production OLTP risks slowing or blocking live transactions",
+        "A separate warehouse or replica isolates reporting workload from live transaction processing"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly distinguishes OLTP from OLAP workloads", "weight": 40},
+        {"criterion": "Explains the real operational risk of querying production OLTP directly", "weight": 40},
+        {"criterion": "Mentions the standard mitigation (replica/warehouse)", "weight": 20}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-037",
+      "questionCode": "LTV-BDA-BEG-037",
+      "title": "The medallion architecture (bronze, silver, gold)",
+      "prompt": "What is the medallion architecture used in Databricks/Delta Lake lakehouse designs, and what's the purpose of each of the bronze, silver, and gold layers?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Databricks", "Delta Lake"],
+      "modelAnswer": "The medallion architecture is a layered organization pattern for a lakehouse that progressively refines data in stages rather than transforming it all in one leap. The bronze layer holds raw data landed as close to its original source format as possible -- minimal or no transformation, kept so the original data is always available to reprocess if downstream logic needs to change or a bug is found. The silver layer applies cleaning, validation, deduplication, and conforming of types and schema across sources -- it's meant to represent a trustworthy, queryable version of the data, but not yet shaped specifically for any one business question. The gold layer applies the actual business logic -- aggregations, joins across domains, metrics calculated exactly the way a specific report or team needs them -- and is what BI tools and end users typically query directly. The value of structuring it this way is that each layer has a clear, single responsibility, a bug in business logic can be fixed by rebuilding just the gold layer from silver without needing to re-ingest raw source data, and the bronze layer's raw retention protects against ever losing the ability to reprocess data correctly after a mistake in an earlier transformation.",
+      "professionalAnswer": "I'd describe it as data getting progressively more refined and more purpose-built as it moves through three stages. Bronze is raw, landed pretty much exactly as it came from the source, kept that way specifically so I never lose the ability to reprocess from scratch if something downstream turns out to be wrong. Silver is where I clean things up -- dedupe, fix types, validate -- so it's a trustworthy general-purpose version of the data, but it's not yet tailored to any specific report. Gold is where the actual business logic lives -- the aggregations and metrics a specific dashboard or team actually needs -- and that's the layer BI tools point at. The real benefit of splitting it this way is isolation: if a business rule in gold turns out to be wrong, I can fix and rebuild just that layer from silver without touching bronze at all, and because bronze still has the raw data, I'm never stuck unable to go back and reprocess correctly if an earlier transformation step had a bug in it.",
+      "example": null,
+      "commonMistakes": [
+        "Applying business logic directly in the bronze or silver layer instead of isolating it in gold",
+        "Not retaining raw bronze data, losing the ability to reprocess after a downstream bug",
+        "Treating silver as already business-ready instead of just clean and conformed",
+        "Skipping straight from raw to gold without a cleaning/conforming silver layer in between"
+      ],
+      "keyPoints": [
+        "Bronze: raw, minimally transformed data, retained for reprocessing",
+        "Silver: cleaned, validated, deduplicated, conformed, general-purpose data",
+        "Gold: business logic applied, purpose-built for specific reporting/analytics needs",
+        "Layer isolation lets a bug be fixed by rebuilding just the affected layer"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Correctly describes the purpose of each layer", "weight": 50},
+        {"criterion": "Explains the benefit of layer isolation/raw retention", "weight": 35},
+        {"criterion": "Clarity of explanation", "weight": 15}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z",
+      "deepDive": [
+        {
+          "heading": "Why bronze retention is the layer people underrate",
+          "content": "New data engineers often treat bronze as just a wasteful extra copy of the data, but it's the layer that makes the whole architecture resilient. If someone discovers six months from now that a type-casting rule in the silver layer was subtly wrong for a certain date range, having bronze intact means that silver and gold can simply be rebuilt from the untouched raw data for that range -- no need to go back to the original source system, which may have already purged or changed the data by then. Delta Lake's own transaction log and time travel features complement this well: even silver and gold tables can be rolled back to an earlier version if a bad transformation was already promoted, but bronze is the real safety net when the fix requires reprocessing logic rather than just reverting to a prior table version."
+        }
+      ]
+    },
+    {
+      "id": "bda-beg-038",
+      "questionCode": "LTV-BDA-BEG-038",
+      "title": "Handling ambiguous requirements from a stakeholder",
+      "prompt": "A stakeholder asks you to 'build a dashboard showing how the sales team is doing' with no further detail. Walk me through how you'd handle that request before you start building anything.",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Stakeholder Management", "Requirements Gathering"],
+      "modelAnswer": "A request this vague has too many possible interpretations to start building against -- 'how the sales team is doing' could mean revenue against quota, deal velocity, win rate, activity volume, or several of those together, and guessing wrong wastes real build time and erodes the stakeholder's trust that I understood the ask. I'd schedule a short conversation and ask specific, concrete questions: what decision will this dashboard inform, who's going to look at it and how often, what time grain matters (daily, monthly, quarterly), is there an existing metric definition I should match (so my 'revenue' lines up with Finance's 'revenue'), and is there a comparable report I can look at for a sense of expected shape. I'd also ask what 'good' looks like -- a target, a quota, a prior period to compare against -- since a number with no benchmark is often not actionable. Only after those answers are clear would I sketch a quick mockup or wireframe and confirm it with the stakeholder before building the real thing, which catches a misunderstanding cheaply instead of after a full build.",
+      "professionalAnswer": "Honestly, my first instinct with a request this open-ended isn't to start building -- it's to ask a handful of specific questions, because 'how the sales team is doing' could mean five different things depending on who's asking and why. I'd ask what decision this is actually going to support, who's looking at it and how often, and whether there's already an agreed definition for something like 'revenue' that I need to match rather than inventing my own. I'd also specifically ask what they're comparing against -- a quota, last quarter, last year -- because a number with nothing to compare it to usually isn't that useful on its own. Once I've got clear answers, I like to sketch a rough mockup and get a thumbs-up on that before I actually build anything, since it's a lot cheaper to catch a misunderstanding on a sketch than after I've spent hours building the real dashboard.",
+      "example": null,
+      "commonMistakes": [
+        "Starting to build immediately on a vague request instead of clarifying scope first",
+        "Not asking what decision the dashboard needs to support, building metrics without a clear purpose",
+        "Inventing a metric definition instead of checking whether one already exists elsewhere in the business",
+        "Skipping a mockup/sketch confirmation step and only getting feedback after a full build"
+      ],
+      "keyPoints": [
+        "Vague requests should be clarified before building, not guessed at",
+        "Ask what decision the output needs to support and who will use it",
+        "Check for existing metric definitions rather than inventing new ones",
+        "Confirm a mockup/sketch before committing to a full build"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Describes clarifying questions before building", "weight": 40},
+        {"criterion": "Shows awareness of metric-definition consistency across the business", "weight": 30},
+        {"criterion": "Mentions a low-cost validation step (mockup) before full build", "weight": 30}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-039",
+      "questionCode": "LTV-BDA-BEG-039",
+      "title": "A report that had wrong numbers",
+      "prompt": "Tell me about a time (real or how you'd approach it) when a report or dashboard you built was flagged as showing incorrect numbers. How did you handle finding out, investigating, and communicating about it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Quality", "Communication"],
+      "modelAnswer": "A strong answer treats this as a process, not just an apology: first, acknowledge the issue quickly and without being defensive, since stakeholders care more about getting a fix than about whose fault it was. Second, reproduce the discrepancy concretely -- find the specific number that's wrong, trace it back through the model or query to find exactly where it diverges from the expected or source value, rather than guessing at a cause. Common root causes worth checking systematically include a join fan-out inflating a total, a filter that's excluding or including the wrong rows, a measure using the wrong aggregation (SUM where AVG was needed, or vice versa), or a timing mismatch between when the report refreshed and when the source data last updated. Third, once the cause is found, fix it, verify the fix against a known-correct number, and communicate clearly what was wrong, what was fixed, and whether any decisions were made based on the bad numbers that might need revisiting. A good answer also mentions a preventive step going forward, like adding a sanity-check total or test to catch a similar error automatically next time.",
+      "professionalAnswer": "I'd walk through it as a sequence rather than just saying 'I fixed it.' First, I don't get defensive -- I thank whoever caught it, since catching a bad number before it drove a bad decision is a good thing. Then I go find the specific number in question and trace it step by step back through the query or model, rather than guessing what might be wrong. Most of the time it ends up being one of a handful of usual suspects -- a join that fanned out and inflated a total, a filter excluding rows it shouldn't have, or a measure aggregating the wrong way. Once I've actually found and fixed the root cause, I verify the corrected number against something I trust, and then I go back to whoever flagged it and explain plainly what was wrong and what's different now. If any real decision was made based on the bad number, I make sure that gets flagged too, since that matters more than the report itself. And afterward, I try to add some kind of sanity check or test so the same category of mistake gets caught automatically next time instead of relying on someone noticing it by eye again.",
+      "example": null,
+      "commonMistakes": [
+        "Getting defensive or dismissive when the issue is first flagged instead of focusing on resolution",
+        "Guessing at the cause instead of systematically tracing the specific number back through the logic",
+        "Fixing the number without verifying the fix against a known-correct value",
+        "Not checking whether any real decisions were made based on the incorrect numbers"
+      ],
+      "keyPoints": [
+        "Respond calmly and focus on resolution, not blame",
+        "Trace the specific discrepancy back through the logic rather than guessing",
+        "Verify the fix against a trusted value before declaring it resolved",
+        "Communicate clearly what was wrong, what changed, and flag any affected decisions"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Describes a calm, methodical investigation process", "weight": 35},
+        {"criterion": "Identifies plausible real root causes", "weight": 30},
+        {"criterion": "Addresses communication and verification of the fix", "weight": 35}
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-040",
+      "questionCode": "LTV-BDA-BEG-040",
+      "title": "Learning a new BI tool quickly",
+      "prompt": "You've mostly worked in Power BI, and your new team needs you to start building dashboards in Tableau within a couple of weeks. How would you approach ramping up quickly without producing low-quality work in the meantime?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Learning Agility", "Tableau"],
+      "modelAnswer": "A good approach leans on transferable concepts rather than starting from zero: the underlying ideas -- dimensions vs. measures, aggregation, filtering, relationships between tables -- are largely the same across Power BI and Tableau, even though the terminology and interface differ (Tableau's discrete/continuous pill distinction maps roughly onto how Power BI treats categorical vs. numeric fields, for instance). I'd start by rebuilding something I already know well in Power BI as a Tableau exercise, since having a known-correct answer to check against is faster than learning entirely new material from scratch. I'd also be upfront with the team about where I am in the ramp-up rather than quietly pretending full fluency, and I'd ask to pair with or get a review from someone already fluent in Tableau on my first few real dashboards, so mistakes specific to Tableau's quirks get caught before they reach end users rather than after.",
+      "professionalAnswer": "I wouldn't try to learn Tableau as if it were a totally foreign tool, because a lot of what I already know transfers directly -- the concept of a measure, a dimension, a relationship between tables, filtering logic -- Tableau just has its own vocabulary and UI for those same ideas. My first move would be picking something I've already built well in Power BI and rebuilding it in Tableau, since I'll immediately notice where my instincts are wrong because I have a known-correct result to compare against. I'd also just be honest with my team about where I am in that ramp-up rather than pretending I'm already fluent, and I'd specifically ask someone who already knows Tableau well to review my first couple of real dashboards before they go out, so any Tableau-specific mistake gets caught by someone who'd recognize it immediately instead of surfacing later when a stakeholder notices something looks off.",
+      "example": null,
+      "commonMistakes": [
+        "Assuming a new BI tool requires learning everything from scratch instead of leaning on transferable concepts",
+        "Hiding uncertainty about tool fluency instead of being upfront with the team",
+        "Shipping unreviewed work during the ramp-up period instead of getting an early review from someone experienced in the new tool",
+        "Not using a 'known answer' exercise (rebuilding something already understood) to accelerate learning"
+      ],
+      "keyPoints": [
+        "Identify which concepts transfer directly versus what's genuinely new terminology/UI",
+        "Use a known-correct rebuild exercise to learn faster and catch wrong assumptions",
+        "Be transparent with the team about current fluency level during ramp-up",
+        "Get an early review from someone experienced in the new tool before work ships"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Identifies transferable concepts rather than treating it as starting from zero", "weight": 35},
+        {"criterion": "Describes a concrete learning strategy", "weight": 30},
+        {"criterion": "Addresses quality control during the ramp-up period", "weight": 35}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-041",
+      "questionCode": "LTV-BDA-BEG-041",
+      "title": "Prioritizing competing requests",
+      "prompt": "Two different stakeholders each ask you for a report by end of day, and you genuinely can't finish both. How would you decide what to do and how would you communicate it?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Prioritization", "Stakeholder Management"],
+      "modelAnswer": "The instinct to quietly try to do both and risk doing neither well is the wrong move -- the right first step is surfacing the conflict immediately rather than silently struggling with it until the deadline arrives. I'd reach out to both stakeholders (or my manager, if there's a clear chain for prioritization calls) as soon as I realize the conflict exists, not at 4:45pm, explain the situation plainly, and ask or propose which one is more urgent based on what I know about downstream impact -- is one feeding a board meeting tomorrow morning while the other is for an internal check-in that could slip a day. If I can't get a clear answer quickly, I'd propose a reasonable default myself rather than leaving both stakeholders waiting on each other's decision, and I'd give the one that slips an honest, specific new timeline rather than a vague 'soon.' The common thread is transparency early, rather than surprise late.",
+      "professionalAnswer": "The moment I realize I can't actually do both well by end of day, I'd flag it immediately rather than sitting on it and hoping I'll somehow find the time. I'd go to both stakeholders, or my manager if there's an obvious person who should make the call, lay out the conflict plainly, and ask which one is actually more time-sensitive -- sometimes one of them doesn't even realize the other request exists, and once they know, the priority sorts itself out pretty fast. If neither answers quickly enough and I have to make the call myself, I'd weigh which one has a harder downstream deadline, like something feeding directly into a meeting that can't move, and go with that. Whatever I decide, I give the other person a real, specific new time I'll have it to them, not a vague 'I'll get to it soon,' because a clear new commitment is a lot easier for someone to plan around than silence.",
+      "example": null,
+      "commonMistakes": [
+        "Trying to quietly do both and risking a rushed, lower-quality result on each",
+        "Waiting until the deadline is imminent to raise the conflict instead of flagging it early",
+        "Making the prioritization call without any input from the stakeholders or a manager when one was available",
+        "Giving a vague 'I'll get to it soon' instead of a specific new commitment to the deprioritized request"
+      ],
+      "keyPoints": [
+        "Surface the conflict early, not at the last minute",
+        "Ask the stakeholders or manager for input on relative urgency rather than guessing in isolation",
+        "Make a reasonable call yourself if a clear answer isn't available quickly",
+        "Give a specific new commitment to the deprioritized request instead of a vague timeline"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Describes surfacing the conflict early and transparently", "weight": 40},
+        {"criterion": "Describes a reasonable method for deciding priority", "weight": 30},
+        {"criterion": "Addresses clear communication of the resulting timeline", "weight": 30}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-042",
+      "questionCode": "LTV-BDA-BEG-042",
+      "title": "Explaining a DAX measure to a non-technical stakeholder",
+      "prompt": "A sales manager keeps asking why a DAX measure on your dashboard shows a different number than what they expected, and they have no SQL or DAX background. How would you explain it to them in a way that actually lands?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Communication", "Power BI"],
+      "modelAnswer": "The right approach drops the technical vocabulary entirely and explains it in terms of what the number actually represents in their world, not how the formula works mechanically. Instead of saying 'CALCULATE overwrites the filter context,' I'd say something like, 'this number is specifically filtered to only count deals that closed this quarter, which is why it's smaller than the total pipeline number you might be thinking of' -- translating the technical mechanism into the business meaning behind it. I'd also validate their expectation rather than dismissing it -- asking what number they expected and why often reveals that they're thinking of a genuinely different metric (total pipeline vs. closed-won revenue, for instance), which means the real conversation isn't about DAX at all, it's about making sure both of us agree on what the metric is supposed to represent. If the measure turns out to actually be wrong, I'd say so plainly rather than over-explaining a bug as if it were intentional behavior.",
+      "professionalAnswer": "I wouldn't start by explaining DAX at all -- I'd start by asking what number they expected to see and why, because half the time that question reveals we're actually talking about two different metrics, not a bug. If it turns out the measure is working correctly, I'd explain it in plain business terms, something like 'this specific number only counts deals that actually closed this quarter, not everything still in the pipeline,' rather than walking them through CALCULATE and filter context, which won't mean anything to them and isn't actually what they're asking about. If I dig in and the measure actually is wrong, I just say that directly instead of trying to explain away a real bug as if it were intentional -- that's a different conversation, and trying to talk around it instead of owning it tends to erode trust a lot faster than just admitting the mistake would.",
+      "example": null,
+      "commonMistakes": [
+        "Explaining the technical DAX mechanism instead of translating it into business meaning",
+        "Not asking what number the stakeholder expected, missing that they might mean a different metric entirely",
+        "Assuming the measure must be correct and getting defensive instead of actually checking",
+        "Over-explaining a genuine bug in technical terms instead of plainly acknowledging it"
+      ],
+      "keyPoints": [
+        "Translate the technical mechanism into plain business meaning",
+        "Ask what the stakeholder expected to see and why, before explaining anything",
+        "Check whether they're actually referring to a different metric entirely",
+        "If the measure genuinely has a bug, acknowledge it plainly rather than over-explaining"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Explains in plain business terms, not technical jargon", "weight": 40},
+        {"criterion": "Checks the stakeholder's expectation before assuming the cause", "weight": 35},
+        {"criterion": "Handles the possibility of a genuine bug honestly", "weight": 25}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "bda-beg-043",
+      "questionCode": "LTV-BDA-BEG-043",
+      "title": "Receiving critical feedback on your SQL",
+      "prompt": "A senior data engineer reviews a query you wrote and points out it's inefficient and poorly structured in front of the rest of the team. How do you respond in the moment, and what do you do afterward?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Professional Growth", "Feedback"],
+      "modelAnswer": "A strong answer treats the feedback as useful information rather than a personal attack, even if the delivery felt blunt or public -- getting defensive or arguing in the moment tends to escalate an uncomfortable moment rather than resolve it, and it signals to the team that feedback isn't welcome, which discourages others from being direct too. In the moment, the right response is something like genuinely asking a clarifying question about the specific concern -- what exactly is inefficient, is it the join structure, the lack of an index-friendly filter, something else -- which shows I'm actually listening rather than just waiting for the criticism to end. Afterward, I'd follow up privately if the public delivery felt harsh, not to relitigate who was right, but because a private conversation about how feedback lands is a reasonable thing to raise separately from the technical content itself. I'd also actually apply the feedback -- rewriting the query, understanding why the new version is better, and treating it as something to remember for next time rather than a one-off fix.",
+      "professionalAnswer": "Honestly, my first reaction is to just listen and ask a clarifying question about whatever specifically they think is inefficient, rather than getting defensive about it in the moment, even if it's a little uncomfortable being critiqued in front of the team. Getting into an argument right there usually doesn't help anyone and tends to make the room tenser than it needs to be. After that, I'd actually go rewrite the query based on what they pointed out and make sure I understand why the new version is better, not just copy a fix without learning from it. If the way it was delivered publicly genuinely bothered me, I'd bring that up with them separately afterward, one-on-one, not as a complaint about being wrong, but just as feedback on how it landed -- those are two different conversations and I wouldn't mix them together in the moment.",
+      "example": null,
+      "commonMistakes": [
+        "Getting defensive or arguing with the feedback in the moment instead of asking a clarifying question",
+        "Treating public critical feedback as a personal attack rather than useful technical information",
+        "Fixing the immediate query without actually understanding why the new approach is better",
+        "Avoiding ever addressing how the feedback was delivered, if it genuinely felt harsh, instead of raising it separately and privately"
+      ],
+      "keyPoints": [
+        "Respond to critical feedback with curiosity, not defensiveness",
+        "Ask clarifying questions to understand the specific concern",
+        "Actually apply and internalize the fix, not just patch the immediate symptom",
+        "Address delivery concerns separately and privately from the technical content"
+      ],
+      "evaluationCriteria": [
+        {"criterion": "Describes a non-defensive, professional in-the-moment response", "weight": 40},
+        {"criterion": "Describes genuinely learning from and applying the feedback", "weight": 35},
+        {"criterion": "Addresses delivery concerns appropriately and separately", "weight": 25}
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,1591 @@
+{
+  "questions": [
+    {
+      "id": "amra-beg-001",
+      "questionCode": "LTV-AMRA-BEG-001",
+      "title": "What requires_grad=True Actually Builds",
+      "prompt": "A teammate asks why setting requires_grad=True on a tensor is enough for PyTorch to later compute gradients with a single .backward() call, with no explicit derivative written anywhere in the code. Explain what actually happens under the hood.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["PyTorch", "Autograd", "Computational Graphs"],
+      "modelAnswer": "Setting requires_grad=True does not compute anything by itself; it tells PyTorch to track every subsequent operation performed on that tensor so it can build a computational graph dynamically as the forward pass runs. Every operation (add, matmul, relu, etc.) applied to a tracked tensor produces a new tensor that stores a grad_fn pointing back to the operation and its inputs. By the time the forward pass reaches a scalar loss, PyTorch has an entire directed graph connecting that loss back to every leaf tensor that had requires_grad=True. Calling .backward() walks that graph in reverse using the chain rule, computing the local derivative at each node and multiplying it into the gradient flowing from downstream, and accumulates the final result into each leaf tensor's .grad attribute. No derivative is 'written' anywhere because each built-in PyTorch operation already knows its own local derivative rule; autograd's job is purely to compose those known rules correctly along the exact path the data actually took.",
+      "professionalAnswer": "I'd explain it as PyTorch keeping a receipt of every operation as it happens, not computing gradients up front. requires_grad=True just flips a tracking flag; from that point on, every op you do on that tensor gets a grad_fn attached that remembers what produced it and from what. Once you reach your scalar loss, you've built a whole graph without meaning to -- it was assembled automatically by just doing normal math. .backward() then walks that graph backward, applying the chain rule at each step, because each individual op (matmul, relu, add) already has a known local derivative baked into PyTorch. So the 'magic' isn't that PyTorch knows calculus about your model specifically -- it's that it knows calculus about each primitive operation, and autograd just chains those known pieces together in the right order.",
+      "example": "x = torch.tensor(2.0, requires_grad=True); y = x**2 + 3*x; y.backward() sets x.grad to 2*x+3 = 7, computed by chaining the known derivative of power and addition, not by PyTorch deriving y's formula symbolically ahead of time.",
+      "commonMistakes": [
+        "Thinking requires_grad=True immediately computes a gradient instead of just enabling tracking",
+        "Believing PyTorch symbolically derives the whole formula in advance rather than composing per-operation local derivatives at backward time",
+        "Forgetting that only leaf tensors with requires_grad=True accumulate a .grad -- intermediate tensors don't retain .grad by default",
+        "Assuming the graph is static and reused across iterations instead of rebuilt fresh on every forward pass"
+      ],
+      "keyPoints": [
+        "requires_grad=True enables tracking, it does not compute gradients itself",
+        "Each operation on a tracked tensor attaches a grad_fn recording how it was produced",
+        "The computational graph is built dynamically during the forward pass",
+        "backward() applies the chain rule using each primitive operation's known local derivative",
+        "Gradients accumulate into leaf tensors' .grad attribute"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains requires_grad as enabling tracking, not computing gradients", "weight": 25 },
+        { "criterion": "Describes the dynamic graph built via grad_fn during the forward pass", "weight": 30 },
+        { "criterion": "Explains backward() as chain rule composition over known local derivatives", "weight": 30 },
+        { "criterion": "Clear, accurate, appropriately scoped explanation", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-002",
+      "questionCode": "LTV-AMRA-BEG-002",
+      "title": "Why Gradients Accumulate Instead of Reset",
+      "prompt": "A junior engineer's training loop calls loss.backward() every step but never calls optimizer.zero_grad(). After a few steps, training diverges wildly. Explain exactly why this happens.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["PyTorch", "Autograd", "Training Loops"],
+      "modelAnswer": "PyTorch's .grad attribute accumulates by design rather than resetting automatically on every backward() call, because this behavior is what makes gradient accumulation across multiple mini-batches possible for cases that genuinely want it (e.g. simulating a larger batch size on limited memory). When zero_grad() is never called, each backward() call adds the newly computed gradient on top of whatever was already sitting in .grad from the previous step, so by step three a parameter's .grad attribute holds the sum of three steps' worth of gradients, not just the current one. The optimizer then applies an update scaled to that inflated gradient, taking a much larger step than intended. Because this compounds every iteration, the effective step size grows roughly linearly with the step count, which is exactly the kind of runaway behavior that produces diverging loss, exploding weights, and eventually NaNs within a handful of steps.",
+      "professionalAnswer": "I'd walk through it mechanically: .grad doesn't zero itself out between calls, it adds to whatever's already there, because that's genuinely useful for people who want to accumulate gradients across micro-batches on purpose. The problem here is nobody is doing that on purpose -- they just forgot the zero_grad() call. So step one's gradient lands in .grad, step two's gradient gets added on top of that instead of replacing it, step three adds a third layer on top of that, and the optimizer is now applying updates sized for triple the real gradient. That's a recipe for divergence almost immediately, because the effective learning rate is silently growing every single step. The fix is one line -- optimizer.zero_grad() before backward() each iteration -- but I'd also mention that this is exactly the kind of bug that's easy to miss because the code runs without erroring, it just slowly blows up, which is why it's worth knowing the mechanism cold rather than just memorizing 'always call zero_grad.'",
+      "example": "for x, y in loader:\n    # missing: optimizer.zero_grad()\n    loss = loss_fn(model(x), y)\n    loss.backward()\n    optimizer.step()",
+      "commonMistakes": [
+        "Assuming .grad automatically resets between backward() calls",
+        "Not recognizing that this produces a slowly compounding, not immediately crashing, failure",
+        "Confusing this bug with a learning-rate-too-high bug when diagnosing, missing the real cause",
+        "Not knowing that gradient accumulation (skipping zero_grad on purpose for several steps) is a legitimate, different technique"
+      ],
+      "keyPoints": [
+        "By design, .grad accumulates across backward() calls rather than resetting",
+        "Missing zero_grad() causes gradients from prior steps to stack on top of the current step's gradient",
+        "The effective step size grows roughly with the number of steps since the last zero_grad()",
+        "This produces progressive divergence rather than an immediate crash, making it a subtle bug",
+        "zero_grad() before backward() each iteration is the fix; intentional accumulation is a separate, deliberate technique"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains that .grad accumulates by design", "weight": 30 },
+        { "criterion": "Explains the compounding effect across steps and why it causes divergence", "weight": 30 },
+        { "criterion": "Identifies the fix (zero_grad before backward)", "weight": 20 },
+        { "criterion": "Notes the distinction from intentional gradient accumulation", "weight": 20 }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-003",
+      "questionCode": "LTV-AMRA-BEG-003",
+      "title": "nn.Module and Where Parameters Actually Live",
+      "prompt": "Explain what subclassing nn.Module actually gives you beyond organizing code into a class -- specifically, how PyTorch finds all the learnable parameters of a model you define this way without you ever registering them manually.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["PyTorch", "nn.Module", "Model Building"],
+      "modelAnswer": "nn.Module provides more than organization -- it overrides Python's normal attribute-setting behavior (via __setattr__) so that whenever you assign a submodule or an nn.Parameter to an attribute inside __init__, the module automatically registers it in internal dictionaries (_modules and _parameters) rather than treating it like an ordinary Python attribute. That registration is what lets model.parameters() recursively walk every submodule's own registered parameters and yield a flat iterator over every learnable tensor in the whole model, which is exactly what gets handed to an optimizer. Nothing about this is automatic from Python's perspective; it is nn.Module's own bookkeeping that makes 'define layers as attributes' equivalent to 'register all their parameters for training.' If you instead store a layer in a plain Python list or dict instead of an nn.ModuleList/nn.ModuleDict, this registration breaks silently -- the layer still runs in forward(), but its parameters never show up in model.parameters(), so the optimizer never updates them.",
+      "professionalAnswer": "I'd say the real trick is in __setattr__, not in __init__. When you write self.fc1 = nn.Linear(...) inside your module's __init__, nn.Module intercepts that assignment and files nn.Linear's parameters away in an internal registry instead of just setting a normal attribute. That's the entire reason model.parameters() can walk the whole model and hand every learnable tensor to your optimizer without you manually listing each one. I'd also flag the classic gotcha here, because I've hit it myself: if you put a bunch of layers in a plain Python list instead of nn.ModuleList, forward() still works fine because you can still index into the list and call the layers -- but none of those layers' parameters get registered, so your optimizer silently never updates them. It doesn't error, it just quietly doesn't train that part of the network, which makes it a nasty one to debug.",
+      "example": "self.layers = [nn.Linear(10, 10) for _ in range(3)]  # BROKEN: parameters invisible to optimizer\nself.layers = nn.ModuleList([nn.Linear(10, 10) for _ in range(3)])  # correct: registered",
+      "commonMistakes": [
+        "Thinking nn.Module parameter discovery is just Python introspection rather than nn.Module's own __setattr__ override",
+        "Storing submodules in a plain list/dict instead of nn.ModuleList/nn.ModuleDict, silently breaking parameter registration",
+        "Assuming a broken registration will raise an error rather than just fail to train that part of the model",
+        "Not realizing model.parameters() recurses through all nested submodules automatically"
+      ],
+      "keyPoints": [
+        "nn.Module overrides attribute assignment to auto-register submodules and parameters",
+        "model.parameters() recursively collects every registered parameter across submodules",
+        "Storing layers in a plain Python list/dict breaks registration silently",
+        "nn.ModuleList/nn.ModuleDict exist specifically to preserve registration for collections of layers",
+        "A broken registration still runs in forward() but never gets optimized"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains __setattr__-based automatic parameter registration", "weight": 35 },
+        { "criterion": "Explains how model.parameters() collects them recursively", "weight": 25 },
+        { "criterion": "Identifies the plain-list-vs-ModuleList pitfall and its silent failure mode", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 10 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-004",
+      "questionCode": "LTV-AMRA-BEG-004",
+      "title": "Cross-Entropy vs. MSE: Picking the Right Loss",
+      "prompt": "A teammate uses mean squared error (MSE) loss for a 10-class image classification model and finds training is slow and accuracy plateaus low. Explain why MSE is a poor fit here and why cross-entropy is the standard choice.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Loss Functions", "Classification", "PyTorch"],
+      "modelAnswer": "MSE treats the model's output as a continuous numeric target and penalizes squared distance, which is a poor match for classification where the target is a categorical label, not a point on a number line -- MSE has no way to express 'this class is simply wrong' versus 'this class is numerically close,' and classes 3 and 7 aren't actually closer or farther apart than classes 3 and 9. More concretely, MSE combined with a softmax output produces very flat gradients when the prediction is confidently wrong, because the squared-error gradient shrinks as the sigmoid/softmax output saturates near 0 or 1 -- exactly when you need the strongest correction signal. Cross-entropy, by contrast, is derived directly from the likelihood of the correct class under the model's predicted probability distribution, and its gradient with respect to the logits (when paired with softmax) simplifies to simply (predicted_probability - true_label), which stays large exactly when the model is confidently wrong and shrinks smoothly as the prediction becomes correct. That is the mathematical reason cross-entropy trains faster and converges to better accuracy on classification tasks than MSE.",
+      "professionalAnswer": "The core issue is that MSE is built for regression, where the target really is a number on a line and being '2 away' is twice as bad as being '1 away.' That doesn't describe classification at all -- there's no sense in which predicting class 7 instead of class 3 is numerically closer than predicting class 9, so MSE is optimizing toward a geometric structure that doesn't exist in the label space. The gradient problem makes it worse in practice: once the softmax output saturates near 0 or 1 for a confidently wrong prediction, MSE's gradient through that saturated unit gets tiny, so the model barely gets corrected exactly when it most needs correcting. Cross-entropy sidesteps this because it comes straight from maximum likelihood on the predicted probability distribution, and its gradient with softmax reduces to just predicted-minus-true, which stays strong on confident wrong answers and only shrinks once the model is actually getting it right. That's why switching the loss function alone, with nothing else changed, usually fixes both the slow training and the low accuracy plateau the teammate is seeing.",
+      "example": "For true label 3 and softmax output [0.05]*10 except 0.55 for class 3, cross-entropy gradient on the correct logit is 0.55-1=-0.45 (strong pull); MSE's gradient through the saturated softmax units is much smaller in magnitude for wrong classes near 0.",
+      "commonMistakes": [
+        "Treating class labels as if they have numeric distance that MSE can meaningfully penalize",
+        "Not recognizing MSE's vanishing-gradient problem at saturated softmax outputs",
+        "Forgetting cross-entropy is derived from maximum likelihood on the predicted class distribution",
+        "Assuming any loss function will work equally well as long as training eventually converges"
+      ],
+      "keyPoints": [
+        "MSE assumes a numeric target space, which doesn't describe categorical class labels",
+        "MSE's gradient through a saturated softmax is small exactly when correction is most needed",
+        "Cross-entropy is derived from maximum likelihood on the predicted probability distribution",
+        "Cross-entropy's gradient with softmax simplifies to predicted-minus-true, staying strong on confident errors",
+        "Switching from MSE to cross-entropy on classification tasks typically improves both speed and final accuracy"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why MSE is a poor fit for categorical labels", "weight": 25 },
+        { "criterion": "Correctly explains the vanishing-gradient issue with MSE on saturated outputs", "weight": 30 },
+        { "criterion": "Explains cross-entropy's maximum-likelihood derivation and gradient behavior", "weight": 30 },
+        { "criterion": "Clear, accurate explanation overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-005",
+      "questionCode": "LTV-AMRA-BEG-005",
+      "title": "What Query, Key, and Value Actually Represent in Self-Attention",
+      "prompt": "A new team member can recite that self-attention uses 'queries, keys, and values' but admits they don't actually understand what those three things represent or why you need three separate projections instead of one. Give them a real explanation.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "Self-Attention", "Deep Learning"],
+      "modelAnswer": "Each input token's embedding is linearly projected three separate ways using three separate learned weight matrices, producing a query vector, a key vector, and a value vector for that token -- the same underlying embedding, viewed through three different learned lenses. The query represents what this position is 'looking for' from other positions; the key represents what each position 'advertises' about itself as being relevant for; and the value represents the actual content that gets passed forward if that position is attended to. Attention scores are computed as the dot product of one position's query against every position's key, which measures how well what position A is looking for matches what position B is advertising -- high dot product means strong relevance. Those scores are scaled and passed through softmax to get attention weights that sum to 1, and the output for position A is the weighted sum of every position's value vector, weighted by how relevant A found each one. The reason you need three separate projections rather than one is that 'what I'm looking for' and 'what I advertise' and 'what I actually contain' are functionally different roles that the same token's content needs to play simultaneously, and giving each role its own learned projection lets the model learn each role independently rather than forcing one fixed representation to serve all three jobs at once.",
+      "professionalAnswer": "I'd use a search-engine analogy because it maps almost exactly: query is like your search box -- what you're looking for right now. Key is like the index terms on every document -- what each document says it's about, which your query gets compared against. Value is the actual document content you get back once a match is found. The reason you need three separate learned projections of the same token embedding, instead of reusing one, is that those are three genuinely different jobs: 'what am I looking for,' 'what do I advertise,' and 'what do I actually contain' aren't the same thing, even for the same word. Mechanically, you take the dot product of a token's query against every token's key to get a relevance score per pair, softmax those scores so they sum to one, and then use those weights to blend everyone's value vectors into the output for that position. The query-key dot product is literally the 'how relevant is this to what I'm looking for' computation, and the value is what actually flows through once relevance is established.",
+      "example": "Q = X @ W_q, K = X @ W_k, V = X @ W_v; attention_weights = softmax(Q @ K.T / sqrt(d_k)); output = attention_weights @ V -- three separate learned matrices W_q, W_k, W_v applied to the same input X.",
+      "commonMistakes": [
+        "Describing Q, K, V as arbitrary labels without explaining what role each actually plays",
+        "Not explaining that all three come from the same input embedding via three different learned projections",
+        "Forgetting that the query-key dot product is what produces the relevance/attention score",
+        "Confusing the value vector (what gets passed forward) with the key vector (what gets matched against)"
+      ],
+      "keyPoints": [
+        "Query, key, and value are three separate learned linear projections of the same token embedding",
+        "Query represents what a position is looking for; key represents what a position advertises",
+        "Value represents the content that actually gets passed forward when attended to",
+        "Attention scores come from the query-key dot product, scaled and softmaxed into weights",
+        "Three separate roles need three separate projections because they are functionally different jobs"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains what query, key, and value each represent", "weight": 35 },
+        { "criterion": "Explains the dot-product-then-softmax mechanism for computing attention weights", "weight": 30 },
+        { "criterion": "Explains why three separate projections are needed rather than one", "weight": 25 },
+        { "criterion": "Clear and well-structured explanation", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-006",
+      "questionCode": "LTV-AMRA-BEG-006",
+      "title": "Why Transformers Replaced RNNs for Sequence Modeling",
+      "prompt": "Explain the two main practical reasons self-attention-based transformers displaced RNNs/LSTMs as the dominant architecture for sequence modeling, beyond just 'they perform better.'",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "RNNs", "Deep Learning History"],
+      "modelAnswer": "The first reason is parallelism: an RNN processes a sequence strictly step by step, since each hidden state depends on the previous hidden state, which means training cannot parallelize across the time dimension and GPU utilization suffers badly on long sequences. Self-attention computes relationships between all token pairs in a sequence simultaneously via matrix multiplication, so the entire sequence can be processed in parallel during training, which is a dramatically better fit for modern GPU hardware and is a major reason transformers scale so much more efficiently to large datasets and large models. The second reason is long-range dependency handling: RNNs/LSTMs propagate information through a chain of hidden states, so a dependency between tokens far apart in the sequence has to survive many sequential transformations, and in practice this information degrades (the vanishing gradient problem during training, and signal degradation during the forward pass itself) even with LSTM's gating mechanisms designed to mitigate it. Self-attention connects any two positions directly in a single operation regardless of their distance in the sequence, so a dependency between token 1 and token 500 costs exactly the same computational path as a dependency between adjacent tokens, which empirically produces much more reliable long-range modeling.",
+      "professionalAnswer": "I'd point to two things, not one. First, pure training speed: RNNs are inherently sequential, each step needs the previous hidden state, so you can't parallelize across time during training, and that's a brutal bottleneck on modern GPUs which are built for massive parallel matrix math, not step-by-step loops. Self-attention is just matrix multiplications across the whole sequence at once, so it uses the hardware the way it's meant to be used, and that alone made training on much larger datasets practical. Second, long-range dependencies: an RNN has to carry information forward through every single intermediate step in a chain, and even with LSTM gating, that signal degrades over long distances -- it's the vanishing gradient problem showing up as a modeling limitation, not just a training nuisance. Self-attention just connects any two tokens directly, in one hop, no matter how far apart they are in the sequence, so a relationship between the first and five-hundredth token is exactly as easy to represent as one between adjacent tokens. Put together, you get an architecture that trains faster on the hardware you actually have and models long sequences more reliably -- that combination, not just raw benchmark numbers, is why RNNs lost out.",
+      "example": "Translating a long sentence where the subject at position 1 determines verb agreement at position 40: an RNN must propagate that signal through 39 sequential hidden-state updates; self-attention connects position 1 to position 40 in a single dot-product computation.",
+      "commonMistakes": [
+        "Giving only a vague 'transformers perform better' answer without a mechanistic reason",
+        "Not mentioning the parallelization advantage over sequential RNN computation",
+        "Not explaining why long-range dependencies specifically degrade in RNNs even with LSTM gating",
+        "Confusing attention's computational cost (quadratic in sequence length) with RNN's sequential bottleneck -- these are different tradeoffs"
+      ],
+      "keyPoints": [
+        "RNNs process sequences step by step, which prevents parallelizing across the time dimension during training",
+        "Self-attention computes all pairwise token relationships simultaneously via matrix multiplication",
+        "RNNs propagate long-range dependencies through many sequential hidden-state updates, which degrades signal",
+        "Self-attention connects any two positions directly in one step regardless of distance",
+        "The combination of better hardware utilization and more reliable long-range modeling drove the shift"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains the parallelization advantage of self-attention over sequential RNNs", "weight": 35 },
+        { "criterion": "Explains the long-range dependency advantage of direct attention connections", "weight": 35 },
+        { "criterion": "Avoids a vague 'just performs better' answer", "weight": 15 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-007",
+      "questionCode": "LTV-AMRA-BEG-007",
+      "title": "Why Transformers Need Positional Encoding at All",
+      "prompt": "Someone asks why transformers need an explicit positional encoding step when RNNs never needed anything like it. Explain the underlying reason.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "Positional Encoding", "Deep Learning"],
+      "modelAnswer": "RNNs process tokens strictly in sequence order, so position is implicitly encoded by the order of computation itself -- the hidden state at step 5 was necessarily computed after steps 1 through 4, so sequence order is baked into the architecture's execution. Self-attention has no such structural ordering: the attention computation between any two tokens is a symmetric function of their content (query and key vectors) with no reference to where each token sits in the sequence, so if you shuffled the token order and recomputed attention with no positional information, you would get a mathematically permutation-invariant result -- the model literally cannot tell 'the cat sat' from 'sat the cat' from content alone. Positional encoding fixes this by injecting a signal that depends on each token's position into its embedding before attention is computed, commonly by adding a fixed sinusoidal pattern (where the specific sinusoid frequencies vary across embedding dimensions, giving every position a mathematically unique signature) or a learned positional embedding, so that position becomes part of the content attention is matching on. Without it, a transformer would process sequences as unordered sets, which would make it fundamentally incapable of representing word order, syntax, or any order-dependent meaning.",
+      "professionalAnswer": "The short version is that self-attention is permutation-invariant by construction -- it has no built-in sense of order at all, unlike an RNN where order is baked into the architecture because step 5 literally can't be computed before step 4. If you fed a transformer's attention mechanism a shuffled sentence with the exact same tokens, it would compute the exact same attention pattern, because attention only looks at content (query/key similarity), never position. That's a real problem because word order carries meaning -- 'dog bites man' and 'man bites dog' have the same tokens in a different order and very different meanings. Positional encoding is the fix: you inject a position-dependent signal into each token's embedding before attention runs, often a fixed sinusoidal pattern with different frequencies across the embedding's dimensions, so every position gets a unique signature baked into its vector. Once that's added, attention can effectively use position as part of what it's matching on, even though the attention math itself never explicitly 'knows' about order -- it's smuggled in through the input representation instead of the mechanism.",
+      "example": "Without positional encoding, 'the dog bit the man' and 'the man bit the dog' would produce identical sets of token embeddings fed into attention, since both sentences contain the same multiset of tokens -- the model has no way to distinguish them.",
+      "commonMistakes": [
+        "Not realizing self-attention is permutation-invariant without positional information",
+        "Assuming position is somehow implicit in the attention mechanism itself",
+        "Describing positional encoding as optional or purely cosmetic rather than structurally necessary",
+        "Confusing positional encoding with the embedding layer itself rather than an additive signal on top of it"
+      ],
+      "keyPoints": [
+        "RNNs encode position implicitly through sequential computation order",
+        "Self-attention is permutation-invariant with respect to content alone",
+        "Without positional information, shuffled-order input would produce identical attention results",
+        "Positional encoding injects a position-dependent signal into each token's embedding before attention",
+        "This is structurally necessary, not optional, for a transformer to represent word order"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why self-attention is permutation-invariant without positional information", "weight": 35 },
+        { "criterion": "Contrasts this correctly with RNNs' implicit ordering", "weight": 20 },
+        { "criterion": "Explains how positional encoding is injected into the token representation", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-008",
+      "questionCode": "LTV-AMRA-BEG-008",
+      "title": "The Core Components of a Markov Decision Process",
+      "prompt": "Explain the components of a Markov Decision Process (MDP) and why the 'Markov' property -- that the next state depends only on the current state and action, not on the full history -- matters for how RL algorithms are designed.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Reinforcement Learning", "MDPs", "RL Fundamentals"],
+      "modelAnswer": "An MDP is formally defined by a set of states S, a set of actions A, a transition function (or distribution) P(s'|s,a) describing the probability of reaching state s' given current state s and action a, a reward function R(s,a,s') specifying the immediate reward received, and a discount factor gamma that controls how much future reward is valued relative to immediate reward. A policy is a mapping from states to actions (or a distribution over actions), and the value function estimates the expected cumulative discounted reward obtainable from a given state (or state-action pair) under a given policy. The Markov property -- that P(s'|s,a) depends only on the current state and action, not on the sequence of states and actions that preceded it -- matters enormously because it is what makes the state a sufficient statistic for decision-making: an agent never needs to remember the full history of everything that happened, only the current state, to act optimally. This is precisely what allows value functions and the Bellman equation to be defined recursively in terms of the current state alone, which is the mathematical foundation nearly every RL algorithm (value iteration, Q-learning, policy gradients) relies on. If the environment were not Markovian, an agent would in principle need to condition on arbitrarily long history to act optimally, which breaks the clean recursive structure these algorithms depend on.",
+      "professionalAnswer": "I'd lay out the five pieces: states, actions, a transition function describing what happens when you take an action in a state, a reward function, and a discount factor that trades off immediate versus future reward. On top of that sits a policy, which just maps states to actions, and a value function, which estimates how much cumulative reward you can expect from here on if you follow a given policy. The Markov property is the part that actually makes all of this tractable -- it says the next state only depends on your current state and action, not on the whole history that got you there. That matters because it means the current state alone is enough information to make an optimal decision; you don't need to remember everything that happened five steps ago. That's exactly what lets you write the Bellman equation recursively in terms of the current state, and basically every RL algorithm I'd mention after this -- Q-learning, policy gradients, actor-critic -- is built on top of that recursive structure being valid. If an environment weren't Markovian, you'd technically need to track arbitrarily long history to act optimally, which is a much harder problem than what these algorithms are designed to solve.",
+      "example": "In chess, the current board position is (approximately) Markovian -- the best next move depends on the board as it stands, not on the specific sequence of moves that produced it (ignoring repetition-draw rules), which is why chess engines can evaluate a position without replaying its full history.",
+      "commonMistakes": [
+        "Omitting the discount factor or reward function when listing MDP components",
+        "Describing the Markov property vaguely without explaining why it enables recursive value functions",
+        "Confusing a policy (state-to-action mapping) with a value function (expected cumulative reward estimate)",
+        "Not connecting the Markov property to why algorithms like the Bellman equation are even well-defined"
+      ],
+      "keyPoints": [
+        "An MDP consists of states, actions, a transition function, a reward function, and a discount factor",
+        "A policy maps states to actions; a value function estimates expected cumulative discounted reward",
+        "The Markov property means the next state depends only on the current state and action",
+        "This property makes the current state a sufficient statistic, enabling recursive value functions",
+        "Nearly all RL algorithms rely on this recursive (Bellman) structure being valid"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly lists and explains the core MDP components", "weight": 30 },
+        { "criterion": "Correctly defines policy and value function", "weight": 20 },
+        { "criterion": "Explains the Markov property and why it matters for algorithm design", "weight": 35 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-009",
+      "questionCode": "LTV-AMRA-BEG-009",
+      "title": "Why Pure Exploitation Fails in Reinforcement Learning",
+      "prompt": "A teammate's RL agent always picks the action with the highest currently-estimated reward (pure exploitation). Explain why this almost always leads to a suboptimal policy, and what exploration does to fix it.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Reinforcement Learning", "Exploration vs Exploitation"],
+      "modelAnswer": "An agent's reward estimates for each action are built from limited experience, so early on they are noisy and can easily be wrong -- an action that happens to look worse in the first few tries might actually be the best action, and pure exploitation will never discover this because it never tries that action again once it looks slightly worse than an alternative. This is the classic exploration-exploitation tradeoff: exploitation means acting on current best knowledge to maximize immediate expected reward, while exploration means deliberately trying actions that don't currently look best, purely to gather more information that could improve future decisions. Pure exploitation converges prematurely to whichever action looked good by chance early on, and then that estimate never gets corrected because the agent stops gathering new data about the alternatives. Exploration strategies (epsilon-greedy, which picks a random action some fraction of the time; or more sophisticated methods like upper-confidence-bound approaches that explicitly favor actions with high uncertainty) counteract this by continuing to sample alternatives even after a seemingly-best action is found, so the agent's reward estimates keep improving and it doesn't get permanently stuck on an early, possibly incorrect, local optimum.",
+      "professionalAnswer": "The problem is that your reward estimates are only as good as the data you've collected so far, and early on, that data is thin and noisy. If you always exploit -- just pick whatever currently looks best -- you can get unlucky: the actual best action might look mediocre in its first couple of tries purely by chance, and a pure-exploitation agent will never go back and try it again once something else looks even slightly better. It locks in on whatever happened to look good early and never collects the data that would correct that mistake. That's the whole point of the exploration-exploitation tradeoff: exploitation maximizes reward given what you currently believe, exploration deliberately spends some reward now to learn something that improves future decisions. The fix is simple in concept -- something like epsilon-greedy, where you take a random action some small percentage of the time no matter what your current estimates say, so you keep gathering information on actions you'd otherwise have written off. More sophisticated approaches like upper-confidence-bound methods go further and specifically target actions you're most uncertain about, rather than exploring uniformly at random. Either way, the core idea is the same: without some ongoing exploration, your agent's knowledge stops improving and it can get permanently stuck on a false 'best' action.",
+      "example": "A slot-machine (bandit) with 3 arms where arm A's first 2 pulls happen to return low reward by chance despite having the best true average -- pure exploitation abandons arm A forever after 2 pulls; epsilon-greedy keeps occasionally revisiting it and eventually discovers it's actually best.",
+      "commonMistakes": [
+        "Not explaining why early reward estimates are unreliable due to limited sampling",
+        "Describing exploration as random noise rather than deliberate information-gathering",
+        "Failing to name a concrete exploration strategy like epsilon-greedy",
+        "Assuming more exploitation is always better once training has run for a while, ignoring non-stationary environments"
+      ],
+      "keyPoints": [
+        "Reward estimates are built from limited, noisy early experience",
+        "Pure exploitation can permanently lock onto a false best action due to early bad luck",
+        "Exploration deliberately samples non-best-looking actions to improve future estimates",
+        "Epsilon-greedy is a simple exploration strategy; UCB-style methods target high-uncertainty actions specifically",
+        "Without ongoing exploration, an agent's knowledge stops improving and can get stuck on a local optimum"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why early reward estimates are unreliable", "weight": 25 },
+        { "criterion": "Explains how pure exploitation can lock onto a suboptimal action", "weight": 30 },
+        { "criterion": "Correctly describes at least one exploration strategy", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-010",
+      "questionCode": "LTV-AMRA-BEG-010",
+      "title": "Why LLMs Need a Learned Reward Model Instead of a Hand-Written Reward Function",
+      "prompt": "In classic RL, reward functions are often hand-written (e.g. +1 for reaching a goal, -1 for a collision). Explain why aligning an LLM's behavior to something like 'be helpful and harmless' can't just use a hand-written reward function the same way, and why a learned reward model is used instead.",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["RLHF", "Reward Modeling", "Alignment Fundamentals"],
+      "modelAnswer": "A hand-written reward function works when the desired outcome can be specified as a simple, checkable function of the environment's state -- 'did the robot reach the goal coordinates' is objectively checkable. 'Is this response helpful and harmless' has no such checkable formula: helpfulness and harmlessness are holistic, context-dependent human judgments about open-ended text that cannot be reduced to a short hand-codeable rule without either being trivially gameable (e.g. a hand-written rule like 'reward longer responses' gets exploited into padded, unhelpful verbosity) or missing most of what actually matters. The solution used in RLHF is to replace the hand-written reward function with a learned reward model: humans compare pairs of model outputs and indicate which one they prefer, that preference data is used to train a separate neural network (the reward model) to predict a scalar score that reflects human preference, and that learned reward model's output is then used as the reward signal for an RL algorithm (typically PPO) to fine-tune the language model's policy. This effectively outsources the impossible task of hand-specifying 'helpful and harmless' to a model trained directly on examples of human judgment, which can capture far more nuance than any rule a person could write down directly, though it introduces its own risks since the reward model is itself an imperfect proxy for true human preference that can be over-optimized against (reward hacking).",
+      "professionalAnswer": "The honest answer is that nobody can write down a formula for 'helpful and harmless' the way you can write down 'did the robot's coordinates match the goal.' Any rule you try to hand-code either misses most of what people actually mean by helpful, or gets gamed immediately -- reward longer answers and you get bloated, padded responses; reward confident-sounding answers and you get confidently wrong ones. So instead of trying to hand-specify the reward, RLHF trains a separate model to approximate human judgment directly: you show people pairs of model outputs, they say which one they prefer, and you train a reward model on that preference data to output a score that tracks what humans actually tend to prefer. Then that learned reward model becomes the reward signal an RL algorithm, usually PPO, optimizes the language model against. It's a genuinely clever workaround for a problem that doesn't have a clean mathematical specification -- you're learning the reward function from data instead of writing it by hand. The tradeoff I'd be honest about is that the reward model is still just an imperfect proxy for real human preference, and if you optimize against it too hard, the policy can learn to exploit quirks of the reward model itself rather than genuinely becoming more helpful -- that's reward hacking, and it's a real, ongoing concern in how these systems are trained.",
+      "example": "A hand-written rule 'reward +1 per helpful-sounding keyword like 'certainly' or 'here's how'' would be gamed almost immediately by a policy that stuffs those words into every response regardless of actual helpfulness -- which is exactly the kind of gap a learned reward model trained on real human comparisons is meant to close.",
+      "commonMistakes": [
+        "Assuming helpfulness/harmlessness could in principle be hand-coded with enough effort",
+        "Not explaining the human preference-comparison data collection process behind reward models",
+        "Treating the learned reward model as a perfect substitute for human judgment rather than an imperfect proxy",
+        "Forgetting to mention that the reward model's output becomes the signal for a downstream RL step (typically PPO)"
+      ],
+      "keyPoints": [
+        "Helpfulness and harmlessness cannot be reduced to a simple, checkable hand-written reward function",
+        "Hand-written reward proxies for open-ended behavior are easily gamed",
+        "A reward model is trained on human pairwise preference comparisons to predict a scalar preference score",
+        "The learned reward model's output is then used as the reward signal for RL fine-tuning (typically PPO)",
+        "The reward model is an imperfect proxy and can itself be over-optimized against (reward hacking)"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why helpfulness/harmlessness can't be hand-coded as a simple reward function", "weight": 30 },
+        { "criterion": "Correctly describes how a reward model is trained from human preference data", "weight": 30 },
+        { "criterion": "Explains how the reward model feeds into RL fine-tuning", "weight": 25 },
+        { "criterion": "Notes the reward model is an imperfect proxy prone to over-optimization", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-011",
+      "questionCode": "LTV-AMRA-BEG-011",
+      "title": "Writing a Correct Minimal PyTorch Training Loop",
+      "prompt": "Write a correct, minimal training loop in PyTorch for a regression model given a model, a DataLoader, an optimizer, and MSE loss, making sure all the standard steps are present and in the right order.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Training Loops"],
+      "code": "model = MLP(in_dim=10, hidden=64, out_dim=1)\noptimizer = torch.optim.Adam(model.parameters(), lr=1e-3)\nloss_fn = torch.nn.MSELoss()",
+      "modelAnswer": "A correct training loop must, for every batch: zero the gradients before the backward pass, run the forward pass, compute the loss, call backward() to populate gradients, then call optimizer.step() to apply the update -- in that exact order, with zero_grad() happening before backward() each iteration so gradients from the previous step don't accumulate. Any missing or reordered step produces a bug: skipping zero_grad() causes gradient accumulation, calling step() before backward() applies a stale or empty gradient, and computing loss before the forward pass is simply impossible since loss depends on the model's output.",
+      "professionalAnswer": "I'd write it as: loop over epochs, loop over batches from the DataLoader, zero_grad, forward pass to get predictions, compute the loss against the targets, backward to get gradients, then step to apply the update. The order matters a lot here -- zero_grad has to come before backward, and step has to come after backward, or the update either double-counts old gradients or applies nothing at all.",
+      "example": "for epoch in range(num_epochs):\n    for x, y in dataloader:\n        optimizer.zero_grad()\n        preds = model(x)\n        loss = loss_fn(preds, y)\n        loss.backward()\n        optimizer.step()\n    print(f\"epoch {epoch} loss {loss.item():.4f}\")",
+      "commonMistakes": [
+        "Forgetting optimizer.zero_grad(), causing gradient accumulation across steps",
+        "Calling optimizer.step() before loss.backward(), applying a stale gradient",
+        "Computing the loss with mismatched prediction/target shapes without checking",
+        "Not calling .item() when logging loss, accidentally keeping the whole computation graph alive and leaking memory"
+      ],
+      "keyPoints": [
+        "Order must be: zero_grad, forward, compute loss, backward, step",
+        "zero_grad() must run before backward() each iteration to prevent gradient accumulation",
+        "backward() must run before step() so the optimizer has a current gradient to apply",
+        "Loss should be detached (.item()) when logged to avoid retaining the computation graph"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct order of zero_grad/forward/loss/backward/step", "weight": 40 },
+        { "criterion": "Code runs correctly against the given model/optimizer/loss signature", "weight": 30 },
+        { "criterion": "Explains why order matters", "weight": 20 },
+        { "criterion": "Notes the .item() memory consideration when logging", "weight": 10 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-012",
+      "questionCode": "LTV-AMRA-BEG-012",
+      "title": "Fixing Gradient Accumulation Caused by a Missing zero_grad",
+      "prompt": "The following training loop diverges after a few steps. Find and fix the bug.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Debugging", "Training Loops"],
+      "code": "for x, y in dataloader:\n    preds = model(x)\n    loss = loss_fn(preds, y)\n    loss.backward()\n    optimizer.step()",
+      "modelAnswer": "The loop never calls optimizer.zero_grad(), so gradients from every prior step accumulate into .grad on top of the current step's gradient, producing an effectively growing update size each iteration until the loss diverges. The fix is to call optimizer.zero_grad() at the start of each iteration, before backward() is called.",
+      "professionalAnswer": "This is the classic missing zero_grad bug -- each backward() call adds to the existing .grad instead of replacing it, so the effective gradient magnitude keeps growing step over step. The fix is one line: call optimizer.zero_grad() before the forward/backward pass in each iteration.",
+      "example": "for x, y in dataloader:\n    optimizer.zero_grad()\n    preds = model(x)\n    loss = loss_fn(preds, y)\n    loss.backward()\n    optimizer.step()",
+      "commonMistakes": [
+        "Calling zero_grad() after backward() instead of before it",
+        "Calling zero_grad() on the model instead of the optimizer (works if parameters match, but is non-standard)",
+        "Misdiagnosing the divergence as a learning-rate problem and lowering lr instead of fixing the real bug",
+        "Not verifying the fix by checking that .grad magnitude stays stable across steps after the change"
+      ],
+      "keyPoints": [
+        "Missing zero_grad() causes gradients to accumulate across steps",
+        "The fix is calling optimizer.zero_grad() before each forward/backward pass",
+        "This produces progressively diverging training, not an immediate crash",
+        "Lowering the learning rate masks but doesn't fix the underlying bug"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the missing zero_grad as the root cause", "weight": 40 },
+        { "criterion": "Provides a correct, minimal fix", "weight": 35 },
+        { "criterion": "Explains why the bug causes progressive divergence", "weight": 15 },
+        { "criterion": "Does not misattribute the bug to an unrelated cause", "weight": 10 }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-013",
+      "questionCode": "LTV-AMRA-BEG-013",
+      "title": "Computing Scaled Dot-Product Self-Attention by Hand in PyTorch",
+      "prompt": "Write the core scaled dot-product self-attention computation in PyTorch given query, key, and value tensors of shape (batch, seq_len, d_k).",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Self-Attention", "Transformers"],
+      "code": "Q = torch.randn(2, 5, 16)\nK = torch.randn(2, 5, 16)\nV = torch.randn(2, 5, 16)",
+      "modelAnswer": "The computation is: scores = Q @ K.transpose(-2,-1), scaled by 1/sqrt(d_k) to prevent the dot products from growing too large in magnitude as d_k increases (which would push softmax into a saturated, near-one-hot regime with vanishing gradients), then softmax over the last dimension to get attention weights, then multiply those weights by V to get the output. The scaling factor is essential, not cosmetic -- without it, larger d_k values systematically produce larger-magnitude dot products purely due to dimensionality, independent of actual relevance, which destabilizes training.",
+      "professionalAnswer": "I'd write scores as Q times K transposed on the last two dimensions, divide by the square root of d_k to keep the scale sane regardless of the embedding dimension, softmax that over the key dimension to get weights that sum to one per query, then multiply those weights by V. I'd flag the scaling step specifically in an interview, because it's easy to forget and the model will technically still run without it -- it just trains worse, because unscaled dot products grow with d_k and push softmax toward a near-one-hot, low-gradient regime.",
+      "example": "import math\nscores = Q @ K.transpose(-2, -1) / math.sqrt(Q.shape[-1])\nweights = torch.softmax(scores, dim=-1)\noutput = weights @ V  # shape (2, 5, 16)",
+      "commonMistakes": [
+        "Forgetting the 1/sqrt(d_k) scaling factor entirely",
+        "Applying softmax over the wrong dimension (should be over the key/seq dimension, the last axis of scores)",
+        "Transposing the wrong two dimensions of K, breaking the matmul shape",
+        "Not handling batch dimensions correctly when extending beyond a single example"
+      ],
+      "keyPoints": [
+        "scores = Q @ K.transpose(-2,-1), scaled by 1/sqrt(d_k)",
+        "Scaling prevents large-magnitude dot products from saturating softmax as d_k grows",
+        "softmax is applied over the key dimension so weights sum to 1 per query",
+        "Output is the weighted sum of value vectors: weights @ V"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct matmul and transpose for computing raw scores", "weight": 30 },
+        { "criterion": "Correct scaling factor applied", "weight": 25 },
+        { "criterion": "Correct softmax dimension", "weight": 25 },
+        { "criterion": "Explains why scaling matters, not just that it exists", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-014",
+      "questionCode": "LTV-AMRA-BEG-014",
+      "title": "Building a Simple MLP as an nn.Module",
+      "prompt": "Write a two-hidden-layer MLP as a correct nn.Module subclass, with ReLU activations, for a 20-dimensional input and 3-class classification output.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "nn.Module", "Model Building"],
+      "code": null,
+      "modelAnswer": "The class must call super().__init__() first so nn.Module's own initialization (setting up the internal parameter/module registries) runs before any layers are assigned, then assign each layer as a direct attribute (not inside a plain list) so they register correctly, and define forward() to specify the actual computation order including activations, since defining layers in __init__ says nothing about how data flows through them. Raw logits (no softmax) should be returned from forward() when used with nn.CrossEntropyLoss, since that loss function applies log-softmax internally.",
+      "professionalAnswer": "I'd subclass nn.Module, call super().__init__() first thing, then define three linear layers as direct attributes -- 20 to a hidden size, hidden to hidden, hidden to 3 classes -- with ReLU in between in forward(). I'd deliberately not put a softmax at the end, since nn.CrossEntropyLoss expects raw logits and applies log-softmax internally; adding softmax here would double-apply it if paired with that loss.",
+      "example": "class MLP(nn.Module):\n    def __init__(self, in_dim=20, hidden=64, num_classes=3):\n        super().__init__()\n        self.fc1 = nn.Linear(in_dim, hidden)\n        self.fc2 = nn.Linear(hidden, hidden)\n        self.fc3 = nn.Linear(hidden, num_classes)\n        self.relu = nn.ReLU()\n\n    def forward(self, x):\n        x = self.relu(self.fc1(x))\n        x = self.relu(self.fc2(x))\n        return self.fc3(x)  # raw logits, no softmax",
+      "commonMistakes": [
+        "Forgetting super().__init__(), which breaks parameter registration entirely",
+        "Applying softmax in forward() when using it with nn.CrossEntropyLoss, which already applies log-softmax",
+        "Storing layers in a plain list instead of as direct attributes or nn.ModuleList",
+        "Omitting activation functions between layers, making the model equivalent to a single linear transform"
+      ],
+      "keyPoints": [
+        "super().__init__() must be called before defining any layers",
+        "Layers assigned as direct attributes get auto-registered for parameters()",
+        "forward() defines the actual data flow and must include activations",
+        "Return raw logits when pairing with nn.CrossEntropyLoss, not softmaxed probabilities"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct class structure with super().__init__() called first", "weight": 25 },
+        { "criterion": "Correct layer dimensions matching the stated input/output sizes", "weight": 25 },
+        { "criterion": "Correct activation placement in forward()", "weight": 25 },
+        { "criterion": "Returns raw logits appropriately, not softmaxed output", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-015",
+      "questionCode": "LTV-AMRA-BEG-015",
+      "title": "Writing a Custom Dataset and DataLoader",
+      "prompt": "Write a custom PyTorch Dataset for a list of (feature, label) numpy array pairs, and wrap it in a DataLoader with shuffling and batching.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Datasets", "DataLoaders"],
+      "code": null,
+      "modelAnswer": "A custom Dataset subclass must implement __len__ (returning the total number of samples) and __getitem__ (returning a single sample given an index, converted to tensors), and must not load the entire dataset into memory unnecessarily if it can be avoided for large datasets -- though for small in-memory numpy arrays, storing them directly is fine. The DataLoader then handles batching, shuffling, and (optionally) parallel loading via worker processes, so none of that logic needs to be written manually.",
+      "professionalAnswer": "I'd implement __len__ to return how many samples there are, and __getitem__ to pull out one feature/label pair by index and convert it to a tensor. The Dataset class itself doesn't do batching or shuffling at all -- that's the DataLoader's job, which I'd wrap around it with shuffle=True for training and a reasonable batch_size, and I'd point out that for a real training setup, shuffle should be True for the training loader but typically False for a validation/test loader so results are consistent run to run.",
+      "example": "class PairDataset(torch.utils.data.Dataset):\n    def __init__(self, features, labels):\n        self.features = features\n        self.labels = labels\n\n    def __len__(self):\n        return len(self.features)\n\n    def __getitem__(self, idx):\n        x = torch.tensor(self.features[idx], dtype=torch.float32)\n        y = torch.tensor(self.labels[idx], dtype=torch.long)\n        return x, y\n\nloader = torch.utils.data.DataLoader(PairDataset(X, y), batch_size=32, shuffle=True)",
+      "commonMistakes": [
+        "Forgetting to implement __len__ or __getitem__, which DataLoader requires",
+        "Returning raw numpy arrays instead of converting to tensors in __getitem__",
+        "Shuffling the validation/test DataLoader, making evaluation runs inconsistent",
+        "Doing batching manually inside the Dataset instead of letting DataLoader handle it"
+      ],
+      "keyPoints": [
+        "Dataset subclasses must implement __len__ and __getitem__",
+        "DataLoader handles batching, shuffling, and parallel loading, not the Dataset itself",
+        "Tensors should be constructed inside __getitem__ with explicit dtypes",
+        "Training loaders typically shuffle; validation/test loaders typically don't"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct __len__ and __getitem__ implementation", "weight": 35 },
+        { "criterion": "Correct tensor conversion with appropriate dtypes", "weight": 25 },
+        { "criterion": "Correct DataLoader usage with batching and shuffling", "weight": 25 },
+        { "criterion": "Notes shuffle convention difference between train and val/test", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-016",
+      "questionCode": "LTV-AMRA-BEG-016",
+      "title": "Saving and Loading a Model Checkpoint Correctly",
+      "prompt": "Write code to correctly save a model and optimizer checkpoint mid-training, and reload it to resume training from the same point.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Checkpointing"],
+      "code": null,
+      "modelAnswer": "A correct checkpoint for resuming training must save the model's state_dict, the optimizer's state_dict (which holds per-parameter state like Adam's momentum terms -- without it, resuming would reset momentum and effectively change the optimization trajectory), and the current epoch/step number, not just the raw model weights. Loading requires constructing a model and optimizer with the same architecture and hyperparameters first, then calling load_state_dict() on each, and calling model.train() afterward if resuming training (versus model.eval() if only running inference), since some layers like BatchNorm and Dropout behave differently in each mode.",
+      "professionalAnswer": "I'd save a dict containing the model's state_dict, the optimizer's state_dict, and the epoch number -- not just torch.save(model), which only saves weights and would silently reset the optimizer's internal state like Adam's momentum when you resume. To reload, I construct the model and optimizer architecture exactly as before, then call load_state_dict on both from the saved dict, and explicitly call model.train() if I'm resuming training, since layers like BatchNorm and Dropout behave differently in train versus eval mode and I don't want to accidentally resume in eval mode.",
+      "example": "torch.save({\n    \"epoch\": epoch,\n    \"model_state_dict\": model.state_dict(),\n    \"optimizer_state_dict\": optimizer.state_dict(),\n}, \"checkpoint.pt\")\n\ncheckpoint = torch.load(\"checkpoint.pt\")\nmodel.load_state_dict(checkpoint[\"model_state_dict\"])\noptimizer.load_state_dict(checkpoint[\"optimizer_state_dict\"])\nstart_epoch = checkpoint[\"epoch\"] + 1\nmodel.train()",
+      "commonMistakes": [
+        "Saving only the model's weights and not the optimizer state, silently resetting momentum on resume",
+        "Forgetting to call model.train() after loading, leaving BatchNorm/Dropout in eval mode during resumed training",
+        "Not saving the epoch/step number, making it unclear where training actually resumes from",
+        "Constructing a model with different hyperparameters than the saved checkpoint, causing a state_dict shape mismatch"
+      ],
+      "keyPoints": [
+        "Checkpoints should include model state_dict, optimizer state_dict, and the current epoch/step",
+        "Optimizer state (e.g. Adam's momentum) is lost if not explicitly saved and reloaded",
+        "The model/optimizer architecture must be reconstructed identically before loading state_dict",
+        "model.train() vs model.eval() affects BatchNorm/Dropout behavior and must be set correctly after loading"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Saves both model and optimizer state_dict, not just weights", "weight": 35 },
+        { "criterion": "Correctly reloads and reconstructs the training state", "weight": 30 },
+        { "criterion": "Sets train()/eval() mode appropriately after loading", "weight": 20 },
+        { "criterion": "Saves epoch/step information for resuming", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-017",
+      "questionCode": "LTV-AMRA-BEG-017",
+      "title": "Setting Seeds for Reproducible Training Runs",
+      "prompt": "Write the setup code needed at the start of a training script to make results as reproducible as possible across runs on the same hardware.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Reproducibility"],
+      "code": null,
+      "modelAnswer": "Full reproducibility requires seeding every source of randomness independently, since setting only one library's seed leaves the others uncontrolled: Python's own random module, numpy's random generator, and PyTorch's CPU and CUDA random generators all need explicit seeds. Additionally, some GPU operations (particularly certain convolution algorithms chosen by cuDNN's auto-tuner) are nondeterministic by default for performance reasons, so torch.backends.cudnn.deterministic should be set True and benchmark set False to force deterministic algorithm selection, at some cost to speed. DataLoader worker processes also have their own separate random state that needs seeding via a worker_init_fn if using multiple workers with random augmentation, or results can still vary run to run despite seeding everything else.",
+      "professionalAnswer": "I'd seed everything, not just one thing, because each library maintains its own independent random state: random.seed(), numpy's np.random.seed(), and torch.manual_seed() plus torch.cuda.manual_seed_all() for GPU. I'd also explicitly set torch.backends.cudnn.deterministic = True and cudnn.benchmark = False, because cuDNN's default behavior picks the fastest convolution algorithm it can find, which isn't always deterministic -- that's a sneaky source of non-reproducibility people often miss even after seeding everything else. If I'm using a DataLoader with multiple workers and any randomness in my augmentation pipeline, I'd also pass a worker_init_fn that seeds each worker's own random state deterministically based on its worker id, because worker processes don't automatically inherit the main process's seed.",
+      "example": "import random, numpy as np, torch\n\ndef set_seed(seed=42):\n    random.seed(seed)\n    np.random.seed(seed)\n    torch.manual_seed(seed)\n    torch.cuda.manual_seed_all(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False\n\nset_seed(42)",
+      "commonMistakes": [
+        "Only calling torch.manual_seed() and assuming numpy/python random are also covered",
+        "Not setting cudnn.deterministic=True, leaving GPU convolution algorithm selection nondeterministic",
+        "Forgetting that DataLoader worker processes need their own seeding via worker_init_fn",
+        "Expecting bit-for-bit reproducibility across different hardware/driver versions, which isn't guaranteed even with seeding"
+      ],
+      "keyPoints": [
+        "Python's random, numpy, and PyTorch each maintain independent random state requiring separate seeding",
+        "torch.cuda.manual_seed_all() is needed in addition to torch.manual_seed() for GPU reproducibility",
+        "cudnn.deterministic=True and cudnn.benchmark=False are needed to avoid nondeterministic algorithm selection",
+        "DataLoader worker processes need explicit seeding via worker_init_fn if using multiple workers"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Seeds Python random, numpy, and torch (CPU and CUDA)", "weight": 35 },
+        { "criterion": "Sets cudnn.deterministic/benchmark correctly", "weight": 30 },
+        { "criterion": "Mentions DataLoader worker seeding consideration", "weight": 20 },
+        { "criterion": "Notes the limits of reproducibility across hardware", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-018",
+      "questionCode": "LTV-AMRA-BEG-018",
+      "title": "Writing a Minimal Gymnasium-Style Environment Step Function",
+      "prompt": "Write a minimal custom environment class following the Gymnasium API for a simple 1D grid-world where the agent moves left/right and gets reward for reaching a goal position, implementing reset() and step().",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Reinforcement Learning", "Gymnasium", "Environment Design"],
+      "code": null,
+      "modelAnswer": "A Gymnasium-style environment must implement reset() (returning the initial observation and an info dict, re-initializing internal state) and step(action) (returning observation, reward, terminated, truncated, and info, following the modern Gymnasium API that separates 'terminated' meaning the episode ended for a defined reason like reaching the goal from 'truncated' meaning it was cut off externally like a max-step limit). The reward and termination logic must be self-contained inside step() and based purely on the resulting state after applying the action, not on hidden external state the agent can't observe.",
+      "professionalAnswer": "I'd implement reset() to put the agent back at a starting position and return the initial observation plus an empty info dict, and step() to apply the action, update position, compute a reward (say +1 for reaching the goal, small negative step cost otherwise to encourage efficiency), and return the five-tuple the modern Gymnasium API expects: obs, reward, terminated, truncated, info. I'd keep terminated and truncated separate rather than collapsing them into one 'done' flag, since that's the current API convention and it matters for algorithms that handle episode-ending-by-success differently from episode-ending-by-timeout.",
+      "example": "class GridWorld:\n    def __init__(self, size=10, goal=9, max_steps=50):\n        self.size, self.goal, self.max_steps = size, goal, max_steps\n\n    def reset(self):\n        self.pos, self.steps = 0, 0\n        return self.pos, {}\n\n    def step(self, action):  # 0 = left, 1 = right\n        self.pos = max(0, min(self.size - 1, self.pos + (1 if action == 1 else -1)))\n        self.steps += 1\n        terminated = self.pos == self.goal\n        truncated = self.steps >= self.max_steps\n        reward = 1.0 if terminated else -0.01\n        return self.pos, reward, terminated, truncated, {}",
+      "commonMistakes": [
+        "Collapsing terminated and truncated into a single 'done' flag, diverging from the modern Gymnasium API",
+        "Not resetting internal step counters in reset(), causing truncation logic to misbehave across episodes",
+        "Forgetting to clip/bound the position, letting the agent move outside the valid state space",
+        "Giving reward based on action taken rather than the resulting state, which conflates two different reward-shaping choices"
+      ],
+      "keyPoints": [
+        "reset() reinitializes state and returns (observation, info)",
+        "step(action) returns (observation, reward, terminated, truncated, info)",
+        "terminated means the episode ended for a defined reason; truncated means it was cut off externally",
+        "Reward and termination logic should be based on the resulting state after the action is applied"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct reset() signature and behavior", "weight": 25 },
+        { "criterion": "Correct step() signature returning the 5-tuple", "weight": 30 },
+        { "criterion": "Correctly distinguishes terminated vs truncated", "weight": 25 },
+        { "criterion": "Sensible reward/termination logic for the described task", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-019",
+      "questionCode": "LTV-AMRA-BEG-019",
+      "title": "Applying Gradient Clipping in a Training Loop",
+      "prompt": "Add gradient clipping to a training loop to stabilize training against occasional exploding-gradient spikes.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Gradient Clipping", "Training Stability"],
+      "code": "for x, y in dataloader:\n    optimizer.zero_grad()\n    preds = model(x)\n    loss = loss_fn(preds, y)\n    loss.backward()\n    optimizer.step()",
+      "modelAnswer": "Gradient clipping must be applied after backward() has computed the gradients but before optimizer.step() applies them, since clipping operates directly on the .grad values that step() would otherwise use unmodified. torch.nn.utils.clip_grad_norm_ rescales the entire gradient vector (across all parameters together, not per-parameter) if its total norm exceeds a specified maximum, which caps the size of any single update without changing its direction, preventing a rare large-gradient spike from catastrophically disrupting the model's weights in one step.",
+      "professionalAnswer": "The clip call goes in exactly one place: after loss.backward() and before optimizer.step(), since it needs the freshly computed gradients to exist but has to run before the optimizer actually uses them. I'd use torch.nn.utils.clip_grad_norm_ with a max norm like 1.0, which rescales the gradient vector as a whole if its norm exceeds that threshold -- it preserves direction, just caps magnitude -- so one unusually large gradient spike doesn't blow up the weights in a single step.",
+      "example": "for x, y in dataloader:\n    optimizer.zero_grad()\n    preds = model(x)\n    loss = loss_fn(preds, y)\n    loss.backward()\n    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)\n    optimizer.step()",
+      "commonMistakes": [
+        "Placing the clip call before backward() or after step(), where it has no effect",
+        "Confusing clip_grad_norm_ (rescales by total norm) with clip_grad_value_ (clips each element independently)",
+        "Picking a max_norm so small that it suppresses legitimate learning signal, not just outlier spikes",
+        "Not realizing clipping is applied across all parameters jointly, not independently per layer by default"
+      ],
+      "keyPoints": [
+        "Gradient clipping must be called after backward() and before step()",
+        "clip_grad_norm_ rescales the whole gradient vector if its norm exceeds max_norm, preserving direction",
+        "This caps the size of any single parameter update without changing its direction",
+        "clip_grad_value_ is a different, element-wise alternative to norm-based clipping"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct placement of the clip call (after backward, before step)", "weight": 40 },
+        { "criterion": "Correct use of clip_grad_norm_ with a sensible max_norm", "weight": 30 },
+        { "criterion": "Explains the mechanism (rescaling by total norm, preserving direction)", "weight": 20 },
+        { "criterion": "Distinguishes norm-based from value-based clipping", "weight": 10 }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-020",
+      "questionCode": "LTV-AMRA-BEG-020",
+      "title": "Diagnosing a Loss That Turns to NaN After a Few Steps",
+      "prompt": "A training run's loss looks reasonable for the first 20 steps, then suddenly becomes NaN and stays there. Walk through how you'd diagnose and fix this.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Debugging", "Training Stability", "PyTorch"],
+      "modelAnswer": "NaN loss almost always traces back to a numerical overflow or an invalid math operation (like log(0) or division by zero) somewhere in the forward or backward pass, and once a NaN enters any tensor it propagates through every subsequent computation that touches it, including all future parameter updates, which is why the loss stays NaN forever afterward rather than recovering. The most common concrete causes are: a learning rate that is too high, causing weights to grow until they overflow; mixed-precision (fp16) training where intermediate activations overflow fp16's limited range (resolved via automatic mixed precision's loss scaling, or by checking which specific operation overflows); a numerically unstable operation like an unclipped log or an unprotected division inside a custom loss function; or exploding gradients from a deep or poorly-initialized network. Diagnosis should start by checking at exactly which step and which tensor (loss, a specific layer's activations, or gradients) the NaN first appears, since a NaN in the very first forward pass points to initialization or a numerically unstable input, while a NaN appearing after several healthy steps points to compounding instability like exploding gradients or growing weight magnitudes. torch.autograd.set_detect_anomaly(True) helps pinpoint the exact failing operation during backward(). Fixes typically involve lowering the learning rate, adding gradient clipping, double-checking any custom loss math for unguarded log/division, and switching from fp16 to bf16 or using proper loss scaling if mixed precision is the suspect.",
+      "professionalAnswer": "First thing I'd do is figure out exactly where the NaN first shows up, because once it exists anywhere it poisons everything downstream -- every op that touches a NaN produces another NaN, including every future weight update, which is why it never recovers on its own. If it appears right at step one, I'm suspecting bad initialization or a numerically unstable op on the very first input. If it shows up after 20 healthy-looking steps, that's more consistent with exploding gradients or weights slowly growing until something overflows. I'd turn on torch.autograd.set_detect_anomaly(True) to get a stack trace pointing at the exact operation that produced the NaN during backward, rather than guessing. From there the usual suspects are: learning rate too high, so I'd try lowering it and adding gradient clipping as a safety net regardless; if I'm using fp16 mixed precision, I'd check whether an activation is overflowing fp16's narrow range, which usually means I need proper loss scaling or should switch to bf16, which has a much wider range; and if there's any custom loss math, I'd specifically check for an unguarded log of zero or a division that could hit zero. I wouldn't just lower the learning rate and call it fixed without understanding which of these it actually was, because the same symptom can come from very different root causes.",
+      "example": "torch.autograd.set_detect_anomaly(True) wrapped around a training step will raise a traceback pointing to the exact backward operation (e.g. a log() call) that first produced a NaN or Inf, rather than only showing the NaN after it has already propagated through the whole graph.",
+      "commonMistakes": [
+        "Immediately lowering the learning rate without first identifying where the NaN originates",
+        "Not distinguishing a NaN appearing at step 0 (initialization/input issue) from one appearing after many steps (compounding instability)",
+        "Not checking custom loss code for unguarded log(0) or division-by-zero",
+        "Assuming mixed precision is always the cause without verifying which specific tensor overflows",
+        "Not using torch.autograd.set_detect_anomaly to localize the exact failing operation"
+      ],
+      "keyPoints": [
+        "NaN propagates through every subsequent computation once introduced, explaining why loss never recovers",
+        "Where the NaN first appears (step 0 vs. after many steps) narrows down the likely cause",
+        "set_detect_anomaly(True) pinpoints the exact operation producing the NaN during backward",
+        "Common causes: too-high learning rate, fp16 overflow, unguarded log/division, exploding gradients",
+        "Fixes include lowering lr, gradient clipping, switching to bf16 or proper loss scaling, and guarding custom math"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why NaN propagates and never self-recovers", "weight": 20 },
+        { "criterion": "Uses where the NaN first appears to narrow down the cause", "weight": 25 },
+        { "criterion": "Names concrete, correct diagnostic tools (set_detect_anomaly)", "weight": 20 },
+        { "criterion": "Proposes correct, specific fixes rather than generic 'lower the learning rate'", "weight": 25 },
+        { "criterion": "Clear, systematic diagnostic approach", "weight": 10 }
+      ],
+      "estimatedMinutes": 8,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-021",
+      "questionCode": "LTV-AMRA-BEG-021",
+      "title": "Model Accuracy Stuck at Random-Guess Level",
+      "prompt": "A classifier's training loss is decreasing normally but accuracy stays stuck at exactly what random guessing would give (e.g. 10% for 10 classes). What would you check?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Debugging", "Classification", "PyTorch"],
+      "modelAnswer": "Decreasing loss but random-level accuracy almost always points to a mismatch between what the loss function is optimizing and what the accuracy metric is measuring, not a fundamentally broken model. The most common cause is a label/prediction misalignment -- the accuracy computation comparing predictions to shuffled or mismatched labels (for instance, computing accuracy on a dataset with a different shuffle order than the one the loss was computed on), or an off-by-one in label indexing. A second common cause is computing accuracy from the wrong tensor, such as taking argmax over the wrong dimension of the logits, which would produce an essentially arbitrary predicted-class assignment unrelated to the model's actual confidence per class. A third is applying softmax before computing accuracy via argmax when it isn't needed (argmax of softmax output equals argmax of raw logits, so this specific case is actually harmless, but is worth ruling out as a red herring during debugging). The fastest way to isolate this is to manually print a handful of raw logits, their argmax, and the corresponding true label side by side for the same batch used in both the loss and accuracy computation, which almost always immediately reveals a misalignment if one exists.",
+      "professionalAnswer": "When loss is dropping but accuracy is stuck at exactly the random-guess rate, my first assumption isn't that the model is broken -- it's that the accuracy calculation and the loss calculation are somehow looking at different things. The classic culprit is a label alignment bug: maybe the accuracy code pulls labels from a differently-shuffled copy of the dataset than the one used for the loss, or there's an off-by-one in how labels are indexed. The other common one is taking argmax over the wrong axis of the logits tensor, which gives you an essentially random predicted class that has nothing to do with what the model actually thinks. My first move, before changing anything about the model, is to grab one batch, print the raw logits, their argmax, and the true labels side by side, and just eyeball whether the argmax predictions look like they're tracking the labels at all even loosely. That almost always surfaces the misalignment immediately, and it's a much faster diagnosis than tweaking hyperparameters and hoping it goes away.",
+      "example": "logits.argmax(dim=0) instead of logits.argmax(dim=1) on a (batch, num_classes) tensor silently computes the argmax across the batch dimension instead of the class dimension, producing meaningless predicted classes while the loss (computed correctly against dim=1) keeps decreasing normally.",
+      "commonMistakes": [
+        "Assuming the model architecture itself is broken rather than checking the accuracy computation first",
+        "Taking argmax over the wrong tensor dimension",
+        "Computing accuracy against a misaligned or differently-shuffled copy of the labels",
+        "Changing hyperparameters as a first response instead of inspecting raw predictions vs. labels directly"
+      ],
+      "keyPoints": [
+        "Decreasing loss with random-level accuracy usually indicates a measurement bug, not a broken model",
+        "Label/prediction misalignment is the most common cause",
+        "Taking argmax over the wrong dimension produces effectively random predicted classes",
+        "Printing raw logits, argmax, and true labels side by side is the fastest diagnostic"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly reasons that decreasing loss implies the model is learning something", "weight": 25 },
+        { "criterion": "Identifies label/prediction misalignment as the likely cause", "weight": 30 },
+        { "criterion": "Identifies wrong-dimension argmax as a concrete possible bug", "weight": 25 },
+        { "criterion": "Proposes a fast, concrete diagnostic step", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-022",
+      "questionCode": "LTV-AMRA-BEG-022",
+      "title": "Diagnosing Vanishing Gradients in a Deep MLP",
+      "prompt": "A 15-layer MLP trained from scratch barely learns anything -- loss decreases extremely slowly and the early layers' weights barely change at all across training. Diagnose and propose fixes.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Debugging", "Vanishing Gradients", "Deep Learning"],
+      "modelAnswer": "Barely-changing early-layer weights in a deep network is the classic signature of vanishing gradients: the chain rule multiplies many layers' local derivatives together during backpropagation, and if those local derivatives are each somewhat less than 1 (which is common with saturating activations like sigmoid or tanh, whose derivative is at most 0.25 and near zero away from the origin), the product shrinks exponentially with depth, so gradients reaching the earliest layers can become vanishingly small by the time they propagate back through 15 layers. The fix set is layered: switching from sigmoid/tanh to ReLU or a variant (which has a derivative of exactly 1 for positive inputs, not shrinking with magnitude) addresses the activation-saturation source directly; adding proper weight initialization (Kaiming/He initialization, matched to the activation function) prevents the problem from being made worse by starting weights at a bad scale; and adding batch normalization or layer normalization between layers directly counteracts the compounding shrinkage by renormalizing activations at every layer, which keeps gradients from systematically shrinking or growing as they propagate. Residual (skip) connections, while more associated with very deep CNNs/transformers, also directly help because they give the gradient a direct additive path around a layer that bypasses the multiplicative shrinkage.",
+      "professionalAnswer": "The symptom -- early layers barely updating in a 15-layer MLP -- is almost a textbook description of vanishing gradients. Backprop multiplies local derivatives together going backward through each layer, and if those derivatives are each noticeably below 1, which happens with sigmoid or tanh because their derivative tops out around 0.25 and gets near zero away from the center, that product shrinks fast with depth, so by the time the gradient reaches layer 1 of 15 it can be tiny. I'd check the activation functions first; if it's sigmoid or tanh throughout, swapping to ReLU is usually the single highest-leverage fix, since ReLU's derivative is a flat 1 for any positive input instead of shrinking. I'd also check weight initialization -- using a Kaiming/He init matched to the activation, rather than a default or naive initialization, keeps the signal at a reasonable scale from the start instead of compounding the problem. And I'd add batch or layer normalization between layers, which actively renormalizes activations at every layer and directly fights the compounding shrinkage rather than just avoiding making it worse. If it's still an issue after all that, residual connections give gradients an additive shortcut path that sidesteps the multiplicative chain entirely.",
+      "example": "With tanh (max derivative 0.25) across 15 layers, a naive upper bound on the gradient scaling factor reaching layer 1 is roughly 0.25^14, an extremely small number -- illustrating why even a modest per-layer shrinkage compounds into a severe vanishing-gradient problem at this depth.",
+      "commonMistakes": [
+        "Not connecting the symptom (early layers not updating) to the vanishing gradient mechanism specifically",
+        "Only suggesting a lower learning rate, which doesn't address the root cause",
+        "Not checking the activation function as a primary suspect",
+        "Forgetting that weight initialization and normalization both independently help and should be combined"
+      ],
+      "keyPoints": [
+        "Backprop multiplies local derivatives through each layer; derivatives less than 1 compound into vanishing gradients with depth",
+        "Saturating activations (sigmoid/tanh) are a primary cause due to their small maximum derivative",
+        "Switching to ReLU, using matched weight initialization, and adding batch/layer normalization are the standard fixes",
+        "Residual connections provide an additive gradient path that bypasses multiplicative shrinkage"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses vanishing gradients from the symptom pattern", "weight": 30 },
+        { "criterion": "Explains the chain-rule-compounding mechanism correctly", "weight": 25 },
+        { "criterion": "Proposes correct, specific fixes (activation, init, normalization)", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-023",
+      "questionCode": "LTV-AMRA-BEG-023",
+      "title": "Training Loss Keeps Falling While Validation Loss Diverges Early",
+      "prompt": "Training loss keeps decreasing smoothly, but validation loss starts increasing after only a few epochs. What's happening and what would you do?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Overfitting", "Debugging", "Model Evaluation"],
+      "modelAnswer": "This is the classic signature of overfitting: the model is increasingly memorizing patterns specific to the training set, including noise and idiosyncrasies that don't generalize, which keeps driving training loss down while actively hurting performance on unseen validation data. That training loss keeps falling is expected -- the model has enough capacity to keep reducing error on data it has memorized -- while validation loss rising is the signal that this improvement is no longer reflecting genuine learning. Standard fixes include adding or increasing regularization (weight decay, dropout), reducing model capacity if it is clearly oversized for the dataset, using data augmentation to effectively increase the diversity of the training distribution, and using early stopping to halt training at the epoch where validation loss was lowest rather than continuing to the point this question describes. The first overfitting epoch happening 'after only a few epochs' specifically suggests either a very small training dataset relative to model capacity, or too high a learning rate causing rapid memorization, both of which should be checked before assuming regularization alone will fix it.",
+      "professionalAnswer": "This pattern -- training loss still falling, validation loss turning upward -- is overfitting, not a bug. The model has enough capacity to keep reducing error on the exact training examples it's seen, including their noise, but that memorization stops transferring to data it hasn't seen, which is exactly what rising validation loss is telling you. Given that it's happening after only a few epochs, I'd first check whether the training set is small relative to the model's capacity, or whether the learning rate is high enough that the model is memorizing fast rather than learning generalizable structure -- both point to different first moves. Assuming the basic setup is reasonable, I'd reach for the standard toolkit: add or increase weight decay and dropout, consider whether the model is just bigger than this dataset needs, add data augmentation if applicable to the data type, and set up early stopping so training actually halts near the validation-loss minimum instead of continuing well past it. I wouldn't just let it keep training and pick the final checkpoint -- the useful checkpoint is back near where validation loss bottomed out, not wherever training happened to stop.",
+      "example": "Epoch 1: train_loss=0.9, val_loss=0.95. Epoch 3: train_loss=0.4, val_loss=0.55. Epoch 6: train_loss=0.1, val_loss=0.9 -- the widening gap after epoch 3 marks where the model started overfitting; the best checkpoint to keep is from around epoch 3, not epoch 6.",
+      "commonMistakes": [
+        "Treating a rising validation loss as a bug to debug rather than the expected signature of overfitting",
+        "Not checking dataset size relative to model capacity as a first-pass explanation",
+        "Continuing training to the final epoch and keeping that checkpoint instead of the one near the validation minimum",
+        "Reaching only for 'more regularization' without first checking whether the learning rate or dataset size is the real driver"
+      ],
+      "keyPoints": [
+        "Training loss falling while validation loss rises is the classic signature of overfitting",
+        "The model is memorizing training-set-specific noise rather than generalizing",
+        "Standard fixes: weight decay, dropout, reduced capacity, data augmentation, early stopping",
+        "The useful checkpoint is near the validation-loss minimum, not the final training epoch"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies overfitting as the cause", "weight": 30 },
+        { "criterion": "Explains why training loss keeps falling despite validation degrading", "weight": 25 },
+        { "criterion": "Proposes correct, specific fixes", "weight": 30 },
+        { "criterion": "Notes the correct checkpoint-selection practice (early stopping)", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-024",
+      "questionCode": "LTV-AMRA-BEG-024",
+      "title": "Results Aren't Reproducible Despite Setting a Seed",
+      "prompt": "A teammate set torch.manual_seed(42) at the top of their script but still gets different results on every run. What are the likely remaining sources of nondeterminism?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Debugging", "Reproducibility", "PyTorch"],
+      "modelAnswer": "torch.manual_seed() only seeds PyTorch's own CPU random generator; it does not seed numpy's or Python's built-in random module, both of which are commonly used in data loading, augmentation, or custom sampling logic, so any randomness routed through those libraries remains unseeded. It also does not cover torch.cuda's random generator used for GPU operations, which needs torch.cuda.manual_seed_all() separately. Beyond library-level seeding, cuDNN's convolution algorithm auto-tuner (enabled by default via cudnn.benchmark) can select different, individually nondeterministic algorithms run to run for performance reasons, which needs cudnn.deterministic=True and cudnn.benchmark=False to control. Finally, if the DataLoader uses multiple worker processes (num_workers > 0) with any randomness in the data pipeline (shuffling, augmentation), each worker process has its own separate random state that is not automatically seeded by the main process's seed call unless a worker_init_fn explicitly seeds each worker deterministically based on its worker id.",
+      "professionalAnswer": "manual_seed() alone only covers PyTorch's own CPU random number generator -- it doesn't touch numpy's random state or Python's built-in random module, and a lot of real pipelines use one of those somewhere in data loading or augmentation without anyone noticing. It also doesn't cover the GPU side; you need torch.cuda.manual_seed_all() separately for that. Beyond the seeding itself, there's a sneaky one: cuDNN's convolution algorithm selection can be nondeterministic by default when cudnn.benchmark is on, because it's auto-tuning for speed, not determinism -- you need cudnn.deterministic=True and benchmark=False to shut that off. And if the DataLoader is using multiple worker processes with any random augmentation, each worker has its own separate random state that doesn't automatically inherit the main process's seed -- you need a worker_init_fn that seeds each worker explicitly based on its worker id, or results will vary across runs even with everything else seeded correctly.",
+      "example": "A training script seeding only torch.manual_seed(42) but using numpy for a random crop augmentation inside a DataLoader with num_workers=4 will get different crops every run, since neither numpy's seed nor each worker's independent random state is controlled by that single call.",
+      "commonMistakes": [
+        "Assuming torch.manual_seed() alone covers all sources of randomness",
+        "Forgetting numpy and Python's random module as separate, commonly-used randomness sources",
+        "Not setting cudnn.deterministic/benchmark, leaving GPU algorithm selection nondeterministic",
+        "Not seeding DataLoader worker processes individually when num_workers > 0"
+      ],
+      "keyPoints": [
+        "torch.manual_seed() only seeds PyTorch's own CPU generator, not numpy or Python's random module",
+        "GPU operations require a separate torch.cuda.manual_seed_all() call",
+        "cudnn.benchmark's auto-tuning can introduce nondeterministic algorithm selection unless disabled",
+        "DataLoader worker processes need their own explicit seeding via worker_init_fn"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies that manual_seed() doesn't cover numpy/Python random", "weight": 30 },
+        { "criterion": "Identifies the separate CUDA seeding requirement", "weight": 20 },
+        { "criterion": "Identifies cudnn.benchmark as a nondeterminism source", "weight": 25 },
+        { "criterion": "Identifies DataLoader worker seeding as a potential gap", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-025",
+      "questionCode": "LTV-AMRA-BEG-025",
+      "title": "Diagnosing a Matrix Multiplication Shape Mismatch",
+      "prompt": "The following code raises 'RuntimeError: mat1 and mat2 shapes cannot be multiplied (32x768 and 512x256)'. Diagnose the likely cause and how you'd fix it.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Debugging", "Tensor Shapes"],
+      "code": "x = torch.randn(32, 768)\nlinear = nn.Linear(512, 256)\noutput = linear(x)",
+      "modelAnswer": "Matrix multiplication (and nn.Linear internally) requires the inner dimensions to match: x has shape (32, 768) and nn.Linear(512, 256) expects an input with last dimension 512, so the actual multiplication attempted is (32x768) by (768-input-expected-as-512x256), a mismatch between 768 and 512. This is not a bug in the multiplication itself -- it is almost always upstream, either the Linear layer was constructed with the wrong input dimension (should be nn.Linear(768, 256) to match x's actual feature dimension), or x itself has an unexpected shape because an earlier layer or reshape produced 768 features instead of the 512 the rest of the model expects. The fix is to trace backward from this error to find which side is actually wrong: print x.shape right before this line and compare it against what the model's architecture assumes the input dimension should be.",
+      "professionalAnswer": "nn.Linear(512, 256) is expecting its input's last dimension to be 512, but x has last dimension 768, so the fix depends on which one is actually correct for this model. If x really should have 768 features at this point, the Linear layer was constructed with the wrong in_features and should be nn.Linear(768, 256). If the architecture genuinely expects 512 features here, then something upstream -- maybe an earlier layer's output size, or a reshape/flatten operation -- is producing 768 instead of 512, and that's where I'd actually go looking, not at this line itself. I'd just print x.shape right before this call and trace back through whatever produced x to find where the dimension diverged from what was intended.",
+      "example": "# If x should have 768 features:\nlinear = nn.Linear(768, 256)\noutput = linear(x)  # works\n\n# If x should have 512 features, trace back to find why it has 768 instead",
+      "commonMistakes": [
+        "Treating this as a bug in matmul itself rather than a mismatch between two upstream assumptions",
+        "Guessing a fix without checking which side (the layer's in_features or x's actual shape) is the one that's wrong",
+        "Not printing the actual shapes involved before attempting a fix",
+        "Assuming the fix is always to change the Linear layer, when the real bug might be further upstream"
+      ],
+      "keyPoints": [
+        "nn.Linear requires its input's last dimension to match in_features exactly",
+        "The error means the actual input shape and the layer's expected shape disagree",
+        "The fix requires determining which side is correct, not guessing",
+        "Printing the actual tensor shape right before the failing line is the fastest diagnostic step"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why the shapes are incompatible", "weight": 30 },
+        { "criterion": "Correctly identifies this requires determining which side is wrong, not an automatic fix", "weight": 30 },
+        { "criterion": "Proposes a concrete diagnostic step (printing shapes, tracing upstream)", "weight": 25 },
+        { "criterion": "Provides a correct code fix for at least one plausible scenario", "weight": 15 }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-026",
+      "questionCode": "LTV-AMRA-BEG-026",
+      "title": "Handling a GPU Out-of-Memory Error Mid-Training",
+      "prompt": "Training crashes with CUDA out of memory after running fine for several epochs. What would you check and what are your options for fixing it without a hardware upgrade?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Debugging", "GPU Memory", "Training Optimization"],
+      "modelAnswer": "If training ran fine for several epochs before crashing, the most likely cause is not a simple static memory shortage (which would fail immediately) but something growing over time, such as accidentally retaining the computation graph across iterations (e.g. appending loss directly instead of loss.item() into a logging list, which keeps every historical graph alive in memory) or a batch with unusually large inputs (e.g. one unusually long sequence in a variable-length dataset) arriving later in training. If the crash is consistent and immediate rather than growing, the simplest fixes are reducing batch size, enabling gradient accumulation to simulate a larger effective batch size without the memory cost, switching to mixed-precision (fp16/bf16) training which roughly halves activation memory, and enabling gradient checkpointing (trading recomputation time for memory by not storing all intermediate activations). Diagnosis should start by checking whether memory usage was growing steadily across epochs (pointing to a leak like the loss.item() issue) versus whether it was flat until a sudden large batch or sequence (pointing to a data-dependent spike), which can be checked via torch.cuda.memory_summary() or similar monitoring.",
+      "professionalAnswer": "The fact that this ran fine for several epochs before crashing is the important clue -- a true static memory shortage would fail on the very first batch, not several epochs in. That pattern makes me suspect something growing over time, and the single most common cause I'd check first is whether loss (the full tensor, not loss.item()) is getting appended into some logging list -- that silently keeps every historical computation graph alive in memory, and it compounds epoch after epoch until it finally runs out. The other common cause is a late-arriving unusually large batch or sequence in a variable-length dataset. I'd check torch.cuda.memory_summary() across a few epochs to see whether usage is flat-then-spiking (data-dependent) or steadily climbing (a leak). If it's a genuine memory ceiling rather than a leak, my options without new hardware are: reduce batch size, use gradient accumulation to recover the effective batch size I lost, switch to fp16/bf16 mixed precision which roughly halves activation memory, and use gradient checkpointing to trade some recomputation time for a lot less memory held at once.",
+      "example": "losses = []\nfor x, y in loader:\n    ...\n    loss = loss_fn(preds, y)\n    losses.append(loss)  # BUG: keeps the full computation graph alive every iteration\n    # fix: losses.append(loss.item())",
+      "commonMistakes": [
+        "Assuming any OOM is a static capacity problem rather than checking whether memory usage was growing over time",
+        "Appending the full loss tensor instead of loss.item() into a logging list, silently leaking the computation graph",
+        "Jumping straight to reducing batch size without first checking for a leak",
+        "Not knowing gradient accumulation and gradient checkpointing as memory-saving options besides reducing batch size"
+      ],
+      "keyPoints": [
+        "A crash after several working epochs suggests something growing over time, not a static shortage",
+        "Appending full loss tensors (instead of .item()) into logs is a common silent memory leak",
+        "torch.cuda.memory_summary() helps distinguish a leak from a data-dependent spike",
+        "Fixes for a genuine memory ceiling: smaller batch size, gradient accumulation, mixed precision, gradient checkpointing"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly reasons about delayed-crash timing pointing to a growing leak", "weight": 25 },
+        { "criterion": "Identifies the loss.item() / retained-graph leak as a concrete likely cause", "weight": 30 },
+        { "criterion": "Proposes a concrete diagnostic approach", "weight": 20 },
+        { "criterion": "Lists correct memory-saving options for a genuine capacity issue", "weight": 25 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-027",
+      "questionCode": "LTV-AMRA-BEG-027",
+      "title": "A Toy RL Agent Maximizes Reward While Behaving Clearly Undesirably",
+      "prompt": "In a toy grid-world environment with a reward for collecting coins, your trained agent discovers it can spin in a tight circle around a single coin-respawn point to rack up near-infinite reward instead of exploring the grid as intended. Diagnose what happened and how you'd fix the environment.",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Reinforcement Learning", "Reward Hacking", "Environment Design"],
+      "modelAnswer": "This is a textbook instance of reward hacking (also called specification gaming): the agent is optimizing exactly what the reward function literally specifies, and the reward function has a loophole the designer didn't intend -- a coin respawning in a way that lets an agent exploit a tight repeated loop for reward far exceeding what the designer meant to incentivize. The agent isn't malfunctioning; it is doing precisely what RL training optimizes it to do, which is maximize cumulative reward under the actual reward function as written, not under the designer's unstated intent. The fix has to change the specification, not the agent: options include capping the reward obtainable from any single coin-respawn location within a time window, adding a small per-step cost that makes pure camping less attractive relative to exploring, randomizing or spacing out respawn locations so no single spot can be farmed repeatedly, or explicitly penalizing revisiting the same small region too frequently. The general lesson -- directly relevant to real RLHF/alignment work -- is that any reward function which is a hand-written or imperfect proxy for the intended goal (here, 'explore and collect coins broadly') can be exploited by a sufficiently capable optimizer finding the specific loophole, which is exactly the dynamic that makes reward design one of the hardest parts of applied RL.",
+      "professionalAnswer": "This is reward hacking, plain and simple -- the agent found a loophole in exactly what I told it to maximize, not a malfunction in how it's learning. I didn't actually specify 'explore the grid and collect coins broadly,' I specified 'maximize cumulative reward from coins,' and camping a respawn point turned out to satisfy that literal specification better than exploring did. The fix has to be in the reward function or environment, not in the agent -- I can't train my way out of a loophole in the specification itself. Concretely, I'd look at capping how much reward a single location can yield within some time window, adding a small step cost so that pure camping stops being the dominant strategy relative to exploring, or randomizing/spacing coin respawns so there isn't a single farmable spot. I'd also flag this as the small-scale version of a real problem in alignment work: any reward signal that's an imperfect stand-in for what you actually want is a target for a capable optimizer to exploit exactly like this, just at a much higher stakes level with something like a learned reward model instead of a hand-written grid-world reward.",
+      "example": "A grid-world reward of +1 per coin collected with instant respawn at the same tile lets the agent earn unbounded reward per episode by repeatedly stepping on and off that one tile, versus the designer's intent of rewarding broad map exploration -- fixed by adding a respawn cooldown or per-tile reward cap.",
+      "commonMistakes": [
+        "Treating this as a bug in the learning algorithm rather than a flaw in the reward specification",
+        "Trying to fix it by changing hyperparameters or training longer instead of changing the reward/environment",
+        "Not connecting this toy example to the broader concept of reward hacking/specification gaming relevant to real alignment work",
+        "Proposing a fix that just patches this one exploit without considering whether other exploits remain possible"
+      ],
+      "keyPoints": [
+        "The agent is correctly optimizing the literal reward function, which has an unintended loophole",
+        "This is reward hacking / specification gaming, not an agent malfunction",
+        "The fix must change the reward function or environment design, not the agent itself",
+        "Concrete fixes include reward caps, step costs, and spacing/randomizing exploitable resources",
+        "This toy case illustrates a dynamic directly relevant to real-world reward model exploitation in RLHF"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies this as reward hacking / specification gaming", "weight": 30 },
+        { "criterion": "Correctly explains the agent is behaving as optimized, not malfunctioning", "weight": 25 },
+        { "criterion": "Proposes concrete environment/reward fixes, not agent-side fixes", "weight": 25 },
+        { "criterion": "Connects the toy example to the broader alignment concept soberly and accurately", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "deepDive": [
+        {
+          "heading": "Why this generalizes beyond toy environments",
+          "content": "The exact same dynamic shows up at much higher stakes with learned reward models in RLHF: if a reward model gives unusually high scores to responses with a particular structural quirk (excessive hedging, specific phrasing, padded length), a capable policy optimized hard enough against that reward model will find and exploit the quirk, exactly as the grid-world agent found the respawn-camping loophole. This is why reward model over-optimization is tracked as its own failure mode in RLHF, and why techniques like KL penalties against a reference policy, reward model ensembling, and periodically refreshing the reward model with new human feedback exist specifically to make this kind of exploitation harder to find and less rewarding when found."
+        },
+        {
+          "heading": "Why you can't just 'train the agent to behave better'",
+          "content": "A natural instinct is to keep training longer, hoping the agent eventually explores more. This usually doesn't work, because from the agent's perspective it is already doing the optimal thing under the reward function as specified -- there is no learning signal pushing it away from an actually-optimal-under-the-spec strategy. Any fix that doesn't change the reward function or environment is fighting the training process's own objective, which is a losing proposition; the fix has to make the exploit actually worse under the (corrected) specification, not hope the agent discovers it shouldn't do the mathematically best thing available to it."
+        }
+      ],
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-028",
+      "questionCode": "LTV-AMRA-BEG-028",
+      "title": "The Structure of a Transformer Block",
+      "prompt": "Describe the internal structure of a single transformer block, including where residual connections and normalization sit relative to the attention and feed-forward sublayers.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "Architecture", "Deep Learning"],
+      "modelAnswer": "A standard transformer block contains two main sublayers in sequence: a multi-head self-attention sublayer followed by a position-wise feed-forward sublayer (typically two linear layers with a nonlinearity in between, applied identically and independently to each position). Each of these two sublayers is wrapped in a residual connection, meaning the sublayer's output is added back to its own input (output = x + Sublayer(x)) rather than replacing it outright, which gives gradients a direct additive path through the network regardless of depth and makes very deep stacks of these blocks trainable. Layer normalization is applied alongside this structure, either after each residual sum (the original 'post-norm' arrangement from the original Transformer paper) or before each sublayer's input (the now more common 'pre-norm' arrangement, which tends to produce more stable training at scale because gradients flow through the residual path without first passing through a normalization layer). Stacking many of these identical blocks, each with their own independently learned parameters, is what forms the full transformer encoder or decoder.",
+      "professionalAnswer": "Each block has two sublayers back to back: multi-head self-attention, then a feed-forward network applied independently to every position. Both sublayers get wrapped in a residual connection -- you add the sublayer's output back onto its input rather than replacing it -- which is what makes stacking dozens of these blocks trainable at all, since gradients get a direct additive shortcut regardless of depth. Where normalization sits is the detail people get wrong: the original paper put layer norm after the residual addition ('post-norm'), but most modern architectures use 'pre-norm' instead, normalizing the input before it even enters the sublayer, because that keeps the residual path itself clean of normalization and tends to train more stably at the kind of depth and scale people build models at today. So in order, a pre-norm block looks like: normalize, attention, add residual, normalize, feed-forward, add residual.",
+      "example": "Pre-norm block: x = x + Attention(LayerNorm(x)); x = x + FeedForward(LayerNorm(x)) -- contrast with post-norm: x = LayerNorm(x + Attention(x)); x = LayerNorm(x + FeedForward(x)).",
+      "commonMistakes": [
+        "Forgetting the residual connections entirely and describing attention/FFN as simply stacked without additive shortcuts",
+        "Not knowing the difference between pre-norm and post-norm placement",
+        "Describing the feed-forward sublayer as processing the whole sequence jointly rather than position-wise/independently",
+        "Omitting that multi-head attention, not single-head, is the standard first sublayer"
+      ],
+      "keyPoints": [
+        "A transformer block has two sublayers: multi-head self-attention, then a position-wise feed-forward network",
+        "Each sublayer is wrapped in a residual connection (output = x + Sublayer(x))",
+        "Layer normalization placement varies: post-norm (original paper) vs. pre-norm (more common today, more stable at scale)",
+        "Many identical blocks are stacked to form the full encoder or decoder"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes the two sublayers in order", "weight": 25 },
+        { "criterion": "Correctly explains residual connections and their purpose", "weight": 30 },
+        { "criterion": "Correctly distinguishes pre-norm vs. post-norm placement", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-029",
+      "questionCode": "LTV-AMRA-BEG-029",
+      "title": "Encoder-Only vs. Decoder-Only vs. Encoder-Decoder Transformers",
+      "prompt": "Explain the architectural difference between encoder-only, decoder-only, and encoder-decoder transformer models, and give a reason each variant exists for the tasks it's used for.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "Architecture", "Model Design"],
+      "modelAnswer": "The core difference is in the attention masking and what each side of the model is allowed to see. Encoder-only models (e.g. BERT-style) use bidirectional self-attention, meaning every token can attend to every other token in the input regardless of position, which suits tasks like classification or embedding generation where you want a representation that has absorbed the full context of the input at once and there is no sequential generation step. Decoder-only models (e.g. GPT-style, which is what nearly all modern large language models use) use causal (masked) self-attention, where each position can only attend to itself and earlier positions, never later ones, which is exactly what's needed for autoregressive text generation where the model must predict each next token without access to tokens it hasn't generated yet. Encoder-decoder models (e.g. the original Transformer for translation, T5) use a bidirectional encoder to build a full representation of an input sequence, then a causal decoder that generates an output sequence while also attending (via cross-attention) to the encoder's representations, which suits tasks with a clear separate 'input' and 'output' sequence like translation or summarization. Modern large language models overwhelmingly use decoder-only architectures because a single causal model can be prompted to handle translation, summarization, and virtually any other task as one sequence, avoiding the need for a separate architecture per task type.",
+      "professionalAnswer": "The real difference is what each position is allowed to attend to. Encoder-only, like BERT, uses full bidirectional attention -- every token sees every other token, past and future -- which is great for building a representation of a fixed input for classification or embeddings, but it's not set up to generate text one token at a time. Decoder-only, like GPT and basically every modern large language model, uses causal attention -- each position can only see itself and earlier positions, never later ones -- because that's exactly the constraint autoregressive generation needs: you can't let the model cheat by looking at the token it's supposed to be predicting. Encoder-decoder, like the original Transformer or T5, keeps both: a bidirectional encoder fully digests the input, and a causal decoder generates the output while cross-attending back into the encoder's representation, which maps naturally onto tasks with a distinct input and output, like translation. The reason decoder-only won out for general-purpose LLMs is flexibility -- one causal model, trained on a huge mix of text, can be prompted into translation, summarization, question answering, whatever, without needing a separate encoder-decoder setup per task.",
+      "example": "BERT (encoder-only, bidirectional) is used for sentence classification; GPT-style models (decoder-only, causal) are used for open-ended text generation; the original Transformer / T5 (encoder-decoder) are used for sequence-to-sequence tasks like translation.",
+      "commonMistakes": [
+        "Not explaining the attention-masking difference (bidirectional vs. causal) as the actual architectural distinction",
+        "Describing encoder-decoder models as simply 'bigger' rather than architecturally different in how attention flows",
+        "Not explaining why decoder-only became dominant for general-purpose LLMs specifically",
+        "Confusing cross-attention (encoder-decoder models attending from decoder to encoder) with self-attention"
+      ],
+      "keyPoints": [
+        "Encoder-only uses bidirectional attention; decoder-only uses causal (masked) attention; encoder-decoder uses both plus cross-attention",
+        "Encoder-only suits representation/classification tasks with no generation step",
+        "Decoder-only suits autoregressive generation and is what most modern LLMs use",
+        "Encoder-decoder suits tasks with a distinct input and output sequence, like translation",
+        "Decoder-only's flexibility (one model, many prompted tasks) drove its dominance for general-purpose LLMs"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the bidirectional vs. causal attention distinction", "weight": 35 },
+        { "criterion": "Correctly maps each architecture to appropriate task types", "weight": 30 },
+        { "criterion": "Explains cross-attention in encoder-decoder models", "weight": 15 },
+        { "criterion": "Explains why decoder-only dominates modern general-purpose LLMs", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-030",
+      "questionCode": "LTV-AMRA-BEG-030",
+      "title": "What Pooling Actually Does in a CNN Architecture",
+      "prompt": "Explain what a pooling layer does structurally in a CNN architecture, and why a network might use pooling instead of just stacking more convolutional layers.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["CNNs", "Architecture", "Deep Learning"],
+      "modelAnswer": "A pooling layer (most commonly max pooling or average pooling) downsamples its input spatially by summarizing each small local region (e.g. a 2x2 patch) into a single value -- the maximum or the average of that region -- reducing the spatial dimensions of the feature map (typically halving height and width for a 2x2 pool with stride 2) with no learnable parameters at all, unlike a convolutional layer. This serves two structural purposes: it reduces the computational cost and memory footprint of subsequent layers by shrinking the feature map they operate on, and it provides a degree of translation invariance, since a small shift in where a feature appears within the pooled region still produces the same max (or similar average) output, making the network somewhat robust to exact pixel-level position. Pooling differs from simply stacking more convolutional layers because convolution layers learn feature detectors but don't inherently reduce spatial resolution unless given a stride greater than 1; pooling is a cheap, parameter-free way to reduce resolution and build a hierarchy of increasingly coarse, increasingly abstract spatial features as the network gets deeper, which is architecturally distinct from simply learning more filters at the same resolution.",
+      "professionalAnswer": "Pooling takes a small local patch of the feature map -- say 2x2 -- and collapses it down to one number, either the max or the average of that patch, which shrinks the spatial size of the feature map going forward with zero learnable parameters involved. Two reasons you'd want that: it's cheap, since every later layer now operates on a smaller feature map, and it buys you a bit of translation invariance, because if the exact feature we care about shifts by a pixel within that patch, max pooling still outputs the same value. The reason you don't just stack more conv layers instead is that a plain convolution doesn't shrink spatial resolution on its own unless you explicitly give it a stride greater than 1 -- pooling is specifically a parameter-free resolution-reduction step, whereas conv layers are about learning what features to detect. In practice, modern architectures increasingly use strided convolutions instead of separate pooling layers to get the same downsampling effect while still having learnable parameters doing the work, but the conceptual role -- shrink resolution, build hierarchy -- is the same either way.",
+      "example": "A 2x2 max-pool with stride 2 on a 4x4 feature map of values [[1,3,2,4],[5,6,1,2],[7,8,0,3],[4,2,9,1]] outputs a 2x2 map [[6,4],[8,9]] -- the max of each non-overlapping 2x2 quadrant.",
+      "commonMistakes": [
+        "Describing pooling as having learnable parameters like a convolution",
+        "Not explaining the translation-invariance benefit of max pooling specifically",
+        "Confusing pooling's role (resolution reduction) with convolution's role (feature detection)",
+        "Not mentioning strided convolution as a modern alternative to explicit pooling layers"
+      ],
+      "keyPoints": [
+        "Pooling downsamples spatial resolution by summarizing local regions (max or average), with no learnable parameters",
+        "It reduces computational cost for subsequent layers by shrinking the feature map",
+        "It provides a degree of translation invariance within the pooled region",
+        "Convolution layers don't inherently reduce resolution unless given stride > 1; pooling is a separate, cheap mechanism for that",
+        "Strided convolutions are a modern, parameterized alternative that serves a similar downsampling role"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the pooling mechanism (max/average over local regions)", "weight": 30 },
+        { "criterion": "Explains the computational-cost reduction benefit", "weight": 20 },
+        { "criterion": "Explains the translation-invariance benefit", "weight": 25 },
+        { "criterion": "Correctly distinguishes pooling's role from convolution's role", "weight": 25 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-031",
+      "questionCode": "LTV-AMRA-BEG-031",
+      "title": "Why Multi-Head Attention Uses Several Smaller Attention Operations Instead of One Large One",
+      "prompt": "Explain structurally what multi-head attention does differently from single-head attention, and why splitting into multiple heads tends to produce better representations.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Transformers", "Multi-Head Attention", "Architecture"],
+      "modelAnswer": "Multi-head attention splits the embedding dimension into several smaller chunks (heads), and runs a completely independent scaled dot-product attention computation within each chunk using its own separately learned query, key, and value projection matrices, then concatenates all the heads' outputs back together and passes them through one final linear projection. A single large attention head, by contrast, has only one set of Q/K/V projections and can only learn one 'style' of relationship between tokens for the whole embedding dimension at once. Splitting into multiple heads lets the model learn several different relationship patterns in parallel -- for instance, one head might specialize in attending to the immediately preceding token (local syntactic structure), while another attends to a distant token sharing the same subject (long-range coreference), using the exact same total parameter budget as a single large head would have used. Empirically, this parallel specialization produces richer representations than a single attention operation of the same total size, because the model is not forced to compress every type of relevant relationship into one shared attention pattern.",
+      "professionalAnswer": "Mechanically, multi-head attention splits the embedding dimension into several smaller slices and runs a fully separate attention computation -- its own Q, K, V projections -- in each slice, then concatenates the outputs and applies one final linear layer. A single big attention head would use the full embedding dimension with just one set of Q/K/V projections, which means it only gets to learn one notion of 'what's relevant to what' across the whole representation. With multiple smaller heads, different heads are free to specialize -- one might end up tracking nearby tokens for local grammar, another might track a distant token that shares the same referent -- all using the same total parameter count you'd have spent on one big head. The empirical payoff is that forcing everything through one shared attention pattern tends to blur together relationships that are actually different in kind, whereas giving the model several independent, smaller attention computations lets it specialize without costing extra parameters.",
+      "example": "An 8-head attention layer with model dimension 512 splits into 8 heads of dimension 64 each, running 8 independent attention computations in parallel, then concatenating the 8 outputs of size 64 back into a 512-dimensional vector before the final linear projection.",
+      "commonMistakes": [
+        "Describing multi-head attention as simply 'running attention multiple times' without explaining the dimension-splitting mechanism",
+        "Not explaining that each head has its own independently learned Q/K/V projections",
+        "Assuming multi-head attention uses more total parameters than an equivalent single-head attention of the same model dimension",
+        "Not giving a concrete reason (specialization) for why multiple heads tend to perform better"
+      ],
+      "keyPoints": [
+        "Multi-head attention splits the embedding dimension into smaller chunks, one attention computation per chunk",
+        "Each head has its own independently learned Q/K/V projection matrices",
+        "Outputs from all heads are concatenated and passed through a final linear projection",
+        "Multiple heads allow specialization in different relationship types using the same total parameter budget",
+        "This specialization tends to produce richer representations than a single large attention head"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes the dimension-splitting mechanism", "weight": 30 },
+        { "criterion": "Explains that each head has independent Q/K/V projections", "weight": 25 },
+        { "criterion": "Explains the specialization benefit with a concrete example", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-032",
+      "questionCode": "LTV-AMRA-BEG-032",
+      "title": "Batch Normalization vs. Layer Normalization: What Each Actually Normalizes",
+      "prompt": "Explain the structural difference between what batch normalization and layer normalization each compute statistics over, and why transformers use layer norm rather than batch norm.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Normalization", "Architecture", "Deep Learning"],
+      "modelAnswer": "Batch normalization computes its mean and variance across the batch dimension for each feature channel independently, meaning it normalizes a given feature using statistics gathered from that same feature across every example in the current mini-batch. This makes batch norm's behavior dependent on batch composition and batch size -- small batches give noisy statistics, and it requires maintaining running statistics for use at inference time when a full batch isn't necessarily available. Layer normalization instead computes its mean and variance across the feature dimension for each individual example independently, meaning each example is normalized using only its own features, with no dependence on other examples in the batch at all. For transformers, which commonly process variable-length sequences and are often used with small batch sizes (especially during inference, sometimes a single example at a time), layer norm's independence from batch size and other examples makes it far more stable and consistent between training and inference than batch norm would be, which is the primary architectural reason transformers adopted layer norm rather than batch norm.",
+      "professionalAnswer": "The difference is literally what axis you're computing statistics over. Batch norm normalizes a feature using the mean and variance of that same feature across every example in the current batch -- so its behavior depends on what else happens to be in your batch, and it needs running averages tracked separately for inference, since you might not have a full batch there. Layer norm normalizes across the feature dimension within a single example, completely independent of whatever else is in the batch. For transformers, that independence is exactly what you want: you're often dealing with variable-length sequences and sometimes running inference one sequence at a time, and you don't want your normalization behavior to depend on batch composition or size, or to behave differently between training and inference the way batch norm's running statistics can. That mismatch between batch norm's batch-dependence and how transformers are actually used in practice is the real reason layer norm became the standard here, not just convention.",
+      "example": "For a batch of shape (batch=32, seq_len=10, features=512): batch norm would compute statistics across the 32 examples for each of the 512 features independently; layer norm computes statistics across the 512 features for each individual (batch, seq_len) position independently.",
+      "commonMistakes": [
+        "Not identifying the correct axis each normalization computes statistics over",
+        "Not explaining why batch-size dependence is specifically a problem for transformers",
+        "Forgetting that batch norm requires running statistics for inference, which layer norm does not",
+        "Assuming the choice between batch norm and layer norm is arbitrary convention rather than tied to a real architectural mismatch"
+      ],
+      "keyPoints": [
+        "Batch norm normalizes each feature using statistics across the batch dimension",
+        "Layer norm normalizes each example using statistics across its own feature dimension",
+        "Batch norm's behavior depends on batch size/composition and needs running statistics for inference",
+        "Layer norm is independent of batch size and other examples, which suits transformers' variable-length, often small-batch usage",
+        "This batch-independence is the primary reason transformers use layer norm rather than batch norm"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes the axis difference between batch norm and layer norm", "weight": 35 },
+        { "criterion": "Explains batch norm's batch-size/composition dependence", "weight": 25 },
+        { "criterion": "Explains why this dependence is problematic for transformers specifically", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-033",
+      "questionCode": "LTV-AMRA-BEG-033",
+      "title": "The Basic Structure of an Actor-Critic Architecture",
+      "prompt": "Explain the architectural idea behind actor-critic methods -- what the 'actor' and 'critic' each are structurally, and why using both together tends to work better than a pure policy-gradient (actor-only) method.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Reinforcement Learning", "Actor-Critic", "Architecture"],
+      "modelAnswer": "An actor-critic architecture consists of two functional components, which can be implemented as two entirely separate networks or as one shared network body with two output heads: the actor is a policy network that maps states to a distribution over actions (the thing actually making decisions), and the critic is a value network that estimates the expected return (value) of a given state, used purely to evaluate how good the actor's decisions are turning out to be, not to make decisions itself. A pure actor-only (policy-gradient/REINFORCE-style) method estimates how good an action was using the actual observed cumulative return from that point onward, which is a very high-variance estimate since a single trajectory's return is noisy due to all the randomness in what happens afterward. The critic reduces this variance by providing a learned baseline (an estimate of expected value) to subtract from the observed return, so the actor's gradient update is driven by how much better or worse an action did relative to the critic's expectation, rather than the raw noisy return itself -- this is the core reason actor-critic methods tend to train with lower variance and more stably than pure policy-gradient methods.",
+      "professionalAnswer": "Structurally, there are two pieces: the actor is the policy network that actually picks actions by mapping states to an action distribution, and the critic is a separate value network -- or a separate head on a shared network -- that estimates how much return to expect from a given state, purely to grade how the actor is doing. The critic never picks actions itself; its whole job is evaluation. The reason this combination beats a pure policy-gradient method comes down to variance: REINFORCE-style methods estimate how good an action was using the full observed return from that point on, which is extremely noisy because everything that happens afterward in the trajectory is random. The critic gives you a learned baseline -- an expected value estimate -- so instead of using the raw noisy return, you use the difference between what actually happened and what the critic expected, which is a much lower-variance signal and leads to noticeably more stable training in practice.",
+      "example": "A shared-body actor-critic network takes a state, runs it through shared layers, then branches into two heads: a policy head outputting action probabilities, and a value head outputting a single scalar value estimate -- both trained jointly, with the value head's error feeding a baseline into the policy head's gradient update.",
+      "commonMistakes": [
+        "Describing the critic as making decisions rather than purely evaluating the actor's decisions",
+        "Not explaining the variance-reduction reasoning for why actor-critic beats pure policy gradient",
+        "Confusing the critic's value estimate with the actor's action probabilities",
+        "Not mentioning that actor and critic can share a network body with separate heads, not just be two fully separate networks"
+      ],
+      "keyPoints": [
+        "The actor is a policy network mapping states to an action distribution",
+        "The critic is a value network estimating expected return, used only to evaluate, not to act",
+        "Pure policy-gradient methods use noisy, high-variance raw returns to estimate action quality",
+        "The critic provides a learned baseline, reducing the variance of the actor's gradient updates",
+        "Actor and critic can be separate networks or a shared body with two output heads"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes the actor and critic's distinct roles", "weight": 30 },
+        { "criterion": "Explains the variance problem with pure policy-gradient methods", "weight": 30 },
+        { "criterion": "Explains how the critic's baseline reduces variance", "weight": 30 },
+        { "criterion": "Clear and accurate overall", "weight": 10 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-034",
+      "questionCode": "LTV-AMRA-BEG-034",
+      "title": "The High-Level Structure of an RLHF Pipeline",
+      "prompt": "Describe the three main stages of a standard RLHF pipeline for aligning a language model, at an architectural/pipeline level (what model exists at each stage, and what feeds into the next stage).",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["RLHF", "Architecture", "Alignment"],
+      "modelAnswer": "A standard RLHF pipeline has three stages, each producing an artifact the next stage consumes. First, a pretrained base language model is supervised-fine-tuned (SFT) on a dataset of high-quality demonstration examples (instruction-response pairs written or curated by humans), producing an SFT model that behaves more like a helpful assistant than a raw next-token predictor. Second, that SFT model (or a similar model) is used to generate multiple candidate responses to a range of prompts, human annotators rank or compare these candidates by preference, and this preference data is used to train a separate reward model -- typically initialized from the SFT model's weights but with a scalar output head -- to predict a score reflecting human preference. Third, the SFT model is further fine-tuned using reinforcement learning (typically PPO), where the reward model from stage two provides the reward signal for each generated response, and a KL-divergence penalty against the original SFT model's output distribution is added to the objective to prevent the policy from drifting too far from reasonable, fluent language in pursuit of reward. The end artifact is a policy model that has been shaped first by imitation (SFT) and then by optimization against a learned proxy for human preference (RL against the reward model).",
+      "professionalAnswer": "I'd walk through it as three stages that each feed the next. Stage one is supervised fine-tuning: take a pretrained base model and fine-tune it on a curated set of good instruction-response examples, which gets you a model that at least behaves like an assistant instead of a raw autocomplete engine. Stage two is reward modeling: you take that SFT model, generate several candidate responses per prompt, have humans rank which ones they prefer, and train a separate reward model -- usually starting from the same SFT weights but with a scalar output instead of a vocabulary-sized output -- to predict that preference. Stage three is the actual RL step: you fine-tune the SFT model further using PPO, where the reward model from stage two scores each response the policy generates, and critically, you add a KL penalty against the original SFT model so the policy doesn't drift into generating weird, high-reward-but-incoherent text just to exploit the reward model. Each stage's output is literally the next stage's starting point or scoring mechanism -- SFT model feeds reward model training and becomes the RL starting policy, and the reward model feeds the RL reward signal.",
+      "example": "Pipeline flow: base pretrained model --SFT on demonstrations--> SFT model --generates candidates, humans rank--> preference data --trains--> reward model; then SFT model --PPO against reward model + KL penalty to SFT model--> final RLHF policy.",
+      "commonMistakes": [
+        "Skipping the SFT stage and describing RLHF as starting RL directly from the pretrained base model",
+        "Not explaining that the reward model is trained on human preference comparisons, not direct scores",
+        "Forgetting the KL penalty against the reference (SFT) policy during the RL stage",
+        "Not correctly identifying which model's output feeds into the next stage"
+      ],
+      "keyPoints": [
+        "Stage 1 (SFT): fine-tune the base model on curated demonstration examples",
+        "Stage 2 (reward modeling): train a reward model on human preference comparisons of SFT-model outputs",
+        "Stage 3 (RL): fine-tune the SFT model with PPO using the reward model's score, plus a KL penalty to the SFT reference policy",
+        "Each stage's model/data output becomes the next stage's input"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly describes all three stages in the right order", "weight": 35 },
+        { "criterion": "Correctly explains what feeds into what between stages", "weight": 30 },
+        { "criterion": "Mentions the KL penalty's role in the RL stage", "weight": 20 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 8,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-035",
+      "questionCode": "LTV-AMRA-BEG-035",
+      "title": "What a Model Card Is Structured to Communicate",
+      "prompt": "Explain what a model card is and why it's structured into the specific sections it typically has (intended use, training data, evaluation results, limitations), rather than being a single free-text description.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Model Cards", "Documentation", "Responsible AI"],
+      "modelAnswer": "A model card is a structured document released alongside a model that communicates what the model is, how it was built, how it performs, and what its known limitations and risks are, aimed at anyone deciding whether and how to use the model responsibly -- downstream developers, researchers, auditors, or deployers. Its sections are deliberately separated rather than free-text because each section answers a structurally different question that a reader needs to be able to find independently: 'intended use and out-of-scope use' tells a potential user whether their use case is appropriate at all; 'training data' tells them what the model has and hasn't seen, which bears directly on where it's likely to fail or exhibit bias; 'evaluation results' gives concrete, checkable performance numbers on specific benchmarks rather than a vague performance claim; and 'limitations and known risks' explicitly documents failure modes the developers are aware of, which is the section most directly relevant to responsible deployment decisions. Structuring this as discrete sections, rather than one narrative description, makes the information scannable and comparable across different models' cards, and makes it much harder for a developer to miss a specific category of important information (like limitations) that might get buried in free-text prose.",
+      "professionalAnswer": "A model card exists to answer a specific set of questions someone deciding whether to use a model actually needs answered, and it's split into sections because those are genuinely different questions that shouldn't get blended together in a paragraph. 'Intended use' tells you whether your use case is even appropriate. 'Training data' tells you what the model has and hasn't seen, which is often the first place to look when a model behaves unexpectedly on some input. 'Evaluation results' gives you actual numbers on specific benchmarks instead of a marketing-style performance claim. And 'limitations' is the section that exists specifically so known failure modes and risks don't get lost -- if that information were buried somewhere in a free-text writeup, people deploying the model downstream would be far more likely to miss it. Having a standard structure also means you can actually compare two different models' cards side by side on the same dimensions, which you can't easily do with two different unstructured descriptions written by two different teams.",
+      "example": "A model card's 'Limitations' section might state that a model's training data skews heavily toward English-language text, so performance on other languages is meaningfully worse and hasn't been rigorously evaluated -- information that's easy to miss in free-text prose but immediately visible as its own labeled section.",
+      "commonMistakes": [
+        "Describing a model card as just marketing material rather than a structured responsible-use document",
+        "Not explaining why separating into sections matters versus a single narrative description",
+        "Treating the 'limitations' section as optional or secondary rather than central to the document's purpose",
+        "Not connecting training data documentation to its practical use in diagnosing failure modes"
+      ],
+      "keyPoints": [
+        "A model card communicates what a model is, how it performs, and its known limitations for anyone deciding how to use it",
+        "Sections are separated because each answers a structurally different question (appropriateness, data, performance, risk)",
+        "Structured sections make information scannable, comparable across models, and harder to accidentally omit",
+        "The limitations/risks section is central to responsible deployment decisions, not an afterthought"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the purpose of a model card", "weight": 25 },
+        { "criterion": "Correctly explains why the sections are structured separately rather than as free text", "weight": 35 },
+        { "criterion": "Identifies the practical importance of the limitations section specifically", "weight": 25 },
+        { "criterion": "Clear and accurate overall", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-036",
+      "questionCode": "LTV-AMRA-BEG-036",
+      "title": "Knowing When to Ask for Help on a Stuck Bug",
+      "prompt": "You've been stuck for two days on a training run that silently produces worse results than a baseline, with no error messages to go on. Walk me through how you'd decide when to keep debugging solo versus asking your mentor for help, and how you'd frame that ask.",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Collaboration", "Debugging", "Communication"],
+      "modelAnswer": "A strong answer sets a concrete checkpoint for escalation rather than letting 'stuck' drag on indefinitely -- for example, deciding in advance that after exhausting a specific list of hypotheses (data pipeline, loss function, hyperparameters, a sanity-check overfit-on-one-batch test) without resolution, it's time to ask for help rather than continuing to flail. The candidate should describe doing the groundwork first: running the standard sanity checks (can the model overfit a tiny subset, are labels aligned, is the loss computed correctly) and documenting exactly what's been tried and ruled out, so that when they do ask for help, they can present a clear, specific summary rather than 'it's not working, can you look.' This respects the mentor's time and usually gets a much more useful response, since the mentor can reason about what's already eliminated instead of re-deriving the whole debugging process from scratch. The answer should also show self-awareness that asking early with a well-documented problem is a sign of good judgment, not failure, which is a mindset that matters a lot in a research environment where debugging opaque silent failures is routine.",
+      "professionalAnswer": "I'd set myself a rough checkpoint going in -- say, I have a list of the usual suspects (data pipeline, loss computation, a batch-overfit sanity check, hyperparameters) and I'll work through that list systematically. If I get through that whole list without resolving it, that's my signal to ask for help rather than just keep poking at it indefinitely. Before I actually ask, I'd make sure I can describe exactly what I've ruled out and what I've observed -- not 'it's not working,' but 'here's the baseline, here's what's different, I've confirmed the data pipeline is producing correct batches, I've confirmed the loss computation matches the baseline, and the model can overfit a single batch fine, so the bug seems to be somewhere in training dynamics at scale.' That kind of specific ask respects my mentor's time and usually gets a much faster, more useful answer than a vague 'can you take a look.' And honestly, I think asking for help after doing that groundwork is exactly the right call, not something to feel bad about -- a lot of real research debugging is silent and opaque, and knowing when you've exhausted your own toolkit is part of the job.",
+      "example": "A documented ask might look like: 'Baseline gets 85% val accuracy, my run gets 79% with identical config except the new data augmentation. I've confirmed augmented batches look visually correct, loss curves track normally, and the model overfits a 10-example batch to near-zero loss, so it's not a basic pipeline bug -- I suspect something subtler in how augmentation interacts with batch norm statistics.'",
+      "commonMistakes": [
+        "Debugging indefinitely without a concrete escalation point, letting the problem drag on far too long",
+        "Asking for help too early, before doing basic sanity checks that would have resolved it quickly",
+        "Asking vaguely ('it's not working') instead of presenting what's been ruled out",
+        "Treating asking for help as a sign of failure rather than good judgment"
+      ],
+      "keyPoints": [
+        "Sets a concrete, reasoned checkpoint for escalation rather than debugging indefinitely",
+        "Runs standard sanity checks (overfit test, data/label verification) before escalating",
+        "Documents and presents what's been ruled out specifically when asking for help",
+        "Recognizes that a well-prepared, timely ask is good judgment, not a failure"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Describes a concrete, reasoned process before deciding to escalate", "weight": 30 },
+        { "criterion": "Mentions standard sanity checks run before asking for help", "weight": 25 },
+        { "criterion": "Describes framing a specific, well-documented ask rather than a vague one", "weight": 30 },
+        { "criterion": "Shows appropriate judgment/mindset about asking for help", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-037",
+      "questionCode": "LTV-AMRA-BEG-037",
+      "title": "Reporting a Negative Result Honestly",
+      "prompt": "You spent two weeks testing a hypothesis that a particular architectural change would improve model performance. The results show no improvement, within noise. How do you report this to your team?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Research Communication", "Integrity", "Reporting"],
+      "modelAnswer": "A strong answer reports the negative result as clearly and completely as a positive one would be reported, resisting any temptation to cherry-pick a subset of runs or metrics that happen to look slightly favorable, or to bury the null result in vague language. The report should include the actual numbers, the experimental setup, how many runs/seeds were used to establish that the difference is within noise (since a single run showing no improvement is weaker evidence than several seeds consistently showing no improvement), and an honest assessment of what was learned -- a negative result still rules out a hypothesis and is useful information for the team, preventing someone else from spending time on the same idea later. The candidate should also reflect on what, if anything, they would try differently (a different implementation, a different scale, a different metric) rather than simply concluding 'this doesn't work' without considering whether the experiment itself had a limitation. Framing the two weeks as producing a genuine, documented answer rather than 'wasted time' reflects the correct research mindset.",
+      "professionalAnswer": "I'd report it exactly as thoroughly as I would a positive result -- actual numbers, how many seeds I ran to be confident the difference really is within noise and not just one unlucky run, and the full setup so anyone could reproduce it. I wouldn't go hunting for some metric or subset of the data where it happens to look slightly better just to make the result feel more positive -- that's not honest, and it wastes someone else's time later if they build on a cherry-picked finding. I'd frame it as: here's what we learned, this specific hypothesis doesn't hold up under this implementation at this scale, and here's what I'd check next if we wanted to pursue a variant of the idea -- maybe a different implementation detail, or testing it at a different scale, rather than assuming the whole direction is dead from one experiment. I genuinely don't think of this as two wasted weeks -- it's a documented answer to a real question, and it stops someone else from re-running the same experiment six months from now.",
+      "example": "A clean negative-result report: 'Tested architectural change X across 3 seeds; mean improvement 0.1% ± 0.4% (not significant). Setup: [config]. Conclusion: no measurable benefit at this scale with this implementation; worth revisiting only if [specific condition] changes.'",
+      "commonMistakes": [
+        "Cherry-picking a favorable metric or subset of runs to make the result seem more positive",
+        "Burying the null result in vague or hedging language instead of stating it plainly",
+        "Reporting only a single run instead of multiple seeds to establish the result is genuinely within noise",
+        "Framing the time spent as wasted rather than as a useful, documented answer"
+      ],
+      "keyPoints": [
+        "Reports negative results with the same rigor and completeness as positive ones",
+        "Uses multiple seeds/runs to establish the result is genuinely within noise, not a fluke",
+        "Avoids cherry-picking favorable metrics to soften the negative result",
+        "Frames the result as a useful, documented answer that prevents duplicated effort"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Commits to honest, complete reporting without cherry-picking", "weight": 35 },
+        { "criterion": "Mentions using multiple seeds/runs to validate the null result", "weight": 25 },
+        { "criterion": "Frames the negative result as useful information, not wasted effort", "weight": 25 },
+        { "criterion": "Clear and professional communication approach", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-038",
+      "questionCode": "LTV-AMRA-BEG-038",
+      "title": "Spotting a Flaw in a Research Scientist's Requested Quick Experiment",
+      "prompt": "A research scientist on your team asks you to quickly run an experiment to test an idea, but as you set it up, you notice the proposed evaluation metric wouldn't actually distinguish between the hypothesis being tested and a simpler, more boring explanation. How do you handle this?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Collaboration", "Research Rigor", "Communication"],
+      "modelAnswer": "A strong answer raises the concern directly and promptly, before running the experiment as specified, rather than either silently running it as asked (wasting effort on a result that won't answer the real question) or silently changing the experiment design without checking in (which could miss context the scientist has that the engineer doesn't). The candidate should frame the concern collaboratively and specifically -- not 'this is wrong' but something like 'I noticed metric X wouldn't distinguish hypothesis A from simpler explanation B, should we add a control that isolates which one is actually happening' -- which respects that the scientist may have already considered this and have a reason, while still surfacing a genuine methodological gap. This reflects a core research-engineering skill: engineers are often the ones actually building the experiment and are well-positioned to catch confounds or flawed metrics before compute and time are spent, and good research teams expect and rely on this kind of pushback rather than treating it as overstepping.",
+      "professionalAnswer": "I'd raise it before running anything, not after, and I'd frame it as a question rather than a correction, since the scientist might have already thought about this and have a reason I'm not seeing: something like, 'I want to make sure I'm setting this up right -- metric X looks like it wouldn't actually distinguish your hypothesis from [the simpler explanation]. Should we add a control condition that isolates which one is really driving the result, or am I missing something about why that doesn't matter here?' I think this is exactly the kind of thing a research engineer is well positioned to catch, because I'm the one actually building the experiment and staring at the metric and setup in detail, in a way the scientist might not be at this exact stage. I'd rather spend two minutes raising it now than run a 'quick' experiment that produces a result nobody can actually interpret, which wastes everyone's time more than a short clarifying conversation does.",
+      "example": "If testing whether a new sampling strategy improves diversity using only average pairwise similarity as the metric, that metric wouldn't distinguish 'more diverse outputs' from 'simply lower-quality, noisier outputs' -- flagging this and proposing an added quality-control metric before running the full experiment avoids an uninterpretable result.",
+      "commonMistakes": [
+        "Silently running the experiment as specified despite noticing the flaw, to avoid seeming difficult",
+        "Silently redesigning the experiment without flagging the change to the scientist first",
+        "Framing the concern as a correction rather than a collaborative question",
+        "Not proposing a concrete fix (like an added control) alongside raising the concern"
+      ],
+      "keyPoints": [
+        "Raises the methodological concern before running the experiment, not after",
+        "Frames the concern as a collaborative question, not an accusation of being wrong",
+        "Proposes a concrete fix (e.g. an added control) alongside the concern",
+        "Recognizes this kind of catch is a core, expected part of the research-engineer role"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Raises the concern proactively before running the flawed experiment", "weight": 30 },
+        { "criterion": "Frames the concern collaboratively and specifically", "weight": 30 },
+        { "criterion": "Proposes a concrete methodological fix", "weight": 25 },
+        { "criterion": "Shows understanding of the engineer's role in catching this kind of flaw", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-039",
+      "questionCode": "LTV-AMRA-BEG-039",
+      "title": "Disclosing That a Seed Didn't Actually Guarantee Reproducibility",
+      "prompt": "After reporting a result as reproducible because you set a random seed, you later discover the seed only covered part of the randomness sources and your 'reproducible' result actually varied across reruns more than you realized. How do you handle disclosing this?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Integrity", "Reproducibility", "Communication"],
+      "modelAnswer": "A strong answer discloses this proactively and promptly to whoever relied on the original claim, rather than hoping it goes unnoticed or quietly fixing it going forward without correcting the earlier claim. The disclosure should be specific and factual: what was actually seeded, what wasn't, how much the result actually varies across proper reruns now that it's measured correctly, and whether this changes the conclusion that was drawn from the original result (it might not, if the variance turns out to be small relative to the effect being studied, or it might, if the effect was within the range of this unaccounted-for variance). The candidate should also describe the concrete fix going forward -- seeding every relevant randomness source and verifying reproducibility explicitly rather than assuming a single torch.manual_seed() call was sufficient -- and treat this as a normal, correctable part of rigorous research practice rather than something to be defensive about, since catching and correcting this kind of gap is exactly what good research hygiene looks like in practice.",
+      "professionalAnswer": "I'd flag it to whoever I originally reported the result to as soon as I realized it, rather than sitting on it. I'd be specific: here's what I actually seeded, here's what I missed, here's what the real variance looks like now that I've measured it properly across several runs, and here's whether that changes our original conclusion or not. Sometimes it won't -- if the effect we're reporting is much bigger than the unaccounted-for variance, the conclusion probably still holds, but I'd say that explicitly rather than just asserting it. And I'd fix the actual reproducibility setup going forward -- seed everything properly and actually verify reproducibility with a rerun, not just assume one seed call covers it. I don't think there's anything to be defensive about here; catching a reproducibility gap and correcting it transparently is exactly what's supposed to happen, and it's a much better outcome than someone else building on a result that turns out to be less solid than reported.",
+      "example": "Original report: 'Result X holds reproducibly (seed=42).' Correction: 'Follow-up: seed=42 only covered torch's CPU RNG, not DataLoader worker randomness. Across 5 properly-seeded reruns, result X varies by ±1.2%, which is [within/outside] the effect size we reported -- conclusion [still holds/needs revisiting].'",
+      "commonMistakes": [
+        "Delaying or avoiding disclosure, hoping the gap goes unnoticed",
+        "Disclosing vaguely without specifying what was actually seeded versus missed",
+        "Not re-measuring actual variance after the fix to state whether the original conclusion still holds",
+        "Treating the disclosure defensively instead of as normal, expected research correction"
+      ],
+      "keyPoints": [
+        "Discloses proactively and promptly to whoever relied on the original claim",
+        "Specifies exactly what was and wasn't seeded",
+        "Re-measures actual variance and states explicitly whether the original conclusion still holds",
+        "Treats this as normal, correctable research hygiene rather than a personal failure"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Commits to prompt, proactive disclosure", "weight": 35 },
+        { "criterion": "Provides specific, factual detail about what was missed and re-measured", "weight": 30 },
+        { "criterion": "Addresses whether the original conclusion still holds", "weight": 20 },
+        { "criterion": "Shows an appropriately non-defensive, correction-oriented mindset", "weight": 15 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-040",
+      "questionCode": "LTV-AMRA-BEG-040",
+      "title": "Communicating That a Paper's Result Didn't Reproduce",
+      "prompt": "You were asked to reproduce a result from a published paper as a starting point for a project, but after careful implementation, your numbers consistently fall well short of what the paper reports. How do you communicate this to your team?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Research Communication", "Reproducibility", "Paper Reproduction"],
+      "modelAnswer": "A strong answer avoids two extremes: concluding the paper is simply wrong or fraudulent, and silently assuming the gap must be entirely the candidate's own error without a documented investigation. Instead, the candidate should present a careful, specific account of the gap: what was implemented exactly as described, what details the paper left ambiguous or underspecified (a very common, mundane reason for reproduction gaps -- missing hyperparameters, unclear data preprocessing, undisclosed tricks), what was tried to close the gap, and the current best numbers achieved. The report to the team should distinguish between 'I haven't found the issue yet, here's what I've ruled out' and 'I believe there's a specific discrepancy at X,' since these call for different next steps (continue debugging vs. escalate/consider alternate baselines). The candidate should also mention checking for existing public reproduction attempts or issues/discussions about the same paper, since reproduction gaps are common enough in the field that this is often already a documented, known issue rather than something only they are encountering.",
+      "professionalAnswer": "I wouldn't jump to 'the paper is wrong' and I wouldn't silently assume it's entirely my mistake either -- I'd lay out specifically what I did, what's ambiguous in the paper (missing hyperparameters, unclear preprocessing steps, tricks that get mentioned in passing but not fully specified are extremely common reasons for a reproduction gap), and what I've already tried to close the gap. I'd be clear about where I actually am: 'here's what I've ruled out, I haven't found the discrepancy yet' is a very different message than 'I'm fairly confident the gap comes from X,' and the team needs to know which one it actually is to decide what to do next. I'd also check whether anyone else has publicly tried to reproduce this -- a lot of papers have known reproduction gaps documented in GitHub issues or follow-up work, and it would be a waste of time to rediscover a known gap from scratch without checking first. Then I'd present the actual numbers I did get, honestly, as the real current baseline for the project rather than quietly hoping to close the gap before anyone asks.",
+      "example": "A report might read: 'Paper reports 91.2% on benchmark X; my implementation gets 84.5% after 3 attempts. Ambiguities found: paper doesn't specify warmup schedule or exact data split. Checked: no public issue threads found on this specific gap. Current status: treating 84.5% as our working baseline pending further investigation.'",
+      "commonMistakes": [
+        "Concluding the paper is simply wrong without a careful, documented investigation first",
+        "Assuming the gap is entirely personal error without identifying specific ambiguities in the paper",
+        "Not distinguishing between 'haven't found the issue yet' and 'believe I've found a specific discrepancy'",
+        "Not checking for existing public reproduction attempts or known issues with the paper"
+      ],
+      "keyPoints": [
+        "Avoids concluding the paper is wrong or that the gap is entirely personal error without investigation",
+        "Identifies specific ambiguities in the paper that commonly explain reproduction gaps",
+        "Clearly distinguishes current confidence level (unresolved vs. identified discrepancy)",
+        "Checks for existing public reproduction attempts before escalating as a novel issue"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Avoids premature conclusions about the paper being wrong or the gap being pure personal error", "weight": 25 },
+        { "criterion": "Identifies realistic, specific reasons for reproduction gaps", "weight": 30 },
+        { "criterion": "Clearly communicates current confidence/status to the team", "weight": 25 },
+        { "criterion": "Mentions checking for existing public reproduction attempts", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-041",
+      "questionCode": "LTV-AMRA-BEG-041",
+      "title": "Receiving Tough Code Review Feedback on Research Code for the First Time",
+      "prompt": "This is your first research engineering role, and a senior reviewer leaves extensive, blunt feedback on your first pull request -- more critical than you expected given your prior (production code) experience. How do you respond?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Code Review", "Research Culture", "Growth Mindset"],
+      "modelAnswer": "A strong answer treats the feedback as information about norms the candidate hasn't yet internalized, rather than as a personal judgment, and responds by actually engaging with each point rather than either becoming defensive or simply acquiescing without understanding. The candidate should describe reading through the feedback carefully, asking clarifying questions on points that aren't fully understood (research code norms -- e.g. around config management, experiment reproducibility, or how much defensive error-handling is appropriate -- genuinely differ from production code norms, and a newcomer from a production background may not know this yet), and incorporating the feedback into the current PR rather than treating it as a one-time hurdle to get past. The answer should show self-awareness that blunt, thorough code review feedback early on is often a sign the reviewer is taking the candidate's onboarding seriously, not a sign of being disliked or judged harshly, and that research teams often do have different code quality norms (e.g. prioritizing speed of iteration and reproducibility over production-grade robustness) that take time to learn.",
+      "professionalAnswer": "I'd take it as information, not an attack -- the fact that someone senior spent real time writing detailed feedback on my first PR usually means they're actually invested in getting me up to speed quickly, not that they think poorly of me. I'd go through it point by point and for anything I don't fully understand -- especially where research code norms differ from the production code norms I'm used to, like how config and experiment tracking get handled, or how much defensive error-handling is actually expected versus overkill here -- I'd ask directly rather than guessing or just nodding along. I'd actually incorporate the feedback into this same PR rather than treating review as a one-time gate to get past, since the whole point is learning the norms, not just getting this specific PR merged. And I'd try not to read tone into blunt, thorough feedback that isn't actually there -- a long list of specific comments is usually a good sign someone cared enough to engage seriously with the code, which is honestly more useful early on than a quick approve with no comments.",
+      "example": "A review comment like 'this hardcodes the learning rate instead of reading from the experiment config -- every hyperparameter needs to be config-driven so runs are reproducible from the config file alone' reflects a real research-specific norm (config-driven reproducibility) that production code conventions might not have emphasized the same way.",
+      "commonMistakes": [
+        "Becoming defensive or taking blunt feedback as a personal judgment rather than information",
+        "Silently acquiescing to feedback without understanding the underlying reasoning or norm",
+        "Not asking clarifying questions on points that are genuinely unclear",
+        "Assuming production code norms transfer directly to research code without checking"
+      ],
+      "keyPoints": [
+        "Treats detailed, blunt feedback as investment in onboarding, not personal judgment",
+        "Asks clarifying questions on unfamiliar research-specific norms rather than guessing",
+        "Actually incorporates feedback into the current PR rather than just getting past review",
+        "Recognizes that research code and production code norms genuinely differ and takes time to learn"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows a non-defensive, growth-oriented response to critical feedback", "weight": 30 },
+        { "criterion": "Describes asking clarifying questions on unfamiliar points", "weight": 25 },
+        { "criterion": "Describes actually incorporating the feedback, not just acknowledging it", "weight": 25 },
+        { "criterion": "Shows awareness that research and production code norms differ", "weight": 20 }
+      ],
+      "estimatedMinutes": 6,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-042",
+      "questionCode": "LTV-AMRA-BEG-042",
+      "title": "Admitting You Don't Understand a Core Concept Mid-Discussion",
+      "prompt": "In a team meeting, a senior researcher casually references a concept (say, the KL penalty in RLHF) assuming everyone already understands it well, but you realize you don't actually understand it as deeply as you've been assuming. What do you do in the moment?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Communication", "Growth Mindset", "Team Culture"],
+      "modelAnswer": "A strong answer describes asking the clarifying question in the moment, framed specifically rather than vaguely, rather than nodding along and trying to reverse-engineer understanding later from context clues (which risks building on a flawed mental model for longer, and risks making a decision or contributing an idea that's wrong because of the gap). The candidate should recognize that in a genuinely good research environment, admitting a specific gap in understanding is rarely received as a competence problem -- most people in the room have gaps of their own on other topics, and a team that punishes honest clarifying questions ends up with people silently nodding through things they don't understand, which is far worse for the team's actual output than someone asking a direct, well-framed question. The answer should also show that the candidate would follow up afterward (reading more on their own, or asking a more detailed one-on-one question later) rather than treating a single clarifying question as resolving the full depth of understanding needed.",
+      "professionalAnswer": "I'd just ask, in the moment, but I'd frame it specifically rather than vaguely -- something like 'can you remind me exactly what the KL penalty is doing there, I want to make sure I'm not missing something,' rather than a vague 'I don't get it' that doesn't give anyone a useful starting point to explain from. I don't think there's much upside to nodding along and hoping to reverse-engineer it from context later -- that just means I'm potentially building on a wrong mental model for longer, and if I end up contributing an idea in that meeting, it might be wrong specifically because of that gap. Honestly, in my experience, most people in a room have gaps on at least something being discussed, and a team where people feel safe asking a direct, specific clarifying question usually produces better discussions than one where everyone's quietly nodding through things they don't fully understand. I'd also follow up afterward if the in-meeting answer only partially closed the gap -- reading more on my own or asking a more detailed question one-on-one later, rather than treating the quick answer as the end of it.",
+      "example": "A specific, well-framed in-the-moment question: 'Quick check -- is the KL penalty there to keep the policy close to the SFT reference distribution so it doesn't drift into reward-hacking the reward model, or is it doing something else I'm not accounting for?' gives the room something concrete to correct or confirm, rather than a vague 'I'm lost.'",
+      "commonMistakes": [
+        "Nodding along and trying to reverse-engineer understanding from context instead of asking",
+        "Asking a vague question that doesn't give others a useful starting point to explain from",
+        "Treating a single clarifying question as fully resolving the understanding gap without following up later",
+        "Assuming admitting a gap will be read as a competence problem by a reasonable team"
+      ],
+      "keyPoints": [
+        "Asks a specific, well-framed clarifying question in the moment rather than nodding along",
+        "Recognizes the risk of silently building on a flawed mental model if the gap isn't addressed",
+        "Understands that honest clarifying questions are normal and expected on a healthy research team",
+        "Follows up afterward if needed rather than treating one answer as fully resolving the gap"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Commits to asking in the moment rather than silently nodding along", "weight": 30 },
+        { "criterion": "Frames the question specifically rather than vaguely", "weight": 25 },
+        { "criterion": "Shows understanding that this is normal, healthy team behavior", "weight": 25 },
+        { "criterion": "Mentions following up further if needed", "weight": 20 }
+      ],
+      "estimatedMinutes": 5,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "amra-beg-043",
+      "questionCode": "LTV-AMRA-BEG-043",
+      "title": "Balancing Fast Iteration Against Rigor as a Junior Research Engineer",
+      "prompt": "Your team values fast experimental iteration, but you're worried that moving quickly means you're cutting corners on things like proper baselines, multiple seeds, and careful ablations. As a junior team member, how do you navigate this tension?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Research Rigor", "Prioritization", "Team Culture"],
+      "modelAnswer": "A strong answer avoids treating this as an all-or-nothing choice and instead describes calibrating rigor to the stakes and stage of a given experiment -- an early, cheap, exploratory run to see if an idea has any signal at all can reasonably skip multiple seeds and a full ablation suite, but a result that's about to inform a real decision (whether to scale an approach up, whether to report a finding to the broader team) needs the fuller rigor (baselines, multiple seeds, controls) before being treated as reliable. The candidate should describe being explicit about which stage a given result is at, rather than letting a quick exploratory finding silently get treated as a validated conclusion just because it looked promising and nobody re-ran it properly. As a junior team member specifically, the candidate should also describe asking rather than assuming when unsure where a given experiment falls on that spectrum -- checking with a more senior teammate whether a particular result needs the full rigor treatment before it's shared more broadly, rather than independently deciding either to always over-invest in rigor (slowing the team down unnecessarily on cheap exploratory work) or to always under-invest (letting unreliable findings propagate).",
+      "professionalAnswer": "I don't think this is really an either/or -- the rigor level should match what the result is actually being used for. If I'm just trying to see whether an idea has any signal at all before committing real time to it, a single quick run without a full ablation suite is a completely reasonable way to spend an afternoon. But if that result is about to inform something bigger -- deciding to scale an approach up, or reporting a finding more broadly to the team -- that's exactly the point where I'd insist on the fuller treatment: a real baseline, multiple seeds, and whatever controls rule out the obvious alternative explanations. The thing I'd actually watch for, especially early in my own career here, is a quick exploratory result quietly turning into 'the answer' just because it looked good and nobody went back to validate it properly before it got repeated around the team. As a junior person, when I'm not sure which bucket a given result falls into, I'd just ask a more senior teammate directly rather than guess -- better to check once than to either slow the team down with excessive rigor on a throwaway experiment, or let something under-validated spread as if it were solid.",
+      "example": "An exploratory run testing 5 candidate ideas quickly with 1 seed each to filter down to the 1-2 most promising, followed by full rigor (3+ seeds, proper baseline, ablations) only on the surviving candidates before reporting results more broadly -- rigor scales up as stakes and confidence requirements increase.",
+      "commonMistakes": [
+        "Treating rigor as all-or-nothing rather than scaled to the stakes of a given result",
+        "Letting a quick exploratory finding silently become treated as a validated conclusion",
+        "As a junior team member, independently deciding the right rigor level instead of checking with a senior teammate when unsure",
+        "Always over-investing in rigor even on cheap exploratory work, slowing down legitimate fast iteration"
+      ],
+      "keyPoints": [
+        "Rigor should be calibrated to the stakes and stage of a given experiment, not applied uniformly",
+        "Exploratory, cheap runs can reasonably skip full rigor; decision-informing results cannot",
+        "Watches for exploratory findings silently becoming treated as validated conclusions",
+        "As a junior team member, asks a senior teammate when unsure which rigor level is appropriate"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Avoids framing rigor vs. speed as strictly all-or-nothing", "weight": 30 },
+        { "criterion": "Describes calibrating rigor to the stakes/stage of a result", "weight": 30 },
+        { "criterion": "Identifies the risk of exploratory findings becoming treated as validated", "weight": 20 },
+        { "criterion": "Shows appropriate junior-level judgment (asking rather than assuming)", "weight": 20 }
+      ],
+      "estimatedMinutes": 7,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    }
+  ]
+}

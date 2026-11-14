@@ -1,0 +1,1483 @@
+{
+  "questions": [
+    {
+      "id": "aiim-beg-001",
+      "questionCode": "LTV-AIIM-BEG-001",
+      "title": "What makes a system distributed",
+      "prompt": "In your own words, what is a distributed system, and why is the lack of shared memory and a shared clock the thing that actually makes it hard to reason about, rather than just having more machines?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Systems", "Fundamentals"],
+      "modelAnswer": "A distributed system is a collection of independent computers, each with its own memory, its own clock, and its own independent chance of failing, that coordinate with each other only over a network so that, to users and programs, they appear as one coherent system. The hard part isn't the number of machines -- it's that no node can directly observe another node's internal state, only infer it from messages that can be delayed, lost, duplicated, or reordered, and any node can fail without the others knowing immediately. That absence of shared state and a shared clock is exactly why problems like knowing 'what happened first' or 'is that other node actually dead' are genuinely hard, not incidental details.",
+      "professionalAnswer": "I'd describe it as independent computers that only know about each other through messages over a network, with no shared memory and no shared clock. The reason that's hard, rather than just 'more computers,' is that every one of those assumptions I take for granted on a single machine -- that I can read a variable's current value, that events have an agreed order, that a crashed process is immediately visible as crashed -- stops being true the moment coordination happens over a network. A node going silent could mean it's slow, the message got dropped, or it's actually dead, and from the outside those look identical. Everything else in distributed systems, consensus, consistency models, failure detection, is really just different policies for coping with that one underlying fact.",
+      "commonMistakes": [
+        "Thinking more machines automatically means more raw power without added complexity",
+        "Assuming network messages arrive quickly, in order, and exactly once",
+        "Confusing parallel computing on shared memory with a genuinely distributed system",
+        "Assuming failures are correlated or announced, rather than independent and often silent"
+      ],
+      "keyPoints": [
+        "Independent computers, each with their own memory and clock, coordinating only over a network",
+        "No shared memory and no shared clock between nodes",
+        "Failures happen independently and are not directly observable, only inferred from messages",
+        "The system still needs to appear as one coherent system to the people and programs using it"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly defines a distributed system", "weight": 35 },
+        { "criterion": "Explains why the lack of shared memory/clock creates real difficulty", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-002",
+      "questionCode": "LTV-AIIM-BEG-002",
+      "title": "What autograd actually tracks",
+      "prompt": "When you call loss.backward() in PyTorch, what is actually happening under the hood, and why does every parameter need requires_grad=True for this to work?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["PyTorch", "Autograd"],
+      "modelAnswer": "As tensors flow through operations, PyTorch builds a dynamic computational graph on the fly, but only for tensors that have requires_grad=True (or are derived from one) -- each such tensor gets a grad_fn recording how it was produced. Calling loss.backward() walks that graph backwards from the loss, applying the chain rule at each step to compute how much each parameter contributed to the loss, and populates the .grad attribute of every leaf tensor with requires_grad=True along the way. A tensor without requires_grad=True never gets a node in that graph in the first place, so there's nothing for backward() to compute a gradient for -- it simply isn't tracked.",
+      "professionalAnswer": "I think of it as PyTorch quietly building a record of every operation as it happens, but only for tensors it's been told to care about via requires_grad=True. The moment I call loss.backward(), it walks that recorded graph in reverse, applying the chain rule at each step, and drops the result into .grad on every leaf parameter that was actually part of the graph. If I forget requires_grad=True on something, it's not that the gradient comes out wrong -- it's that no graph node was ever created for it, so there's nothing to differentiate. backward() itself doesn't update any weights either; it only fills in .grad, and a separate optimizer.step() call is what actually applies the update.",
+      "commonMistakes": [
+        "Thinking loss.backward() updates the model's weights directly",
+        "Forgetting that .grad accumulates across calls, causing unexpectedly large gradients without zero_grad()",
+        "Assuming torch.no_grad() permanently disables tracking rather than just inside its block",
+        "Confusing leaf tensors, which actually receive .grad, with intermediate tensors in the graph"
+      ],
+      "keyPoints": [
+        "A dynamic computational graph is built as operations execute, only for tracked tensors",
+        "backward() walks that graph in reverse, applying the chain rule",
+        "Only leaf tensors with requires_grad=True end up with a populated .grad",
+        "optimizer.step() is a separate call that actually applies the update using .grad"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains dynamic graph construction", "weight": 35 },
+        { "criterion": "Correctly explains backward's chain-rule role", "weight": 35 },
+        { "criterion": "Correctly explains requires_grad's gating role", "weight": 30 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-003",
+      "questionCode": "LTV-AIIM-BEG-003",
+      "title": "Why GPUs beat CPUs for matrix math",
+      "prompt": "A GPU has thousands of small, relatively slow cores while a CPU has a handful of large, fast ones. Why does that tradeoff favor the GPU specifically for neural network training, and where would it NOT help?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["GPU Architecture", "Parallelism"],
+      "modelAnswer": "Operations like matrix multiplication and convolution are data-parallel: the exact same instruction (multiply, add) needs to run on huge numbers of independent data elements. A GPU organizes its cores into warps of 32 threads executing the same instruction in lockstep (SIMT), so sheer parallel core count applied to that kind of work dominates even though each individual GPU core runs at a lower clock speed than a CPU core. It does not help for inherently sequential logic, or for code with heavy per-thread branching, since threads within the same warp that take different branches force the warp to execute both paths serially (warp divergence), erasing the parallelism advantage.",
+      "professionalAnswer": "I'd frame it as a tradeoff between a few fast, flexible workers and thousands of simple, synchronized ones. Matrix multiplication and convolution are exactly the kind of work where you want thousands of workers all doing the identical simple operation on different numbers at once, which is what a GPU's warps of 32 lockstep threads are built for -- even though each individual core is slower than a CPU core. Where that falls apart is branchy, sequential logic: if threads in the same warp need to go down different paths, the hardware can't actually run them in parallel anymore, it serializes both paths and masks off whichever threads don't apply, so you lose exactly the advantage you were hoping for.",
+      "commonMistakes": [
+        "Thinking individual GPU cores run faster per-core than CPU cores",
+        "Forgetting that heavy branching inside a warp causes serialized execution (warp divergence), not free parallelism",
+        "Assuming any workload automatically speeds up just by running it on a GPU",
+        "Ignoring that warp divergence specifically erases the advantage for branch-heavy code"
+      ],
+      "keyPoints": [
+        "The advantage comes from parallel core count on data-parallel work, not clock speed",
+        "Warps of 32 threads execute in lockstep (SIMT)",
+        "Matrix multiplication and convolution are the canonical data-parallel operations that benefit most",
+        "Sequential or heavily branching logic doesn't benefit, and can suffer from warp divergence"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the architectural tradeoff behind the GPU advantage", "weight": 40 },
+        { "criterion": "Correctly identifies workloads that don't benefit", "weight": 30 },
+        { "criterion": "Clarity of explanation", "weight": 30 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-004",
+      "questionCode": "LTV-AIIM-BEG-004",
+      "title": "Global memory vs shared memory",
+      "prompt": "What's the practical difference between a GPU's global (HBM) memory and its on-chip shared memory, and why would a kernel author deliberately move data into shared memory instead of just reading from global memory every time?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["GPU Memory", "CUDA"],
+      "modelAnswer": "Global memory (implemented as HBM) is large and visible to every thread in every block, but it's the slowest tier in the GPU's memory hierarchy. Shared memory is small, physically on-chip, and scoped to a single block -- each block gets its own separate copy, and any thread in that block can read or write it quickly. A kernel that reuses the same piece of data across many threads in a block benefits from loading it into shared memory once and letting every thread in the block read it from there, instead of every thread independently round-tripping to slow global memory for the same value -- which matters a lot for memory-bound kernels where those round-trips, not the actual arithmetic, dominate runtime.",
+      "professionalAnswer": "I'd explain it as two very different tiers: global memory is the big pool everyone can see but it's genuinely slow to access repeatedly, while shared memory is a small, fast scratchpad that only exists per-block. The reason to bother copying data into shared memory first is reuse -- if ten threads in a block are all going to read the same value, fetching it from global memory ten separate times is wasteful; fetching it once into shared memory and letting all ten threads read it from there cuts that down to one round trip. I'd also flag that this only pays off when there's actually reuse -- if each thread only touches a given value once, moving it into shared memory first is pure overhead with no benefit.",
+      "commonMistakes": [
+        "Treating shared memory as if it were just a faster version of global memory available to everyone",
+        "Thinking local (per-thread) memory is fast, when it's actually physically stored in the slow global-memory space",
+        "Forgetting __syncthreads() is needed to safely coordinate reads/writes to shared memory across a block",
+        "Assuming moving data to shared memory always helps, even when it's only read once per thread"
+      ],
+      "keyPoints": [
+        "Global memory is large, slow, and visible to every thread across every block",
+        "Shared memory is small, fast, on-chip, and scoped to one block with its own separate copy",
+        "The benefit comes from reusing a value across many threads in a block, not from just moving data",
+        "__syncthreads() is needed to coordinate access to shared memory correctly"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly distinguishes global memory from shared memory", "weight": 40 },
+        { "criterion": "Correctly explains the reuse rationale for shared memory", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-005",
+      "questionCode": "LTV-AIIM-BEG-005",
+      "title": "Why interconnect speed matters for multi-GPU training",
+      "prompt": "After every backward pass in multi-GPU data-parallel training, gradients need to be synchronized across GPUs. Why does the speed of the connection between GPUs (NVLink vs PCIe vs Ethernet) matter so much for how fast training actually runs?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Training", "NCCL", "Networking"],
+      "modelAnswer": "Gradient synchronization (an all-reduce) happens after every single training step, not occasionally, so its cost is paid every step regardless of how fast the GPUs themselves computed the forward and backward pass. If the time it takes to move that gradient traffic over the interconnect is significant relative to the compute time per step, communication becomes the bottleneck no matter how fast the GPUs are. NVLink offers far more bandwidth between GPUs than PCIe, which in turn is far faster than a typical Ethernet link for GPU-to-GPU traffic -- so the interconnect choice directly determines whether adding more GPUs actually scales training speed close to linearly, or whether the cluster spends an increasing share of every step just waiting on communication.",
+      "professionalAnswer": "I'd point out that synchronizing gradients isn't an occasional housekeeping task -- it happens after every backward pass, every single step. So whatever that synchronization costs gets paid repeatedly, and if the interconnect is slow, that repeated cost can end up dominating the step time regardless of how fast the GPUs computed. NVLink gives GPUs within a node a much larger pipe to talk through than PCIe does, and PCIe is itself much faster than typical Ethernet for this kind of traffic -- so the practical effect is that the same cluster, same model, same code can scale almost linearly with more GPUs on a fast interconnect, or hit a wall well before that on a slow one.",
+      "commonMistakes": [
+        "Assuming adding more GPUs always scales training speed close to linearly regardless of interconnect",
+        "Ignoring the communication step entirely when reasoning about training speed",
+        "Thinking GPU compute speed alone determines overall throughput",
+        "Confusing GPU-to-GPU bandwidth (NVLink) with GPU-to-CPU bandwidth (PCIe)"
+      ],
+      "keyPoints": [
+        "Gradient synchronization happens every training step, not occasionally",
+        "Communication time can dominate step time regardless of GPU speed",
+        "NVLink offers far more bandwidth than PCIe, which is far faster than typical Ethernet for this traffic",
+        "Scaling efficiency depends on the ratio of communication time to compute time per step"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Explains why synchronization happens every step", "weight": 30 },
+        { "criterion": "Explains the interconnect bandwidth's impact on scaling", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 30 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-006",
+      "questionCode": "LTV-AIIM-BEG-006",
+      "title": "Why the same feature can give different values twice",
+      "prompt": "What is training/serving skew, and why is it often caused by something as simple as two different pieces of code computing 'the same' feature?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["ML Platform", "Feature Stores"],
+      "modelAnswer": "Training/serving skew is a mismatch between the feature values a model saw during training and the values it actually sees at serving time. A common cause is code duplication: training computes a feature with one piece of code (often a batch SQL query over historical data), while serving computes 'the same' feature with a separate, latency-sensitive implementation, and because the two were written independently and evolve independently, they can silently drift apart -- different null-handling, different windowing, different rounding -- without anyone intending it. The model's offline evaluation metrics can look perfectly fine, since they're measured against the training-side feature values, while real production performance degrades because serving is feeding the model something subtly different. A feature store helps by defining feature logic once and serving it consistently to both an offline store (for training) and an online store (for serving).",
+      "professionalAnswer": "I'd describe skew as the model being trained on one version of a feature and served a quietly different version of 'the same' feature in production. The sneaky part is that it often isn't a big, obvious bug -- it's something like a batch SQL query and an online function both computing 'average rating over 7 days,' written at different times by different people, with a subtly different null-handling branch. Offline metrics don't catch this because they're measured against the training-side values, which look fine on their own; it only shows up once the model is actually serving live traffic and getting a slightly different input than it was trained on. The real fix isn't a one-off patch, it's not having two implementations of the same feature in the first place -- which is exactly what a feature store is for.",
+      "commonMistakes": [
+        "Assuming skew only comes from stale data, not duplicated feature-computation code",
+        "Assuming good offline metrics guarantee good online production performance",
+        "Not realizing the durable fix is defining feature logic once, not just monitoring for drift after the fact"
+      ],
+      "keyPoints": [
+        "Training/serving skew is a mismatch between training-time and serving-time feature values",
+        "A common root cause is duplicated feature logic in two independently maintained code paths",
+        "The two implementations can silently drift apart over time",
+        "A feature store addresses this by defining feature logic once, shared by both stores"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct definition of training/serving skew", "weight": 35 },
+        { "criterion": "Correct explanation of the code-duplication root cause", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-007",
+      "questionCode": "LTV-AIIM-BEG-007",
+      "title": "Why GPUs behave differently during prefill and decode",
+      "prompt": "During LLM inference, why is the prefill phase typically compute-bound while the decode phase is typically memory-bound, and what do TTFT and TPOT each measure as a result?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Inference", "LLM Serving"],
+      "modelAnswer": "Prefill processes the entire input prompt in one parallel forward pass, which keeps the GPU's matrix-multiplication units busy the whole time, making it compute-bound. Decode generates output one token at a time, and each decode step has to read the entire key/value cache accumulated so far to compute attention, so the GPU spends more of its time moving data than doing arithmetic, making decode memory-bound. Time to first token (TTFT) is essentially how long prefill (plus any queuing delay before it) takes before the very first output token appears; time per output token (TPOT) is the per-step latency during decode, once generation has already started.",
+      "professionalAnswer": "I'd split it into the two phases the way the course does: prefill is one big parallel pass over the whole prompt, so the GPU's math units stay genuinely busy -- that's compute-bound. Decode is one token at a time, and every single step has to read the whole KV cache built up so far, so the GPU ends up spending more time moving that cache around than actually computing -- that's memory-bound, even though the GPU still looks 'busy' the whole time. TTFT is the user-facing number for 'how long until I see anything at all,' which is really prefill time plus whatever queuing happened before it even started; TPOT is 'how long between each word after that,' which tracks decode's per-step cost.",
+      "commonMistakes": [
+        "Thinking decode is compute-heavy because tokens keep accumulating",
+        "Treating TTFT and TPOT as if they measure the same thing",
+        "Forgetting that queuing delay, not just prefill itself, contributes to TTFT",
+        "Assuming more raw GPU compute automatically fixes a decode-speed problem"
+      ],
+      "keyPoints": [
+        "Prefill processes the whole prompt in parallel and is compute-bound",
+        "Decode generates one token at a time and is memory-bound due to KV cache reads",
+        "TTFT measures time until the first output token, including any queuing before prefill",
+        "TPOT measures per-token latency once decode has started"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why prefill is compute-bound and decode is memory-bound", "weight": 45 },
+        { "criterion": "Correctly defines TTFT and TPOT", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-008",
+      "questionCode": "LTV-AIIM-BEG-008",
+      "title": "Why BF16 usually skips GradScaler but FP16 doesn't",
+      "prompt": "Both float16 and bfloat16 use 16 bits, but training in float16 usually needs a GradScaler while bfloat16 usually doesn't. What's actually different between the two formats that explains this?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["PyTorch", "Mixed Precision"],
+      "modelAnswer": "FP16 allocates more of its 16 bits to the mantissa and fewer to the exponent, which gives it a narrow dynamic range -- small gradient values during backpropagation can underflow all the way to exactly zero, silently killing learning for those parameters. GradScaler exists specifically to prevent this: it scales the loss up before backward() so small gradients stay representable, then unscales the gradients before the optimizer step. BF16 instead keeps the same 8-bit exponent range as FP32 (sacrificing mantissa precision, not range), so the same gradients that would underflow in FP16 generally stay representable in BF16, which is why BF16 training usually skips GradScaler entirely.",
+      "professionalAnswer": "I'd point to where each format spends its 16 bits. FP16 gives more bits to the mantissa for precision but only a few to the exponent, so its range is narrow -- a small gradient can quietly round down to zero during backward, and nothing errors out, it just silently stops learning for that parameter. That's exactly the problem GradScaler fixes: scale the loss up before backward so those small values survive, then unscale before the optimizer actually applies the update. BF16 takes the opposite tradeoff -- it keeps FP32's full exponent range and gives up mantissa precision instead -- so the underflow problem FP16 has mostly doesn't apply, and the standard practice is to just skip GradScaler with BF16.",
+      "commonMistakes": [
+        "Assuming FP16 and BF16 have the same dynamic range just because both use 16 bits",
+        "Thinking GradScaler fixes precision loss in general rather than specifically preventing gradient underflow",
+        "Assuming BF16 is strictly better in every way, ignoring that it has less mantissa precision",
+        "Treating 'skip GradScaler with BF16' as a hard rule rather than a general convention"
+      ],
+      "keyPoints": [
+        "FP16 has a narrow exponent range and more mantissa bits",
+        "BF16 keeps FP32's exponent range and gives up mantissa precision instead",
+        "GradScaler exists specifically to prevent gradient underflow in FP16",
+        "BF16 generally avoids needing GradScaler because underflow is far less likely"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the exponent/mantissa tradeoff between FP16 and BF16", "weight": 45 },
+        { "criterion": "Correctly explains GradScaler's purpose", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-009",
+      "questionCode": "LTV-AIIM-BEG-009",
+      "title": "Why idempotency matters when a request is retried",
+      "prompt": "If a client doesn't get a response to a request and retries it, why can a non-idempotent operation cause real damage, and what does making an operation idempotent actually require?",
+      "category": "technical-knowledge",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Systems", "Idempotency"],
+      "modelAnswer": "A dropped response looks identical to a dropped request from the client's point of view -- it can't tell whether the first attempt actually succeeded and only the response was lost, or whether nothing happened at all. Retrying a non-idempotent operation, like 'add $100 to this balance,' risks executing it a second time if the first attempt had actually succeeded, resulting in $200 added instead of $100. Making an operation idempotent typically means attaching a unique idempotency key to the request so the server can recognize and ignore an exact duplicate, or redesigning the operation itself so it converges to the same end state no matter how many times it runs, such as 'set balance to $500' instead of 'add $100.'",
+      "professionalAnswer": "The core problem is that silence is ambiguous -- if I send a request and get nothing back, I genuinely don't know whether it succeeded and the response got lost, or whether it never went through at all. For something like 'add $100,' retrying blindly in that situation risks double-applying it if the first attempt actually landed. The fix is either attaching a unique idempotency key so the server can say 'I've already seen this exact request, ignoring the duplicate,' or redesigning the operation itself to be naturally safe to repeat, like setting an absolute value instead of an incremental one. I'd also note this isn't just a payments thing -- any retry logic in a distributed system runs into the same ambiguity.",
+      "commonMistakes": [
+        "Assuming retries are always safe regardless of the operation",
+        "Thinking the server can always detect duplicates automatically without any extra mechanism",
+        "Confusing idempotency with simply having retry logic at all",
+        "Assuming idempotency keys only matter for payment systems"
+      ],
+      "keyPoints": [
+        "Silence after a request is ambiguous: success, failure, and a lost response all look identical",
+        "Retrying a non-idempotent operation risks double-executing it",
+        "Idempotency keys let the server recognize and ignore duplicate requests",
+        "Some operations can be redesigned to be naturally idempotent"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the ambiguity problem behind retries", "weight": 35 },
+        { "criterion": "Correctly explains how idempotency is achieved", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-010",
+      "questionCode": "LTV-AIIM-BEG-010",
+      "title": "Write the five-step training loop body",
+      "prompt": "Write the body of a single PyTorch training iteration for one batch (inputs, targets) given model, loss_fn, and optimizer already defined -- the five canonical steps every training loop repeats.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Training Loop"],
+      "code": "# model, loss_fn, optimizer already defined\nfor inputs, targets in train_loader:\n    ???",
+      "modelAnswer": "The five steps, in order, are: optimizer.zero_grad() to clear leftover gradients from the previous iteration, outputs = model(inputs) for the forward pass, loss = loss_fn(outputs, targets) to reduce the error to a single scalar, loss.backward() to populate .grad for every parameter via the chain rule, and optimizer.step() to actually apply the update using those gradients. zero_grad() has to happen before backward() populates new gradients, specifically because .grad accumulates across calls rather than resetting automatically -- skipping it means each iteration's gradients add on top of the last one's instead of replacing them.",
+      "professionalAnswer": "I write this the same way every time: optimizer.zero_grad(), then outputs = model(inputs), then loss = loss_fn(outputs, targets), then loss.backward(), then optimizer.step(). The one step people forget is zero_grad(), and the reason it matters is that .grad doesn't reset itself between iterations -- it just keeps adding on top of whatever was already there, so without clearing it first, the second iteration's gradients would be a sum of two steps' worth, not the standalone gradient for that batch.",
+      "example": "for inputs, targets in train_loader:\n    optimizer.zero_grad()\n    outputs = model(inputs)\n    loss = loss_fn(outputs, targets)\n    loss.backward()\n    optimizer.step()",
+      "commonMistakes": [
+        "Forgetting optimizer.zero_grad(), causing gradients to accumulate across iterations",
+        "Calling optimizer.step() before loss.backward(), so there's no gradient to apply yet",
+        "Forgetting the forward pass has to run fresh every iteration, not reuse a stale output",
+        "Placing the update step outside the batch loop instead of once per batch"
+      ],
+      "keyPoints": [
+        "Correct order: zero_grad, forward pass, compute loss, backward, step",
+        "zero_grad() prevents gradients from accumulating across iterations",
+        "backward() populates .grad via the chain rule",
+        "step() is the step that actually applies the parameter update"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct order of all five steps", "weight": 50 },
+        { "criterion": "Correct PyTorch syntax", "weight": 30 },
+        { "criterion": "Explains why zero_grad matters", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-011",
+      "questionCode": "LTV-AIIM-BEG-011",
+      "title": "Size a kernel launch for an array",
+      "prompt": "You need to launch a CUDA kernel to process an array of 10,000 floats, with a block size of 256 threads. Write the launch configuration (grid size calculation and the <<<...>>> launch) that ensures every element gets a thread, and explain why you'd still need a bounds check inside the kernel.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["CUDA", "GPU Computing"],
+      "code": "int n = 10000;\nint blockSize = 256;\n// compute gridSize and launch addOne<<<?, ?>>>(d_data, n);",
+      "modelAnswer": "gridSize should be the ceiling of n divided by blockSize: (n + blockSize - 1) / blockSize = (10000 + 255) / 256 = 40 blocks. That launches addOne<<<40, 256>>>(d_data, n), which provisions 40 * 256 = 10,240 threads for only 10,000 elements. A bounds check like if (i < n) is still required inside the kernel because the last block over-provisions 240 extra threads whose computed index exceeds n -- CUDA has no automatic bounds enforcement, so without the check those threads would write past the end of the allocated array, which is undefined behavior rather than a compile or runtime error.",
+      "professionalAnswer": "I'd compute gridSize as (n + blockSize - 1) / blockSize, which for 10,000 elements and a block size of 256 comes out to 40 blocks, and launch addOne<<<40, 256>>>(d_data, n). That gives me 10,240 total threads for only 10,000 elements, so the last block has 240 threads whose index is out of range. I always keep the if (i < n) check inside the kernel because CUDA doesn't protect me from this automatically -- without it, those extra threads would just write past the end of the array, and that's undefined behavior, not something that throws a clean error I'd notice right away.",
+      "example": "int n = 10000;\nint blockSize = 256;\nint gridSize = (n + blockSize - 1) / blockSize;  // 40\naddOne<<<gridSize, blockSize>>>(d_data, n);\n\n__global__ void addOne(float *data, int n) {\n    int i = blockIdx.x * blockDim.x + threadIdx.x;\n    if (i < n) {\n        data[i] += 1;\n    }\n}",
+      "commonMistakes": [
+        "Forgetting the ceiling-division formula and under-provisioning threads, silently dropping elements",
+        "Omitting the if (i < n) bounds check inside the kernel",
+        "Assuming CUDA automatically skips threads whose index is out of range",
+        "Off-by-one errors in the grid size calculation"
+      ],
+      "keyPoints": [
+        "Grid size uses the ceiling-division formula: (n + blockSize - 1) / blockSize",
+        "The launch syntax is kernel<<<gridSize, blockSize>>>(args)",
+        "A bounds check prevents the last block's extra threads from writing out of bounds",
+        "CUDA provides no automatic protection against out-of-bounds writes"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct grid size calculation", "weight": 40 },
+        { "criterion": "Correct launch syntax", "weight": 30 },
+        { "criterion": "Explains why the bounds check is necessary", "weight": 30 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-012",
+      "questionCode": "LTV-AIIM-BEG-012",
+      "title": "Write a minimal Slurm submission script",
+      "prompt": "Write a minimal sbatch script that requests 2 nodes, 4 GPUs per node, and a 2-hour wall-clock limit, then uses srun to launch a torchrun command across the allocation.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Slurm", "Distributed Training"],
+      "code": "#!/bin/bash\n#SBATCH ...",
+      "modelAnswer": "The script sets #SBATCH --nodes=2, #SBATCH --gpus-per-node=4, and #SBATCH --time=02:00:00 to request the resources and time limit, then calls srun torchrun --nproc_per_node=4 --nnodes=2 train.py to actually launch the job. sbatch submits the whole script to Slurm's queue and returns immediately, running whenever Slurm schedules it; srun is what actually launches the parallel step -- one copy of the command per node -- once that allocation already exists, which is why the script calls srun torchrun rather than torchrun directly.",
+      "professionalAnswer": "I'd write the #SBATCH header with --nodes=2, --gpus-per-node=4, and --time=02:00:00, then the actual launch line as srun torchrun --nproc_per_node=4 --nnodes=2 train.py. The distinction I always keep straight is that sbatch just files the job and hands back control immediately -- it doesn't run anything itself -- while srun is the thing that actually executes a command across the nodes Slurm already allocated. That's why I never call torchrun directly in an sbatch script; I call it through srun so it actually launches on every allocated node, not just the one running the script.",
+      "example": "#!/bin/bash\n#SBATCH --job-name=train-run\n#SBATCH --nodes=2\n#SBATCH --gpus-per-node=4\n#SBATCH --time=02:00:00\n\nsrun torchrun --nproc_per_node=4 --nnodes=2 train.py",
+      "commonMistakes": [
+        "Calling torchrun directly inside an sbatch script instead of through srun",
+        "Forgetting --nodes or --gpus-per-node, under-requesting the needed resources",
+        "Writing the --time value in the wrong format",
+        "Confusing sbatch (queues the job and returns) with srun (launches the parallel step)"
+      ],
+      "keyPoints": [
+        "#SBATCH directives request nodes, GPUs per node, and a time limit",
+        "srun is what actually launches the parallel step once the allocation exists",
+        "torchrun's --nproc_per_node and --nnodes must match the requested allocation",
+        "sbatch submits and returns immediately; srun runs inside the allocation"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct #SBATCH directives", "weight": 35 },
+        { "criterion": "Correct srun/torchrun invocation", "weight": 40 },
+        { "criterion": "Explains the sbatch vs srun distinction", "weight": 25 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-013",
+      "questionCode": "LTV-AIIM-BEG-013",
+      "title": "Request a GPU in a pod spec and check why it's pending",
+      "prompt": "Write the resources block that requests exactly 1 GPU for a pod, and the kubectl command you'd run to see why a pod requesting a GPU is stuck in Pending.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Kubernetes", "GPU Scheduling"],
+      "code": "# pod.yaml\nresources:\n  limits:\n    ???",
+      "modelAnswer": "The resources block is resources: limits: nvidia.com/gpu: 1. To investigate a pod stuck Pending, kubectl describe pod <pod-name> shows the scheduling events (such as FailedScheduling, with a message like 'Insufficient nvidia.com/gpu') that explain why -- Kubernetes treats a GPU request as a hard requirement, so the pod stays Pending rather than running without a GPU or on a degraded resource.",
+      "professionalAnswer": "The resource request itself is just resources: limits: nvidia.com/gpu: 1 under the container spec. When I see a pod stuck Pending, my first move is always kubectl describe pod <pod-name> and scrolling to the Events section at the bottom -- that's where Kubernetes actually tells you why it couldn't schedule, usually a FailedScheduling event naming insufficient nvidia.com/gpu. I'd also point out this isn't a bug: Kubernetes treats a GPU request as all-or-nothing, so the pod just waits until a GPU actually frees up rather than running in some degraded state.",
+      "example": "resources:\n  limits:\n    nvidia.com/gpu: 1\n\n# then:\nkubectl describe pod my-training-pod",
+      "commonMistakes": [
+        "Putting the GPU request under requests instead of limits",
+        "Misnaming the resource (it must be exactly nvidia.com/gpu)",
+        "Using kubectl get pod instead of describe and missing the Events section entirely",
+        "Assuming a Pending pod indicates a broader cluster-wide problem rather than this one pod's scheduling constraint"
+      ],
+      "keyPoints": [
+        "nvidia.com/gpu: 1 goes under resources.limits",
+        "kubectl describe pod reveals the scheduling events explaining a Pending state",
+        "A GPU request is a hard, non-overcommittable requirement",
+        "Pending isn't permanent -- it resolves once capacity frees up"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct resources YAML syntax", "weight": 35 },
+        { "criterion": "Correct diagnostic command", "weight": 35 },
+        { "criterion": "Explains what the event output actually tells you", "weight": 30 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-014",
+      "questionCode": "LTV-AIIM-BEG-014",
+      "title": "Log params, metrics, and the model to MLflow",
+      "prompt": "Write the MLflow tracking calls needed inside a training script to start a run, log a learning_rate parameter, log a final val_loss metric, and log the trained model itself.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["MLflow", "Experiment Tracking"],
+      "code": "import mlflow\n\n# fill in the tracking calls",
+      "modelAnswer": "with mlflow.start_run(): scopes everything to one tracked run; inside it, mlflow.log_param('learning_rate', 0.001) records the hyperparameter, mlflow.log_metric('val_loss', val_loss) records the result, and mlflow.pytorch.log_model(model, 'model') saves the trained model itself. log_param and log_metric write queryable key/value data to MLflow's backend store (a metadata database), while log_model saves the model artifact to the separate artifact store, which is why MLflow keeps those two stores apart in the first place.",
+      "professionalAnswer": "I always wrap the whole thing in with mlflow.start_run(): so everything gets attached to one run instead of floating outside any run. Inside that block, mlflow.log_param('learning_rate', 0.001) for the hyperparameter, mlflow.log_metric('val_loss', val_loss) once I actually have the result, and mlflow.pytorch.log_model(model, 'model') to save the model itself. I keep in mind that params and metrics are small, queryable metadata going into one store, while the model artifact is a large file going into a completely separate artifact store -- that split is exactly why a metadata query never has to scan through gigabytes of model weights.",
+      "example": "import mlflow\nimport mlflow.pytorch\n\nwith mlflow.start_run():\n    mlflow.log_param(\"learning_rate\", 0.001)\n    # ... training loop ...\n    mlflow.log_metric(\"val_loss\", val_loss)\n    mlflow.pytorch.log_model(model, \"model\")",
+      "commonMistakes": [
+        "Calling log_param/log_metric outside the start_run() block, attaching them to the wrong run or none at all",
+        "Logging a hyperparameter with log_metric instead of log_param, or vice versa",
+        "Forgetting to call log_model entirely, losing the actual trained artifact",
+        "Hardcoding a value in the log call instead of the actual variable used in training"
+      ],
+      "keyPoints": [
+        "mlflow.start_run() as a context manager scopes a single tracked run",
+        "log_param records hyperparameters",
+        "log_metric records results like val_loss",
+        "log_model saves the model artifact, separate from the metadata backend store"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct use of start_run()", "weight": 25 },
+        { "criterion": "Correct log_param/log_metric calls", "weight": 35 },
+        { "criterion": "Correct log_model call", "weight": 40 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-015",
+      "questionCode": "LTV-AIIM-BEG-015",
+      "title": "Launch a vLLM server with 4-bit quantization",
+      "prompt": "Write the shell command to launch vLLM's OpenAI-compatible server for a model called meta-llama/Llama-3.1-8B-Instruct, using bitsandbytes 4-bit quantization, on port 8000.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["vLLM", "Quantization", "Inference"],
+      "code": "# vllm serve ...",
+      "modelAnswer": "vllm serve meta-llama/Llama-3.1-8B-Instruct --quantization bitsandbytes --port 8000 starts the server with the given model, quantization backend, and port. bitsandbytes is the right choice here because it quantizes weights on the fly at model-load time with no separate calibration dataset or pre-converted checkpoint required -- which matters whenever you need something working immediately rather than waiting on a calibration pass.",
+      "professionalAnswer": "I'd run vllm serve meta-llama/Llama-3.1-8B-Instruct --quantization bitsandbytes --port 8000. I reach for bitsandbytes specifically when I need it working right now with no calibration dataset on hand -- it quantizes at load time, no separate conversion step, unlike GPTQ or AWQ, which both need a calibration pass over representative data before they're usable. If I had time and a calibration set ready, I might reach for one of those instead for better compression, but that's a different situation than 'ship it now.'",
+      "example": "vllm serve meta-llama/Llama-3.1-8B-Instruct \\\n  --quantization bitsandbytes \\\n  --port 8000",
+      "commonMistakes": [
+        "Confusing bitsandbytes (zero-calibration, load-time) with GPTQ/AWQ (require a calibration pass)",
+        "Forgetting the --port flag and landing on the wrong default",
+        "Misspelling or mis-specifying the --quantization flag's value",
+        "Assuming all quantization approaches require an offline conversion step first"
+      ],
+      "keyPoints": [
+        "vllm serve <model> starts the OpenAI-compatible server",
+        "--quantization bitsandbytes needs no calibration dataset",
+        "--port sets the listening port",
+        "Correct flag names and values matter for the command to actually work"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct overall command structure", "weight": 40 },
+        { "criterion": "Correct quantization flag and value", "weight": 35 },
+        { "criterion": "Explains why bitsandbytes fits a no-calibration-data situation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-016",
+      "questionCode": "LTV-AIIM-BEG-016",
+      "title": "Guard a payment handler with an idempotency key",
+      "prompt": "Write a small Python function process_payment(idempotency_key, amount, seen_keys, apply_payment) that only actually applies the payment once per unique idempotency_key, even if called multiple times with the same key.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["Idempotency", "Distributed Systems"],
+      "code": "def process_payment(idempotency_key, amount, seen_keys, apply_payment):\n    ???",
+      "modelAnswer": "The function checks whether idempotency_key is already in seen_keys; if so, it returns early without applying the payment again. Otherwise, it records the key and calls apply_payment(amount). seen_keys acts as a durable record of already-processed keys -- in a real system this would be backed by a database with a uniqueness constraint, checked and recorded as close to atomically as possible, so that a retry with the same key is detected and ignored instead of double-applying the payment.",
+      "professionalAnswer": "I'd check seen_keys first: if the idempotency_key is already there, I return immediately without touching the payment logic at all. If it's new, I record it and then call apply_payment. In a real production system I wouldn't trust an in-memory set for this -- I'd want that check-and-record step backed by a database with a uniqueness constraint, done as atomically as the database allows, so two near-simultaneous retries can't both slip through before either one gets recorded.",
+      "example": "def process_payment(idempotency_key, amount, seen_keys, apply_payment):\n    if idempotency_key in seen_keys:\n        return \"duplicate request ignored\"\n    seen_keys.add(idempotency_key)\n    apply_payment(amount)\n    return \"payment applied\"",
+      "commonMistakes": [
+        "Checking and recording the key non-atomically, leaving a race window for near-simultaneous retries",
+        "Storing seen_keys only in memory, losing the record on a process restart",
+        "Keying on something the client doesn't send identically on every retry",
+        "Applying the payment before checking whether the key was already seen"
+      ],
+      "keyPoints": [
+        "A unique idempotency key identifies one logical operation",
+        "Check-then-record should ideally be atomic in a production system",
+        "Duplicate detection prevents double-execution on retry",
+        "Durability of the seen-keys record matters, not just in-memory tracking"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct duplicate-detection logic", "weight": 45 },
+        { "criterion": "Explains durability/atomicity concerns for production", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-017",
+      "questionCode": "LTV-AIIM-BEG-017",
+      "title": "Fix a gradient accumulation loop missing the loss scale",
+      "prompt": "This gradient accumulation loop is missing one line that keeps its effective learning rate from scaling with accum_steps. Add the missing line and explain why it's needed.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["PyTorch", "Gradient Accumulation"],
+      "code": "accum_steps = 4\noptimizer.zero_grad()\n\nfor i, (inputs, targets) in enumerate(train_loader):\n    output = model(inputs)\n    loss = loss_fn(output, targets)\n    loss.backward()\n\n    if (i + 1) % accum_steps == 0:\n        optimizer.step()\n        optimizer.zero_grad()",
+      "modelAnswer": "The missing line is loss = loss / accum_steps, inserted right after computing loss and before calling backward(). Because loss.backward() accumulates gradients across however many times it's called before the next zero_grad(), not dividing by accum_steps leaves the accumulated gradient accum_steps times larger than intended -- which silently acts exactly like multiplying the learning rate by accum_steps, with no error raised anywhere.",
+      "professionalAnswer": "I'd add loss = loss / accum_steps right after loss = loss_fn(output, targets), before loss.backward(). The reason it matters is that backward() just keeps summing gradients into .grad across however many micro-batches run before the next zero_grad -- without dividing the loss down first, those four micro-batches' gradients add up to something four times too large, which has the same effect as quietly running with a four-times-larger learning rate. Nothing crashes or warns you about this, which is exactly what makes it dangerous.",
+      "example": "accum_steps = 4\noptimizer.zero_grad()\n\nfor i, (inputs, targets) in enumerate(train_loader):\n    output = model(inputs)\n    loss = loss_fn(output, targets) / accum_steps\n    loss.backward()\n\n    if (i + 1) % accum_steps == 0:\n        optimizer.step()\n        optimizer.zero_grad()",
+      "commonMistakes": [
+        "Dividing the already-accumulated gradient after the fact instead of the loss before backward()",
+        "Dividing by the batch size instead of accum_steps",
+        "Assuming optimizer.step() automatically normalizes for the number of accumulated micro-batches",
+        "Not realizing this bug produces no error or warning at all"
+      ],
+      "keyPoints": [
+        "loss.backward() sums gradients across however many times it's called before zero_grad",
+        "Dividing the loss by accum_steps before backward keeps the effective gradient correct",
+        "Skipping the division silently inflates the effective learning rate",
+        "This is a silent bug that raises no error"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Identifies the correct missing line and its placement", "weight": 50 },
+        { "criterion": "Explains why the division is needed", "weight": 35 },
+        { "criterion": "Notes that no error is raised otherwise", "weight": 15 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-018",
+      "questionCode": "LTV-AIIM-BEG-018",
+      "title": "Configure a DataLoader for pinned, async transfers",
+      "prompt": "Write the DataLoader configuration and the .to(device, ...) call needed to overlap each batch's host-to-GPU transfer with ongoing GPU compute, assuming the DataLoader otherwise already works.",
+      "category": "hands-on",
+      "difficulty": "beginner",
+      "responseFormat": "code",
+      "skills": ["GPU Computing", "Pinned Memory", "DataLoader"],
+      "code": "loader = DataLoader(dataset, batch_size=32)\n\nfor inputs, targets in loader:\n    inputs = inputs.to(device)",
+      "modelAnswer": "The DataLoader needs pin_memory=True (and ideally num_workers set to something greater than zero), and the transfer needs .to(device, non_blocking=True). pin_memory=True pre-allocates each batch in page-locked memory so the GPU's DMA engine can transfer it directly without a staging copy; non_blocking=True on that pinned source lets the transfer run asynchronously instead of blocking. Both pieces are required together -- on an ordinary, unpinned tensor, non_blocking=True silently behaves synchronously anyway, so pinning without the async flag, or the async flag without pinning, gives none of the actual overlap benefit.",
+      "professionalAnswer": "I'd set pin_memory=True and num_workers=4 on the DataLoader, and change the transfer to inputs.to(device, non_blocking=True). The thing I always keep in mind is that these two changes only help together -- non_blocking=True on a regular, unpinned tensor quietly falls back to behaving synchronously, because the driver still has to stage it through pinned memory first regardless. So if I only add one of the two, I don't actually get the overlap between the next batch's transfer and the current batch's compute that I was going for.",
+      "example": "loader = DataLoader(dataset, batch_size=32, pin_memory=True, num_workers=4)\n\nfor inputs, targets in loader:\n    inputs = inputs.to(device, non_blocking=True)",
+      "commonMistakes": [
+        "Setting non_blocking=True without pin_memory=True and expecting async behavior anyway",
+        "Pinning every tensor in a program regardless of the real cost",
+        "Forgetting num_workers so CPU-side batch preparation itself becomes the new bottleneck",
+        "Assuming .to(device, non_blocking=True) always returns immediately regardless of source memory type"
+      ],
+      "keyPoints": [
+        "pin_memory=True pre-allocates each batch in page-locked memory",
+        "non_blocking=True enables asynchronous transfer",
+        "Both settings must be combined for the actual overlap benefit",
+        "An unpinned source makes non_blocking=True effectively a no-op"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correct pin_memory DataLoader argument", "weight": 30 },
+        { "criterion": "Correct non_blocking usage", "weight": 30 },
+        { "criterion": "Explains why both are required together", "weight": 40 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-019",
+      "questionCode": "LTV-AIIM-BEG-019",
+      "title": "A training job runs out of GPU memory partway through",
+      "prompt": "A training job that worked fine at batch size 16 now throws a CUDA out-of-memory error after you bumped the batch size to 64, with no other code changes. What's the most likely cause, and what are two straightforward ways to fix it without buying more GPU memory?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["GPU Memory", "Troubleshooting"],
+      "modelAnswer": "Activations dominate memory in most training jobs and scale roughly linearly with batch size, so quadrupling the batch size (16 to 64) quadruples the memory needed to hold activations for the backward pass. Two straightforward fixes without more GPU memory: reduce the batch size back down and use gradient accumulation to reach the same effective batch size over several smaller forward/backward passes before one optimizer step; or use gradient checkpointing, which recomputes activations during backward instead of storing all of them, trading extra compute time for lower memory use.",
+      "professionalAnswer": "My first guess is activations -- they scale with batch size, and going from 16 to 64 is a 4x jump, which is a very plausible way to blow past available memory with no other code change. Without more hardware, I'd reach for gradient accumulation first: run smaller micro-batches, accumulate gradients across a few of them, and only call optimizer.step() once I've simulated the larger effective batch size. If that's still not enough, gradient checkpointing is the other lever -- it recomputes activations during the backward pass instead of keeping them all in memory, which costs some extra compute time but can meaningfully cut memory use.",
+      "commonMistakes": [
+        "Assuming OOM always means the only fix is buying a bigger GPU",
+        "Not realizing activations, not just model weights, scale with batch size",
+        "Confusing gradient accumulation (reduces per-step memory) with gradient checkpointing (recomputes instead of storing)",
+        "Forgetting optimizer state (e.g. Adam's) is also a separate, real memory cost"
+      ],
+      "keyPoints": [
+        "Activations usually dominate memory and scale with batch size",
+        "Gradient accumulation lowers per-step memory while preserving the effective batch size",
+        "Gradient checkpointing trades compute for memory by recomputing instead of storing activations",
+        "A lighter optimizer is a separate, additional memory lever"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the likely cause", "weight": 35 },
+        { "criterion": "Gives at least two valid concrete fixes", "weight": 45 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-020",
+      "questionCode": "LTV-AIIM-BEG-020",
+      "title": "Training loss shoots up to NaN a few hundred steps in",
+      "prompt": "A model's training loss decreases normally for the first few hundred steps, then suddenly spikes and becomes NaN, and stays NaN for the rest of the run. What's the most common cause, and what's the standard first thing to try?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Training Diagnostics", "PyTorch"],
+      "modelAnswer": "This pattern is the classic signature of exploding gradients, often triggered by too high a learning rate or an unusually large or unlucky batch pushing weights into an unstable region. The standard first thing to try is gradient clipping with clip_grad_norm_, which rescales gradients proportionally so their combined norm never exceeds a fixed ceiling, applied between loss.backward() and optimizer.step(). If clipping alone doesn't resolve it, lowering the learning rate is the complementary next step.",
+      "professionalAnswer": "I'd immediately suspect exploding gradients -- a sudden spike to inf or NaN that stays NaN afterward (since NaN propagates forward forever once it appears) is exactly that pattern, and too high a learning rate is the most common trigger. My first move is adding gradient clipping, calling clip_grad_norm_ right after backward() and before the optimizer step, which caps how large the combined gradient norm is allowed to get. If that doesn't fully fix it, I'd also try lowering the learning rate itself, since clipping treats the symptom while a lower learning rate addresses the instability more directly.",
+      "commonMistakes": [
+        "Assuming NaN loss always means a data bug rather than an optimization instability",
+        "Not checking whether the learning rate is simply too high for this model/data combination",
+        "Applying gradient clipping after the optimizer step instead of between backward() and step()",
+        "Restarting training from scratch instead of adding clipping or lowering the learning rate first"
+      ],
+      "keyPoints": [
+        "A sudden spike to inf/NaN that persists is the classic exploding-gradient signature",
+        "Too-high learning rate is the most common trigger",
+        "clip_grad_norm_ is the standard first fix, applied between backward() and step()",
+        "Lowering the learning rate is the complementary second lever"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies exploding gradients/high learning rate as the likely cause", "weight": 40 },
+        { "criterion": "Gives the correct standard fix", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-021",
+      "questionCode": "LTV-AIIM-BEG-021",
+      "title": "A multi-GPU job hangs with no error for several minutes, then dies",
+      "prompt": "A 4-GPU DDP training job appears to just freeze -- no progress, no error -- for several minutes, and then the process finally dies with an NCCL timeout error. What does this actually tell you about what happened, and where would you look first?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["NCCL", "Distributed Training", "Troubleshooting"],
+      "modelAnswer": "An all-reduce (or any NCCL collective) is synchronous across every participating GPU -- all of them have to arrive at the same collective call before any can proceed. If one GPU is stuck, unusually slow, or has silently crashed, every other GPU simply waits at that point with no error of its own, since nothing looks wrong from their side yet. NCCL's watchdog timeout is what eventually converts that silent hang into an explicit error after a set duration. The first place to look is the straggler: check nvidia-smi and each node's driver Xid error log for a hardware fault, and check whether one rank's data loader or preprocessing is unusually slow, since that rank would be the one arriving late to the collective.",
+      "professionalAnswer": "I'd start from the fact that collectives like all-reduce are synchronous -- every GPU has to show up before any of them can move on. So if one GPU is dead or just slow, nobody else gets an error, they just wait, and the timeout error I eventually see could technically come from any rank, not necessarily the actual faulty one. My first move is checking each node's nvidia-smi and driver logs for an Xid error, and looking at whether one particular rank is consistently the one running behind -- maybe its data loader is slower, maybe its GPU is degraded. I wouldn't just restart the job blindly; I'd want to know which rank was actually the straggler first.",
+      "commonMistakes": [
+        "Assuming the error message points directly at the actual faulty GPU",
+        "Treating the hang as a bug in the training script rather than checking GPU/driver health first",
+        "Not knowing NCCL's watchdog timeout exists specifically to convert a silent hang into an explicit error",
+        "Restarting the job repeatedly without investigating which rank was the actual straggler"
+      ],
+      "keyPoints": [
+        "NCCL collectives are synchronous across all participating ranks",
+        "A slow or dead GPU stalls everyone else with no immediate error on their side",
+        "The watchdog timeout converts a silent hang into an explicit error after a delay",
+        "Investigate the straggler rank's hardware health and data pipeline first"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why a hang produces no immediate error", "weight": 40 },
+        { "criterion": "Gives a sensible first diagnostic step", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-022",
+      "questionCode": "LTV-AIIM-BEG-022",
+      "title": "p99 latency is fine at low traffic but terrible under load",
+      "prompt": "An LLM serving endpoint has a great p99 time-to-first-token at low traffic, but under a traffic spike the p99 TTFT balloons to several seconds while per-token latency barely changes. What does this pattern point to, and what's the fix?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Inference", "Latency", "Troubleshooting"],
+      "modelAnswer": "A TTFT tail that blows out while per-token latency (TPOT) stays steady points at queuing delay growing nonlinearly as the server approaches saturation, not a slowdown in the model itself -- requests are waiting for GPU admission or batch formation before model execution even starts. The fix is on the capacity side, not the model side: raise the number of replicas or the batch/concurrency ceiling so fewer requests queue, rather than trying to make the model itself faster through quantization or kernel tuning.",
+      "professionalAnswer": "Since TPOT barely moves while TTFT's tail blows out, that tells me the model itself is running fine once it actually starts on a request -- the problem is requests sitting in a queue waiting to be admitted before generation even begins. That's a capacity problem, not a model-speed problem, so I wouldn't reach for quantization or kernel optimization here; I'd look at adding more replicas or raising the concurrency ceiling so fewer requests pile up during a spike.",
+      "commonMistakes": [
+        "Assuming a latency spike always means the model got slower, reaching for quantization first",
+        "Not distinguishing TTFT (includes queuing) from TPOT (decode-step latency) when diagnosing",
+        "Ignoring autoscaling lag as the real cause of the spike's timing",
+        "Assuming the fix must be code-level rather than capacity-level"
+      ],
+      "keyPoints": [
+        "TTFT includes queuing delay before model execution starts",
+        "TPOT reflects decode-step speed once generation has already started",
+        "A TTFT-only blowout under load points to queuing/admission, not model slowness",
+        "The fix is capacity (more replicas or a higher concurrency ceiling), not model optimization"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses queuing as the cause", "weight": 45 },
+        { "criterion": "Identifies the right category of fix", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-023",
+      "questionCode": "LTV-AIIM-BEG-023",
+      "title": "A GPU training pod has been Pending for ten minutes",
+      "prompt": "A pod requesting nvidia.com/gpu: 1 has been stuck in Pending status for ten minutes. What's the most likely explanation, how would you confirm it, and is this something to escalate immediately or just wait out?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Kubernetes", "GPU Scheduling", "Troubleshooting"],
+      "modelAnswer": "The most likely explanation is that no node in the cluster currently has a free GPU -- Kubernetes treats a GPU resource request as a hard requirement, so rather than running the pod without a GPU or on a degraded resource, it leaves it Pending until capacity frees up. Confirm by running kubectl describe pod and checking for a FailedScheduling event mentioning insufficient nvidia.com/gpu, and checking GPU allocatable versus allocated counts across nodes. Whether to escalate or wait depends on whether other jobs are expected to free GPUs soon (fine to wait) or the cluster is genuinely undersized for current demand (worth escalating to whoever owns capacity), since nothing fixes itself just by waiting if there isn't enough capacity anywhere.",
+      "professionalAnswer": "My first guess is simply that there's no free GPU right now -- Kubernetes won't schedule a pod with a hard GPU request onto a node that can't satisfy it, so it just sits Pending. I'd confirm with kubectl describe pod and read the Events section for a FailedScheduling message naming insufficient nvidia.com/gpu, and check how many GPUs are allocated versus available across the nodes. Whether I escalate depends entirely on context -- if I know other jobs are about to finish and free up GPUs, I'd just wait; if the cluster is genuinely out of capacity for the foreseeable future, that's worth flagging to whoever owns cluster capacity rather than letting it sit silently.",
+      "commonMistakes": [
+        "Assuming Pending always means something is broken rather than simply full capacity",
+        "Not checking the pod's Events section for the actual FailedScheduling reason",
+        "Assuming the pod will eventually run with degraded resources instead of waiting indefinitely",
+        "Escalating immediately without first confirming it's actually a capacity issue"
+      ],
+      "keyPoints": [
+        "A GPU request is a hard scheduling requirement with no fallback",
+        "kubectl describe pod's Events reveal FailedScheduling/insufficient-GPU",
+        "Check node-level GPU allocatable vs allocated to confirm",
+        "Escalation decision depends on whether capacity is expected to free up soon"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the likely cause", "weight": 35 },
+        { "criterion": "Gives the correct diagnostic command and what to look for", "weight": 40 },
+        { "criterion": "Shows reasonable judgment on escalation", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-024",
+      "questionCode": "LTV-AIIM-BEG-024",
+      "title": "GPU utilization is low even though the model trains correctly",
+      "prompt": "nvidia-smi shows the GPU sitting at only 30-40% utilization during training, bouncing up and down, even though the model is learning correctly and there's no error. What's the likely culprit, and what two settings would you check first?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Data Loading", "GPU Utilization", "Troubleshooting"],
+      "modelAnswer": "GPU utilization that bounces between low and high, rather than staying consistently near 100%, is a classic sign the data pipeline (CPU-side loading and preprocessing) can't keep up, so the GPU sits idle waiting for the next batch between bursts of work. The two settings to check first are num_workers (too few workers means batches aren't prepared fast enough in parallel) and whether pin_memory=True plus non_blocking=True transfers are being used to overlap the host-to-GPU copy with compute instead of blocking on it.",
+      "professionalAnswer": "Bouncing utilization instead of a steady near-100% line almost always points me at the data pipeline before I even look at the model. The first thing I'd check is num_workers -- if it's too low, the CPU just can't prepare batches fast enough to keep the GPU fed. The second is whether pin_memory and non_blocking transfers are actually set up, since without them the GPU can end up waiting on the host-to-device copy instead of overlapping it with compute. I'd confirm with a quick batch-timing check or a profiler trace before changing anything, rather than guessing.",
+      "commonMistakes": [
+        "Assuming low GPU utilization always means the model itself is too small or inefficient",
+        "Jumping straight to faster GPUs instead of checking the data pipeline first",
+        "Assuming more num_workers is always better, when too many can hurt due to CPU contention",
+        "Forgetting that CPU-bound preprocessing, not just worker count, can be the real bottleneck"
+      ],
+      "keyPoints": [
+        "Bouncing, sub-100% GPU utilization often points at a CPU-bound data pipeline, not the model",
+        "Check num_workers first",
+        "Check pin_memory and non_blocking for transfer overlap",
+        "Confirm with batch timing or a profiler rather than guessing"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly identifies the data pipeline as the likely cause", "weight": 40 },
+        { "criterion": "Names the correct settings to check", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-025",
+      "questionCode": "LTV-AIIM-BEG-025",
+      "title": "One slow dependency is taking down an unrelated service",
+      "prompt": "Your inference gateway calls both a fast feature-lookup service and a slow, occasionally-overloaded logging service. Lately, when the logging service gets slow, the entire gateway -- including requests that don't even need logging -- starts timing out. What's going wrong, and what pattern would you reach for to fix it?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Systems", "Resilience", "Troubleshooting"],
+      "modelAnswer": "This is a cascading failure caused by a shared, exhaustible resource -- calls to the slow logging service are tying up resources, like a shared thread pool or connection pool, that unrelated requests also depend on, so one dependency's slowness spreads to parts of the system that never even touch it. The fix is the bulkhead pattern: give the logging-service calls their own isolated, limited resource pool so that pool filling up only blocks requests that actually need logging, while feature-lookup and everything else keeps flowing normally through its own separate pool.",
+      "professionalAnswer": "This looks like a cascading failure through a shared resource -- probably a thread pool or connection pool that both the logging calls and everything else are drawing from. When logging gets slow, those calls hold onto that shared pool longer, and eventually there's nothing left for requests that don't even touch logging. The pattern I'd reach for is the bulkhead -- give logging its own dedicated, bounded pool, separate from everything else, so a slow logging service can only ever exhaust its own pool, not the one feature-lookup and other requests depend on.",
+      "commonMistakes": [
+        "Assuming the fix is simply making the logging service faster rather than isolating its blast radius",
+        "Not recognizing a shared thread/connection pool as the actual mechanism of the cascade",
+        "Confusing the bulkhead pattern with a circuit breaker, which stops calling a failing dependency entirely rather than isolating its resource usage",
+        "Applying a global timeout increase, which masks the symptom without fixing the shared-resource coupling"
+      ],
+      "keyPoints": [
+        "A shared resource pool lets one slow dependency starve unrelated requests",
+        "This is a cascading failure, not an isolated outage",
+        "The bulkhead pattern isolates each dependency's resource usage into its own pool",
+        "A circuit breaker is a related but distinct, complementary pattern"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly diagnoses the shared-resource cascade", "weight": 40 },
+        { "criterion": "Correctly names and explains the bulkhead fix", "weight": 45 },
+        { "criterion": "Clarity of explanation", "weight": 15 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-026",
+      "questionCode": "LTV-AIIM-BEG-026",
+      "title": "Offline metrics look great, production performance doesn't",
+      "prompt": "A model's offline evaluation AUC looks excellent, but once deployed, its real-world performance is noticeably worse. Investigation shows the training pipeline computes a feature with one SQL query and the serving path computes 'the same' feature with a different function entirely. What's this called, and what's the actual long-term fix, not just a patch for this one feature?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["ML Platform", "Feature Stores", "Troubleshooting"],
+      "modelAnswer": "This is training/serving skew caused by code duplication -- two independently maintained implementations of what's supposed to be the same feature, drifting apart over time through things like different null-handling, windowing, or rounding. Patching this one feature's mismatch fixes the symptom but not the underlying problem; the real long-term fix is adopting a feature store (or an equivalent shared feature-definition layer) so a feature's logic is defined exactly once and served consistently to both the offline store used for training and the online store used at serving time, eliminating the possibility of two divergent implementations entirely.",
+      "professionalAnswer": "I'd call this training/serving skew, and the root cause here is specifically code duplication -- two separate implementations of what's meant to be the same feature, written at different times, drifting apart. I could patch this one feature to make the two match today, but that doesn't stop the next feature from having the exact same problem a few months from now. The real fix is architectural: a feature store that defines each feature's logic exactly once and serves it consistently to both training and serving, so there's structurally no way for two divergent implementations to exist in the first place.",
+      "commonMistakes": [
+        "Treating this as a one-off bug to patch in isolation rather than a structural problem that will recur",
+        "Assuming good offline metrics are sufficient proof a model is production-ready",
+        "Not recognizing that a feature store's core value is exactly this single-source-of-truth guarantee",
+        "Monitoring for skew after the fact instead of architecturally preventing it"
+      ],
+      "keyPoints": [
+        "Training/serving skew caused by duplicated feature logic",
+        "Offline metrics can look fine while production performance degrades",
+        "A feature store defines feature logic once, shared by both training and serving",
+        "The long-term fix is architectural, not a one-off patch"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly names and explains training/serving skew", "weight": 35 },
+        { "criterion": "Correctly identifies the structural (feature store) fix", "weight": 45 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-027",
+      "questionCode": "LTV-AIIM-BEG-027",
+      "title": "nvidia-smi shows 95% GPU utilization, but the job is still slow",
+      "prompt": "nvidia-smi dmon shows sustained GPU (sm) utilization near 95% for an entire training run, yet the job is still much slower than expected. Why doesn't a high utilization number alone prove the GPU is being used efficiently, and what would you check next?",
+      "category": "troubleshooting",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["GPU Profiling", "Troubleshooting"],
+      "modelAnswer": "nvidia-smi's utilization metric only reports whether some kernel was running on the GPU at all during each sampled interval -- it says nothing about whether that kernel was doing useful, compute-heavy work (like dense matrix multiplication) or spending most of its time waiting on memory traffic, which can also show up as 'busy.' A GPU can sit at 95% utilization while running a badly memory-bound or otherwise inefficient kernel the entire time. The next step is a deeper profiler: Nsight Systems for the overall timeline to spot idle gaps or poor overlap, and Nsight Compute on the specific hot kernel to see its actual compute-versus-memory throughput breakdown and whether it's hitting a low fraction of peak FLOPs.",
+      "professionalAnswer": "I wouldn't treat that 95% number as proof of anything other than 'something was running on the GPU most of the time.' It doesn't tell me whether that something was doing real compute work or just shuffling data around in a memory-bound kernel the whole time, and both can look like high utilization. My next step would be Nsight Systems first, to get the broad timeline and check for idle gaps or poor overlap between operations, and then Nsight Compute on whichever kernel is actually eating the most time, to see the real compute-vs-memory breakdown rather than guessing from a single device-wide number.",
+      "commonMistakes": [
+        "Treating a high nvidia-smi utilization number as proof the job is running efficiently",
+        "Not knowing device-wide, time-sampled utilization hides per-kernel inefficiency entirely",
+        "Jumping straight to buying more or faster GPUs instead of profiling first",
+        "Confusing GPU utilization with tensor-core/compute-throughput utilization, which are different metrics"
+      ],
+      "keyPoints": [
+        "nvidia-smi utilization only means something was running, not that it was running efficiently",
+        "It can't distinguish compute-bound from memory-bound kernels",
+        "Nsight Systems gives the broad timeline, Nsight Compute gives per-kernel detail",
+        "Profiling, not guessing, is the correct next step"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the limitation of nvidia-smi's utilization metric", "weight": 45 },
+        { "criterion": "Names the correct next diagnostic tools", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-028",
+      "questionCode": "LTV-AIIM-BEG-028",
+      "title": "Picking the right feature freshness tier",
+      "prompt": "You're designing feature serving for a fraud-detection model that needs a feature updated within the last minute (transaction velocity), alongside features that only need to refresh daily (account age) and one feature that can only be computed using data present in the actual incoming request (device fingerprint of this request). How would you structure feature computation for these three cases, and why not use one approach for all three?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["ML Platform", "Feature Stores", "Architecture"],
+      "modelAnswer": "Use batch materialization for the daily account-age feature, since its freshness needs are measured in hours and a scheduled job copying values from the offline store into the online store is the simplest, cheapest option. Use streaming ingestion for transaction velocity, since sub-minute freshness requires a stream processor writing directly into the online store rather than waiting for the next batch window. Use an on-demand feature view for the device fingerprint, since it depends on data only available at request time and can't be precomputed into either store at all. Using one approach for all three would either be wasteful -- streaming infrastructure for something that only changes daily -- or simply wrong, since no amount of batch or streaming materialization can produce a value that only exists once the request itself arrives.",
+      "professionalAnswer": "I'd map each feature to its own pattern rather than forcing one approach everywhere. Account age only needs batch materialization -- a scheduled job copying from the offline store into the online store on something like a daily cadence is plenty. Transaction velocity needs streaming ingestion, since sub-minute freshness means a stream processor has to write directly into the online store as events happen, not wait for the next batch run. And the device fingerprint can't be materialized ahead of time at all -- it only exists once the request itself arrives, so it has to be an on-demand feature view computed at request time. Forcing one pattern onto all three would either be overkill for account age or flatly impossible for the device fingerprint.",
+      "commonMistakes": [
+        "Defaulting to streaming for everything 'to be safe,' adding unnecessary infrastructure cost and complexity",
+        "Trying to precompute the request-dependent feature ahead of time, which is architecturally impossible",
+        "Not recognizing that freshness requirements, not team preference, should drive the materialization pattern choice",
+        "Treating the online/offline split as a database choice rather than a freshness/latency-pattern choice"
+      ],
+      "keyPoints": [
+        "Batch materialization fits hours-to-days freshness needs",
+        "Streaming ingestion fits sub-minute freshness, writing directly to the online store",
+        "On-demand feature views handle request-time-only inputs that can never be precomputed",
+        "The right choice is driven by each feature's actual requirement, not one default pattern"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly matches each feature to the right pattern", "weight": 50 },
+        { "criterion": "Correctly explains why one pattern doesn't fit all three", "weight": 35 },
+        { "criterion": "Clarity of explanation", "weight": 15 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-029",
+      "questionCode": "LTV-AIIM-BEG-029",
+      "title": "Choosing data parallelism over model parallelism for a model that fits on one GPU",
+      "prompt": "Your team has 8 GPUs available and a model that comfortably fits in a single GPU's memory with room to spare. Why would you choose DistributedDataParallel over a model-parallel (sharding the model itself across GPUs) approach here, and when would that choice flip?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Training", "Architecture"],
+      "modelAnswer": "When the model already fits on one GPU, DDP is the simpler and typically faster choice -- each GPU holds a full copy of the model, processes its own shard of the data independently, and only synchronizes gradients via all-reduce at the end of each backward pass, with no need to split the model's layers across devices or introduce the extra cross-GPU communication model parallelism requires between layers on different devices. The choice flips once the model itself no longer fits in a single GPU's memory (or a single very large batch's activations don't fit), at which point some form of model, tensor, or pipeline parallelism -- or a combined approach like FSDP that shards both data and model state -- becomes necessary regardless of how fast DDP would otherwise be.",
+      "professionalAnswer": "With a model that fits comfortably on one GPU, I'd default to DDP every time -- every GPU just runs the whole model on its own slice of data and the only coordination needed is one all-reduce on the gradients at the end of each step. Model parallelism would add real complexity and extra cross-GPU communication between layers for zero benefit here, since there's no memory problem to solve. The thing that would actually flip my decision is memory, not GPU count -- the moment the model (or its activations at the batch size I need) stop fitting on a single device, DDP alone can't help anymore and I'd need to look at sharding the model itself, possibly with something like FSDP that blends data and model sharding together.",
+      "commonMistakes": [
+        "Defaulting to model parallelism because it sounds more sophisticated, adding complexity with no benefit",
+        "Not recognizing that the deciding factor is memory, not GPU count or a desire for more distribution",
+        "Assuming DDP and model parallelism are mutually exclusive rather than combinable approaches",
+        "Forgetting DDP still has a real communication cost from gradient synchronization every step"
+      ],
+      "keyPoints": [
+        "DDP is the right default when the model fits on one GPU",
+        "DDP requires only gradient all-reduce, not per-layer cross-GPU communication",
+        "The deciding factor to switch to model/tensor parallelism is memory, not raw GPU count",
+        "FSDP-style sharding is a middle ground combining ideas from both approaches"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly justifies the DDP choice for this scenario", "weight": 40 },
+        { "criterion": "Correctly identifies when the choice would flip", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-030",
+      "questionCode": "LTV-AIIM-BEG-030",
+      "title": "Choosing a quantization method under a calibration-data constraint",
+      "prompt": "You need to ship a 4-bit quantized version of a model into production this week, and you don't have a calibration dataset ready. A teammate suggests GPTQ because it tends to preserve more accuracy. What would you actually recommend, and what's the tradeoff you're accepting?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Quantization", "Inference", "Architecture"],
+      "modelAnswer": "Recommend bitsandbytes instead of GPTQ for this week's deadline, since bitsandbytes quantizes weights on the fly at model-load time with no calibration dataset or separate conversion step required, while GPTQ needs a calibration pass over a few hundred representative example sequences to do its layer-by-layer error correction -- something the team doesn't currently have ready. The tradeoff being accepted is that bitsandbytes generally isn't as compression-efficient or as fast at inference as a properly calibrated GPTQ or AWQ model would be; the plan should be to ship with bitsandbytes now and revisit GPTQ or AWQ once a calibration set exists and there's time to validate it properly, rather than delaying the deadline to build calibration data from scratch.",
+      "professionalAnswer": "I'd push back gently on GPTQ for this specific deadline -- it's a genuinely better accuracy option, but it needs a calibration pass over representative data that we don't have ready, and building that properly isn't a this-week task. I'd recommend bitsandbytes instead, since it quantizes right at load time with zero calibration requirement. I'd be upfront that we're trading some compression efficiency and inference speed for speed of delivery, and I'd flag it explicitly as a 'ship now, revisit with GPTQ once we have calibration data' decision, not a permanent choice.",
+      "commonMistakes": [
+        "Picking the theoretically better method (GPTQ) without accounting for the real constraint of no calibration data and a deadline",
+        "Assuming all quantization methods are interchangeable as long as the bit-width matches",
+        "Not acknowledging there's a real cost being accepted by choosing the zero-calibration option",
+        "Forgetting to frame this as a 'ship now, revisit later' decision rather than a permanent one"
+      ],
+      "keyPoints": [
+        "bitsandbytes needs no calibration data and works at load time",
+        "GPTQ/AWQ need a calibration pass the team doesn't currently have",
+        "The deadline and missing calibration data make bitsandbytes the pragmatic choice",
+        "This is explicitly a tradeoff of convenience now for compression/speed later, not a free win"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly recommends the pragmatic option given the constraint", "weight": 40 },
+        { "criterion": "Correctly names the tradeoff being accepted", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-031",
+      "questionCode": "LTV-AIIM-BEG-031",
+      "title": "Choosing storage for a large, shared training dataset",
+      "prompt": "You're setting up storage for a dataset that needs to be read concurrently by dozens of training workers across multiple nodes, at high throughput, but doesn't need to be edited in place. Would you reach for block storage (like an EBS volume), object storage (like S3), or a parallel filesystem, and why?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Storage", "Distributed Training", "Architecture"],
+      "modelAnswer": "Block storage is out immediately, since it attaches to a single instance and can't serve as shared storage across many nodes at once. Between object storage and a parallel filesystem, object storage (S3) is the natural home for the dataset itself -- cheap, durable, and its aggregate throughput scales horizontally across many prefixes -- but each individual request carries real latency, commonly tens of milliseconds, which can become a bottleneck for many small, concurrent reads during training. A parallel filesystem (such as FSx for Lustre) layered on top, lazily loading objects from S3 on first read and then serving subsequent reads from its own low-latency storage, gives the best of both: S3's durability and cost as the source of truth, with the parallel filesystem's low per-request latency for the actual training workload.",
+      "professionalAnswer": "Block storage is off the table right away -- it's tied to one instance, and this needs to be read by dozens of workers across multiple nodes at once. Between object storage and a parallel filesystem, I'd put the dataset in S3 as the durable, cost-efficient source of truth, since its aggregate throughput scales well with more prefixes. But I wouldn't stop there if the training throughput demands it, because each individual S3 request still carries real latency, often tens of milliseconds, which adds up across many small concurrent reads. Layering something like FSx for Lustre on top, which lazily pulls from S3 on first read and serves from its own fast storage after that, gives me S3's durability with much lower per-request latency for the actual training loop.",
+      "commonMistakes": [
+        "Picking block storage because it feels simpler, without considering the multi-node sharing requirement",
+        "Treating object storage alone as sufficient without accounting for its per-request latency under many small concurrent reads",
+        "Not knowing a parallel filesystem can be layered on top of object storage rather than duplicating the data separately",
+        "Assuming local NVMe on each node could substitute for shared storage across nodes"
+      ],
+      "keyPoints": [
+        "Block storage can't serve multiple nodes at once",
+        "Object storage scales aggregate throughput but has real per-request latency",
+        "A parallel filesystem layered on object storage combines durability/cost with low-latency concurrent access",
+        "Local NVMe is for node-local scratch, not the shared dataset"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly rules out block storage", "weight": 25 },
+        { "criterion": "Correctly reasons about the object storage vs parallel filesystem tradeoff", "weight": 50 },
+        { "criterion": "Clarity of explanation", "weight": 25 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-032",
+      "questionCode": "LTV-AIIM-BEG-032",
+      "title": "Structuring a retraining pipeline's stages",
+      "prompt": "You're designing an automated pipeline that should retrain a model weekly on fresh data and also redeploy whenever the serving code changes. Sketch the stages this pipeline needs, and explain why a code deploy and a model deploy should usually be kept as separate, distinguishable events rather than one combined deploy step.",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["CI/CD/CT", "MLOps", "Architecture"],
+      "modelAnswer": "The pipeline needs roughly: a data-pull stage triggered on a schedule, a retrain stage producing a reproducible candidate model with pinned dependencies and a tracked run, an evaluation stage comparing the candidate against the current production model on a fixed holdout set, and a promotion stage that only proceeds if the candidate passes the quality gate, alerting a human otherwise -- this is the continuous training (CT) piece, distinct from the continuous integration/delivery (CI/CD) piece handling serving-code changes triggered by a commit. Keeping code deploys and model deploys as separate, distinguishable events matters because if something breaks in production, you need to be able to tell which of the two actually changed -- a code deploy that coincided with a model promotion makes root-causing an incident much harder than if only one of the two happened at a time.",
+      "professionalAnswer": "I'd sketch two parallel tracks rather than one combined pipeline: a scheduled CT track that pulls fresh data, retrains a reproducible candidate, evaluates it against the current production model on a fixed holdout set, and only promotes if it actually passes that gate, alerting a human if it doesn't; and a code-triggered CI/CD track that handles serving-code changes on commit. I'd deliberately keep those as separate, distinguishable events rather than bundling them into one deploy, because the moment something breaks in production, I want to be able to say 'was this the new model or the new code,' and that's only possible if they didn't change at exactly the same time.",
+      "commonMistakes": [
+        "Collapsing CT and CI/CD into a single trigger/deploy event, losing the ability to isolate which change caused a problem",
+        "Forgetting the pipeline needs to support both a schedule trigger and a code-change trigger",
+        "Treating a passed evaluation as automatically meaning immediate deploy, with no human alerting path on failure",
+        "Not including a fixed, unchanging holdout set for fair comparison across retraining runs"
+      ],
+      "keyPoints": [
+        "CT (scheduled retraining, evaluation, gated promotion) is distinct from CI/CD (code-triggered deploys)",
+        "A validation gate should stop the pipeline and alert a human on failure, not deploy anyway",
+        "Code deploys and model deploys should be separable events for incident diagnosis",
+        "The pipeline must support both a schedule trigger and a code-change trigger"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly sketches the needed pipeline stages", "weight": 45 },
+        { "criterion": "Correctly explains why code/model deploys should stay separable", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 15 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-033",
+      "questionCode": "LTV-AIIM-BEG-033",
+      "title": "Choosing a load-balancing strategy for LLM inference replicas",
+      "prompt": "You're load-balancing requests across several GPU replicas serving the same LLM, where requests vary widely in prompt length and expected output length. Why would plain round-robin routing be a poor fit here, and what would you use instead?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Load Balancing", "Inference", "Architecture"],
+      "modelAnswer": "Round robin assumes every request costs roughly the same amount of work, which is a poor fit for LLM inference since prompt and output lengths vary widely -- a replica that happens to receive several long requests in a row ends up doing far more work than one that received short requests, even though round robin sent them equal numbers of requests. A better fit is least-outstanding-requests routing, which sends each new request to whichever replica currently has the fewest in-flight requests, naturally balancing actual load rather than request count; for multi-turn conversations, pairing this with session or prefix affinity, routing the same conversation back to the same replica, also lets that replica reuse cached context instead of recomputing it from scratch on a different replica each turn.",
+      "professionalAnswer": "Round robin's problem here is that it treats every request as equal cost, and with LLM inference that's just not true -- a long prompt or a long generation costs a lot more than a short one, so a replica can end up overloaded purely by bad luck in which requests it happened to get, even with a perfectly even request count. I'd use least-outstanding-requests routing instead, which actually tracks how much work each replica currently has in flight rather than just counting requests. And if this is a multi-turn chat workload, I'd also add session or prefix affinity on top, so a given conversation keeps landing on the same replica and can reuse its cached context instead of starting cold somewhere else every turn.",
+      "commonMistakes": [
+        "Assuming round robin is fair because it distributes requests equally, without accounting for unequal per-request cost",
+        "Not considering that routing should account for in-flight load, not just a static rule",
+        "Forgetting that session/prefix affinity has a real benefit (cached-context reuse) that pure least-outstanding-requests alone would give up",
+        "Assuming any routing strategy works equally well regardless of workload cost variance"
+      ],
+      "keyPoints": [
+        "Round robin's equal-cost assumption breaks down with variable-length LLM requests",
+        "Least-outstanding-requests routing tracks actual in-flight load",
+        "Session/prefix affinity preserves cached-context reuse for multi-turn conversations",
+        "The right strategy depends on the actual cost-variance of the workload"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains round robin's flaw for this workload", "weight": 40 },
+        { "criterion": "Correctly proposes a better-fitting strategy", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-034",
+      "questionCode": "LTV-AIIM-BEG-034",
+      "title": "Why a cluster needs leader election rather than a fixed leader",
+      "prompt": "A team is designing a small coordination service and considers just hardcoding one node as 'the leader' permanently instead of implementing leader election. What would go wrong with that approach, and what would you recommend instead at a basic level?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Distributed Systems", "Consensus", "Architecture"],
+      "modelAnswer": "Hardcoding a single node as the permanent leader creates an unmitigated single point of failure -- if that node fails or becomes unreachable, there's no mechanism for any other node to take over, and the whole system loses its coordination point until someone manually intervenes. At a basic level, the recommendation is a Raft-style leader election: followers expect regular heartbeats from the current leader, and if a follower's election timer expires with no heartbeat, it becomes a candidate, requests votes under a new term, and a candidate that wins a majority becomes the new leader -- all automatic, with each node voting for at most one candidate per term so at most one leader is elected for a given term.",
+      "professionalAnswer": "Hardcoding one node as the permanent leader basically bakes in a single point of failure with no recovery path -- if that one node goes down, nothing in the design lets another node pick up the role, so the system just stops coordinating until a human steps in. I'd recommend a basic Raft-style election instead: followers watch for regular heartbeats from the leader, and if one of them doesn't hear a heartbeat before its own election timer runs out, it becomes a candidate and asks for votes under a new term. Each node only votes for one candidate per term, so whichever candidate gets a majority becomes the new leader automatically, with no manual intervention needed.",
+      "commonMistakes": [
+        "Assuming a hardcoded leader is simpler and therefore safer, without weighing the single-point-of-failure risk",
+        "Not recognizing that leader election specifically needs a majority-vote rule to guarantee at most one leader per term",
+        "Thinking leader election happens continuously rather than only in response to a missed heartbeat",
+        "Assuming any node can just declare itself leader without the voting/majority mechanism"
+      ],
+      "keyPoints": [
+        "A hardcoded leader is an unmitigated single point of failure",
+        "Leader election relies on heartbeats and an election timeout to detect leader failure",
+        "A candidate must win a majority vote to become the new leader",
+        "The majority rule guarantees at most one leader per term"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains the risk of a hardcoded leader", "weight": 35 },
+        { "criterion": "Correctly describes the basics of heartbeat/timeout/election", "weight": 45 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-035",
+      "questionCode": "LTV-AIIM-BEG-035",
+      "title": "Designing a checkpointing approach for a large sharded model",
+      "prompt": "You're training a large model sharded across many GPUs using FSDP, and need a checkpointing strategy. Why wouldn't you gather the full model onto one GPU and save it with a plain torch.save, and what would you use instead?",
+      "category": "architecture",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Checkpointing", "Distributed Training", "Architecture"],
+      "modelAnswer": "Gathering the entire sharded model onto a single GPU before saving would require that one GPU's memory to momentarily hold the full model, and possibly optimizer state, while every other GPU sits idle waiting for the save to finish -- a serialization bottleneck and a real memory risk for any sufficiently large model. Instead, use a sharded checkpointing API like torch.distributed.checkpoint (DCP), where each rank saves only the shard of state it already holds, in parallel, along with metadata describing how the shards reassemble -- which also has the added benefit of letting a later load reshard onto a different number of ranks than the run that originally saved it.",
+      "professionalAnswer": "Gathering everything onto one GPU first means that single GPU has to momentarily hold the whole model, maybe the optimizer state too, which is exactly the kind of memory pressure FSDP was sharding to avoid in the first place -- and every other GPU just sits idle while that one does all the saving work. I'd use torch.distributed.checkpoint instead, where every rank saves only the shard it already has, in parallel, along with metadata describing how the pieces fit back together. That also means I'm not locked into reloading onto the exact same number of ranks I saved with, which matters if cluster size ever changes between runs.",
+      "commonMistakes": [
+        "Defaulting to a familiar plain torch.save without considering it requires gathering the full state onto one process first",
+        "Not recognizing the gather step itself as both a memory risk and a serialization bottleneck",
+        "Assuming a sharded checkpoint can only ever be reloaded onto the exact same number of ranks that saved it",
+        "Forgetting checkpointing needs to cover optimizer state as well as model weights"
+      ],
+      "keyPoints": [
+        "Gathering a sharded model onto one GPU before saving risks memory limits and serializes the save",
+        "Sharded checkpointing (e.g. DCP) lets each rank save its own shard in parallel",
+        "Sharded checkpoint metadata allows reloading onto a different rank count",
+        "This matters for both model weights and sharded optimizer state"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Correctly explains why the naive gather-and-save approach is risky", "weight": 40 },
+        { "criterion": "Correctly describes the sharded-checkpoint alternative", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 4,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-036",
+      "questionCode": "LTV-AIIM-BEG-036",
+      "title": "Your first on-call shift for a training platform",
+      "prompt": "Tell me about how you'd approach your first on-call shift supporting a team's model training infrastructure, where you're still new to the specific alerts and runbooks. What would you do to prepare, and how would you handle an alert you don't fully understand yet?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "On-Call", "Communication"],
+      "modelAnswer": "A strong answer describes concrete preparation before the shift starts: reading through existing runbooks and recent incident postmortems, confirming escalation paths and who the backup on-call is, and making sure dashboards and alert definitions are bookmarked and at least roughly understood even if not memorized. For an alert that isn't fully understood during the shift itself, the right instinct is to follow the runbook's documented first steps if one exists, triage the blast radius -- is a training job merely stalled versus completely down, is data at risk -- and escalate to the backup or a more senior teammate early rather than guessing at a fix under time pressure, especially since a wrong mitigation on GPU training infrastructure (like killing the wrong job) can waste real, expensive compute time. It also means documenting what was observed and tried, even if the issue is eventually handed off, so the postmortem and the runbook both improve afterward.",
+      "professionalAnswer": "Before the shift even starts, I'd go through the existing runbooks and recent incident writeups, confirm who my backup is and how to reach them, and make sure I at least roughly understand the dashboards and alert thresholds even if I haven't memorized every one. If an alert fires that I don't fully understand, I'm not going to guess at a fix under pressure -- I'll follow whatever first steps the runbook gives, think about blast radius first (is this just a stalled job or something actually at risk of data loss), and escalate early rather than late, especially on infrastructure where the wrong move, like killing the wrong training job, wastes real compute time I can't get back. Whatever happens, I'd make sure to write down what I saw and tried, so it's useful for a postmortem or for updating the runbook even if I ultimately handed it off.",
+      "commonMistakes": [
+        "Trying to resolve everything solo rather than escalating when genuinely unsure, especially under time pressure",
+        "Not reading runbooks or recent incident history before the first shift even starts",
+        "Panicking into drastic action, like killing jobs or restarting services, without first understanding blast radius",
+        "Failing to document what happened for the next person or for a postmortem"
+      ],
+      "keyPoints": [
+        "Concrete preparation before the shift: runbooks, escalation paths, dashboards",
+        "Triage blast radius before taking any action",
+        "Escalate early rather than guessing under pressure",
+        "Document the incident for future improvement, even when handed off"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Describes concrete, specific preparation steps", "weight": 35 },
+        { "criterion": "Shows sound judgment about escalation vs self-resolution", "weight": 40 },
+        { "criterion": "Shows a communication/documentation habit", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-037",
+      "questionCode": "LTV-AIIM-BEG-037",
+      "title": "Stuck on a GPU driver mismatch for half a day",
+      "prompt": "You've spent half a day trying to resolve a CUDA/driver version mismatch that's blocking a training job, with no progress. Walk me through how you'd decide when to keep troubleshooting versus asking a teammate for help, and how you'd frame that ask.",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Collaboration", "GPU Troubleshooting"],
+      "modelAnswer": "A good answer sets a reasonable time-box going in, rather than an open-ended 'I'll ask when I feel stuck,' and treats half a day without progress on a well-scoped infrastructure problem as a clear signal to ask for help rather than push through alone, especially since a driver/CUDA mismatch is often something a teammate has hit before and can resolve in minutes with the right context. Framing the ask well means being specific: what you were trying to do, the exact error message and driver/CUDA/toolkit versions involved, and what you've already tried and ruled out, so the teammate doesn't have to re-derive the same ground you already covered. It also means treating the exchange as a two-way thing -- documenting the eventual fix somewhere shared, like a wiki or runbook, so the next person who hits the same mismatch doesn't lose another half day.",
+      "professionalAnswer": "I'd set a rough time-box for myself going in, rather than letting it be open-ended, and half a day with zero progress on something as specific as a driver/CUDA mismatch is well past the point where I should be asking for help -- someone on the team has very likely hit this exact thing before. When I ask, I try to make it easy for them: here's exactly what I was doing, here's the error and the specific versions involved, here's what I already tried and ruled out, so they're not starting from zero. And once we find the fix, I'd write it down somewhere the team can find it, so the next person doesn't burn another half day on the same thing.",
+      "commonMistakes": [
+        "Treating asking for help as a sign of failure and continuing to grind well past the point of diminishing returns",
+        "Asking vaguely without sharing what's already been tried, forcing the teammate to start from zero",
+        "Not setting any time-box at all and letting the problem silently consume the whole day",
+        "Not documenting the resolution afterward so the same problem recurs for someone else"
+      ],
+      "keyPoints": [
+        "Set a reasonable time-box for troubleshooting before escalating",
+        "Recognize version-mismatch issues as the kind of problem a teammate may have already solved",
+        "Frame the ask with specifics: error, versions, what's already been tried",
+        "Document the resolution for the team afterward"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows sound judgment about when to ask for help", "weight": 40 },
+        { "criterion": "Gives a concrete, specific framing of the ask", "weight": 40 },
+        { "criterion": "Shows follow-through by documenting for the team", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-038",
+      "questionCode": "LTV-AIIM-BEG-038",
+      "title": "Explaining why inference got slower to a non-technical stakeholder",
+      "prompt": "A product manager asks why the chatbot feature 'feels slower' since last week's change, and you know the real cause is that KV cache memory got tighter under higher concurrent traffic, increasing queuing delay. How would you explain this to them without relying on jargon they won't follow?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Communication", "Stakeholder Management"],
+      "modelAnswer": "A strong answer translates the mechanism into a concrete, relatable analogy rather than reciting technical terms -- something like: more people are using the chatbot at once than our servers were originally sized for, so new requests wait in a short line before they even start being answered, the same way a restaurant with more diners than tables seats people slower even though the kitchen itself didn't get any slower. It's honest about the actual cause (more usage, not a code regression) and is specific about what's being done about it, such as adding more serving capacity or tuning how many requests can run at once, and roughly when they can expect it resolved, rather than either over-promising a timeline or hiding behind technical language that leaves the PM unable to communicate the status upward themselves.",
+      "professionalAnswer": "I'd skip the technical terms entirely and go with an analogy: more people are using the chatbot at once than we originally sized the servers for, so new requests are waiting in a short line before they're even answered -- like a restaurant that got more diners than tables, where the kitchen itself didn't get slower, there's just a longer wait before anyone gets seated. I'd be straightforward that this is a usage-growth problem, not a bug from last week's change, and I'd tell them concretely what we're doing about it, like adding more capacity, and roughly when they should expect it to feel better, so they can relay that to whoever's asking them.",
+      "commonMistakes": [
+        "Leading with the jargon itself (KV cache, memory pressure, queuing) and losing the stakeholder immediately",
+        "Being vague about the cause in a way that sounds like deflection rather than a clear, honest explanation",
+        "Failing to connect the explanation to a concrete next step or timeline the stakeholder can relay onward",
+        "Downplaying a real capacity problem to avoid an uncomfortable conversation"
+      ],
+      "keyPoints": [
+        "Translate the technical mechanism into a concrete, relatable analogy",
+        "Be honest about the actual root cause without hiding behind jargon",
+        "Connect the explanation to a specific next step or timeline",
+        "The stakeholder should come away able to explain the gist to someone else"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Builds an accurate, accessible explanation", "weight": 45 },
+        { "criterion": "Connects it to a concrete next step", "weight": 35 },
+        { "criterion": "Clarity and relatability of the analogy", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-039",
+      "questionCode": "LTV-AIIM-BEG-039",
+      "title": "Getting pushback on a pull request you were confident in",
+      "prompt": "You submit a pull request changing how a training job's checkpoints are saved, confident in the approach, and a senior teammate leaves several comments pointing out it doesn't handle a failure case you hadn't considered. How do you respond?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Code Review", "Growth Mindset"],
+      "modelAnswer": "A strong answer treats the feedback as the review doing its job, not as a personal critique, and starts by actually understanding the failure case being raised -- asking a clarifying question if the scenario isn't immediately obvious, rather than defending the original approach reflexively before fully grasping the concern. If the reviewer is right, the right move is to say so plainly, fix it, and thank them for catching something that could have caused a real incident, since a bad checkpoint silently corrupting a long training run is exactly the kind of bug worth catching in review rather than in production. If there's a genuine disagreement about tradeoffs rather than a clear bug, the response is a substantive counter-argument with reasoning, not a dismissal, and if it still isn't resolved, escalating to a quick conversation rather than a long comment thread is usually faster and less adversarial.",
+      "professionalAnswer": "My first move is to actually understand the failure case they're pointing at, not defend my approach before I've fully grasped it -- if it's not obvious, I'll ask a clarifying question. If they're right, I say so directly, thank them for catching it, and fix it; a bad checkpoint silently corrupting a long training run is exactly the kind of thing I'd rather have caught in review than in production. If it's more of a genuine tradeoff disagreement than a clear bug, I'll make my case with actual reasoning rather than just restating my original opinion, and if we're still stuck after a round or two of comments, I'd rather hop on a quick call than let it drag out in writing.",
+      "commonMistakes": [
+        "Getting defensive and arguing from ego rather than engaging with the specific failure case raised",
+        "Assuming seniority alone means the reviewer is automatically right without actually verifying the concern",
+        "Silently fixing the code without acknowledging the feedback, which erodes trust over time",
+        "Letting a disagreement drag out in comment threads instead of having a quick synchronous conversation"
+      ],
+      "keyPoints": [
+        "Treat review feedback as the process working, not a personal attack",
+        "Verify the concern is real before responding either way",
+        "Acknowledge being wrong plainly when it's deserved",
+        "Escalate to a conversation rather than a long comment war when stuck"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows a constructive, non-defensive attitude", "weight": 40 },
+        { "criterion": "Describes a sound process for verifying and responding to the concern", "weight": 40 },
+        { "criterion": "Clarity of explanation", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-040",
+      "questionCode": "LTV-AIIM-BEG-040",
+      "title": "Triaging a pile of small platform tickets",
+      "prompt": "Your ML platform team has a backlog of a dozen small tickets -- a flaky alert, a slow dashboard, two feature requests from different data science teams, and a minor security finding from an audit. How would you decide what to work on first?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Prioritization", "Platform Engineering"],
+      "modelAnswer": "A sound approach separates tickets by actual risk and blast radius rather than working through them in arrival order: the security finding and the flaky alert both deserve a first look, since a security issue can have compliance or breach implications regardless of how minor it looks on paper, and a flaky alert erodes trust in the whole alerting system every time it fires wrongly, which leads to alert fatigue where real incidents get ignored too. The two feature requests should be weighed by how many people they unblock and how urgent each requesting team's own deadline actually is, which usually means a short conversation with both teams rather than guessing. The slow dashboard, while annoying, is probably the lowest-risk item unless it's actively causing people to miss real signals. The output of this triage should be communicated back to whoever filed each ticket, even the ones going last, so nothing silently falls off the backlog without the requester knowing why.",
+      "professionalAnswer": "I wouldn't just work the backlog in the order it came in -- I'd sort by actual risk first. The security finding gets a real look regardless of how minor it sounds, since 'minor' security issues can still have compliance implications, and the flaky alert matters too because every false alarm chips away at trust in the whole alerting system, which eventually means people start ignoring real incidents. For the two feature requests, I'd actually talk to both requesting teams rather than guess at urgency, and weigh them by how many people each one unblocks. The slow dashboard is probably last unless it's actually causing people to miss something important. And whatever order I land on, I'd tell every requester where their ticket landed and why, so nothing just silently disappears from the backlog on them.",
+      "commonMistakes": [
+        "Working tickets in arrival order or by whichever is easiest to close quickly",
+        "Treating a security finding as automatically lowest priority just because it's described as minor",
+        "Not talking to the requesting teams to understand real urgency before deciding priority",
+        "Silently deprioritizing tickets without communicating back to whoever filed them"
+      ],
+      "keyPoints": [
+        "Triage by risk/blast-radius first, not arrival order or ease",
+        "A flaky alert and a security finding both deserve early attention",
+        "Weigh feature requests by actual impact and urgency, confirmed with the requesting teams",
+        "Communicate the prioritization decision back to everyone, not just the people whose ticket moved up"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows sound prioritization reasoning (risk/impact over convenience)", "weight": 45 },
+        { "criterion": "Recognizes the importance of checking in with requesters", "weight": 30 },
+        { "criterion": "Communicates the decision back to the team", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-041",
+      "questionCode": "LTV-AIIM-BEG-041",
+      "title": "Disagreeing with a teammate over how to fix a flaky training job",
+      "prompt": "A teammate wants to fix a flaky distributed training job by simply increasing the NCCL timeout, while you suspect the real problem is a genuinely failing GPU on one node. How do you raise your disagreement productively?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Collaboration", "Technical Disagreement"],
+      "modelAnswer": "A good answer leads with curiosity and evidence rather than simply asserting a different opinion -- asking what led the teammate to the timeout theory, and sharing the specific evidence pointing at a hardware issue instead, like recurring Xid errors in the driver log on one particular node, or that same node always being the straggler when the job hangs. The goal is proposing a quick, low-cost way to settle the disagreement with data rather than debate, such as cordoning the suspect node for one run and seeing if the flakiness disappears, rather than just repeating competing opinions back and forth. If the teammate's fix is also reasonable as an interim mitigation while the real cause is investigated, it's worth saying so explicitly rather than treating it as an either/or, since the two aren't actually mutually exclusive.",
+      "professionalAnswer": "I'd start by asking what led them to the timeout theory, rather than just countering with my own guess, and then share the specific evidence I have -- if I'm seeing recurring Xid errors on one particular node, or that node is consistently the straggler whenever the job hangs, that's worth putting on the table concretely. From there I'd propose something cheap that settles it with data instead of opinions, like cordoning that one node for a run and seeing if the flakiness goes away. And honestly, raising the timeout isn't necessarily wrong either -- it could be a reasonable interim mitigation while we figure out the real cause, so I'd say that explicitly rather than framing it as 'my theory versus yours.'",
+      "commonMistakes": [
+        "Treating a technical disagreement as a status contest to win rather than a question to resolve with evidence",
+        "Dismissing the teammate's theory without first understanding their reasoning",
+        "Not proposing a cheap, concrete way to test either theory, leaving the disagreement stuck at the opinion level",
+        "Framing the two approaches as mutually exclusive when one could be a reasonable interim step alongside investigating the other"
+      ],
+      "keyPoints": [
+        "Lead with curiosity about the teammate's reasoning, not a competing assertion",
+        "Bring concrete evidence, like logs or patterns, rather than just a different opinion",
+        "Propose a cheap way to test and resolve the disagreement with data",
+        "Recognize when two approaches are complementary rather than mutually exclusive"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Approaches the disagreement with curiosity and evidence rather than ego", "weight": 40 },
+        { "criterion": "Proposes a concrete way to resolve it", "weight": 40 },
+        { "criterion": "Recognizes complementary vs competing solutions", "weight": 20 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-042",
+      "questionCode": "LTV-AIIM-BEG-042",
+      "title": "Owning a mistake that caused a wasted training run",
+      "prompt": "You pushed a config change that, combined with an edge case you hadn't considered, caused a multi-hour distributed training run to silently train on a corrupted data shard before anyone noticed. How would you handle telling your team about this, and what would you do afterward?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Accountability", "Postmortem Culture"],
+      "modelAnswer": "The right first move is proactively surfacing the mistake as soon as it's discovered, rather than waiting to be found out or hoping it goes unnoticed -- a clear, factual account of what happened, when, and the actual impact, such as the hours of compute wasted and whether any model was promoted based on the bad run, without minimizing it or getting defensive about the mistake itself. Afterward, the constructive move is writing or contributing to a blameless postmortem that focuses on the timeline and systemic gaps, like why the corrupted shard wasn't caught by an existing data-validation check if there even is one, and proposing a concrete follow-up, such as adding an automated data-integrity check before training starts, so the same class of mistake can't silently recur. The point isn't self-flagellation; it's turning one incident into a system-level improvement that protects the next person who might make a similar edge-case mistake.",
+      "professionalAnswer": "I'd surface it myself as soon as I realized what happened, rather than hoping nobody notices -- a clear, factual rundown of what happened, when, and what it actually cost us, including whether anything downstream got affected by the bad run. After that, I'd want to write up a blameless postmortem focused on the timeline and the systemic gap, not on how badly I feel about it -- the real question is why didn't an existing check catch a corrupted shard before it burned several hours of compute, and if there isn't one, that's the concrete thing to fix. I'd rather turn my mistake into an automated check that protects the next person than just apologize and move on.",
+      "commonMistakes": [
+        "Delaying disclosure in the hope the mistake goes unnoticed, which erodes trust far more than the original mistake would have",
+        "Being defensive or minimizing the impact when describing what happened",
+        "Treating the postmortem as a forum for self-blame rather than identifying the systemic gap that let it happen",
+        "Not following through on a concrete preventive action afterward"
+      ],
+      "keyPoints": [
+        "Proactively disclose the mistake promptly and factually, without minimizing it",
+        "Participate in a blameless postmortem focused on systemic causes, not blame",
+        "Propose a concrete preventive fix, such as an automated validation check",
+        "Follow through so the mistake doesn't silently recur"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows proactive, honest disclosure", "weight": 35 },
+        { "criterion": "Describes a constructive, blameless postmortem framing", "weight": 35 },
+        { "criterion": "Proposes concrete follow-through", "weight": 30 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    },
+    {
+      "id": "aiim-beg-043",
+      "questionCode": "LTV-AIIM-BEG-043",
+      "title": "Staying effective during a live production inference outage",
+      "prompt": "It's your first time on-call during a real incident: the inference serving endpoint is returning errors for a meaningful share of users, and people in the incident channel are asking for updates every few minutes. How do you stay effective instead of getting overwhelmed?",
+      "category": "behavioral",
+      "difficulty": "beginner",
+      "responseFormat": "text",
+      "skills": ["Behavioral", "Incident Response", "Working Under Pressure"],
+      "modelAnswer": "Staying effective here means separating two different jobs that are easy to conflate under pressure -- actually diagnosing and fixing the issue, and communicating status to the people asking -- and not letting the second one derail the first. A practical way to do this is giving a quick, honest status update up front, such as 'investigating, will update again in 10 minutes,' that buys uninterrupted focus time, rather than trying to answer every individual question in real time while also debugging. It also means working through triage systematically rather than randomly trying fixes under pressure -- checking the most likely and cheapest things first, like recent deploys, dependency health, and resource exhaustion, before reaching for riskier interventions -- and asking for a second pair of hands early if the cause isn't obvious within a few minutes, rather than trying to be the hero who solves it alone while the error rate climbs.",
+      "professionalAnswer": "The first thing I'd do is separate debugging from communicating, because trying to do both in real time is how I'd get overwhelmed. I'd post something like 'investigating now, next update in 10 minutes' right away, which buys me uninterrupted time instead of answering every message as it comes in. Then I'd triage systematically -- recent deploys, dependency health, obvious resource exhaustion -- starting with the cheap, likely causes before reaching for anything risky. And if I'm not making progress within a few minutes, I'd ask for a second pair of hands rather than trying to be the one person who solves it alone while the error rate keeps climbing.",
+      "commonMistakes": [
+        "Trying to answer every incident-channel message in real time while also debugging, fragmenting attention on both",
+        "Jumping straight to a risky fix under pressure without first checking cheap, likely causes",
+        "Treating asking for help during an incident as a sign of weakness rather than the fastest path to resolution",
+        "Going quiet for long stretches without any status update, increasing anxiety and duplicate 'any update?' messages"
+      ],
+      "keyPoints": [
+        "Separate diagnosing/fixing from stakeholder communication, protecting focus time with a proactive status update",
+        "Triage systematically from cheap/likely causes to riskier ones",
+        "Ask for help early rather than trying to solve it alone under pressure",
+        "Keep a steady cadence of brief updates rather than going silent or over-communicating"
+      ],
+      "evaluationCriteria": [
+        { "criterion": "Shows a sound approach to balancing communication and diagnosis", "weight": 40 },
+        { "criterion": "Describes a systematic triage approach", "weight": 35 },
+        { "criterion": "Recognizes the value of asking for help early", "weight": 25 }
+      ],
+      "estimatedMinutes": 3,
+      "status": "published",
+      "version": 1,
+      "createdAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T00:00:00.000Z"
+    }
+  ]
+}
