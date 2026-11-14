@@ -62,6 +62,8 @@ model Student {
 
   credits       InterviewCredit[]
   sessions      MockInterviewSession[]
+  careerProfile CareerProfile?
+  applications  JobApplication[]
 }
 
 // One row per confirmed $19.97 purchase. orderId is the Wix order id and is
@@ -275,4 +277,89 @@ model Certificate {
   difficulty      String
   passingScore    Int
   issuedAt        DateTime @default(now())
+}
+
+// LTV Career Launch — one row per student's job-search preferences and base
+// resume. 1:1 with Student (not folded into Student itself) so a student who
+// never opts into Career Launch never gets these nullable columns at all.
+model CareerProfile {
+  id                   String    @id @default(cuid())
+  student              Student   @relation(fields: [studentId], references: [id])
+  studentId            String    @unique
+
+  targetRoles          String    // comma-separated
+  locations            String    // comma-separated
+  compFloor            Int?
+  workAuth             String
+  excludedCompanies    String    // comma-separated, may be empty
+  weeklyTarget         Int       @default(5)
+  startAvailability    String
+
+  baseResumeText       String?
+  baseResumeApprovedAt DateTime?
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+// One posting discovered by the scraper (lib/jobScraper.ts). sourceUrl is
+// the de-dup key — the scheduled sweep upserts on it so re-discovering the
+// same listing on a later run never creates a duplicate JobApplication fan-out.
+model JobPosting {
+  id            String   @id @default(cuid())
+  sourceSite    String   // "dice" | "careerbuilder" | "linkedin" | "indeed"
+  sourceUrl     String   @unique
+  company       String
+  title         String
+  location      String
+  remote        Boolean  @default(false)
+  salaryRange   String?
+  rawSummary    String
+
+  applications  JobApplication[]
+
+  discoveredAt  DateTime @default(now())
+}
+
+// One student-posting pairing. status mirrors the ApplicationStatus union
+// already shown to users in the Career Launch UI prototype — kept as a plain
+// string (same reasoning as Admin.role above) since new statuses are the
+// likely future change, not a new column.
+model JobApplication {
+  id                  String    @id @default(cuid())
+  student             Student   @relation(fields: [studentId], references: [id])
+  studentId           String
+  posting             JobPosting @relation(fields: [postingId], references: [id])
+  postingId           String
+
+  status              String    @default("discovered")
+  // "discovered" | "tailored" | "staff_review" | "submitted" | "response" | "interview" | "rejected"
+  matchScore          Int?
+
+  tailoredResumeText  String?
+  coverLetterText     String?
+  staffNote           String?
+
+  reviewedByAdminId   String?
+  reviewedAt          DateTime?
+
+  createdAt           DateTime  @default(now())
+
+  @@unique([studentId, postingId])
+  @@index([status])
+}
+
+// One row per scraped site, tracking the same durable backoff shape as
+// PendingCreditVerification above — a site that's blocking us (LinkedIn,
+// Indeed, realistically) backs off instead of being hammered every sweep.
+model JobScrapeState {
+  id            String   @id @default(cuid())
+  sourceSite    String   @unique // "dice" | "careerbuilder" | "linkedin" | "indeed"
+
+  status        String   @default("pending") // "pending" | "ok" | "blocked"
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now())
+  lastError     String?
+
+  updatedAt     DateTime @updatedAt
 }

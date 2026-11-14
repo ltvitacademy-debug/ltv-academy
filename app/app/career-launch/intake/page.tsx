@@ -1,27 +1,92 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MOCK_PREFERENCES } from "@/lib/careerLaunchMockData";
+import type { CareerProfileDTO } from "@/lib/careerLaunchTypes";
 
-// Prototype only — local state stands in for a real save. No backend call.
+const DEV_EMAIL_KEY = "careerLaunchDevEmail";
+
+const EMPTY: Omit<CareerProfileDTO, "baseResumeText" | "baseResumeApprovedAt"> = {
+  targetRoles: [],
+  locations: [],
+  compFloor: null,
+  workAuth: "",
+  excludedCompanies: [],
+  weeklyTarget: 5,
+  startAvailability: "",
+};
 
 export default function CareerLaunchIntakePage() {
-  const [targetRoles, setTargetRoles] = useState(MOCK_PREFERENCES.targetRoles.join(", "));
-  const [locations, setLocations] = useState(MOCK_PREFERENCES.locations.join(", "));
-  const [compFloor, setCompFloor] = useState(MOCK_PREFERENCES.compFloor);
-  const [workAuth, setWorkAuth] = useState(MOCK_PREFERENCES.workAuth);
-  const [excluded, setExcluded] = useState(MOCK_PREFERENCES.excludedCompanies.join(", "));
-  const [weeklyTarget, setWeeklyTarget] = useState(MOCK_PREFERENCES.weeklyApplicationTarget);
-  const [startAvailability, setStartAvailability] = useState(MOCK_PREFERENCES.startAvailability);
+  const [devEmail, setDevEmail] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [targetRoles, setTargetRoles] = useState("");
+  const [locations, setLocations] = useState("");
+  const [compFloor, setCompFloor] = useState<number | "">("");
+  const [workAuth, setWorkAuth] = useState("");
+  const [excluded, setExcluded] = useState("");
+  const [weeklyTarget, setWeeklyTarget] = useState(5);
+  const [startAvailability, setStartAvailability] = useState("");
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDevEmail(window.localStorage.getItem(DEV_EMAIL_KEY) ?? "");
+  }, []);
+
+  useEffect(() => {
+    const query = devEmail ? `?devStudentEmail=${encodeURIComponent(devEmail)}` : "";
+    fetch(`/api/career-launch-profile${query}`)
+      .then((res) => res.json())
+      .then((data: { profile: CareerProfileDTO | null; error?: string }) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        const profile = data.profile ?? EMPTY;
+        setTargetRoles(profile.targetRoles.join("; "));
+        setLocations(profile.locations.join("; "));
+        setCompFloor(profile.compFloor ?? "");
+        setWorkAuth(profile.workAuth);
+        setExcluded(profile.excludedCompanies.join("; "));
+        setWeeklyTarget(profile.weeklyTarget || 5);
+        setStartAvailability(profile.startAvailability);
+        setLoaded(true);
+      })
+      .catch(() => setError("Could not load your preferences."));
+  }, [devEmail]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaved(false);
+    setError(null);
+    try {
+      const res = await fetch("/api/career-launch-profile", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          devStudentEmail: devEmail || undefined,
+          targetRoles: targetRoles.split(";").map((s) => s.trim()).filter(Boolean),
+          locations: locations.split(";").map((s) => s.trim()).filter(Boolean),
+          compFloor: compFloor === "" ? null : Number(compFloor),
+          workAuth,
+          excludedCompanies: excluded.split(";").map((s) => s.trim()).filter(Boolean),
+          weeklyTarget,
+          startAvailability,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+      setSaved(true);
+    } catch {
+      setError("Could not save your preferences.");
+    }
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <div className="mb-6 border border-gold bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-crimson-deep">
-        Prototype — placeholder data, not a live feature
-      </div>
-
       <nav className="mb-6 text-sm text-stone">
         <Link href="/app/career-launch" className="hover:text-crimson">
           LTV Career Launch
@@ -37,13 +102,9 @@ export default function CareerLaunchIntakePage() {
         apply to new matches going forward, not applications already submitted.
       </p>
 
-      <form
-        className="mt-8 space-y-6"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSaved(true);
-        }}
-      >
+      {error && <p className="mt-6 border border-crimson/40 bg-crimson/5 p-3 text-sm text-crimson-deep">{error}</p>}
+
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <label className="block">
           <span className="mb-1 block text-sm font-semibold text-ink">Target roles</span>
           <input
@@ -51,7 +112,7 @@ export default function CareerLaunchIntakePage() {
             onChange={(e) => setTargetRoles(e.target.value)}
             className="w-full border border-ink/15 bg-white p-3 text-sm text-ink focus:border-crimson focus:outline-none"
           />
-          <span className="mt-1 block text-xs text-stone">Comma-separated. Order doesn&apos;t matter.</span>
+          <span className="mt-1 block text-xs text-stone">Semicolon-separated (e.g. &quot;Data Engineer; Analytics Engineer&quot;). Order doesn&apos;t matter.</span>
         </label>
 
         <label className="block">
@@ -59,16 +120,19 @@ export default function CareerLaunchIntakePage() {
           <input
             value={locations}
             onChange={(e) => setLocations(e.target.value)}
+            placeholder="Remote; Atlanta, GA"
             className="w-full border border-ink/15 bg-white p-3 text-sm text-ink focus:border-crimson focus:outline-none"
           />
+          <span className="mt-1 block text-xs text-stone">Semicolon-separated — a city/state can have its own comma.</span>
         </label>
 
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="block">
             <span className="mb-1 block text-sm font-semibold text-ink">Minimum salary</span>
             <input
+              type="number"
               value={compFloor}
-              onChange={(e) => setCompFloor(e.target.value)}
+              onChange={(e) => setCompFloor(e.target.value === "" ? "" : Number(e.target.value))}
               className="w-full border border-ink/15 bg-white p-3 text-sm text-ink focus:border-crimson focus:outline-none"
             />
           </label>
@@ -116,13 +180,28 @@ export default function CareerLaunchIntakePage() {
         <div className="flex items-center gap-4 pt-2">
           <button
             type="submit"
-            className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
+            disabled={!loaded}
+            className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep disabled:opacity-50"
           >
             Save preferences
           </button>
-          {saved && <span className="text-sm text-crimson-deep">Saved (prototype only — not persisted).</span>}
+          {saved && <span className="text-sm text-crimson-deep">Saved.</span>}
         </div>
       </form>
+
+      <details className="mt-10 text-xs text-stone">
+        <summary className="cursor-pointer">Dev mode (local testing only)</summary>
+        <input
+          type="email"
+          value={devEmail}
+          onChange={(e) => {
+            setDevEmail(e.target.value);
+            window.localStorage.setItem(DEV_EMAIL_KEY, e.target.value);
+          }}
+          placeholder="dev email, ignored in production"
+          className="mt-2 w-full max-w-xs rounded-[2px] border border-ink/15 px-2 py-1"
+        />
+      </details>
     </main>
   );
 }

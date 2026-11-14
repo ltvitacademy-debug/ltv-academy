@@ -1,27 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-// Prototype only — approve/request-changes is local state, nothing is sent anywhere.
-
-const MOCK_RESUME_BULLETS = [
-  "Built ETL pipelines moving on-prem SQL Server data into Azure Data Lake using ADF, serving 12 downstream Power BI reports.",
-  "Migrated a 200GB on-prem data warehouse to a cloud lakehouse, cutting reporting latency by 40%.",
-  "Designed star-schema data marts for self-service BI reporting across 3 business units.",
-  "Automated data quality checks across 40+ pipeline tables using Great Expectations, catching schema drift before it reached dashboards.",
-];
+const DEV_EMAIL_KEY = "careerLaunchDevEmail";
 
 export default function CareerLaunchResumePage() {
-  const [decision, setDecision] = useState<"pending" | "approved" | "changes">("pending");
-  const [note, setNote] = useState("");
+  const [devEmail, setDevEmail] = useState("");
+  const [resumeText, setResumeText] = useState("");
+  const [savedText, setSavedText] = useState("");
+  const [approvedAt, setApprovedAt] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDevEmail(window.localStorage.getItem(DEV_EMAIL_KEY) ?? "");
+  }, []);
+
+  useEffect(() => {
+    const query = devEmail ? `?devStudentEmail=${encodeURIComponent(devEmail)}` : "";
+    fetch(`/api/career-launch-resume${query}`)
+      .then((res) => res.json())
+      .then((data: { baseResumeText: string | null; baseResumeApprovedAt: string | null; error?: string }) => {
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        setResumeText(data.baseResumeText ?? "");
+        setSavedText(data.baseResumeText ?? "");
+        setApprovedAt(data.baseResumeApprovedAt);
+        setLoaded(true);
+      })
+      .catch(() => setError("Could not load your resume."));
+  }, [devEmail]);
+
+  async function handleSave() {
+    setStatus(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/career-launch-resume", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ devStudentEmail: devEmail || undefined, baseResumeText: resumeText }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+      setSavedText(resumeText);
+      setApprovedAt(null);
+      setStatus("Saved. Approve below when it's ready to use.");
+    } catch {
+      setError("Could not save your resume.");
+    }
+  }
+
+  async function handleApprove() {
+    setStatus(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/career-launch-resume", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ devStudentEmail: devEmail || undefined, action: "approve" }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+      setApprovedAt(data.baseResumeApprovedAt);
+      setStatus("Approved. New matches can now be tailored from this version.");
+    } catch {
+      setError("Could not approve your resume.");
+    }
+  }
+
+  const hasUnsavedChanges = resumeText !== savedText;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <div className="mb-6 border border-gold bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-crimson-deep">
-        Prototype — placeholder data, not a live feature
-      </div>
-
       <nav className="mb-6 text-sm text-stone">
         <Link href="/app/career-launch" className="hover:text-crimson">
           LTV Career Launch
@@ -31,84 +91,63 @@ export default function CareerLaunchResumePage() {
       </nav>
 
       <p className="eyebrow mb-3">One resume, tailored per role</p>
-      <h1 className="display text-3xl">Approve your base resume</h1>
+      <h1 className="display text-3xl">Your base resume</h1>
       <p className="mt-3 max-w-xl text-stone">
         This is the source of truth our AI tailors from for every application — it only adjusts
-        emphasis and keywords per posting, it never adds experience that isn&apos;t here. Review it
-        once; you can request changes anytime.
+        emphasis and keywords per posting, it never adds experience that isn&apos;t here. Edit it
+        directly, save, then approve when it's ready to use.
       </p>
 
-      <div className="mt-8 border border-ink/15 bg-white p-6">
-        <p className="font-semibold text-ink">Jordan Alvarez</p>
-        <p className="text-sm text-stone">Data Engineer · Atlanta, GA · jordan.alvarez@example.com</p>
+      {error && <p className="mt-6 border border-crimson/40 bg-crimson/5 p-3 text-sm text-crimson-deep">{error}</p>}
 
-        <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-crimson-deep">
-          Capstone &amp; Project Experience
-        </p>
-        <ul className="mt-2 space-y-2 text-sm text-ink">
-          {MOCK_RESUME_BULLETS.map((bullet, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="text-crimson">—</span>
-              <span>{bullet}</span>
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-crimson-deep">
-          Certifications
-        </p>
-        <p className="mt-2 text-sm text-ink">
-          LTV Academy — Azure &amp; Fabric Data Engineer (Job-Ready) · Professional Mock Interview,
-          Advanced — Passed
-        </p>
+      <div className="mt-8">
+        <textarea
+          value={resumeText}
+          onChange={(e) => setResumeText(e.target.value)}
+          rows={16}
+          placeholder="Paste your resume text here…"
+          className="w-full border border-ink/15 bg-white p-4 text-sm text-ink focus:border-crimson focus:outline-none"
+        />
       </div>
 
-      {decision === "pending" && (
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => setDecision("approved")}
-            className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
-          >
-            Approve as-is
-          </button>
-          <button
-            type="button"
-            onClick={() => setDecision("changes")}
-            className="rounded-[2px] border border-ink/15 px-6 py-3 text-sm font-semibold text-ink hover:border-crimson"
-          >
-            Request changes
-          </button>
-        </div>
-      )}
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!loaded || !resumeText.trim()}
+          className="rounded-[2px] border border-ink/15 bg-white px-6 py-3 text-sm font-semibold text-ink hover:border-crimson disabled:opacity-50"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={handleApprove}
+          disabled={!loaded || !savedText.trim() || hasUnsavedChanges || !!approvedAt}
+          className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep disabled:opacity-50"
+        >
+          {approvedAt ? "Approved" : "Approve"}
+        </button>
+        {hasUnsavedChanges && <span className="text-xs text-stone">Save before approving.</span>}
+        {approvedAt && !hasUnsavedChanges && (
+          <span className="text-xs text-crimson-deep">Approved {new Date(approvedAt).toLocaleDateString()}</span>
+        )}
+      </div>
 
-      {decision === "approved" && (
-        <div className="mt-6 border border-crimson/30 bg-crimson/5 p-4 text-sm text-crimson-deep">
-          Approved (prototype only). New matches can now be tailored from this version.
-        </div>
-      )}
+      {status && <p className="mt-4 border border-crimson/30 bg-crimson/5 p-4 text-sm text-crimson-deep">{status}</p>}
 
-      {decision === "changes" && (
-        <div className="mt-6 space-y-3">
-          <label className="block">
-            <span className="mb-1 block text-sm font-semibold text-ink">What should change?</span>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={4}
-              className="w-full border border-ink/15 bg-white p-3 text-sm text-ink focus:border-crimson focus:outline-none"
-              placeholder="e.g. add my new certification, remove the retail job"
-            />
-          </label>
-          <button
-            type="button"
-            onClick={() => setDecision("pending")}
-            className="rounded-[2px] bg-crimson px-6 py-3 text-sm font-semibold text-parchment hover:bg-crimson-deep"
-          >
-            Send to staff (prototype only)
-          </button>
-        </div>
-      )}
+      <details className="mt-10 text-xs text-stone">
+        <summary className="cursor-pointer">Dev mode (local testing only)</summary>
+        <input
+          type="email"
+          value={devEmail}
+          onChange={(e) => {
+            setDevEmail(e.target.value);
+            window.localStorage.setItem(DEV_EMAIL_KEY, e.target.value);
+          }}
+          placeholder="dev email, ignored in production"
+          className="mt-2 w-full max-w-xs rounded-[2px] border border-ink/15 px-2 py-1"
+        />
+      </details>
     </main>
   );
 }
